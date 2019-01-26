@@ -9,6 +9,9 @@ import ch.cern.eam.wshub.core.tools.InforException;
 
 public interface UserSetupService {
 
+    @Operation(logOperation = INFOR_OPERATION.LOGIN)
+    String login(InforContext context) throws InforException;
+
     @Operation(logOperation = INFOR_OPERATION.USERSETUP_R, logDataReference1 = LogDataReferenceType.INPUT)
     EAMUser readUserSetup(InforContext context, String userCode) throws InforException;
 

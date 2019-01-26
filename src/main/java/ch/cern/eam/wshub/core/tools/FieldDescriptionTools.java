@@ -179,6 +179,9 @@ public class FieldDescriptionTools {
 		if (!tools.isDatabaseConnectionConfigured()) {
 			return null;
 		}
+		if (tools.isEmpty(codeValue)) {
+			return null;
+		}
 		EntityManager em = tools.getEntityManager();
 		try {
 			if (entityCode != null && codeValue != null)

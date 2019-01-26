@@ -15,9 +15,11 @@ import net.datastream.schemas.mp_functions.mp0601_001.MP0601_GetUserSetup_001;
 import net.datastream.schemas.mp_functions.mp0602_001.MP0602_AddUserSetup_001;
 import net.datastream.schemas.mp_functions.mp0603_001.MP0603_SyncUserSetup_001;
 import net.datastream.schemas.mp_functions.mp0604_001.MP0604_DeleteUserSetup_001;
+import net.datastream.schemas.mp_functions.mp9532_001.MP9532_RunEmptyOp_001;
 import net.datastream.schemas.mp_results.mp0601_001.MP0601_GetUserSetup_001_Result;
 import net.datastream.schemas.mp_results.mp0602_001.MP0602_AddUserSetup_001_Result;
 import net.datastream.schemas.mp_results.mp0603_001.MP0603_SyncUserSetup_001_Result;
+import net.datastream.schemas.mp_results.mp9532_001.MP9532_RunEmptyOp_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
 import javax.persistence.EntityManager;
@@ -36,6 +38,19 @@ public class UserSetupServiceImpl implements UserSetupService {
 		this.tools = tools;
 		this.inforws = inforWebServicesToolkitClient;
 	}
+
+	public String login(InforContext context) throws InforException {
+		MP9532_RunEmptyOp_001 runEmptyOp = new MP9532_RunEmptyOp_001();
+		if (context != null && context.getCredentials() != null) {
+			MP9532_RunEmptyOp_001_Result result =  inforws.runEmptyOpOp(runEmptyOp, applicationData.getOrganization(),
+					tools.createSecurityHeader(context), "", null, null,
+					applicationData.getTenant());
+			return result.getResultData();
+		} else {
+			throw tools.generateFault("Please supply valid credentials");
+		}
+	}
+
 	public EAMUser readUserSetup(InforContext context, String userCode) throws InforException {
 		// User Setup result
 		MP0601_GetUserSetup_001_Result getUserSetupResult = null;
@@ -293,57 +308,9 @@ public class UserSetupServiceImpl implements UserSetupService {
 		// Custom fields
 		tools.getCustomFieldsTools().updateInforCustomFields(userInfor.getUSERDEFINEDAREA(), userParam.getCustomFields());
 
-		// if the cern ID field is set, use it to populate the custom field and user defined field 20
-		if (userParam.getCernId() != null) {
-			CustomField[] customFields = userParam.getCustomFields();
-
-			if (customFields != null) {
-				CustomField cernIDCustomField = null;
-				for (CustomField customField : customFields) {
-					if (customField.getCode().equalsIgnoreCase("0002")) {
-						cernIDCustomField = customField;
-					}
-				}
-
-				if (cernIDCustomField != null) {
-					cernIDCustomField.setValue(userParam.getCernId());
-				} else {
-					customFields = Stream
-							.concat(Arrays.stream(customFields), Arrays.stream(new CustomField[]{createCernIDCustomField(userParam.getCernId())})).toArray(CustomField[]::new);
-				}
-			}
-
-			else {
-				customFields = new CustomField[]{createCernIDCustomField(userParam.getCernId())};
-			}
-
-			if (userParam.getUserDefinedFields() == null) {
-				userParam.setUserDefinedFields(new UserDefinedFields());
-			}
-
-			userParam.getUserDefinedFields().setUdfchar20(userParam.getCernId());
-
-			tools.getCustomFieldsTools().updateInforCustomFields(userInfor.getUSERDEFINEDAREA(), customFields);
-		}
-
 		// User defined fields
 		tools.getUDFTools().updateInforUserDefinedFields(userInfor.getStandardUserDefinedFields(),
 				userParam.getUserDefinedFields());
-	}
-
-	private CustomField createCernIDCustomField(String value) {
-		CustomField customField = new CustomField();
-		customField.setClassCode("*");
-		customField.setCode("0002");
-		customField.setEntityCode("USER");
-		customField.setLabel("Détenteur (ID CERN)");
-		customField.setLovType("P");
-		customField.setLovValidate("+");
-		customField.setRentCodeValue("PERS");
-		customField.setType("RENT");
-		customField.setValue(value);
-
-		return customField;
 	}
 
 }

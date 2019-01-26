@@ -301,4 +301,8 @@ public class DataTypeTools {
     public String decodeBoolean(String value) {
         return encodeBoolean(value, BooleanType.TRUE_FALSE);
     }
+
+    public boolean isEmpty(String value) {
+        return value == null || value.trim().equals("");
+    }
 }
