@@ -35,17 +35,17 @@ public interface WorkOrderService {
     WorkOrder readWorkOrder(InforContext context, String number) throws InforException;
 
     @Operation(logOperation = INFOR_OPERATION.STANDARDWO_READ)
-    WorkOrder readStandardWorkOrder(InforContext context, WorkOrder workorderParam) throws InforException;
+    WorkOrder readStandardWorkOrder(InforContext context, WorkOrder workorder) throws InforException;
 
     @Operation(logOperation = INFOR_OPERATION.WORKORDER_CREATE, logDataReference1 = LogDataReferenceType.RESULT)
-    String createWorkOrder(InforContext context, WorkOrder workorderParam) throws InforException;
+    String createWorkOrder(InforContext context, WorkOrder workorder) throws InforException;
 
     @Operation(logOperation = INFOR_OPERATION.WORKORDER_U, logDataReference1 = LogDataReferenceType.INPUTFIELD, logDataReference1FieldName = "number")
-    String updateWorkOrder(InforContext context, WorkOrder workorderParam) throws InforException;
+    String updateWorkOrder(InforContext context, WorkOrder workorder) throws InforException;
 
     @Operation(logOperation = INFOR_OPERATION.WORKORDER_D)
     String deleteWorkOrder(InforContext context, String workOrderNumber) throws InforException;
 
     @Operation(logOperation = INFOR_OPERATION.WO_STATUS_U)
-    String changeWOStatus(InforContext context, String woNumber, String statusCode) throws InforException;
+    String updateWorkOrderStatus(InforContext context, String workOrderNumber, String statusCode) throws InforException;
 }

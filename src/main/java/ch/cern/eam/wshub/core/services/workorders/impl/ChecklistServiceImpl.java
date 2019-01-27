@@ -257,15 +257,15 @@ public class ChecklistServiceImpl implements ChecklistService {
 		Statement stmt = null;
 		ResultSet v_result = null;
 		try {
-			String sqlQuery = "with checklist_data as(select ack_event,ack_act,ack_code,ack_occurrence,ack_sequence,ack_object,\r\n"
-					+ " ack_type,ack_completed,ack_yes,ack_no,ack_finding,ack_possiblefindings,ack_value,ack_uom,ack_notes,ack_finaloccurrence, o.obj_desc,\r\n"
+			String sqlQuery = "with checklist_data as(select ack_event,ack_act,ack_code,ack_occurrence,ack_sequence,ack_object, "
+					+ " ack_type,ack_completed,ack_yes,ack_no,ack_finding,ack_possiblefindings,ack_value,ack_uom,ack_notes,ack_finaloccurrence, o.obj_desc, "
 					+ " NVL((SELECT TRA_TEXT FROM U5TRANSLATIONS WHERE TRA_PAGENAME = 'EAM_CHECKLIST' AND TRA_ELEMENTID = ACK_TASKCHECKLISTCODE AND TRA_LANGUAGE = '"
-					+ context.getCredentials().getLanguage() + "'), ack_desc) ack_desc,\r\n"
+					+ context.getCredentials().getLanguage() + "'), ack_desc) ack_desc, "
 					+ " NVL((SELECT ROB_LINE FROM R5ROUTOBJECTS WHERE ROB_ROUTE = (SELECT EVT_ROUTE FROM R5EVENTS WHERE EVT_CODE = '"
-					+ activity.getWorkOrderNumber() + "') AND ROB_OBJECT = ack_object), 1) eqp_order \r\n"
+					+ activity.getWorkOrderNumber() + "') AND ROB_OBJECT = ack_object), 1) eqp_order "
 					+ " from R5ACTCHECKLISTS c, R5OBJECTS o where obj_code = ack_object and ack_event = '"
 					+ activity.getWorkOrderNumber() + "' and ack_act = '" + activity.getActivityCode()
-					+ "' order by ack_object, ack_sequence, ack_occurrence)  \r\n"
+					+ "' order by ack_object, ack_sequence, ack_occurrence)  "
 					+ " select * from checklist_data order by eqp_order,ack_sequence, ack_occurrence";
 			v_connection = tools.getDataSource().getConnection();
 			stmt = v_connection.createStatement();

@@ -49,34 +49,34 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
 	public BatchResponse<String> createWorkOrderBatch(InforContext context, List<WorkOrder> workOrderParam)
 			throws InforException {
-		List<Callable<String>> wos = workOrderParam.stream()
+		List<Callable<String>> callableList = workOrderParam.stream()
 				.<Callable<String>>map(wo -> () -> createWorkOrder(context, wo))
 				.collect(Collectors.toList());
 
-		return tools.processCallables(wos);
+		return tools.processCallables(callableList);
 	}
 
 	public BatchResponse<WorkOrder> readWorkOrderBatch(InforContext context, List<String> workOrderNumbers)  {
-		List<Callable<WorkOrder>> wos = workOrderNumbers.stream()
+		List<Callable<WorkOrder>> callableList = workOrderNumbers.stream()
 				.<Callable<WorkOrder>>map(workOrderNumber -> () -> readWorkOrder(context, workOrderNumber))
 				.collect(Collectors.toList());
-		return tools.processCallables(wos);
+		return tools.processCallables(callableList);
 	}
 
 	public BatchResponse<String> updateWorkOrderBatch(InforContext context, List<WorkOrder> workOrders)
 			throws InforException {
-		List<Callable<String>> wos = workOrders.stream()
+		List<Callable<String>> callableList = workOrders.stream()
 				.<Callable<String>>map(workOrder -> () -> updateWorkOrder(context, workOrder))
 				.collect(Collectors.toList());
-		return tools.processCallables(wos);
+		return tools.processCallables(callableList);
 	}
 
 	public BatchResponse<String> deleteWorkOrderBatch(InforContext context, List<String> workOrderNumbers)
 			throws InforException {
-		List<Callable<String>> wos = workOrderNumbers.stream()
+		List<Callable<String>> callableList = workOrderNumbers.stream()
 				.<Callable<String>>map(workOrderNumber -> () -> deleteWorkOrder(context, workOrderNumber))
 				.collect(Collectors.toList());
-		return tools.processCallables(wos);
+		return tools.processCallables(callableList);
 	}
 
 	//
@@ -101,9 +101,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			getWOResult = inforws.getWorkOrderOp(getWorkOrder, applicationData.getOrganization(), null, "",
 					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
 		}
-		net.datastream.schemas.mp_entities.workorder_001.WorkOrder inforWorkOrder = getWOResult.getResultData()
-				.getWorkOrder();
-		// Add Fetched WO to the list
+		net.datastream.schemas.mp_entities.workorder_001.WorkOrder inforWorkOrder = getWOResult.getResultData().getWorkOrder();
 		//
 		// Populate the 'workOrder' object
 		//
@@ -426,8 +424,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
 		}
 
-		net.datastream.schemas.mp_entities.workorder_001.WorkOrder inforWorkOrder = getWOResult.getResultData()
-				.getWorkOrder();
+		net.datastream.schemas.mp_entities.workorder_001.WorkOrder inforWorkOrder = getWOResult.getResultData().getWorkOrder();
 
 		// Check Custom fields. If they change, or now we have them
 		if (workorderParam.getClassCode() != null && (inforWorkOrder.getCLASSID() == null
@@ -718,12 +715,12 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		return workOrderNumber;
 	}
 
-	public String changeWOStatus(InforContext context, String woNumber, String statusCode) throws InforException {
+	public String updateWorkOrderStatus(InforContext context, String workOrderNumber, String statusCode) throws InforException {
 
 		MP7161_ChangeWorkOrderStatus_001 changeWOStatus = new MP7161_ChangeWorkOrderStatus_001();
 		changeWOStatus.setWORKORDERID(new WOID_Type());
 		changeWOStatus.getWORKORDERID().setORGANIZATIONID(tools.getOrganization(context));
-		changeWOStatus.getWORKORDERID().setJOBNUM(woNumber);
+		changeWOStatus.getWORKORDERID().setJOBNUM(workOrderNumber);
 		changeWOStatus.setNEWSTATUS(new STATUS_Type());
 		changeWOStatus.getNEWSTATUS().setSTATUSCODE(statusCode);
 
@@ -735,7 +732,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			inforws.changeWorkOrderStatusOp(changeWOStatus, "*", null, null,
 					new Holder<>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
 		}
-		return "done";
+		return workOrderNumber;
 	}
 
 }

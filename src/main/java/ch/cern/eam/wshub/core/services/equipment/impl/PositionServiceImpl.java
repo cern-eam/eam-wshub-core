@@ -59,6 +59,9 @@ public class PositionServiceImpl implements PositionService {
 		//
 		//
 		initializePositionObject(context, positionEquipment, positionParam, true);
+
+		positionEquipment.setTYPE(new TYPE_Type());
+		positionEquipment.getTYPE().setTYPECODE("P");
 		//
 		//
 		//
@@ -169,12 +172,6 @@ public class PositionServiceImpl implements PositionService {
 		// ASSIGNED TO
 		if (positionEquipment.getASSIGNEDTO() != null) {
 			position.setAssignedTo(tools.getFieldDescriptionsTools().readPersonDesc(position.getAssignedTo()));
-		}
-
-		// TYPE
-		if (positionEquipment.getTYPE() != null) {
-			position.setTypeCode(positionEquipment.getTYPE().getTYPECODE());
-			position.setTypeDesc(positionEquipment.getTYPE().getDESCRIPTION());
 		}
 
 		// DEPARTMENT

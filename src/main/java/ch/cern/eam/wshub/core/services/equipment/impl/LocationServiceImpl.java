@@ -35,7 +35,7 @@ public class LocationServiceImpl implements LocationService {
 		MP0318_GetLocation_001_Result getLocationResult = new MP0318_GetLocation_001_Result();
 
 		if (context.getCredentials() != null)
-			getLocationResult = inforws.getLocationOp(getLocation, "*", tools.createSecurityHeader(context), "TERMINATE", null, null, applicationData.getTenant());
+			getLocationResult = inforws.getLocationOp(getLocation, "*", tools.createSecurityHeader(context), "TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
 		else {
 			getLocationResult = inforws.getLocationOp(getLocation, "*", null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
@@ -81,7 +81,7 @@ public class LocationServiceImpl implements LocationService {
 		MP0318_GetLocation_001_Result getLocationResult = new MP0318_GetLocation_001_Result();
 
 		if (credentials != null)
-			getLocationResult = inforws.getLocationOp(getLocation, "*", tools.createSecurityHeader(credentials.getUsername(), credentials.getPassword()), "TERMINATE", null, null, applicationData.getTenant());
+			getLocationResult = inforws.getLocationOp(getLocation, "*", tools.createSecurityHeader(credentials.getUsername(), credentials.getPassword()), "TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
 		else {
 			getLocationResult = inforws.getLocationOp(getLocation, "*", null, null, new Holder<SessionType>(tools.createInforSession(sessionID)), null, applicationData.getTenant());
 		}
@@ -91,7 +91,7 @@ public class LocationServiceImpl implements LocationService {
 		syncLocation.setLocation(locationInfor);
 
 		if (credentials != null)
-			inforws.syncLocationOp(syncLocation, "*", tools.createSecurityHeader(credentials.getUsername(), credentials.getPassword()), "TERMINATE", null, null, applicationData.getTenant());
+			inforws.syncLocationOp(syncLocation, "*", tools.createSecurityHeader(credentials.getUsername(), credentials.getPassword()), "TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
 		else {
 			inforws.syncLocationOp(syncLocation, "*", null, null, new Holder<SessionType>(tools.createInforSession(sessionID)), null, applicationData.getTenant());
 		}

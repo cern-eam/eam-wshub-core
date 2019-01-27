@@ -69,7 +69,7 @@ public class EquipmentOtherServiceImpl implements EquipmentOtherService {
 			depreciationDefault = inforws
 					.getDepreciationDefaultOp(getdepdef, applicationData.getOrganization(),
 							tools.createSecurityHeader(context),
-							"TERMINATE", null, null, applicationData.getTenant())
+							"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant())
 					.getResultData().getDepreciationDefault();
 		} else {
 			depreciationDefault = inforws.getDepreciationDefaultOp(getdepdef, applicationData.getOrganization(), null,

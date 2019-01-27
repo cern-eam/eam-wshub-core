@@ -34,9 +34,6 @@ public class InspectionServiceImpl implements InspectionService {
 		this.inforws = inforWebServicesToolkitClient;
 	}
 
-
-
-
 	//
 	//
 	//
@@ -172,15 +169,15 @@ public class InspectionServiceImpl implements InspectionService {
 	}
 
 
-	public String addAspect(InforContext context, Aspect aspectParam) throws InforException {
-		net.datastream.schemas.mp_entities.aspect_001.Aspect aspect = new net.datastream.schemas.mp_entities.aspect_001.Aspect();
+	public String addAspect(InforContext context, Aspect aspect) throws InforException {
+		net.datastream.schemas.mp_entities.aspect_001.Aspect inforAspect = new net.datastream.schemas.mp_entities.aspect_001.Aspect();
 
-		aspect.setASPECTID(new ASPECTID_Type());
-		aspect.getASPECTID().setASPECTCODE(aspectParam.getCode());
-		aspect.getASPECTID().setDESCRIPTION(aspectParam.getDesc());
+		inforAspect.setASPECTID(new ASPECTID_Type());
+		inforAspect.getASPECTID().setASPECTCODE(aspect.getCode());
+		inforAspect.getASPECTID().setDESCRIPTION(aspect.getDesc());
 
 		MP1017_AddAspect_001 addAspect = new MP1017_AddAspect_001();
-		addAspect.setAspect(aspect);
+		addAspect.setAspect(inforAspect);
 		if (context.getCredentials() != null) {
 			inforws.addAspectOp(addAspect, applicationData.getOrganization(),
 					tools.createSecurityHeader(context), "TERMINATE", null,
@@ -189,7 +186,7 @@ public class InspectionServiceImpl implements InspectionService {
 			inforws.addAspectOp(addAspect, applicationData.getOrganization(), null, "",
 					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
 		}
-		return "OK";
+		return aspect.getCode();
 	}
 
 

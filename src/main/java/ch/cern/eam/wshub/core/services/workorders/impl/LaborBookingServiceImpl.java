@@ -15,6 +15,9 @@ import net.datastream.schemas.mp_functions.mp0037_001.MP0037_AddActivity_001;
 import net.datastream.schemas.mp_functions.mp0038_001.MP0038_SyncActivity_001;
 import net.datastream.schemas.mp_functions.mp0042_001.MP0042_AddLaborBooking_001;
 import net.datastream.schemas.mp_results.mp0035_001.MP0035_GetActivity_001_Result;
+import net.datastream.schemas.mp_results.mp0037_001.MP0037_AddActivity_001_Result;
+import net.datastream.schemas.mp_results.mp0038_001.MP0038_SyncActivity_001_Result;
+import net.datastream.schemas.mp_results.mp0042_001.MP0042_AddLaborBooking_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
 import javax.persistence.EntityManager;
@@ -36,6 +39,7 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 	}
 
 	public LaborBooking[] readLaborBookings(InforContext context, String workOrderNumber) throws InforException {
+		tools.demandDatabaseConnection();
 		EntityManager em = tools.getEntityManager();
 		try {
 			return em.createNamedQuery(LaborBooking.GETBOOKEDLABOR, LaborBooking.class).setParameter("workOrder", workOrderNumber).getResultList().toArray(new LaborBooking[0]);
@@ -104,16 +108,20 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 		//
 		MP0042_AddLaborBooking_001 addLaborBoking = new MP0042_AddLaborBooking_001();
 		addLaborBoking.setLaborBooking(laborBookingInfor);
+
+		MP0042_AddLaborBooking_001_Result result = null;
+
 		if (context.getCredentials() != null) {
-			inforws.addLaborBookingOp(addLaborBoking, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
+			result = inforws.addLaborBookingOp(addLaborBoking, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
 		} else {
-			inforws.addLaborBookingOp(addLaborBoking, applicationData.getOrganization(), null, null, new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
+			result = inforws.addLaborBookingOp(addLaborBoking, applicationData.getOrganization(), null, null, new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
 		}
-		return "succeeded";
+		return laborBookingParam.getActivityCode();
 	}
 
 
 	public Activity[] readActivities(InforContext context, String workOrderNumber) throws InforException {
+		tools.demandDatabaseConnection();
 		EntityManager em = tools.getEntityManager();
 		try {
 			List<Activity> activities = em.createNamedQuery("FINDACT", Activity.class)
@@ -193,15 +201,18 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 		//
 		MP0037_AddActivity_001 addActivity = new MP0037_AddActivity_001();
 		addActivity.setActivity(activityInfor);
+
+		MP0037_AddActivity_001_Result result;
+
 		if (context.getCredentials() != null) {
-			inforws.addActivityOp(addActivity, applicationData.getOrganization(),
+			result = inforws.addActivityOp(addActivity, applicationData.getOrganization(),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					tools.createMessageConfig(), applicationData.getTenant());
 		} else {
-			inforws.addActivityOp(addActivity, applicationData.getOrganization(), null, null,
+			result = inforws.addActivityOp(addActivity, applicationData.getOrganization(), null, null,
 					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
 		}
-		return "succeeded";
+		return result.getResultData().getACTIVITYID().getACTIVITYCODE().getValue() + "";
 	}
 
 	public String updateActivity(InforContext context, Activity activityParam) throws InforException {
@@ -221,18 +232,18 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 		getActivity.getACTIVITYID().getWORKORDERID().setORGANIZATIONID(tools.getOrganization(context));
 		getActivity.getACTIVITYID().getWORKORDERID().setJOBNUM(activityParam.getWorkOrderNumber());
 
-		MP0035_GetActivity_001_Result result = null;
+		MP0035_GetActivity_001_Result getresult = null;
 
 		if (context.getCredentials() != null) {
-			result = inforws.getActivityOp(getActivity, applicationData.getOrganization(),
+			getresult = inforws.getActivityOp(getActivity, applicationData.getOrganization(),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					tools.createMessageConfig(), applicationData.getTenant());
 		} else {
-			result = inforws.getActivityOp(getActivity, applicationData.getOrganization(), null, null,
+			getresult = inforws.getActivityOp(getActivity, applicationData.getOrganization(), null, null,
 					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
 		}
 
-		net.datastream.schemas.mp_entities.activity_001.Activity activityInfor = result.getResultData().getActivity();
+		net.datastream.schemas.mp_entities.activity_001.Activity activityInfor = getresult.getResultData().getActivity();
 
 		//
 		if (activityParam.getTradeCode() != null) {
@@ -290,15 +301,18 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 		//
 		MP0038_SyncActivity_001 syncActivity = new MP0038_SyncActivity_001();
 		syncActivity.setActivity(activityInfor);
+
+		MP0038_SyncActivity_001_Result syncresult = null;
+
 		if (context.getCredentials() != null) {
-			inforws.syncActivityOp(syncActivity, applicationData.getOrganization(),
+			syncresult = inforws.syncActivityOp(syncActivity, applicationData.getOrganization(),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					tools.createMessageConfig(), applicationData.getTenant());
 		} else {
-			inforws.syncActivityOp(syncActivity, applicationData.getOrganization(), null, null,
+			syncresult = inforws.syncActivityOp(syncActivity, applicationData.getOrganization(), null, null,
 					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
 		}
-		return "succeeded";
+		return syncresult.getResultData().getACTIVITYID().getACTIVITYCODE().getValue() + "";
 	}
 
 

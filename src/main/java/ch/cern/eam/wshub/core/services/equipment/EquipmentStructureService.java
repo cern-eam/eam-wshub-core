@@ -6,7 +6,7 @@ import ch.cern.eam.wshub.core.services.INFOR_OPERATION;
 import ch.cern.eam.wshub.core.services.equipment.entities.EquipmentStructure;
 import ch.cern.eam.wshub.core.tools.InforException;
 
-public interface EquipmentHierarchyService {
+public interface EquipmentStructureService {
 
     @Operation(logOperation = INFOR_OPERATION.EQP_STR_C)
     String addEquipmentToStructure(InforContext context, EquipmentStructure equipmentStructure) throws InforException;

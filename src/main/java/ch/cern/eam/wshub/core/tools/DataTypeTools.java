@@ -133,10 +133,6 @@ public class DataTypeTools {
         return cal.getTime();
     }
 
-
-
-
-
     //
     // NUMBERS:
     //
@@ -270,8 +266,10 @@ public class DataTypeTools {
         if (value == null)
             value = "-";
         // Check the value
-        boolean result = value.equalsIgnoreCase("+") || value.equalsIgnoreCase("1") || value.equalsIgnoreCase("true")
-                || value.equalsIgnoreCase("yes");
+        boolean result = value.equalsIgnoreCase("+")
+                        || value.equalsIgnoreCase("1")
+                        || value.equalsIgnoreCase("true")
+                        || value.equalsIgnoreCase("yes");
         // Assign the result according to the type
         switch (returnType) {
             case TRUE_FALSE:

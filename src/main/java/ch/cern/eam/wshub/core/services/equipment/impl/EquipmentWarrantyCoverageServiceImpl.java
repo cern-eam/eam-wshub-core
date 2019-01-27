@@ -1,9 +1,10 @@
 package ch.cern.eam.wshub.core.services.equipment.impl;
 
 import ch.cern.eam.wshub.core.client.InforContext;
-import ch.cern.eam.wshub.core.services.equipment.WarrantyCoverageService;
+import ch.cern.eam.wshub.core.services.equipment.EquipmentWarrantyCoverageService;
 import ch.cern.eam.wshub.core.services.equipment.entities.EquipmentWarranty;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
+import ch.cern.eam.wshub.core.tools.BooleanType;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_entities.warrantycoverage_001.CoverageByDate;
@@ -13,6 +14,8 @@ import net.datastream.schemas.mp_functions.SessionType;
 import net.datastream.schemas.mp_functions.mp0344_001.MP0344_AddWarrantyCoverage_001;
 import net.datastream.schemas.mp_functions.mp0345_001.MP0345_SyncWarrantyCoverage_001;
 import net.datastream.schemas.mp_functions.mp3238_001.MP3238_GetWarrantyCoverage_001;
+import net.datastream.schemas.mp_results.mp0344_001.MP0344_AddWarrantyCoverage_001_Result;
+import net.datastream.schemas.mp_results.mp0345_001.MP0345_SyncWarrantyCoverage_001_Result;
 import net.datastream.schemas.mp_results.mp3238_001.MP3238_GetWarrantyCoverage_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
@@ -20,13 +23,13 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.xml.ws.Holder;
 
-public class WarrantyCoverageServiceImpl implements WarrantyCoverageService {
+public class EquipmentWarrantyCoverageServiceImpl implements EquipmentWarrantyCoverageService {
 
 	private Tools tools;
 	private InforWebServicesPT inforws;
 	private ApplicationData applicationData;
 
-	public WarrantyCoverageServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
+	public EquipmentWarrantyCoverageServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
 		this.applicationData = applicationData;
 		this.tools = tools;
 		this.inforws = inforWebServicesToolkitClient;
@@ -64,8 +67,8 @@ public class WarrantyCoverageServiceImpl implements WarrantyCoverageService {
 			throw tools.generateFault("Coverage type other than 'Calendar' is not supported. Please contact CMMS Support.");
 		}
 
-		if (equipmentWarrantyParam.getActive() != null && equipmentWarrantyParam.getActive().toUpperCase().equals("TRUE")) {
-			equipmentWarranty.setISWARRANTYACTIVE("true");
+		if (equipmentWarrantyParam.getActive() != null) {
+			equipmentWarranty.setISWARRANTYACTIVE(tools.getDataTypeTools().encodeBoolean(equipmentWarrantyParam.getActive(), BooleanType.TRUE_FALSE));
 		} else {
 			equipmentWarranty.setISWARRANTYACTIVE("false");
 		}
@@ -73,12 +76,14 @@ public class WarrantyCoverageServiceImpl implements WarrantyCoverageService {
 		MP0344_AddWarrantyCoverage_001 addwarrantycoverage = new MP0344_AddWarrantyCoverage_001();
 		addwarrantycoverage.setEquipmentWarranty(equipmentWarranty);
 
+		MP0344_AddWarrantyCoverage_001_Result result = null;
+
 		if (context.getCredentials() != null) {
-			inforws.addWarrantyCoverageOp(addwarrantycoverage, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, null, applicationData.getTenant());
+			result = inforws.addWarrantyCoverageOp(addwarrantycoverage, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
 		} else {
-			inforws.addWarrantyCoverageOp(addwarrantycoverage, applicationData.getOrganization(), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+			result = inforws.addWarrantyCoverageOp(addwarrantycoverage, applicationData.getOrganization(), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
-		return "OK";
+		return result.getResultData().getWARRANTYCOVERAGESEQNUM() + "";
 	}
 
 	public String updateEquipmentWarrantyCoverage(InforContext context, EquipmentWarranty equipmentWarrantyParam) throws InforException {
@@ -87,27 +92,29 @@ public class WarrantyCoverageServiceImpl implements WarrantyCoverageService {
 		//
 		MP3238_GetWarrantyCoverage_001 getwarrantycoverege = new MP3238_GetWarrantyCoverage_001();
 		MP3238_GetWarrantyCoverage_001_Result getwarrantycoveregeResult = new MP3238_GetWarrantyCoverage_001_Result();
-		// Fetch the sequence number
-		if (equipmentWarrantyParam.getEquipmentCode() == null) {
-			throw tools.generateFault("Equipment Code is mandatory field");
+
+		if (equipmentWarrantyParam.getSequenceNumber() == null) {
+			tools.demandDatabaseConnection();
+			EntityManager em = tools.getEntityManager();
+			try {
+				TypedQuery<EquipmentWarranty> eqwarr = em.createNamedQuery(EquipmentWarranty.GETEQPWARRANTY, EquipmentWarranty.class);
+				eqwarr.setParameter("equipmentCode", equipmentWarrantyParam.getEquipmentCode().trim().toUpperCase());
+				eqwarr.setParameter("warrantyCode", equipmentWarrantyParam.getWarrantyCode());
+				equipmentWarrantyParam.setSequenceNumber(eqwarr.getSingleResult().getSequenceNumber());
+
+			} catch (Exception e) {
+				throw tools.generateFault("Couldn't fetch warranty record for this equipment (" + e.getMessage() + ")");
+			} finally {
+				em.close();
+			}
 		}
 
-		EntityManager em = tools.getEntityManager();
-		try {
-			TypedQuery<EquipmentWarranty> eqwarr = em.createNamedQuery(EquipmentWarranty.GETEQPWARRANTY, EquipmentWarranty.class);
-			eqwarr.setParameter("equipmentCode", equipmentWarrantyParam.getEquipmentCode().trim().toUpperCase());
-			eqwarr.setParameter("warrantyCode", equipmentWarrantyParam.getWarrantyCode());
-			getwarrantycoverege.setWARRANTYCOVERAGESEQNUM(eqwarr.getSingleResult().getSequenceNumber());
-		} catch (Exception e) {
-			throw tools.generateFault("Couldn't fetch warranty record for this equipment (" + e.getMessage() + ")");
-		} finally {
-			em.close();
-		}
+		getwarrantycoverege.setWARRANTYCOVERAGESEQNUM(Long.parseLong(equipmentWarrantyParam.getSequenceNumber()));
 
 		if (context.getCredentials() != null) {
 			getwarrantycoveregeResult = inforws.getWarrantyCoverageOp(getwarrantycoverege,
 					applicationData.getOrganization(),
-					tools.createSecurityHeader(context),"TERMINATE", null, null,
+					tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(),
 					applicationData.getTenant());
 		} else {
 			getwarrantycoveregeResult = inforws.getWarrantyCoverageOp(getwarrantycoverege,
@@ -145,18 +152,20 @@ public class WarrantyCoverageServiceImpl implements WarrantyCoverageService {
 		}
 
 		if (equipmentWarrantyParam.getActive() != null) {
-			warrantyCoverege.getEquipmentWarranty().setISWARRANTYACTIVE(equipmentWarrantyParam.getActive());
+			warrantyCoverege.getEquipmentWarranty().setISWARRANTYACTIVE(tools.getDataTypeTools().encodeBoolean(equipmentWarrantyParam.getActive(), BooleanType.TRUE_FALSE));
 		}
 
 		MP0345_SyncWarrantyCoverage_001 syncwarrantycoverege = new MP0345_SyncWarrantyCoverage_001();
 		syncwarrantycoverege.setWarrantyCoverage(warrantyCoverege);
 
+		MP0345_SyncWarrantyCoverage_001_Result result = null;
+
 		if (context.getCredentials() != null) {
-			inforws.syncWarrantyCoverageOp(syncwarrantycoverege, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, null, applicationData.getTenant());
+			result = inforws.syncWarrantyCoverageOp(syncwarrantycoverege, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
 		} else {
-			inforws.syncWarrantyCoverageOp(syncwarrantycoverege, applicationData.getOrganization(), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+			result = inforws.syncWarrantyCoverageOp(syncwarrantycoverege, applicationData.getOrganization(), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
-		return "OK";
+		return result.getResultData().getWARRANTYCOVERAGESEQNUM() + "";
 	}
 
 

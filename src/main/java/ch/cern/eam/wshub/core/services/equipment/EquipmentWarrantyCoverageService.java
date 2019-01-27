@@ -6,7 +6,7 @@ import ch.cern.eam.wshub.core.services.INFOR_OPERATION;
 import ch.cern.eam.wshub.core.services.equipment.entities.EquipmentWarranty;
 import ch.cern.eam.wshub.core.tools.InforException;
 
-public interface WarrantyCoverageService {
+public interface EquipmentWarrantyCoverageService {
 
     @Operation(logOperation = INFOR_OPERATION.EQP_WARR_C)
     String createEquipmentWarrantyCoverage(InforContext context, EquipmentWarranty equipmentWarrantyParam) throws InforException;

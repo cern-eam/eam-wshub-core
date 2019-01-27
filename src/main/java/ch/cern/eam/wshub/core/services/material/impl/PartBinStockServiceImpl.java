@@ -66,7 +66,7 @@ public class PartBinStockServiceImpl implements PartBinStockService {
 		addbinstock.setBinStock(binStock);
 
 		if (context.getCredentials() != null) {
-			inforws.addBinStockOp(addbinstock, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, null, applicationData.getTenant());
+			inforws.addBinStockOp(addbinstock, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
 		} else {
 			inforws.addBinStockOp(addbinstock, applicationData.getOrganization(), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
@@ -97,7 +97,7 @@ public class PartBinStockServiceImpl implements PartBinStockService {
 		MP0250_GetBinStock_001_Result result = new MP0250_GetBinStock_001_Result();
 
 		if (context.getCredentials() != null) {
-			result = inforws.getBinStockOp(getBinStock, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, null, applicationData.getTenant());
+			result = inforws.getBinStockOp(getBinStock, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
 		} else {
 			result = inforws.getBinStockOp(getBinStock, applicationData.getOrganization(), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
@@ -113,7 +113,7 @@ public class PartBinStockServiceImpl implements PartBinStockService {
 		}
 
 		if (context.getCredentials() != null) {
-			inforws.syncBinStockOp(syncBinStock, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, null, applicationData.getTenant());
+			inforws.syncBinStockOp(syncBinStock, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
 		} else {
 			inforws.syncBinStockOp(syncBinStock, applicationData.getOrganization(), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}

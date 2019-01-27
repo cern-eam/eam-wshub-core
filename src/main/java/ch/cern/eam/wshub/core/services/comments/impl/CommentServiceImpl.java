@@ -30,29 +30,29 @@ public class CommentServiceImpl implements CommentService {
 		this.inforws = inforWebServicesToolkitClient;
 	}
 
-	public String createComment(InforContext context, Comment commentParam) throws InforException {
+	public String createComment(InforContext context, Comment comment) throws InforException {
 		//
 		// VALIDATION
 		//
-		if (commentParam == null) {
+		if (comment == null) {
 			throw tools.generateFault("Comment can not be empty");
 		}
 
 		String[] supportedEntities = {"OBJ", "EVNT", "PART", "CASE"};
-		if (!Arrays.asList(supportedEntities).contains(commentParam.getEntityCode())) {
+		if (!Arrays.asList(supportedEntities).contains(comment.getEntityCode())) {
 			throw tools.generateFault("This entity is not supported");
 		}
 
-		if (commentParam.getText() == null || commentParam.getEntityCode() == null || commentParam.getEntityKeyCode() == null) {
+		if (comment.getText() == null || comment.getEntityCode() == null || comment.getEntityKeyCode() == null) {
 			throw tools.generateFault("Please supply entity code, entity key code and comment text.");
 		}
 
-		if (commentParam.getEntityKeyCode().endsWith("#*")) {
+		if (comment.getEntityKeyCode().endsWith("#*")) {
 			throw tools.generateFault("Entity key code can't end with '#*'");
 		}
 
-		if ("OBJ".equals(commentParam.getEntityCode()) || "PART".equals(commentParam.getEntityCode())) {
-			commentParam.setEntityKeyCode(commentParam.getEntityKeyCode() + "#*");
+		if ("OBJ".equals(comment.getEntityCode()) || "PART".equals(comment.getEntityCode())) {
+			comment.setEntityKeyCode(comment.getEntityKeyCode() + "#*");
 		}
 
 		//
@@ -60,15 +60,15 @@ public class CommentServiceImpl implements CommentService {
 		//
 		COMMENT_Type commentInfor = new COMMENT_Type();
 
-		if (commentParam.getEntityCode() != null) {
+		if (comment.getEntityCode() != null) {
 			commentInfor.setENTITYCOMMENTID(new ENTITYCOMMENTID_Type());
-			commentInfor.getENTITYCOMMENTID().setENTITY(commentParam.getEntityCode());
-			commentInfor.getENTITYCOMMENTID().setENTITYKEYCODE(commentParam.getEntityKeyCode());
+			commentInfor.getENTITYCOMMENTID().setENTITY(comment.getEntityCode());
+			commentInfor.getENTITYCOMMENTID().setENTITYKEYCODE(comment.getEntityKeyCode());
 			commentInfor.getENTITYCOMMENTID().setLANGUAGEID(new LANGUAGEID_Type());
 			commentInfor.getENTITYCOMMENTID().getLANGUAGEID().setLANGUAGECODE("EN");
-			if (commentParam.getTypeCode() != null) {
+			if (comment.getTypeCode() != null) {
 				commentInfor.getENTITYCOMMENTID().setCOMMENTTYPE(new TYPE_Type());
-				commentInfor.getENTITYCOMMENTID().getCOMMENTTYPE().setTYPECODE(commentParam.getTypeCode());
+				commentInfor.getENTITYCOMMENTID().getCOMMENTTYPE().setTYPECODE(comment.getTypeCode());
 			} else {
 				commentInfor.getENTITYCOMMENTID().setCOMMENTTYPE(new TYPE_Type());
 				commentInfor.getENTITYCOMMENTID().getCOMMENTTYPE().setTYPECODE("*");
@@ -76,14 +76,14 @@ public class CommentServiceImpl implements CommentService {
 		}
 
 		//
-		if (commentParam.getText()!= null && !commentParam.getText().trim().equals("")) {
-			commentInfor.setCOMMENTTEXT(commentParam.getText());
+		if (comment.getText()!= null && !comment.getText().trim().equals("")) {
+			commentInfor.setCOMMENTTEXT(comment.getText());
 		}
 
 		//
-		if (commentParam.getCreationUserCode() != null) {
+		if (comment.getCreationUserCode() != null) {
 			commentInfor.setCREATEDBY(new USERID_Type());
-			commentInfor.getCREATEDBY().setUSERCODE(commentParam.getCreationUserCode());
+			commentInfor.getCREATEDBY().setUSERCODE(comment.getCreationUserCode());
 		}
 
 		//
@@ -95,15 +95,15 @@ public class CommentServiceImpl implements CommentService {
 
 		long lineNumber;
 		if (context.getCredentials() != null) {
-			MP0109_AddComments_001_Result result = inforws.addCommentsOp(addComments, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, null, applicationData.getTenant());
+			MP0109_AddComments_001_Result result = inforws.addCommentsOp(addComments, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
 			lineNumber = result.getResultData().getENTITYCOMMENTID().getLINENUM();
 		} else {
 			MP0109_AddComments_001_Result result = inforws.addCommentsOp(addComments, applicationData.getOrganization(), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 			lineNumber = result.getResultData().getENTITYCOMMENTID().getLINENUM();
 		}
-		commentParam.setLineNumber(String.valueOf(lineNumber));
+		comment.setLineNumber(String.valueOf(lineNumber));
 
-		return commentParam.getPk();
+		return comment.getPk();
 	}
 
 	public Comment[] readComments(InforContext context, String entityCode, String entityKeyCode, String typeCode) throws InforException {
@@ -152,7 +152,7 @@ public class CommentServiceImpl implements CommentService {
 		MP0108_GetComments_001_Result result;
 
 		if (context.getCredentials() != null) {
-			result = inforws.getCommentsOp(getComments, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, null, applicationData.getTenant());
+			result = inforws.getCommentsOp(getComments, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
 		} else {
 			result = inforws.getCommentsOp(getComments, applicationData.getOrganization(), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
@@ -272,11 +272,11 @@ public class CommentServiceImpl implements CommentService {
 		syncComments.setCOMMENT(commentInfor);
 
 		if (context.getCredentials() != null) {
-			inforws.syncCommentsOp(syncComments, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, null, applicationData.getTenant());
+			inforws.syncCommentsOp(syncComments, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
 		} else {
 			inforws.syncCommentsOp(syncComments, applicationData.getOrganization(), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
-		return "UPDATED";
+		return commentParam.getPk();
 	}
 
 

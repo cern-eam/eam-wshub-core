@@ -4,6 +4,7 @@ import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.equipment.PMScheduleService;
 import ch.cern.eam.wshub.core.services.equipment.entities.EquipmentPMSchedule;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
+import ch.cern.eam.wshub.core.tools.BooleanType;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_entities.pmschedule_001.PMScheduleData;
@@ -13,8 +14,13 @@ import net.datastream.schemas.mp_functions.mp0364_001.MP0364_AddEquipmentPMSched
 import net.datastream.schemas.mp_functions.mp0365_001.MP0365_SyncEquipmentPMSchedule_001;
 import net.datastream.schemas.mp_functions.mp3014_001.MP3014_GetEquipmentPMSchedule_001;
 import net.datastream.schemas.mp_functions.mp7006_001.MP7006_DeletePMScheduleEquipment_001;
+import net.datastream.schemas.mp_results.mp0364_001.MP0364_AddEquipmentPMSchedule_001_Result;
+import net.datastream.schemas.mp_results.mp0365_001.MP0365_SyncEquipmentPMSchedule_001_Result;
 import net.datastream.schemas.mp_results.mp3014_001.MP3014_GetEquipmentPMSchedule_001_Result;
+import net.datastream.schemas.mp_results.mp7006_001.MP7006_DeletePMScheduleEquipment_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
+
+import javax.persistence.EntityManager;
 import javax.xml.ws.Holder;
 
 public class PMScheduleServiceImpl implements PMScheduleService {
@@ -77,10 +83,10 @@ public class PMScheduleServiceImpl implements PMScheduleService {
 		}
 
 		// CHANGED
-		if (pmSchedule.getChanged() == null || pmSchedule.getChanged().trim().equals("")) {
-			pmschedule.getPMScheduleData().setCHANGED("false");
+		if (pmSchedule.getChanged() != null) {
+			pmschedule.getPMScheduleData().setCHANGED(tools.getDataTypeTools().encodeBoolean(pmSchedule.getChanged(), BooleanType.TRUE_FALSE));
 		} else {
-			pmschedule.getPMScheduleData().setCHANGED(pmSchedule.getChanged());
+			pmschedule.getPMScheduleData().setCHANGED("false");
 		}
 
 		// PPO_SCHEDGRP - SUPERVISOR
@@ -92,7 +98,6 @@ public class PMScheduleServiceImpl implements PMScheduleService {
 		}
 
 		// PPO_COSTCODE
-
 		if (pmSchedule.getCostCode() != null) {
 			pmschedule.getPMScheduleData().setCOSTCODEID(new COSTCODEID_Type());
 			pmschedule.getPMScheduleData().getCOSTCODEID().setORGANIZATIONID(tools.getOrganization(context));
@@ -146,33 +151,35 @@ public class PMScheduleServiceImpl implements PMScheduleService {
 			pmschedule.getPMScheduleData().getWORKORDERCLASSID().setCLASSCODE(pmSchedule.getWorkOrderClass());
 		}
 
+		MP0364_AddEquipmentPMSchedule_001_Result result = null;
+
 		if (context.getCredentials() != null) {
-			inforws.addEquipmentPMScheduleOp(pmschedule, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, null, applicationData.getTenant());
+			result = inforws.addEquipmentPMScheduleOp(pmschedule, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
 		} else {
-			inforws.addEquipmentPMScheduleOp(pmschedule, applicationData.getOrganization(), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+			result = inforws.addEquipmentPMScheduleOp(pmschedule, applicationData.getOrganization(), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
-		return "OK";
+		return result.getResultData().getPMSCHEDULEEQUIPMENTID().getSEQUENCENUMBER() + "";
 	}
 
 	public String deleteEquipmentPMSchedule(InforContext context, EquipmentPMSchedule pmSchedule) throws InforException {
 		//
 		// Fetch PM Schedule Sequence Number and Revision
 		//
-		//TODO
-		/*
-		EntityManager em = tools.getEntityManager();
-		try {
-			EquipmentPMSchedule pmScheduleTemp = em.createNamedQuery(EquipmentPMSchedule.FIND_PM_SCHEDULE, EquipmentPMSchedule.class).setParameter("equipmentCode", pmSchedule.getEquipmentCode()).setParameter("pmCode",pmSchedule.getPmCode()).getSingleResult();
-			pmSchedule.setSequenceNumber(pmScheduleTemp.getSequenceNumber());
-			pmSchedule.setRevision(pmScheduleTemp.getRevision());
-			// Just in case pmCode was not supplied
-			pmSchedule.setPmCode(pmScheduleTemp.getPmCode());
-		} catch (Exception e) {
-			throw tools.generateFault("Couldn't fetch PM Schedule record for this equipment (" + e.getMessage() + ")");
-		} finally {
-			em.close();
+		if (pmSchedule.getSequenceNumber() == null || pmSchedule.getRevision() == null) {
+			tools.demandDatabaseConnection();
+			EntityManager em = tools.getEntityManager();
+			try {
+				EquipmentPMSchedule pmScheduleTemp = em.createNamedQuery(EquipmentPMSchedule.FIND_PM_SCHEDULE, EquipmentPMSchedule.class).setParameter("equipmentCode", pmSchedule.getEquipmentCode()).setParameter("pmCode", pmSchedule.getPmCode()).getSingleResult();
+				pmSchedule.setSequenceNumber(pmScheduleTemp.getSequenceNumber());
+				pmSchedule.setRevision(pmScheduleTemp.getRevision());
+				// Just in case pmCode was not supplied
+				pmSchedule.setPmCode(pmScheduleTemp.getPmCode());
+			} catch (Exception e) {
+				throw tools.generateFault("Couldn't fetch PM Schedule record for this equipment (" + e.getMessage() + ")");
+			} finally {
+				em.close();
+			}
 		}
-		*/
 		//
 		// Delete PM Schedule
 		//
@@ -187,33 +194,35 @@ public class PMScheduleServiceImpl implements PMScheduleService {
 
 		pmschedule.getPMSCHEDULEEQUIPMENTID().setSEQUENCENUMBER(tools.getDataTypeTools().encodeLong(pmSchedule.getSequenceNumber(), "Sequence Number"));
 
+		MP7006_DeletePMScheduleEquipment_001_Result result = null;
+
 		if (context.getCredentials() != null) {
-			inforws.deletePMScheduleEquipmentOp(pmschedule, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, null, applicationData.getTenant());
+			result = inforws.deletePMScheduleEquipmentOp(pmschedule, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
 		} else {
-			inforws.deletePMScheduleEquipmentOp(pmschedule, applicationData.getOrganization(), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+			result = inforws.deletePMScheduleEquipmentOp(pmschedule, applicationData.getOrganization(), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
-		return "OK";
+		return result.getResultData().getPMSCHEDULEEQUIPMENTID().getSEQUENCENUMBER() + "";
 	}
 
 	public String updateEquipmentPMSchedule(InforContext context, EquipmentPMSchedule pmSchedule) throws InforException {
 		//
 		// Fetch PM Schedule Sequence Number and Revision
 		//
-		//TODO
-		/*
-		EntityManager em = tools.getEntityManager();
-		try {
-			EquipmentPMSchedule pmScheduleTemp = em.createNamedQuery(EquipmentPMSchedule.FIND_PM_SCHEDULE, EquipmentPMSchedule.class).setParameter("equipmentCode", pmSchedule.getEquipmentCode()).setParameter("pmCode",pmSchedule.getPmCode()).getSingleResult();
-			pmSchedule.setSequenceNumber(pmScheduleTemp.getSequenceNumber());
-			pmSchedule.setRevision(pmScheduleTemp.getRevision());
-			// Just in case pmCode was not supplied
-			pmSchedule.setPmCode(pmScheduleTemp.getPmCode());
-		} catch (Exception e) {
-			throw tools.generateFault("Couldn't fetch PM Schedule record for this equipment (" + e.getMessage() + ")");
-		} finally {
-			em.close();
+		if (pmSchedule.getSequenceNumber() == null || pmSchedule.getRevision() == null) {
+			tools.demandDatabaseConnection();
+			EntityManager em = tools.getEntityManager();
+			try {
+				EquipmentPMSchedule pmScheduleTemp = em.createNamedQuery(EquipmentPMSchedule.FIND_PM_SCHEDULE, EquipmentPMSchedule.class).setParameter("equipmentCode", pmSchedule.getEquipmentCode()).setParameter("pmCode", pmSchedule.getPmCode()).getSingleResult();
+				pmSchedule.setSequenceNumber(pmScheduleTemp.getSequenceNumber());
+				pmSchedule.setRevision(pmScheduleTemp.getRevision());
+				// Just in case pmCode was not supplied
+				pmSchedule.setPmCode(pmScheduleTemp.getPmCode());
+			} catch (Exception e) {
+				throw tools.generateFault("Couldn't fetch PM Schedule record for this equipment (" + e.getMessage() + ")");
+			} finally {
+				em.close();
+			}
 		}
-		*/
 		//
 		// Fetch Equipment PM Schedule first
 		//
@@ -227,16 +236,16 @@ public class PMScheduleServiceImpl implements PMScheduleService {
 		getpm.getPMSCHEDULEEQUIPMENTID().getPPMID().setPPMREVISION((int)tools.getDataTypeTools().encodeLong(pmSchedule.getRevision(), "PM Schedule Revision"));
 		getpm.getPMSCHEDULEEQUIPMENTID().setSEQUENCENUMBER(tools.getDataTypeTools().encodeLong(pmSchedule.getSequenceNumber(), "PM Schedule Sequence Number"));
 
-		MP3014_GetEquipmentPMSchedule_001_Result result = null;
+		MP3014_GetEquipmentPMSchedule_001_Result getresult = null;
 		if (context.getCredentials() != null) {
-			result = inforws.getEquipmentPMScheduleOp(getpm, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, null, applicationData.getTenant());
+			getresult = inforws.getEquipmentPMScheduleOp(getpm, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
 		} else {
-			result = inforws.getEquipmentPMScheduleOp(getpm, applicationData.getOrganization(), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+			getresult = inforws.getEquipmentPMScheduleOp(getpm, applicationData.getOrganization(), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
 		//
 		// Update it
 		//
-		PMScheduleData pmScheduleData = result.getResultData().getPMSchedule().getPMScheduleData();
+		PMScheduleData pmScheduleData = getresult.getResultData().getPMSchedule().getPMScheduleData();
 
 		// INTERVAL
 		if (pmSchedule.getPeriodLength() != null && pmSchedule.getPeriodUOM() != null) {
@@ -244,8 +253,11 @@ public class PMScheduleServiceImpl implements PMScheduleService {
 			pmScheduleData.getPERIODINTERVAL().setINTERVAL(tools.getDataTypeTools().encodeLong(pmSchedule.getPeriodLength(), "Period Length"));
 			pmScheduleData.getPERIODINTERVAL().setUOM(pmSchedule.getPeriodUOM());
 			pmScheduleData.getPERIODINTERVAL().setDUEDATE(tools.getDataTypeTools().formatDate(pmSchedule.getDueDate(), "PM Schedule Due Date"));
+		} else if (pmSchedule.getPeriodLength() != null) {
+			pmScheduleData.getPERIODINTERVAL().setINTERVAL(tools.getDataTypeTools().encodeLong(pmSchedule.getPeriodLength(), "Period Length"));
+		} else if (pmSchedule.getPeriodUOM() != null) {
+			pmScheduleData.getPERIODINTERVAL().setUOM(pmSchedule.getPeriodUOM());
 		}
-
 
 		// DEPARTMENT
 		if (pmSchedule.getDepartmentCode() != null) {
@@ -268,7 +280,7 @@ public class PMScheduleServiceImpl implements PMScheduleService {
 
 		// CHANGED
 		if (pmSchedule.getChanged() != null ) {
-			pmScheduleData.setCHANGED("false");
+			pmScheduleData.setCHANGED(tools.getDataTypeTools().encodeBoolean(pmSchedule.getChanged(), BooleanType.TRUE_FALSE));
 		}
 
 		// PPO_SCHEDGRP - SUPERVISOR
@@ -336,12 +348,15 @@ public class PMScheduleServiceImpl implements PMScheduleService {
 		// Sync Equipment PM Schedule
 		MP0365_SyncEquipmentPMSchedule_001 syncpm = new MP0365_SyncEquipmentPMSchedule_001();
 		syncpm.setPMScheduleData(pmScheduleData);
+
+		MP0365_SyncEquipmentPMSchedule_001_Result syncresult = null;
+
 		if (context.getCredentials() != null) {
-			inforws.syncEquipmentPMScheduleOp(syncpm, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, null, applicationData.getTenant());
+			syncresult = inforws.syncEquipmentPMScheduleOp(syncpm, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
 		} else {
-			inforws.syncEquipmentPMScheduleOp(syncpm, applicationData.getOrganization(), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+			syncresult = inforws.syncEquipmentPMScheduleOp(syncpm, applicationData.getOrganization(), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
 
-		return "OK";
+		return syncresult.getResultData().getPMSCHEDULEEQUIPMENTID().getSEQUENCENUMBER() + "";
 	}
 }

@@ -47,7 +47,7 @@ public class PartStoreServiceImpl implements PartStoreService {
 
 		MP0254_GetPartStores_001_Result result;
 		if (context.getCredentials() != null) {
-			result = inforws.getPartStoresOp(getPartStores, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, null, applicationData.getTenant());
+			result = inforws.getPartStoresOp(getPartStores, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
 		} else {
 			result = inforws.getPartStoresOp(getPartStores, applicationData.getOrganization(), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
@@ -118,7 +118,7 @@ public class PartStoreServiceImpl implements PartStoreService {
 		syncPartStores.setPartStores(partStoresResult);
 
 		if (context.getCredentials() != null) {
-			inforws.syncPartStoresOp(syncPartStores, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, null, applicationData.getTenant());
+			inforws.syncPartStoresOp(syncPartStores, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
 		} else {
 			inforws.syncPartStoresOp(syncPartStores, applicationData.getOrganization(), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
@@ -211,7 +211,7 @@ public class PartStoreServiceImpl implements PartStoreService {
 		addPartStores.setPartStores(partStoresInfor);
 
 		if (context.getCredentials() != null) {
-			inforws.addPartStoresOp(addPartStores, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, null, applicationData.getTenant());
+			inforws.addPartStoresOp(addPartStores, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
 		} else {
 			inforws.addPartStoresOp(addPartStores, applicationData.getOrganization(), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}

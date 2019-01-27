@@ -9,13 +9,9 @@ import ch.cern.eam.wshub.core.services.comments.impl.CommentServiceImpl;
 import ch.cern.eam.wshub.core.services.documents.DocumentsService;
 import ch.cern.eam.wshub.core.services.documents.impl.DocumentsServiceImpl;
 import ch.cern.eam.wshub.core.services.equipment.*;
-import ch.cern.eam.wshub.core.services.equipment.*;
-import ch.cern.eam.wshub.core.services.equipment.impl.*;
 import ch.cern.eam.wshub.core.services.equipment.impl.*;
 import ch.cern.eam.wshub.core.services.grids.GridsService;
 import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
-import ch.cern.eam.wshub.core.services.material.*;
-import ch.cern.eam.wshub.core.services.material.impl.*;
 import ch.cern.eam.wshub.core.services.material.*;
 import ch.cern.eam.wshub.core.services.material.impl.*;
 import ch.cern.eam.wshub.core.services.workorders.CaseService;
@@ -79,10 +75,10 @@ public class InforClient {
     private LocationService locationService;
     private EquipmentFacadeService equipmentFacadeService;
 
-    private EquipmentHierarchyService equipmentHierarchyService;
+    private EquipmentStructureService equipmentStructureService;
     private LinearReferenceService linearReferenceService;
     private PMScheduleService pmScheduleService;
-    private WarrantyCoverageService warrantyCoverageService;
+    private EquipmentWarrantyCoverageService equipmentWarrantyCoverageService;
     private EquipmentOtherService equipmentOtherService;
 
     private PartService partService;
@@ -202,10 +198,10 @@ public class InforClient {
             inforClient.positionService = proxy(PositionService.class, new PositionServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor);
             inforClient.systemService = proxy(SystemService.class, new SystemServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor);
             inforClient.equipmentFacadeService = proxy(EquipmentFacadeService.class, new EquipmentFacadeServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor);
-            inforClient.equipmentHierarchyService = proxy(EquipmentHierarchyService.class, new EquipmentHierarchyServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor);
+            inforClient.equipmentStructureService = proxy(EquipmentStructureService.class, new EquipmentStructureServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor);
             inforClient.linearReferenceService = proxy(LinearReferenceService.class, new LinearReferenceServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor);
             inforClient.pmScheduleService = proxy(PMScheduleService.class, new PMScheduleServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor);
-            inforClient.warrantyCoverageService = proxy(WarrantyCoverageService.class, new WarrantyCoverageServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor);
+            inforClient.equipmentWarrantyCoverageService = proxy(EquipmentWarrantyCoverageService.class, new EquipmentWarrantyCoverageServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor);
             inforClient.equipmentOtherService = proxy(EquipmentOtherService.class, new EquipmentOtherServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor);
             inforClient.partService = proxy(PartService.class, new PartServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor);
             inforClient.partMiscService = proxy(PartMiscService.class, new PartMiscServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor);
@@ -252,8 +248,8 @@ public class InforClient {
         return equipmentFacadeService;
     }
 
-    public EquipmentHierarchyService getEquipmentHierarchyService() {
-        return equipmentHierarchyService;
+    public EquipmentStructureService getEquipmentStructureService() {
+        return equipmentStructureService;
     }
 
     public LinearReferenceService getLinearReferenceService() {
@@ -264,8 +260,8 @@ public class InforClient {
         return pmScheduleService;
     }
 
-    public WarrantyCoverageService getWarrantyCoverageService() {
-        return warrantyCoverageService;
+    public EquipmentWarrantyCoverageService getEquipmentWarrantyCoverageService() {
+        return equipmentWarrantyCoverageService;
     }
 
     public EquipmentOtherService getEquipmentOtherService() {

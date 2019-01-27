@@ -11,7 +11,7 @@ public class EquipmentWarranty implements Serializable {
 	public static final String GETEQPWARRANTY = "GETEQPWARRANTY";
 	@Id
 	@Column(name="WCV_SEQNO")
-	private long sequenceNumber;
+	private String sequenceNumber;
 	@Column(name="WCV_OBJECT")
 	private String equipmentCode;
 	@Column(name="WCV_WARRANTY")
@@ -78,10 +78,10 @@ public class EquipmentWarranty implements Serializable {
 	public void setEquipmentCode(String equipmentCode) {
 		this.equipmentCode = equipmentCode;
 	}
-	public long getSequenceNumber() {
+	public String getSequenceNumber() {
 		return sequenceNumber;
 	}
-	public void setSequenceNumber(long sequenceNumber) {
+	public void setSequenceNumber(String sequenceNumber) {
 		this.sequenceNumber = sequenceNumber;
 	}
 	

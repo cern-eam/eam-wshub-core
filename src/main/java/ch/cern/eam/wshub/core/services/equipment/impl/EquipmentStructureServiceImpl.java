@@ -1,9 +1,10 @@
 package ch.cern.eam.wshub.core.services.equipment.impl;
 
 import ch.cern.eam.wshub.core.client.InforContext;
-import ch.cern.eam.wshub.core.services.equipment.EquipmentHierarchyService;
+import ch.cern.eam.wshub.core.services.equipment.EquipmentStructureService;
 import ch.cern.eam.wshub.core.services.equipment.entities.EquipmentStructure;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
+import ch.cern.eam.wshub.core.tools.BooleanType;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_fields.EQUIPMENTID_Type;
@@ -18,13 +19,13 @@ import net.datastream.schemas.mp_functions.mp3058_001.NewParentEquipment;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 import javax.xml.ws.Holder;
 
-public class EquipmentHierarchyServiceImpl implements EquipmentHierarchyService {
+public class EquipmentStructureServiceImpl implements EquipmentStructureService {
 
 	private Tools tools;
 	private InforWebServicesPT inforws;
 	private ApplicationData applicationData;
 
-	public EquipmentHierarchyServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
+	public EquipmentStructureServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
 		this.applicationData = applicationData;
 		this.tools = tools;
 		this.inforws = inforWebServicesToolkitClient;
@@ -52,13 +53,13 @@ public class EquipmentHierarchyServiceImpl implements EquipmentHierarchyService 
 		}
 
 		if (equipmentStructure.getCostRollUp() != null && !equipmentStructure.getCostRollUp().trim().equals("")) {
-			addEqStr.getEquipmentStructure().setCOSTROLLUP(equipmentStructure.getCostRollUp());
+			addEqStr.getEquipmentStructure().setCOSTROLLUP(tools.getDataTypeTools().encodeBoolean(equipmentStructure.getCostRollUp(), BooleanType.TRUE_FALSE));
 		} else {
 			addEqStr.getEquipmentStructure().setCOSTROLLUP("false");
 		}
 
 		if (equipmentStructure.getDependent() != null && !equipmentStructure.getDependent().trim().equals("")) {
-			addEqStr.getEquipmentStructure().setDEPENDENTON(equipmentStructure.getDependent().toUpperCase());
+			addEqStr.getEquipmentStructure().setDEPENDENTON(tools.getDataTypeTools().encodeBoolean(equipmentStructure.getDependent(), BooleanType.TRUE_FALSE));
 		}
 
 		if (equipmentStructure.getSequenceNumber() != null
@@ -132,11 +133,11 @@ public class EquipmentHierarchyServiceImpl implements EquipmentHierarchyService 
 			}
 
 			if (equipmentStructure.getCostRollUp() != null) {
-				updateEqStr.setCOSTROLLUP(equipmentStructure.getCostRollUp().toUpperCase());
+				updateEqStr.setCOSTROLLUP(tools.getDataTypeTools().encodeBoolean(equipmentStructure.getCostRollUp(), BooleanType.TRUE_FALSE));
 			}
 
 			if (equipmentStructure.getDependent() != null) {
-				updateEqStr.setDEPENDENTON(equipmentStructure.getDependent().toUpperCase());
+				updateEqStr.setDEPENDENTON(tools.getDataTypeTools().encodeBoolean(equipmentStructure.getDependent(), BooleanType.TRUE_FALSE));
 			}
 
 			if (context.getCredentials() != null) {
@@ -175,15 +176,15 @@ public class EquipmentHierarchyServiceImpl implements EquipmentHierarchyService 
 			}
 
 			if (equipmentStructure.getCostRollUp() != null && !equipmentStructure.getCostRollUp().trim().equals("")) {
-				synceqpstr.getEquipmentStructure().setCOSTROLLUP(equipmentStructure.getCostRollUp());
+				synceqpstr.getEquipmentStructure().setCOSTROLLUP(tools.getDataTypeTools().encodeBoolean(equipmentStructure.getCostRollUp(), BooleanType.TRUE_FALSE));
 			} else {
-				synceqpstr.getEquipmentStructure().setCOSTROLLUP("FALSE");
+				synceqpstr.getEquipmentStructure().setCOSTROLLUP("false");
 			}
 
 			if (equipmentStructure.getDependent() != null && !equipmentStructure.getDependent().trim().equals("")) {
-				synceqpstr.getEquipmentStructure().setDEPENDENTON(equipmentStructure.getDependent().toUpperCase());
+				synceqpstr.getEquipmentStructure().setDEPENDENTON(tools.getDataTypeTools().encodeBoolean(equipmentStructure.getDependent(), BooleanType.TRUE_FALSE));
 			} else {
-				synceqpstr.getEquipmentStructure().setDEPENDENTON("FALSE");
+				synceqpstr.getEquipmentStructure().setDEPENDENTON("false");
 			}
 
 			if (equipmentStructure.getNewParentCode() != null) {
@@ -206,6 +207,5 @@ public class EquipmentHierarchyServiceImpl implements EquipmentHierarchyService 
 		}
 		return "OK";
 	}
-
 
 }

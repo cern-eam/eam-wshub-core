@@ -4,7 +4,6 @@ import javax.persistence.EntityManager;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.entities.BatchResponse;
 import ch.cern.eam.wshub.core.services.equipment.*;
-import ch.cern.eam.wshub.core.services.equipment.*;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.Tools;
 import ch.cern.eam.wshub.core.tools.InforException;
@@ -36,137 +35,144 @@ public class EquipmentFacadeServiceImpl implements EquipmentFacadeService {
 	}
 
 	//
-	// BATCH
+	// BATCH PROCESSING
 	//
 	@Override
 	public BatchResponse<String> createEquipmentBatch(InforContext inforContext, List<Equipment> equipmentList)
 			throws InforException {
-		List<Callable<String>> wos = equipmentList.stream()
+		List<Callable<String>> callableList = equipmentList.stream()
 				.<Callable<String>>map(equipment -> () -> createEquipment(inforContext, equipment))
 				.collect(Collectors.toList());
-		return tools.processCallables(wos);
+		return tools.processCallables(callableList);
 	}
 
 	@Override
-	public BatchResponse<Equipment> readEquipmentBatch(InforContext inforContext, List<String> numbers) {
-		List<Callable<Equipment>> wos = numbers.stream()
+	public BatchResponse<Equipment> readEquipmentBatch(InforContext inforContext, List<Equipment> equipmentList) {
+		List<Callable<Equipment>> callableList = equipmentList.stream()
 				.<Callable<Equipment>>map(number -> () -> readEquipment(inforContext, number))
 				.collect(Collectors.toList());
-		return tools.processCallables(wos);
+		return tools.processCallables(callableList);
 	}
 
 	@Override
 	public BatchResponse<String> updateEquipmentBatch(InforContext inforContext, List<Equipment> equipmentList)
 			throws InforException {
-		List<Callable<String>> wos = equipmentList.stream()
-				.<Callable<String>>map(
-						equipment -> () -> updateEquipment(inforContext, equipment))
+		List<Callable<String>> callableList = equipmentList.stream()
+				.<Callable<String>>map(equipment -> () -> updateEquipment(inforContext, equipment))
 				.collect(Collectors.toList());
 
-		return tools.processCallables(wos);
+		return tools.processCallables(callableList);
+	}
+
+	@Override
+	public BatchResponse<String> deleteEquipmentBatch(InforContext inforContext, List<Equipment> equipmentList)
+			throws InforException {
+		List<Callable<String>> callableList = equipmentList.stream()
+				.<Callable<String>>map(equipment -> () -> deleteEquipment(inforContext, equipment))
+				.collect(Collectors.toList());
+
+		return tools.processCallables(callableList);
 	}
 
 	//
 	// CRUD
 	//
 	@Override
-	public String updateEquipment(InforContext inforContext, Equipment equipmentParam) throws InforException {
-		if (equipmentParam.getTypeCode() == null || equipmentParam.getTypeCode().trim().equals("")) {
-			EntityManager em = tools.getEntityManager();
-			try {
-				equipmentParam.setTypeCode(em.find(Equipment.class, equipmentParam.getCode()).getTypeCode());
-			} catch (IllegalArgumentException | NullPointerException exception) {
-				throw tools.generateFault("The equipment record couldn't be found.");
-			} finally {
-				em.close();
-			}
-		}
+	public String updateEquipment(InforContext inforContext, Equipment equipment) throws InforException {
 
-		switch (equipmentParam.getTypeCode()) {
+		fetchAndPopulateEquipmentTypeCode(equipment);
+
+		switch (equipment.getTypeCode()) {
 		case "A":
-			return assetService.updateAsset(inforContext, equipmentParam);
+			return assetService.updateAsset(inforContext, equipment);
 		case "P":
-			return positionService.updatePosition(inforContext, equipmentParam);
+			return positionService.updatePosition(inforContext, equipment);
 		case "B": // Lot
 		case "M": // Material
 		case "R": // Route
 		case "S": // System
-			return systemService.updateSystem(inforContext, equipmentParam);
+			return systemService.updateSystem(inforContext, equipment);
 		default:
 			throw tools.generateFault("Wrong equipment type.");
 		}
 	}
 
 	@Override
-	public String createEquipment(InforContext inforContext, Equipment equipmentParam) throws InforException {
-		switch (equipmentParam.getTypeCode()) {
+	public String createEquipment(InforContext inforContext, Equipment equipment) throws InforException {
+		if (equipment.getTypeCode() == null) {
+			throw tools.generateFault("Equipment type can not be empty.");
+		}
+		switch (equipment.getTypeCode()) {
 		case "A":
-			return assetService.createAsset(inforContext, equipmentParam);
+			return assetService.createAsset(inforContext, equipment);
 		case "P":
-			return positionService.createPosition(inforContext, equipmentParam);
+			return positionService.createPosition(inforContext, equipment);
 		case "B": // Lot
 		case "M": // Material
 		case "R": // Route
 		case "S": // System
-			return systemService.createSystem(inforContext, equipmentParam);
+			return systemService.createSystem(inforContext, equipment);
 		default:
-			throw tools.generateFault("Equipment type must be supplied with 'A', 'P', 'S' value.");
+			throw tools.generateFault("Equipment type not recognized.");
 		}
 	}
 
 	@Override
-	public Equipment readEquipment(InforContext inforContext, String equipmentCode)
+	public Equipment readEquipment(InforContext inforContext, Equipment equipment)
 			throws InforException {
-		String equipmentType = null;
-		EntityManager em = tools.getEntityManager();
-		try {
-			equipmentType = (em.find(Equipment.class, equipmentCode).getTypeCode());
-		} catch (IllegalArgumentException | NullPointerException exception) {
-			InforException inforException = tools.generateFault("The equipment record couldn't be found.");
-			throw inforException;
-		} finally {
-			em.close();
-		}
 
-		switch (equipmentType) {
+		fetchAndPopulateEquipmentTypeCode(equipment);
+
+		switch (equipment.getTypeCode()) {
 		case "A":
-			return assetService.readAsset(inforContext, equipmentCode);
+			return assetService.readAsset(inforContext, equipment.getCode());
 		case "P":
-			return positionService.readPosition(inforContext, equipmentCode);
+			return positionService.readPosition(inforContext, equipment.getCode());
 		case "B": // Lot
 		case "M": // Material
 		case "R": // Route
 		case "S": // System
-			return systemService.readSystem(inforContext, equipmentCode);
+			return systemService.readSystem(inforContext, equipment.getCode());
 		case "L":
-			return locationService.readLocation(inforContext, equipmentCode);
+			return locationService.readLocation(inforContext, equipment.getCode());
 		default:
-			return null;
+			throw tools.generateFault("Equipment type not recognized.");
 		}
 	}
 
 	@Override
-	public String deleteEquipment(InforContext inforContext, String equipmentCode)
-			throws InforException {
-		String equipmentType = null;
-		EntityManager em = tools.getEntityManager();
-		try {
-			equipmentType = (em.find(Equipment.class, equipmentCode).getTypeCode());
-		} catch (IllegalArgumentException | NullPointerException exception) {
-			throw tools.generateFault("The equipment record couldn't be found.");
-		} finally {
-			em.close();
-		}
+	public String deleteEquipment(InforContext inforContext, Equipment equipment) throws InforException {
 
-		switch (equipmentType) {
+		fetchAndPopulateEquipmentTypeCode(equipment);
+
+		switch (equipment.getTypeCode()) {
 		case "A":
-			return assetService.deleteAsset(inforContext, equipmentCode);
+			return assetService.deleteAsset(inforContext, equipment.getCode());
 		case "P":
-			return positionService.deletePosition(inforContext, equipmentCode);
-		case "S":
-			return systemService.deleteSystem(inforContext, equipmentCode);
-		default:
+			return positionService.deletePosition(inforContext, equipment.getCode());
+		case "B": // Lot
+		case "M": // Material
+		case "R": // Route
+		case "S": // System
+			return systemService.deleteSystem(inforContext, equipment.getCode());
+		case "L":
 			throw tools.generateFault("Deletion of locations is not supported.");
+		default:
+			throw tools.generateFault("Equipment type not recognized.");
+		}
+	}
+
+	private void fetchAndPopulateEquipmentTypeCode(Equipment equipment) throws InforException {
+		if (equipment.getTypeCode() == null || equipment.getTypeCode().trim().equals("")) {
+			tools.demandDatabaseConnection();
+			EntityManager em = tools.getEntityManager();
+			try {
+				equipment.setCode(em.find(Equipment.class, equipment.getCode()).getTypeCode());
+			} catch (IllegalArgumentException | NullPointerException exception) {
+				throw tools.generateFault("The equipment record couldn't be found.");
+			} finally {
+				em.close();
+			}
 		}
 	}
 

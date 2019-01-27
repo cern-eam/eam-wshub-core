@@ -46,7 +46,7 @@ public class LinearReferenceServiceImpl implements LinearReferenceService {
 
 		MP3023_GetEquipLinearRef_001_Result result;
 		if (context.getCredentials() != null) {
-			result = inforws.getEquipLinearRefOp(getLinRef, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, null, applicationData.getTenant());
+			result = inforws.getEquipLinearRefOp(getLinRef, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
 		} else {
 			result = inforws.getEquipLinearRefOp(getLinRef, applicationData.getOrganization(), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
@@ -77,8 +77,8 @@ public class LinearReferenceServiceImpl implements LinearReferenceService {
 			linearReferenceInfor.getEQUIPMENTID().setEQUIPMENTCODE(linearReference.getEquipmentCode().toUpperCase());
 		}
 
-		if (linearReference.getReferenceDescription() != null && !linearReference.getReferenceDescription().trim().equals("")) {
-			linearReferenceInfor.setLRFDESC(linearReference.getReferenceDescription());
+		if (linearReference.getDescription() != null && !linearReference.getDescription().trim().equals("")) {
+			linearReferenceInfor.setLRFDESC(linearReference.getDescription());
 		}
 
 		if (linearReference.getFromPoint() != null && !linearReference.getFromPoint().trim().equals("")) {
@@ -110,24 +110,21 @@ public class LinearReferenceServiceImpl implements LinearReferenceService {
 			linearReferenceInfor.getCLASSID().setCLASSCODE(linearReference.getClassCode().toUpperCase());
 		}
 
-
-		//
-		//
-		//
 		MP3026_SyncEquipLinearRef_001 syncEquipLienarRef = new MP3026_SyncEquipLinearRef_001();
 		syncEquipLienarRef.setEquipLinearRef(linearReferenceInfor);
 
 		try {
 			if (context.getCredentials() != null) {
-				inforws.syncEquipLinearRefOp(syncEquipLienarRef, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, null, applicationData.getTenant());
+				inforws.syncEquipLinearRefOp(syncEquipLienarRef, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
 			} else {
-				inforws.syncEquipLinearRefOp(syncEquipLienarRef, applicationData.getOrganization(), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+				inforws.syncEquipLinearRefOp(syncEquipLienarRef, applicationData.getOrganization(), null, null, new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
 			}
 		} catch (Exception e) {
 			if (!e.getMessage().contains("EquipLinearRef has been Synchronized.")) {
 				throw e;
 			}
 		}
+
 		//return String.valueOf(syncResult.getResultData().getEquipLinearRef().getLRFID());
 		return linearReference.getID();
 	}
@@ -139,7 +136,7 @@ public class LinearReferenceServiceImpl implements LinearReferenceService {
 		MP3025_DeleteEquipLinearRef_001 deleteEquipLinearRef = new MP3025_DeleteEquipLinearRef_001();
 		deleteEquipLinearRef.setLRFID(tools.getDataTypeTools().encodeLong(linearReferenceID, "Linear Ref. ID"));
 		if (context.getCredentials() != null) {
-			inforws.deleteEquipLinearRefOp(deleteEquipLinearRef, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, null, applicationData.getTenant());
+			inforws.deleteEquipLinearRefOp(deleteEquipLinearRef, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
 		} else {
 			inforws.deleteEquipLinearRefOp(deleteEquipLinearRef, applicationData.getOrganization(), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
@@ -168,8 +165,8 @@ public class LinearReferenceServiceImpl implements LinearReferenceService {
 			linearReferenceInfor.getEQUIPMENTID().setEQUIPMENTCODE(linearReference.getEquipmentCode().toUpperCase());
 		}
 
-		if (linearReference.getReferenceDescription() != null && !linearReference.getReferenceDescription().trim().equals("")) {
-			linearReferenceInfor.setLRFDESC(linearReference.getReferenceDescription());
+		if (linearReference.getDescription() != null && !linearReference.getDescription().trim().equals("")) {
+			linearReferenceInfor.setLRFDESC(linearReference.getDescription());
 		}
 
 		if (linearReference.getFromPoint() != null && !linearReference.getFromPoint().trim().equals("")) {
@@ -207,7 +204,7 @@ public class LinearReferenceServiceImpl implements LinearReferenceService {
 		addEquipLinearRef.setEquipLinearRef(linearReferenceInfor);
 		MP3024_AddEquipLinearRef_001_Result result;
 		if (context.getCredentials() != null) {
-			result = inforws.addEquipLinearRefOp(addEquipLinearRef, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, null, applicationData.getTenant());
+			result = inforws.addEquipLinearRefOp(addEquipLinearRef, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
 		} else {
 			result = inforws.addEquipLinearRefOp(addEquipLinearRef, applicationData.getOrganization(), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}

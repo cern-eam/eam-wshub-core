@@ -179,7 +179,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
 		}
 
-		return "Deleted";
+		return employeeCode;
 	}
 
 	private void populateInforObject(net.datastream.schemas.mp_entities.employee_001.Employee inforEmployee,

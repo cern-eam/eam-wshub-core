@@ -294,6 +294,9 @@ public class SystemServiceImpl implements SystemService {
 		if (systemParam.getTypeCode() != null) {
 			systemInfor.setTYPE(new TYPE_Type());
 			systemInfor.getTYPE().setTYPECODE(systemParam.getTypeCode());
+		} else {
+			systemInfor.setTYPE(new TYPE_Type());
+			systemInfor.getTYPE().setTYPECODE("S");
 		}
 
 		if (systemParam.getStatusCode() != null) {
@@ -480,20 +483,42 @@ public class SystemServiceImpl implements SystemService {
 			}
 		}
 
-		// TYPE
-		if (systemParam.getTypeCode() != null) {
-			systemInfor.setTYPE(new TYPE_Type());
-			systemInfor.getTYPE().setTYPECODE(systemParam.getTypeCode());
+		// HIERARCHY
+		if (systemInfor.getTYPE().getTYPECODE().equals("S")) {
+			populateSystemHierarchy(context, systemParam, systemInfor);
 		}
 
-		// HIERARCHY
+		if (systemParam.getInProduction() != null) {
+			systemInfor.setINPRODUCTION(systemParam.getInProduction());
+		}
+
+		// ORIGINAL RECEIPT DATE
+		if (systemParam.getOriginalReceiptDate() != null) {
+			systemInfor.setORIGINALRECEIPTDATE(
+					tools.getDataTypeTools().formatDate(systemParam.getOriginalReceiptDate(), "Original Receipt Date"));
+		}
+
+		// SAFETY
+		if (systemParam.getSafety() != null) {
+			systemInfor.setSAFETY(systemParam.getSafety());
+		}
+
+		// ORIGINAL INSTALL DATE
+		if (systemParam.getOriginalInstallDate() != null) {
+			systemInfor.setORIGINALINSTALLDATE(
+					tools.getDataTypeTools().encodeInforDate(systemParam.getOriginalInstallDate(), "Original Install Date"));
+		}
+
+	}
+
+	private void populateSystemHierarchy(InforContext context, Equipment systemParam, SystemEquipment systemInfor) {
 		SystemParentHierarchy systemParentHierarchy = new SystemParentHierarchy();
 
 		systemParentHierarchy.setSYSTEMID(new EQUIPMENTID_Type());
 		systemParentHierarchy.getSYSTEMID().setORGANIZATIONID(tools.getOrganization(context));
 		systemParentHierarchy.getSYSTEMID().setEQUIPMENTCODE(systemParam.getCode());
 		systemParentHierarchy.setTYPE(new TYPE_Type());
-		systemParentHierarchy.getTYPE().setTYPECODE(systemParam.getTypeCode());
+		systemParentHierarchy.getTYPE().setTYPECODE("S");
 
 		// HIERARCHY - PRIMARY SYSTEM
 		if (!tools.isEmpty(systemParam.getHierarchyPrimarySystemCode())) {
@@ -548,27 +573,5 @@ public class SystemServiceImpl implements SystemService {
 		}
 
 		systemInfor.setSystemParentHierarchy(systemParentHierarchy);
-
-		if (systemParam.getInProduction() != null) {
-			systemInfor.setINPRODUCTION(systemParam.getInProduction());
-		}
-
-		// ORIGINAL RECEIPT DATE
-		if (systemParam.getOriginalReceiptDate() != null) {
-			systemInfor.setORIGINALRECEIPTDATE(
-					tools.getDataTypeTools().formatDate(systemParam.getOriginalReceiptDate(), "Original Receipt Date"));
-		}
-
-		// SAFETY
-		if (systemParam.getSafety() != null) {
-			systemInfor.setSAFETY(systemParam.getSafety());
-		}
-
-		// ORIGINAL INSTALL DATE
-		if (systemParam.getOriginalInstallDate() != null) {
-			systemInfor.setORIGINALINSTALLDATE(
-					tools.getDataTypeTools().encodeInforDate(systemParam.getOriginalInstallDate(), "Original Install Date"));
-		}
-
 	}
 }

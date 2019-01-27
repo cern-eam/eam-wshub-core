@@ -162,7 +162,7 @@ public class InforGrids implements Serializable {
 		// CALL THE WEB SERVICE
 		//
 		if (context.getCredentials() != null) {
-			result = inforws.getGridDataOnlyOp(getgridd, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, null, applicationData.getTenant());
+			result = inforws.getGridDataOnlyOp(getgridd, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
 		} else 
 		{
 			SessionType session = new SessionType();

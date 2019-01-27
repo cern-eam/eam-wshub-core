@@ -8,7 +8,7 @@ public class LinearReference implements Serializable {
 	private String typeCode;
 	private String equipmentCode;
 	private String relatedEquipmentCode;
-	private String referenceDescription;
+	private String description;
 	private String fromPoint;
 	private String toPoint;
 	private String geographicalReference;
@@ -31,11 +31,11 @@ public class LinearReference implements Serializable {
 	public void setEquipmentCode(String equipmentCode) {
 		this.equipmentCode = equipmentCode;
 	}
-	public String getReferenceDescription() {
-		return referenceDescription;
+	public String getDescription() {
+		return description;
 	}
-	public void setReferenceDescription(String referenceDescription) {
-		this.referenceDescription = referenceDescription;
+	public void setDescription(String description) {
+		this.description = description;
 	}
 	public String getFromPoint() {
 		return fromPoint;
@@ -107,8 +107,8 @@ public class LinearReference implements Serializable {
 						+ ", " : "")
 				+ (relatedEquipmentCode != null ? "relatedEquipmentCode="
 						+ relatedEquipmentCode + ", " : "")
-				+ (referenceDescription != null ? "referenceDescription="
-						+ referenceDescription + ", " : "")
+				+ (description != null ? "description="
+						+ description + ", " : "")
 				+ (fromPoint != null ? "fromPoint=" + fromPoint + ", " : "")
 				+ (toPoint != null ? "toPoint=" + toPoint + ", " : "")
 				+ (geographicalReference != null ? "geographicalReference="
