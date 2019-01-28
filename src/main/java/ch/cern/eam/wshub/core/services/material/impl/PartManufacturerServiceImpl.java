@@ -4,6 +4,7 @@ import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.material.PartManufacturerService;
 import ch.cern.eam.wshub.core.services.material.entities.PartManufacturer;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
+import ch.cern.eam.wshub.core.tools.BooleanType;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_fields.MANUFACTURERID_Type;
@@ -17,7 +18,6 @@ import net.datastream.schemas.mp_functions.mp0264_001.MP0264_GetPartManufacturer
 import net.datastream.schemas.mp_results.mp0264_001.MP0264_GetPartManufacturer_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 import javax.xml.ws.Holder;
-
 
 public class PartManufacturerServiceImpl implements PartManufacturerService {
 
@@ -59,12 +59,12 @@ public class PartManufacturerServiceImpl implements PartManufacturerService {
 
 		//
 		if (partManufacturerParam.getOutOfService() != null) {
-			partManufacturerInfor.setOUTOFSERVICE(partManufacturerParam.getOutOfService());
+			partManufacturerInfor.setOUTOFSERVICE(tools.getDataTypeTools().encodeBoolean(partManufacturerParam.getOutOfService(), BooleanType.TRUE_FALSE));
 		}
 
 		//
 		if (partManufacturerParam.getPrimary() != null) {
-			partManufacturerInfor.setISPRIMARY(partManufacturerParam.getPrimary());
+			partManufacturerInfor.setISPRIMARY(tools.getDataTypeTools().encodeBoolean(partManufacturerParam.getPrimary(), BooleanType.TRUE_FALSE));
 		}
 		//
 		// CALL INFOR WS
@@ -76,12 +76,11 @@ public class PartManufacturerServiceImpl implements PartManufacturerService {
 		} else {
 			inforws.addPartManufacturerOp(addPartManufacturer,applicationData.getOrganization(),  null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
-		return null;
+		return partManufacturerParam.getManufacturerCode();
 	}
 
 	public String updatePartManufacturer(InforContext context, PartManufacturer partManufacturerParam) throws InforException {
 		net.datastream.schemas.mp_entities.partmanufacturer_001.PartManufacturer partManufacturerInfor = new net.datastream.schemas.mp_entities.partmanufacturer_001.PartManufacturer();
-
 
 		MP0264_GetPartManufacturer_001 getPartM = new MP0264_GetPartManufacturer_001();
 
@@ -116,12 +115,12 @@ public class PartManufacturerServiceImpl implements PartManufacturerService {
 
 		//
 		if (partManufacturerParam.getOutOfService() != null) {
-			partManufacturerInfor.setOUTOFSERVICE(partManufacturerParam.getOutOfService());
+			partManufacturerInfor.setOUTOFSERVICE(tools.getDataTypeTools().encodeBoolean(partManufacturerParam.getOutOfService(), BooleanType.TRUE_FALSE));
 		}
 
 		//
 		if (partManufacturerParam.getPrimary() != null) {
-			partManufacturerInfor.setISPRIMARY(partManufacturerParam.getPrimary());
+			partManufacturerInfor.setISPRIMARY(tools.getDataTypeTools().encodeBoolean(partManufacturerParam.getPrimary(), BooleanType.TRUE_FALSE));
 		}
 		//
 		// CALL INFOR WS
@@ -133,7 +132,7 @@ public class PartManufacturerServiceImpl implements PartManufacturerService {
 		} else {
 			inforws.syncPartManufacturerOp(syncPartManufacturer,applicationData.getOrganization(),  null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
-		return null;
+		return partManufacturerParam.getManufacturerCode();
 	}
 
 
@@ -155,7 +154,7 @@ public class PartManufacturerServiceImpl implements PartManufacturerService {
 			inforws.deletePartManufacturerOp(deletePartM,applicationData.getOrganization(),  null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
 
-		return null;
+		return partManufacturerParam.getManufacturerCode();
 	}
 
 }

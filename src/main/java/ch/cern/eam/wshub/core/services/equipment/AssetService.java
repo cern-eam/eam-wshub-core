@@ -13,6 +13,6 @@ public interface AssetService {
 
 	String createAsset(InforContext context, Equipment assetParam) throws InforException;
 
-	String deleteAsset(InforContext context, String systemCode) throws InforException;
+	String deleteAsset(InforContext context, String assetCode) throws InforException;
 
 }

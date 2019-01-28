@@ -18,28 +18,28 @@ public interface EquipmentFacadeService {
             throws InforException;
 
     @Operation(logOperation = INFOR_OPERATION.EQUIPMENT_BR)
-    BatchResponse<Equipment> readEquipmentBatch(InforContext inforContext, List<Equipment> equipmentList);
+    BatchResponse<Equipment> readEquipmentBatch(InforContext inforContext, List<String> equipmentCodes);
 
     @Operation(logOperation = INFOR_OPERATION.EQUIPMENT_BU)
     BatchResponse<String> updateEquipmentBatch(InforContext inforContext, List<Equipment> equipmentList)
                     throws InforException;
 
     @Operation(logOperation = INFOR_OPERATION.EQUIPMENT_BD)
-    BatchResponse<String> deleteEquipmentBatch(InforContext inforContext, List<Equipment> equipmentList)
+    BatchResponse<String> deleteEquipmentBatch(InforContext inforContext, List<String> equipmentCodes)
             throws InforException;
 
     //
     // CRUD
     //
-    @Operation(logOperation = INFOR_OPERATION.EQUIPMENT_U)
-    String updateEquipment(InforContext inforContext, Equipment equipmentParam) throws InforException;
-
     @Operation(logOperation = INFOR_OPERATION.EQUIPMENT_C)
-    String createEquipment(InforContext inforContext, Equipment equipmentParam) throws InforException;
+    String createEquipment(InforContext inforContext, Equipment equipment) throws InforException;
 
     @Operation(logOperation = INFOR_OPERATION.EQUIPMENT_R)
-    Equipment readEquipment(InforContext inforContext, Equipment equipment) throws InforException;
+    Equipment readEquipment(InforContext inforContext, String equipmentCode) throws InforException;
+
+    @Operation(logOperation = INFOR_OPERATION.EQUIPMENT_U)
+    String updateEquipment(InforContext inforContext, Equipment equipment) throws InforException;
 
     @Operation(logOperation = INFOR_OPERATION.EQUIPMENT_D)
-    String deleteEquipment(InforContext inforContext, Equipment equipment) throws InforException;
+    String deleteEquipment(InforContext inforContext, String equipmentCode) throws InforException;
 }

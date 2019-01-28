@@ -13,35 +13,16 @@ public class InforContext implements Serializable {
     private String sessionID;
     private String organizationCode;
 
-    private InforContext(Credentials credentials, String sessionID, String organizationCode) {
+    public InforContext () {
+
+    }
+
+    public InforContext(Credentials credentials) {
         this.credentials = credentials;
+    }
+
+    public InforContext(String sessionID) {
         this.sessionID = sessionID;
-        this.organizationCode = organizationCode;
-    };
-
-    public static class Builder implements Serializable {
-        private Credentials credentials;
-        private String sessionID;
-        private String organizationCode;
-
-        public Builder withCredentials(Credentials credentials) {
-            this.credentials = credentials;
-            return this;
-        }
-
-        public Builder withSessionID(String sessionID) {
-            this.sessionID = sessionID;
-            return this;
-        }
-
-        public Builder withOrganizationCode(String organizationCode) {
-            this.organizationCode = organizationCode;
-            return this;
-        }
-
-        public InforContext build() {
-            return new InforContext(credentials, sessionID, organizationCode);
-        }
     }
 
     public Credentials getCredentials() {
@@ -53,4 +34,16 @@ public class InforContext implements Serializable {
     }
 
     public String getOrganizationCode() {return organizationCode; }
+
+    public void setCredentials(Credentials credentials) {
+        this.credentials = credentials;
+    }
+
+    public void setSessionID(String sessionID) {
+        this.sessionID = sessionID;
+    }
+
+    public void setOrganizationCode(String organizationCode) {
+        this.organizationCode = organizationCode;
+    }
 }

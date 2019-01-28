@@ -6,8 +6,7 @@ import ch.cern.eam.wshub.core.annotations.Operation;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.interceptors.LogDataReferenceType;
 import ch.cern.eam.wshub.core.services.INFOR_OPERATION;
-import ch.cern.eam.wshub.core.services.entities.IssueReturnPartTransaction;
-import ch.cern.eam.wshub.core.services.material.entities.*;
+import ch.cern.eam.wshub.core.services.material.entities.IssueReturnPartTransaction;
 import ch.cern.eam.wshub.core.services.material.entities.*;
 import ch.cern.eam.wshub.core.tools.InforException;
 

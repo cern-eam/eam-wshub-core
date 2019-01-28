@@ -215,14 +215,14 @@ public class Tools {
 
 	public InforContext getInforContext(Credentials credentials, String sessionID) {
 		if (credentials != null) {
-			return new InforContext.Builder().withCredentials(credentials).build();
+			return new InforContext(credentials);
 		} else {
-			return new InforContext.Builder().withSessionID(sessionID).build();
+			return new InforContext(sessionID);
 		}
 	}
 
 	public InforContext getInforContext(Credentials credentials) {
-		return new InforContext.Builder().withCredentials(credentials).build();
+		return new InforContext(credentials);
 	}
 
 	/**

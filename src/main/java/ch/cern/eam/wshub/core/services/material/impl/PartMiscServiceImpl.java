@@ -1,10 +1,9 @@
 package ch.cern.eam.wshub.core.services.material.impl;
 
 import ch.cern.eam.wshub.core.client.InforContext;
-import ch.cern.eam.wshub.core.services.entities.IssueReturnPartTransaction;
-import ch.cern.eam.wshub.core.services.entities.IssueReturnPartTransactionLine;
+import ch.cern.eam.wshub.core.services.material.entities.IssueReturnPartTransaction;
+import ch.cern.eam.wshub.core.services.material.entities.IssueReturnPartTransactionLine;
 import ch.cern.eam.wshub.core.services.material.PartMiscService;
-import ch.cern.eam.wshub.core.services.material.entities.*;
 import ch.cern.eam.wshub.core.services.material.entities.*;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;

@@ -4,7 +4,7 @@ import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.comments.CommentService;
 import ch.cern.eam.wshub.core.services.comments.impl.CommentServiceImpl;
 import ch.cern.eam.wshub.core.services.entities.BatchResponse;
-import ch.cern.eam.wshub.core.services.entities.Comment;
+import ch.cern.eam.wshub.core.services.comments.entities.Comment;
 import ch.cern.eam.wshub.core.services.workorders.WorkOrderService;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;

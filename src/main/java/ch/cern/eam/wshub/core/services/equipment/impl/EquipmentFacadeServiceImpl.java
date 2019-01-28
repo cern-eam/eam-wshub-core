@@ -47,8 +47,8 @@ public class EquipmentFacadeServiceImpl implements EquipmentFacadeService {
 	}
 
 	@Override
-	public BatchResponse<Equipment> readEquipmentBatch(InforContext inforContext, List<Equipment> equipmentList) {
-		List<Callable<Equipment>> callableList = equipmentList.stream()
+	public BatchResponse<Equipment> readEquipmentBatch(InforContext inforContext, List<String> equipmentCodes) {
+		List<Callable<Equipment>> callableList = equipmentCodes.stream()
 				.<Callable<Equipment>>map(number -> () -> readEquipment(inforContext, number))
 				.collect(Collectors.toList());
 		return tools.processCallables(callableList);
@@ -65,9 +65,9 @@ public class EquipmentFacadeServiceImpl implements EquipmentFacadeService {
 	}
 
 	@Override
-	public BatchResponse<String> deleteEquipmentBatch(InforContext inforContext, List<Equipment> equipmentList)
+	public BatchResponse<String> deleteEquipmentBatch(InforContext inforContext, List<String> equipmentCodes)
 			throws InforException {
-		List<Callable<String>> callableList = equipmentList.stream()
+		List<Callable<String>> callableList = equipmentCodes.stream()
 				.<Callable<String>>map(equipment -> () -> deleteEquipment(inforContext, equipment))
 				.collect(Collectors.toList());
 
@@ -80,7 +80,9 @@ public class EquipmentFacadeServiceImpl implements EquipmentFacadeService {
 	@Override
 	public String updateEquipment(InforContext inforContext, Equipment equipment) throws InforException {
 
-		fetchAndPopulateEquipmentTypeCode(equipment);
+		if (equipment.getTypeCode() == null) {
+			equipment.setTypeCode(getEquipmentTypeCode(equipment.getCode()));
+		}
 
 		switch (equipment.getTypeCode()) {
 		case "A":
@@ -118,43 +120,43 @@ public class EquipmentFacadeServiceImpl implements EquipmentFacadeService {
 	}
 
 	@Override
-	public Equipment readEquipment(InforContext inforContext, Equipment equipment)
+	public Equipment readEquipment(InforContext inforContext, String equipmentCode)
 			throws InforException {
 
-		fetchAndPopulateEquipmentTypeCode(equipment);
+		String equipmentTypeCode = getEquipmentTypeCode(equipmentCode);
 
-		switch (equipment.getTypeCode()) {
+		switch (equipmentTypeCode) {
 		case "A":
-			return assetService.readAsset(inforContext, equipment.getCode());
+			return assetService.readAsset(inforContext, equipmentCode);
 		case "P":
-			return positionService.readPosition(inforContext, equipment.getCode());
+			return positionService.readPosition(inforContext, equipmentCode);
 		case "B": // Lot
 		case "M": // Material
 		case "R": // Route
 		case "S": // System
-			return systemService.readSystem(inforContext, equipment.getCode());
+			return systemService.readSystem(inforContext, equipmentCode);
 		case "L":
-			return locationService.readLocation(inforContext, equipment.getCode());
+			return locationService.readLocation(inforContext, equipmentCode);
 		default:
 			throw tools.generateFault("Equipment type not recognized.");
 		}
 	}
 
 	@Override
-	public String deleteEquipment(InforContext inforContext, Equipment equipment) throws InforException {
+	public String deleteEquipment(InforContext inforContext, String equipmentCode) throws InforException {
 
-		fetchAndPopulateEquipmentTypeCode(equipment);
+		String equipmentTypeCode = getEquipmentTypeCode(equipmentCode);
 
-		switch (equipment.getTypeCode()) {
+		switch (equipmentTypeCode) {
 		case "A":
-			return assetService.deleteAsset(inforContext, equipment.getCode());
+			return assetService.deleteAsset(inforContext, equipmentCode);
 		case "P":
-			return positionService.deletePosition(inforContext, equipment.getCode());
+			return positionService.deletePosition(inforContext, equipmentCode);
 		case "B": // Lot
 		case "M": // Material
 		case "R": // Route
 		case "S": // System
-			return systemService.deleteSystem(inforContext, equipment.getCode());
+			return systemService.deleteSystem(inforContext, equipmentCode);
 		case "L":
 			throw tools.generateFault("Deletion of locations is not supported.");
 		default:
@@ -162,18 +164,16 @@ public class EquipmentFacadeServiceImpl implements EquipmentFacadeService {
 		}
 	}
 
-	private void fetchAndPopulateEquipmentTypeCode(Equipment equipment) throws InforException {
-		if (equipment.getTypeCode() == null || equipment.getTypeCode().trim().equals("")) {
+	private String getEquipmentTypeCode(String equipmentCode) throws InforException {
 			tools.demandDatabaseConnection();
 			EntityManager em = tools.getEntityManager();
 			try {
-				equipment.setCode(em.find(Equipment.class, equipment.getCode()).getTypeCode());
+				return em.find(Equipment.class, equipmentCode).getTypeCode();
 			} catch (IllegalArgumentException | NullPointerException exception) {
 				throw tools.generateFault("The equipment record couldn't be found.");
 			} finally {
 				em.close();
 			}
-		}
 	}
 
 }

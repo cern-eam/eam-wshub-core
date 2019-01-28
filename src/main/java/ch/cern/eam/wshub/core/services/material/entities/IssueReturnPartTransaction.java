@@ -1,4 +1,4 @@
-package ch.cern.eam.wshub.core.services.entities;
+package ch.cern.eam.wshub.core.services.material.entities;
 
 import java.io.Serializable;
 import java.util.Arrays;

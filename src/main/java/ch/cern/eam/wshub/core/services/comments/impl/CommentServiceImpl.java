@@ -2,7 +2,7 @@ package ch.cern.eam.wshub.core.services.comments.impl;
 
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.comments.CommentService;
-import ch.cern.eam.wshub.core.services.entities.Comment;
+import ch.cern.eam.wshub.core.services.comments.entities.Comment;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;

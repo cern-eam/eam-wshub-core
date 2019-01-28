@@ -1,4 +1,4 @@
-package ch.cern.eam.wshub.core.services.entities;
+package ch.cern.eam.wshub.core.services.comments.entities;
 
 import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
