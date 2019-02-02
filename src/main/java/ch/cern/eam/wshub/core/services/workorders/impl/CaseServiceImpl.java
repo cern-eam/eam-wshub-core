@@ -45,11 +45,11 @@ public class CaseServiceImpl implements CaseService {
 
 		MP3643_GetCaseManagement_001_Result result = null;
 		if (context.getCredentials() != null) {
-			result = inforws.getCaseManagementOp(getCase, applicationData.getOrganization(),
+			result = inforws.getCaseManagementOp(getCase, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					tools.createMessageConfig(), applicationData.getTenant());
 		} else {
-			result = inforws.getCaseManagementOp(getCase, applicationData.getOrganization(), null, "",
+			result = inforws.getCaseManagementOp(getCase, tools.getOrganizationCode(context), null, "",
 					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
 		}
 
@@ -206,11 +206,11 @@ public class CaseServiceImpl implements CaseService {
 		MP3640_AddCaseManagement_001_Result addCaseResult = null;
 
 		if (context.getCredentials() != null) {
-			addCaseResult = inforws.addCaseManagementOp(addCase, applicationData.getOrganization(),
+			addCaseResult = inforws.addCaseManagementOp(addCase, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					tools.createMessageConfig(), applicationData.getTenant());
 		} else {
-			addCaseResult = inforws.addCaseManagementOp(addCase, applicationData.getOrganization(), null, "",
+			addCaseResult = inforws.addCaseManagementOp(addCase, tools.getOrganizationCode(context), null, "",
 					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
 		}
 		return addCaseResult.getResultData().getCASEID().getCASECODE();
@@ -224,11 +224,11 @@ public class CaseServiceImpl implements CaseService {
 		deleteCase.getCASEID().setORGANIZATIONID(tools.getOrganization(context));
 
 		if (context.getCredentials() != null) {
-			inforws.deleteCaseManagementOp(deleteCase, applicationData.getOrganization(),
+			inforws.deleteCaseManagementOp(deleteCase, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					tools.createMessageConfig(), applicationData.getTenant());
 		} else {
-			inforws.deleteCaseManagementOp(deleteCase, applicationData.getOrganization(), null, "",
+			inforws.deleteCaseManagementOp(deleteCase, tools.getOrganizationCode(context), null, "",
 					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
 		}
 		return caseID;
@@ -246,11 +246,11 @@ public class CaseServiceImpl implements CaseService {
 
 		MP3643_GetCaseManagement_001_Result result = null;
 		if (context.getCredentials() != null) {
-			result = inforws.getCaseManagementOp(getCase, applicationData.getOrganization(),
+			result = inforws.getCaseManagementOp(getCase, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					tools.createMessageConfig(), applicationData.getTenant());
 		} else {
-			result = inforws.getCaseManagementOp(getCase, applicationData.getOrganization(), null, "",
+			result = inforws.getCaseManagementOp(getCase, tools.getOrganizationCode(context), null, "",
 					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
 		}
 
@@ -273,11 +273,11 @@ public class CaseServiceImpl implements CaseService {
 		MP3641_SyncCaseManagement_001_Result syncCaseResult = null;
 
 		if (context.getCredentials() != null) {
-			syncCaseResult = inforws.syncCaseManagementOp(syncCase, applicationData.getOrganization(),
+			syncCaseResult = inforws.syncCaseManagementOp(syncCase, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					tools.createMessageConfig(), applicationData.getTenant());
 		} else {
-			syncCaseResult = inforws.syncCaseManagementOp(syncCase, applicationData.getOrganization(), null, "",
+			syncCaseResult = inforws.syncCaseManagementOp(syncCase, tools.getOrganizationCode(context), null, "",
 					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
 		}
 		return syncCaseResult.getResultData().getCASEID().getCASECODE();

@@ -94,11 +94,11 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		getWorkOrder.setWORKORDERID(woid);
 		MP0024_GetWorkOrder_001_Result getWOResult = null;
 		if (context.getCredentials() != null) {
-			getWOResult = inforws.getWorkOrderOp(getWorkOrder, applicationData.getOrganization(),
+			getWOResult = inforws.getWorkOrderOp(getWorkOrder, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					tools.createMessageConfig(), applicationData.getTenant());
 		} else {
-			getWOResult = inforws.getWorkOrderOp(getWorkOrder, applicationData.getOrganization(), null, "",
+			getWOResult = inforws.getWorkOrderOp(getWorkOrder, tools.getOrganizationCode(context), null, "",
 					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
 		}
 		net.datastream.schemas.mp_entities.workorder_001.WorkOrder inforWorkOrder = getWOResult.getResultData().getWorkOrder();
@@ -285,11 +285,11 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			getStandardWorkOrder.getSTANDARDWO().setSTDWOCODE(workorderParam.getStandardWO());
 			MP7082_GetStandardWorkOrder_001_Result getSWOResult;
 			if (context.getCredentials() != null) {
-				getSWOResult = inforws.getStandardWorkOrderOp(getStandardWorkOrder, applicationData.getOrganization(),
+				getSWOResult = inforws.getStandardWorkOrderOp(getStandardWorkOrder, tools.getOrganizationCode(context),
 						tools.createSecurityHeader(context), "TERMINATE",
 						null, tools.createMessageConfig(), applicationData.getTenant());
 			} else {
-				getSWOResult = inforws.getStandardWorkOrderOp(getStandardWorkOrder, applicationData.getOrganization(),
+				getSWOResult = inforws.getStandardWorkOrderOp(getStandardWorkOrder, tools.getOrganizationCode(context),
 						null, "", new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(),
 						applicationData.getTenant());
 			}
@@ -353,11 +353,11 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			getStandardWorkOrder.getSTANDARDWO().setSTDWOCODE(workorderParam.getStandardWO());
 			MP7082_GetStandardWorkOrder_001_Result getSWOResult;
 			if (context.getCredentials() != null) {
-				getSWOResult = inforws.getStandardWorkOrderOp(getStandardWorkOrder, applicationData.getOrganization(),
+				getSWOResult = inforws.getStandardWorkOrderOp(getStandardWorkOrder, tools.getOrganizationCode(context),
 						tools.createSecurityHeader(context), "TERMINATE",
 						null, tools.createMessageConfig(), applicationData.getTenant());
 			} else {
-				getSWOResult = inforws.getStandardWorkOrderOp(getStandardWorkOrder, applicationData.getOrganization(),
+				getSWOResult = inforws.getStandardWorkOrderOp(getStandardWorkOrder, tools.getOrganizationCode(context),
 						null, "", new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(),
 						applicationData.getTenant());
 			}
@@ -387,11 +387,11 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		//
 		//
 		if (context.getCredentials() != null) {
-			result = inforws.addWorkOrderOp(addWO, applicationData.getOrganization(),
+			result = inforws.addWorkOrderOp(addWO, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					tools.createMessageConfig(), applicationData.getTenant());
 		} else {
-			result = inforws.addWorkOrderOp(addWO, applicationData.getOrganization(), null, "",
+			result = inforws.addWorkOrderOp(addWO, tools.getOrganizationCode(context), null, "",
 					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
 		}
 		// Work Order has been created, check if comment should be added
@@ -416,11 +416,11 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		req.setWORKORDERID(woid);
 		MP0024_GetWorkOrder_001_Result getWOResult;
 		if (context.getCredentials() != null) {
-			getWOResult = inforws.getWorkOrderOp(req, applicationData.getOrganization(),
+			getWOResult = inforws.getWorkOrderOp(req, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					tools.createMessageConfig(), applicationData.getTenant());
 		} else {
-			getWOResult = inforws.getWorkOrderOp(req, applicationData.getOrganization(), null, null,
+			getWOResult = inforws.getWorkOrderOp(req, tools.getOrganizationCode(context), null, null,
 					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
 		}
 
@@ -443,11 +443,11 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		syncWO.setWorkOrder(inforWorkOrder);
 
 		if (context.getCredentials() != null) {
-			inforws.syncWorkOrderOp(syncWO, applicationData.getOrganization(),
+			inforws.syncWorkOrderOp(syncWO, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					tools.createMessageConfig(), applicationData.getTenant());
 		} else {
-			inforws.syncWorkOrderOp(syncWO, applicationData.getOrganization(), null, null,
+			inforws.syncWorkOrderOp(syncWO, tools.getOrganizationCode(context), null, null,
 					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
 		}
 

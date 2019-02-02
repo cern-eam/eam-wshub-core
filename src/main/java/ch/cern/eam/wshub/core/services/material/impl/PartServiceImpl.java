@@ -47,12 +47,12 @@ public class PartServiceImpl implements PartService {
 		getPart.getPARTID().setPARTCODE(partCode);
 
 		if (context.getCredentials() != null) {
-			getPartResult = inforws.getPartOp(getPart, applicationData.getOrganization(),
+			getPartResult = inforws.getPartOp(getPart, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					null, applicationData.getTenant());
 
 		} else {
-			getPartResult = inforws.getPartOp(getPart, applicationData.getOrganization(), null, null,
+			getPartResult = inforws.getPartOp(getPart, tools.getOrganizationCode(context), null, null,
 					new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
 
@@ -146,11 +146,11 @@ public class PartServiceImpl implements PartService {
 		MP0240_AddPart_001_Result result = null;
 
 		if (context.getCredentials() != null) {
-			result = inforws.addPartOp(addPart, applicationData.getOrganization(),
+			result = inforws.addPartOp(addPart, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					null, applicationData.getTenant());
 		} else {
-			result = inforws.addPartOp(addPart, applicationData.getOrganization(), null, null,
+			result = inforws.addPartOp(addPart, tools.getOrganizationCode(context), null, null,
 					new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
 
@@ -173,11 +173,11 @@ public class PartServiceImpl implements PartService {
 			changePartNumber.getChangePartNumber().getNEWPARTID().setPARTCODE(partParam.getNewCode());
 
 			if (context.getCredentials() != null) {
-				inforws.changePartNumberOp(changePartNumber, applicationData.getOrganization(),
+				inforws.changePartNumberOp(changePartNumber, tools.getOrganizationCode(context),
 						tools.createSecurityHeader(context), "TERMINATE",
 						null, null, applicationData.getTenant());
 			} else {
-				inforws.changePartNumberOp(changePartNumber, applicationData.getOrganization(), null, null,
+				inforws.changePartNumberOp(changePartNumber, tools.getOrganizationCode(context), null, null,
 						new Holder<SessionType>(tools.createInforSession(context)), null,
 						applicationData.getTenant());
 			}
@@ -196,11 +196,11 @@ public class PartServiceImpl implements PartService {
 			getPart.getPARTID().setORGANIZATIONID(tools.getOrganization(context));
 			getPart.getPARTID().setPARTCODE(partParam.getCode());
 			if (context.getCredentials() != null) {
-				getPartResult = inforws.getPartOp(getPart, applicationData.getOrganization(),
+				getPartResult = inforws.getPartOp(getPart, tools.getOrganizationCode(context),
 						tools.createSecurityHeader(context), "TERMINATE",
 						null, null, applicationData.getTenant());
 			} else {
-				getPartResult = inforws.getPartOp(getPart, applicationData.getOrganization(), null, null,
+				getPartResult = inforws.getPartOp(getPart, tools.getOrganizationCode(context), null, null,
 						new Holder<SessionType>(tools.createInforSession(context)), null,
 						applicationData.getTenant());
 			}
@@ -227,11 +227,11 @@ public class PartServiceImpl implements PartService {
 			MP0242_SyncPart_001_Result result = null;
 
 			if (context.getCredentials() != null) {
-				result = inforws.syncPartOp(syncPart, applicationData.getOrganization(),
+				result = inforws.syncPartOp(syncPart, tools.getOrganizationCode(context),
 						tools.createSecurityHeader(context), "TERMINATE",
 						null, null, applicationData.getTenant());
 			} else {
-				result = inforws.syncPartOp(syncPart, applicationData.getOrganization(), null, null,
+				result = inforws.syncPartOp(syncPart, tools.getOrganizationCode(context), null, null,
 						new Holder<SessionType>(tools.createInforSession(context)), null,
 						applicationData.getTenant());
 			}
@@ -380,11 +380,11 @@ public class PartServiceImpl implements PartService {
 		deletePart.getPARTID().setPARTCODE(partCode);
 
 		if (context.getCredentials() != null) {
-			inforws.deletePartOp(deletePart, applicationData.getOrganization(),
+			inforws.deletePartOp(deletePart, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					null, applicationData.getTenant());
 		} else {
-			inforws.deletePartOp(deletePart, applicationData.getOrganization(), null, null,
+			inforws.deletePartOp(deletePart, tools.getOrganizationCode(context), null, null,
 					new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
 		return partCode;

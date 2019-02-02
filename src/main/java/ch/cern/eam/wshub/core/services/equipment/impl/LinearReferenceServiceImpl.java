@@ -46,9 +46,9 @@ public class LinearReferenceServiceImpl implements LinearReferenceService {
 
 		MP3023_GetEquipLinearRef_001_Result result;
 		if (context.getCredentials() != null) {
-			result = inforws.getEquipLinearRefOp(getLinRef, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
+			result = inforws.getEquipLinearRefOp(getLinRef, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
 		} else {
-			result = inforws.getEquipLinearRefOp(getLinRef, applicationData.getOrganization(), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+			result = inforws.getEquipLinearRefOp(getLinRef, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
 		//
 		// UPDATE THE LINEAR REFERENCE
@@ -115,9 +115,9 @@ public class LinearReferenceServiceImpl implements LinearReferenceService {
 
 		try {
 			if (context.getCredentials() != null) {
-				inforws.syncEquipLinearRefOp(syncEquipLienarRef, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
+				inforws.syncEquipLinearRefOp(syncEquipLienarRef, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
 			} else {
-				inforws.syncEquipLinearRefOp(syncEquipLienarRef, applicationData.getOrganization(), null, null, new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
+				inforws.syncEquipLinearRefOp(syncEquipLienarRef, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
 			}
 		} catch (Exception e) {
 			if (!e.getMessage().contains("EquipLinearRef has been Synchronized.")) {
@@ -136,9 +136,9 @@ public class LinearReferenceServiceImpl implements LinearReferenceService {
 		MP3025_DeleteEquipLinearRef_001 deleteEquipLinearRef = new MP3025_DeleteEquipLinearRef_001();
 		deleteEquipLinearRef.setLRFID(tools.getDataTypeTools().encodeLong(linearReferenceID, "Linear Ref. ID"));
 		if (context.getCredentials() != null) {
-			inforws.deleteEquipLinearRefOp(deleteEquipLinearRef, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
+			inforws.deleteEquipLinearRefOp(deleteEquipLinearRef, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
 		} else {
-			inforws.deleteEquipLinearRefOp(deleteEquipLinearRef, applicationData.getOrganization(), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+			inforws.deleteEquipLinearRefOp(deleteEquipLinearRef, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
 		return linearReferenceID;
 	}
@@ -204,9 +204,9 @@ public class LinearReferenceServiceImpl implements LinearReferenceService {
 		addEquipLinearRef.setEquipLinearRef(linearReferenceInfor);
 		MP3024_AddEquipLinearRef_001_Result result;
 		if (context.getCredentials() != null) {
-			result = inforws.addEquipLinearRefOp(addEquipLinearRef, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
+			result = inforws.addEquipLinearRefOp(addEquipLinearRef, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
 		} else {
-			result = inforws.addEquipLinearRefOp(addEquipLinearRef, applicationData.getOrganization(), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+			result = inforws.addEquipLinearRefOp(addEquipLinearRef, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
 
 

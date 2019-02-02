@@ -72,9 +72,9 @@ public class PartManufacturerServiceImpl implements PartManufacturerService {
 		MP0261_AddPartManufacturer_001 addPartManufacturer = new  MP0261_AddPartManufacturer_001();
 		addPartManufacturer.setPartManufacturer(partManufacturerInfor);
 		if (context.getCredentials() != null) {
-			inforws.addPartManufacturerOp(addPartManufacturer, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
+			inforws.addPartManufacturerOp(addPartManufacturer, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
 		} else {
-			inforws.addPartManufacturerOp(addPartManufacturer,applicationData.getOrganization(),  null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+			inforws.addPartManufacturerOp(addPartManufacturer,tools.getOrganizationCode(context),  null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
 		return partManufacturerParam.getManufacturerCode();
 	}
@@ -95,9 +95,9 @@ public class PartManufacturerServiceImpl implements PartManufacturerService {
 		getPartM.getPARTMANUFACTURERID().getPARTID().setPARTCODE(partManufacturerParam.getPartCode());
 		// first get it:
 		if (context.getCredentials() != null) {
-			result = inforws.getPartManufacturerOp(getPartM, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
+			result = inforws.getPartManufacturerOp(getPartM, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
 		} else {
-			result = inforws.getPartManufacturerOp(getPartM,applicationData.getOrganization(),  null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+			result = inforws.getPartManufacturerOp(getPartM,tools.getOrganizationCode(context),  null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
 
 		partManufacturerInfor = result.getResultData().getPartManufacturer();
@@ -128,9 +128,9 @@ public class PartManufacturerServiceImpl implements PartManufacturerService {
 		MP0262_SyncPartManufacturer_001 syncPartManufacturer = new  MP0262_SyncPartManufacturer_001();
 		syncPartManufacturer.setPartManufacturer(partManufacturerInfor);
 		if (context.getCredentials() != null) {
-			inforws.syncPartManufacturerOp(syncPartManufacturer, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
+			inforws.syncPartManufacturerOp(syncPartManufacturer, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
 		} else {
-			inforws.syncPartManufacturerOp(syncPartManufacturer,applicationData.getOrganization(),  null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+			inforws.syncPartManufacturerOp(syncPartManufacturer,tools.getOrganizationCode(context),  null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
 		return partManufacturerParam.getManufacturerCode();
 	}
@@ -149,9 +149,9 @@ public class PartManufacturerServiceImpl implements PartManufacturerService {
 
 		// first get it:
 		if (context.getCredentials() != null) {
-			inforws.deletePartManufacturerOp(deletePartM, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
+			inforws.deletePartManufacturerOp(deletePartM, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
 		} else {
-			inforws.deletePartManufacturerOp(deletePartM,applicationData.getOrganization(),  null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+			inforws.deletePartManufacturerOp(deletePartM,tools.getOrganizationCode(context),  null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
 
 		return partManufacturerParam.getManufacturerCode();

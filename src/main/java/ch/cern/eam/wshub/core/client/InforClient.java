@@ -168,7 +168,6 @@ public class InforClient {
             InforWebServicesPT inforWebServicesToolkitClient = service.getPort(InforWebServicesPT.class);
             ((BindingProvider) inforWebServicesToolkitClient).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, applicationData.getUrl());
 
-            // Executor Service
             if (this.executorService != null) {
                 // Init new Executor Service
             }

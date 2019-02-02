@@ -43,12 +43,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 		request.getEMPLOYEEID().setEMPLOYEECODE(employeeCode);
 
 		if (context.getCredentials() != null) {
-			result = inforws.getEmployeeOp(request, applicationData.getOrganization(),
+			result = inforws.getEmployeeOp(request, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					tools.createMessageConfig(), applicationData.getTenant());
 
 		} else {
-			result = inforws.getEmployeeOp(request, applicationData.getOrganization(), null, null,
+			result = inforws.getEmployeeOp(request, tools.getOrganizationCode(context), null, null,
 					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
 		}
 
@@ -113,11 +113,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 		MP7038_AddEmployee_001_Result result = null;
 
 		if (context.getCredentials() != null) {
-			result = inforws.addEmployeeOp(request, applicationData.getOrganization(),
+			result = inforws.addEmployeeOp(request, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					tools.createMessageConfig(), applicationData.getTenant());
 		} else {
-			result = inforws.addEmployeeOp(request, applicationData.getOrganization(), null, null,
+			result = inforws.addEmployeeOp(request, tools.getOrganizationCode(context), null, null,
 					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
 		}
 
@@ -132,12 +132,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 		readRequest.getEMPLOYEEID().setEMPLOYEECODE(employee.getCode());
 
 		if (context.getCredentials() != null) {
-			readResult = inforws.getEmployeeOp(readRequest, applicationData.getOrganization(),
+			readResult = inforws.getEmployeeOp(readRequest, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					tools.createMessageConfig(), applicationData.getTenant());
 
 		} else {
-			readResult = inforws.getEmployeeOp(readRequest, applicationData.getOrganization(), null, null,
+			readResult = inforws.getEmployeeOp(readRequest, tools.getOrganizationCode(context), null, null,
 					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
 		}
 
@@ -152,12 +152,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 		MP7039_SyncEmployee_001_Result syncResult = null;
 
 		if (context.getCredentials() != null) {
-			syncResult = inforws.syncEmployeeOp(syncRequest, applicationData.getOrganization(),
+			syncResult = inforws.syncEmployeeOp(syncRequest, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					tools.createMessageConfig(), applicationData.getTenant());
 
 		} else {
-			syncResult = inforws.syncEmployeeOp(syncRequest, applicationData.getOrganization(), null, null,
+			syncResult = inforws.syncEmployeeOp(syncRequest, tools.getOrganizationCode(context), null, null,
 					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
 		}
 
@@ -171,11 +171,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 		request.getEMPLOYEEID().setEMPLOYEECODE(employeeCode);
 
 		if (context.getCredentials() != null) {
-			inforws.deleteEmployeeOp(request, applicationData.getOrganization(),
+			inforws.deleteEmployeeOp(request, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					tools.createMessageConfig(), applicationData.getTenant());
 		} else {
-			inforws.deleteEmployeeOp(request, applicationData.getOrganization(), null, null,
+			inforws.deleteEmployeeOp(request, tools.getOrganizationCode(context), null, null,
 					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
 		}
 

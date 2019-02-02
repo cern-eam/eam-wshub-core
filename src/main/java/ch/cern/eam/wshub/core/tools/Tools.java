@@ -155,6 +155,14 @@ public class Tools {
 		return org;
 	}
 
+	public String getOrganizationCode(InforContext inforContext) {
+		if (inforContext != null && inforContext.getOrganizationCode() != null) {
+			return inforContext.getOrganizationCode();
+		} else {
+			return applicationData.getOrganization();
+		}
+	}
+
 	public InforException generateFault(String reason) {
 		return new InforException(reason, null, null);
 	}
@@ -167,26 +175,9 @@ public class Tools {
 		return value == null || value.trim().equals("");
 	}
 
-	public boolean isTrueValue(String value) {
-		return value != null && value.trim().toUpperCase().equals("TRUE");
-	}
-
-	public boolean isFalseValue(String value) {
-		return value == null || value.trim().toUpperCase().equals("FALSE");
-	}
-
-	/**
-	 * Create an array of objects
-	 * 
-	 * @param objects
-	 *            To be converted to an array
-	 * @return The array of objects
-	 */
-	public <T> T[] asArray(@SuppressWarnings("unchecked") T... objects) {
-		return objects;
-	}
-
-
+	//
+	// BATCH PROCESSING
+	//
 	public <T> BatchResponse<T> processCallables(List<Callable<T>> mylist) {
 		List<BatchSingleResponse<T>> responseList = null;
 
@@ -213,6 +204,9 @@ public class Tools {
 		return response;
 	}
 
+	//
+	// INFOR CONTEXT
+	//
 	public InforContext getInforContext(Credentials credentials, String sessionID) {
 		if (credentials != null) {
 			return new InforContext(credentials);

@@ -280,11 +280,11 @@ public class CustomFieldsTools {
         MP9501_GetCustomFields_001_Result result;
 
         if (context.getCredentials() != null) {
-            result = inforws.getCustomFieldsOp(getcustomfields, applicationData.getOrganization(),
+            result = inforws.getCustomFieldsOp(getcustomfields, tools.getOrganizationCode(context),
                     tools.createSecurityHeader(context), "TERMINATE", null, null,
                     applicationData.getTenant());
         } else {
-            result = inforws.getCustomFieldsOp(getcustomfields, applicationData.getOrganization(), null, null,
+            result = inforws.getCustomFieldsOp(getcustomfields, tools.getOrganizationCode(context), null, null,
                     new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
         }
 
@@ -313,11 +313,11 @@ public class CustomFieldsTools {
         MP9501_GetCustomFields_001_Result result;
 
         if (context.getCredentials() != null) {
-            result = inforws.getCustomFieldsOp(getcustomfields, applicationData.getOrganization(),
+            result = inforws.getCustomFieldsOp(getcustomfields, tools.getOrganizationCode(context),
                     tools.createSecurityHeader(context), "TERMINATE", null, null,
                     applicationData.getTenant());
         } else {
-            result = inforws.getCustomFieldsOp(getcustomfields, applicationData.getOrganization(), null, null,
+            result = inforws.getCustomFieldsOp(getcustomfields, tools.getOrganizationCode(context), null, null,
                     new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
         }
 

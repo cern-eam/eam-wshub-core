@@ -41,11 +41,11 @@ public class PurchaseOrdersImpl implements PurchaseOrdersService {
 		
 		MP0413_GetPurchaseOrder_001_Result getPOResult;
 		if (context.getCredentials() != null) {
-			getPOResult = inforws.getPurchaseOrderOp(req, applicationData.getOrganization(),
+			getPOResult = inforws.getPurchaseOrderOp(req, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					null, applicationData.getTenant());
 		} else {
-			getPOResult = inforws.getPurchaseOrderOp(req, applicationData.getOrganization(), null, null,
+			getPOResult = inforws.getPurchaseOrderOp(req, tools.getOrganizationCode(context), null, null,
 					new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
 		net.datastream.schemas.mp_entities.purchaseorder_001.PurchaseOrder inforPurchaseOrder = getPOResult.getResultData()
@@ -63,11 +63,11 @@ public class PurchaseOrdersImpl implements PurchaseOrdersService {
 		syncPO.setPurchaseOrder(inforPurchaseOrder);
 
 		if (context.getCredentials() != null) {
-			inforws.syncPurchaseOrderOp(syncPO, applicationData.getOrganization(),
+			inforws.syncPurchaseOrderOp(syncPO, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					null, applicationData.getTenant());
 		} else {
-			inforws.syncPurchaseOrderOp(syncPO, applicationData.getOrganization(), null, null,
+			inforws.syncPurchaseOrderOp(syncPO, tools.getOrganizationCode(context), null, null,
 					new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
 

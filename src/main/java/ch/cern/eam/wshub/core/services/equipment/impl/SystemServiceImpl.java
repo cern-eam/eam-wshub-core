@@ -245,11 +245,11 @@ public class SystemServiceImpl implements SystemService {
 		addPosition.setSystemEquipment(systemEquipment);
 		MP0311_AddSystemEquipment_001_Result result;
 		if (context.getCredentials() != null) {
-			result = inforws.addSystemEquipmentOp(addPosition, applicationData.getOrganization(),
+			result = inforws.addSystemEquipmentOp(addPosition, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					null, applicationData.getTenant());
 		} else {
-			result = inforws.addSystemEquipmentOp(addPosition, applicationData.getOrganization(), null, null,
+			result = inforws.addSystemEquipmentOp(addPosition, tools.getOrganizationCode(context), null, null,
 					new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
 		//TODO Update CERN properties
@@ -265,11 +265,11 @@ public class SystemServiceImpl implements SystemService {
 		deleteSystem.getSYSTEMID().setEQUIPMENTCODE(systemCode);
 
 		if (context.getCredentials() != null) {
-			inforws.deleteSystemEquipmentOp(deleteSystem, applicationData.getOrganization(),
+			inforws.deleteSystemEquipmentOp(deleteSystem, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					null, applicationData.getTenant());
 		} else {
-			inforws.deleteSystemEquipmentOp(deleteSystem, applicationData.getOrganization(), null, null,
+			inforws.deleteSystemEquipmentOp(deleteSystem, tools.getOrganizationCode(context), null, null,
 					new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
 
@@ -530,7 +530,7 @@ public class SystemServiceImpl implements SystemService {
 			hierarchySystem.setORGANIZATIONID(tools.getOrganization(context));
 			hierarchySystem.setEQUIPMENTCODE(systemParam.getHierarchyPrimarySystemCode());
 			// System dependent
-			if (tools.isTrueValue(systemParam.getHierarchyPrimarySystemDependent())) {
+			if (tools.getDataTypeTools().isTrueValue(systemParam.getHierarchyPrimarySystemDependent())) {
 				SYSTEMPARENT_Type systemType = new SYSTEMPARENT_Type();
 				systemType.setSYSTEMID(hierarchySystem);
 				systemType.setCOSTROLLUP(systemParam.getHierarchyPrimarySystemCostRollUp());

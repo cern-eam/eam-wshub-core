@@ -79,9 +79,9 @@ public class EquipmentWarrantyCoverageServiceImpl implements EquipmentWarrantyCo
 		MP0344_AddWarrantyCoverage_001_Result result = null;
 
 		if (context.getCredentials() != null) {
-			result = inforws.addWarrantyCoverageOp(addwarrantycoverage, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
+			result = inforws.addWarrantyCoverageOp(addwarrantycoverage, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
 		} else {
-			result = inforws.addWarrantyCoverageOp(addwarrantycoverage, applicationData.getOrganization(), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+			result = inforws.addWarrantyCoverageOp(addwarrantycoverage, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
 		return result.getResultData().getWARRANTYCOVERAGESEQNUM() + "";
 	}
@@ -113,12 +113,12 @@ public class EquipmentWarrantyCoverageServiceImpl implements EquipmentWarrantyCo
 
 		if (context.getCredentials() != null) {
 			getwarrantycoveregeResult = inforws.getWarrantyCoverageOp(getwarrantycoverege,
-					applicationData.getOrganization(),
+					tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(),
 					applicationData.getTenant());
 		} else {
 			getwarrantycoveregeResult = inforws.getWarrantyCoverageOp(getwarrantycoverege,
-                    applicationData.getOrganization(), null, null,
+                    tools.getOrganizationCode(context), null, null,
                     new Holder<SessionType>(tools.createInforSession(context)), null,
                     applicationData.getTenant());
 		}
@@ -161,9 +161,9 @@ public class EquipmentWarrantyCoverageServiceImpl implements EquipmentWarrantyCo
 		MP0345_SyncWarrantyCoverage_001_Result result = null;
 
 		if (context.getCredentials() != null) {
-			result = inforws.syncWarrantyCoverageOp(syncwarrantycoverege, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
+			result = inforws.syncWarrantyCoverageOp(syncwarrantycoverege, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
 		} else {
-			result = inforws.syncWarrantyCoverageOp(syncwarrantycoverege, applicationData.getOrganization(), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+			result = inforws.syncWarrantyCoverageOp(syncwarrantycoverege, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
 		return result.getResultData().getWARRANTYCOVERAGESEQNUM() + "";
 	}

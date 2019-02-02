@@ -320,11 +320,11 @@ public class AssetServiceImpl implements AssetService {
 
 		MP0327_GetAssetParentHierarchy_001_Result result;
 		if (context.getCredentials() != null) {
-			result = inforws.getAssetParentHierarchyOp(getassetph, applicationData.getOrganization(),
+			result = inforws.getAssetParentHierarchyOp(getassetph, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					null, applicationData.getTenant());
 		} else {
-			result = inforws.getAssetParentHierarchyOp(getassetph, applicationData.getOrganization(), null, null,
+			result = inforws.getAssetParentHierarchyOp(getassetph, tools.getOrganizationCode(context), null, null,
 					new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
 
@@ -342,12 +342,12 @@ public class AssetServiceImpl implements AssetService {
 
 		if (context.getCredentials() != null) {
 			getAssetResult = inforws.getAssetEquipmentOp(getAsset,
-					applicationData.getOrganization(),
+					tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					tools.createMessageConfig(), applicationData.getTenant());
 		} else {
 			getAssetResult = inforws.getAssetEquipmentOp(getAsset,
-					applicationData.getOrganization(), null, null,
+					tools.getOrganizationCode(context), null, null,
 					new Holder<SessionType>(tools.createInforSession(context)),
 					tools.createMessageConfig(),
 					applicationData.getTenant());
@@ -361,11 +361,11 @@ public class AssetServiceImpl implements AssetService {
 		MP0303_SyncAssetEquipment_001 syncAsset = new MP0303_SyncAssetEquipment_001();
 		syncAsset.setAssetEquipment(assetEquipment);
 		if (context.getCredentials() != null) {
-			inforws.syncAssetEquipmentOp(syncAsset, applicationData.getOrganization(),
+			inforws.syncAssetEquipmentOp(syncAsset, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					tools.createMessageConfig(), applicationData.getTenant());
 		} else {
-			inforws.syncAssetEquipmentOp(syncAsset, applicationData.getOrganization(), null, null,
+			inforws.syncAssetEquipmentOp(syncAsset, tools.getOrganizationCode(context), null, null,
 					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
 		}
 	}
@@ -426,11 +426,11 @@ public class AssetServiceImpl implements AssetService {
 		MP0301_AddAssetEquipment_001_Result addAssetResult = null;
 
 		if (context.getCredentials() != null) {
-			addAssetResult = inforws.addAssetEquipmentOp(addAsset, applicationData.getOrganization(),
+			addAssetResult = inforws.addAssetEquipmentOp(addAsset, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					null, applicationData.getTenant());
 		} else {
-			addAssetResult = inforws.addAssetEquipmentOp(addAsset, applicationData.getOrganization(), null, null,
+			addAssetResult = inforws.addAssetEquipmentOp(addAsset, tools.getOrganizationCode(context), null, null,
 					new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
 		//TODO Update CERN properties
@@ -445,11 +445,11 @@ public class AssetServiceImpl implements AssetService {
 		deleteAsset.getASSETID().setEQUIPMENTCODE(assetCode);
 
 		if (context.getCredentials() != null) {
-			inforws.deleteAssetEquipmentOp(deleteAsset, applicationData.getOrganization(),
+			inforws.deleteAssetEquipmentOp(deleteAsset, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					null, applicationData.getTenant());
 		} else {
-			inforws.deleteAssetEquipmentOp(deleteAsset, applicationData.getOrganization(), null, null,
+			inforws.deleteAssetEquipmentOp(deleteAsset, tools.getOrganizationCode(context), null, null,
 					new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
 		return assetCode;
@@ -771,7 +771,7 @@ public class AssetServiceImpl implements AssetService {
 		hierarchySystem.setEQUIPMENTCODE(assetParam.getHierarchyPrimarySystemCode());
 
 		// Asset dependent
-		if (tools.isTrueValue(assetParam.getHierarchyAssetDependent())) {
+		if (tools.getDataTypeTools().isTrueValue(assetParam.getHierarchyAssetDependent())) {
 
 			assetParentHierarchy.setAssetDependency(new AssetDependency());
 			// Non dependent position
@@ -791,7 +791,7 @@ public class AssetServiceImpl implements AssetService {
 					.setDEPENDENTASSET(this.createHierarchyAsset(assetParam, hierarchyAsset));
 		}
 		// Position dependent
-		else if (tools.isTrueValue(assetParam.getHierarchyPositionDependent())) {
+		else if (tools.getDataTypeTools().isTrueValue(assetParam.getHierarchyPositionDependent())) {
 			assetParentHierarchy.setPositionDependency(new PositionDependency());
 
 			// Non dependent asset
@@ -811,7 +811,7 @@ public class AssetServiceImpl implements AssetService {
 					.setDEPENDENTPOSITION(this.createHierarchyPosition(assetParam, hierarchyPosition));
 		}
 		// System dependent
-		else if (tools.isTrueValue(assetParam.getHierarchyPrimarySystemDependent())) {
+		else if (tools.getDataTypeTools().isTrueValue(assetParam.getHierarchyPrimarySystemDependent())) {
 
 			assetParentHierarchy.setPrimarySystemDependency(new PrimarySystemDependency());
 			// Non dependent position
@@ -831,9 +831,9 @@ public class AssetServiceImpl implements AssetService {
 					.setDEPENDENTPRIMARYSYSTEM(this.createHierarchyPrymarySystem(assetParam, hierarchySystem));
 		}
 		// All non dependents
-		else if (tools.isFalseValue(assetParam.getHierarchyAssetDependent())
-				&& tools.isFalseValue(assetParam.getHierarchyPositionDependent())
-				&& tools.isFalseValue(assetParam.getHierarchyPrimarySystemDependent())) {
+		else if (tools.getDataTypeTools().isFalseValue(assetParam.getHierarchyAssetDependent())
+				&& tools.getDataTypeTools().isFalseValue(assetParam.getHierarchyPositionDependent())
+				&& tools.getDataTypeTools().isFalseValue(assetParam.getHierarchyPrimarySystemDependent())) {
 
 			// Non location
 			if (assetParam.getHierarchyLocationCode() == null) {

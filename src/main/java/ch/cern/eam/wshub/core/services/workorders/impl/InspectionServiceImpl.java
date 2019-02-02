@@ -56,11 +56,11 @@ public class InspectionServiceImpl implements InspectionService {
 		addInspPoint.setInspectionPoint(inspectionPoint);
 
 		if (context.getCredentials() != null) {
-			inforws.addInspectionPointOp(addInspPoint, applicationData.getOrganization(),
+			inforws.addInspectionPointOp(addInspPoint, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					tools.createMessageConfig(), applicationData.getTenant());
 		} else {
-			inforws.addInspectionPointOp(addInspPoint, applicationData.getOrganization(), null, "",
+			inforws.addInspectionPointOp(addInspPoint, tools.getOrganizationCode(context), null, "",
 					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
 		}
 
@@ -81,11 +81,11 @@ public class InspectionServiceImpl implements InspectionService {
 		MP1022_AddInspectionAspect_001 addInspAspect = new MP1022_AddInspectionAspect_001();
 		addInspAspect.setInspectionAspect(inspectionAspect);
 		if (context.getCredentials() != null) {
-			inforws.addInspectionAspectOp(addInspAspect, applicationData.getOrganization(),
+			inforws.addInspectionAspectOp(addInspAspect, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					tools.createMessageConfig(), applicationData.getTenant());
 		} else {
-			inforws.addInspectionAspectOp(addInspAspect, applicationData.getOrganization(), null, "",
+			inforws.addInspectionAspectOp(addInspAspect, tools.getOrganizationCode(context), null, "",
 					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
 		}
 	}
@@ -118,11 +118,11 @@ public class InspectionServiceImpl implements InspectionService {
 		addInspAspectPoint.setInspectionAspectPoint(inspectionAspectPoint);
 
 		if (context.getCredentials() != null) {
-			inforws.addInspectionAspectPointOp(addInspAspectPoint, applicationData.getOrganization(),
+			inforws.addInspectionAspectPointOp(addInspAspectPoint, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					tools.createMessageConfig(), applicationData.getTenant());
 		} else {
-			inforws.addInspectionAspectPointOp(addInspAspectPoint, applicationData.getOrganization(), null, "",
+			inforws.addInspectionAspectPointOp(addInspAspectPoint, tools.getOrganizationCode(context), null, "",
 					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
 		}
 	}
@@ -158,11 +158,11 @@ public class InspectionServiceImpl implements InspectionService {
 		addInspForWO.setInspectionsForWorkOrder(inspectionsForWO);
 
 		if (context.getCredentials() != null) {
-			inforws.addInspectionsForWorkOrderOp(addInspForWO, applicationData.getOrganization(),
+			inforws.addInspectionsForWorkOrderOp(addInspForWO, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					tools.createMessageConfig(), applicationData.getTenant());
 		} else {
-			inforws.addInspectionsForWorkOrderOp(addInspForWO, applicationData.getOrganization(), null, "",
+			inforws.addInspectionsForWorkOrderOp(addInspForWO, tools.getOrganizationCode(context), null, "",
 					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
 		}
 
@@ -179,11 +179,11 @@ public class InspectionServiceImpl implements InspectionService {
 		MP1017_AddAspect_001 addAspect = new MP1017_AddAspect_001();
 		addAspect.setAspect(inforAspect);
 		if (context.getCredentials() != null) {
-			inforws.addAspectOp(addAspect, applicationData.getOrganization(),
+			inforws.addAspectOp(addAspect, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					tools.createMessageConfig(), applicationData.getTenant());
 		} else {
-			inforws.addAspectOp(addAspect, applicationData.getOrganization(), null, "",
+			inforws.addAspectOp(addAspect, tools.getOrganizationCode(context), null, "",
 					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
 		}
 		return aspect.getCode();

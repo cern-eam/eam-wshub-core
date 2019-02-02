@@ -289,6 +289,14 @@ public class DataTypeTools {
         return resultStr;
     }
 
+    public boolean isTrueValue(String value) {
+        return value != null && value.trim().toUpperCase().equals("TRUE");
+    }
+
+    public boolean isFalseValue(String value) {
+        return value == null || value.trim().toUpperCase().equals("FALSE");
+    }
+
     /**
      * Decode a boolean
      *

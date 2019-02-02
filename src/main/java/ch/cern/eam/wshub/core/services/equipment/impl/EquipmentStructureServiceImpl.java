@@ -69,11 +69,11 @@ public class EquipmentStructureServiceImpl implements EquipmentStructureService 
 		}
 
 		if (context.getCredentials() != null) {
-			inforws.addEquipmentStructureOp(addEqStr, applicationData.getOrganization(),
+			inforws.addEquipmentStructureOp(addEqStr, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					null, applicationData.getTenant());
 		} else {
-			inforws.addEquipmentStructureOp(addEqStr, applicationData.getOrganization(), null, null,
+			inforws.addEquipmentStructureOp(addEqStr, tools.getOrganizationCode(context), null, null,
 					new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
 
@@ -98,11 +98,11 @@ public class EquipmentStructureServiceImpl implements EquipmentStructureService 
 		}
 
 		if (context.getCredentials() != null) {
-			inforws.removeEquipmentFromStructureOp(removeeq, applicationData.getOrganization(),
+			inforws.removeEquipmentFromStructureOp(removeeq, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					null, applicationData.getTenant());
 		} else {
-			inforws.removeEquipmentFromStructureOp(removeeq, applicationData.getOrganization(), null, null,
+			inforws.removeEquipmentFromStructureOp(removeeq, tools.getOrganizationCode(context), null, null,
 					new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
 
@@ -141,11 +141,11 @@ public class EquipmentStructureServiceImpl implements EquipmentStructureService 
 			}
 
 			if (context.getCredentials() != null) {
-				inforws.updateEquipmentStructurePropertiesOp(updateEqStr, applicationData.getOrganization(),
+				inforws.updateEquipmentStructurePropertiesOp(updateEqStr, tools.getOrganizationCode(context),
 						tools.createSecurityHeader(context), "TERMINATE",
 						null, null, applicationData.getTenant());
 			} else {
-				inforws.updateEquipmentStructurePropertiesOp(updateEqStr, applicationData.getOrganization(), null, null,
+				inforws.updateEquipmentStructurePropertiesOp(updateEqStr, tools.getOrganizationCode(context), null, null,
 						new Holder<SessionType>(tools.createInforSession(context)), null,
 						applicationData.getTenant());
 			}
@@ -196,11 +196,11 @@ public class EquipmentStructureServiceImpl implements EquipmentStructureService 
 			}
 
 			if (context.getCredentials() != null) {
-				inforws.syncEquipmentStructureOp(synceqpstr, applicationData.getOrganization(),
+				inforws.syncEquipmentStructureOp(synceqpstr, tools.getOrganizationCode(context),
 						tools.createSecurityHeader(context), "TERMINATE",
 						null, null, applicationData.getTenant());
 			} else {
-				inforws.syncEquipmentStructureOp(synceqpstr, applicationData.getOrganization(), null, null,
+				inforws.syncEquipmentStructureOp(synceqpstr, tools.getOrganizationCode(context), null, null,
 						new Holder<SessionType>(tools.createInforSession(context)), null,
 						applicationData.getTenant());
 			}

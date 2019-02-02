@@ -70,11 +70,11 @@ public class PositionServiceImpl implements PositionService {
 		MP0306_AddPositionEquipment_001_Result result;
 
 		if (context.getCredentials() != null) {
-			result = inforws.addPositionEquipmentOp(addPosition, applicationData.getOrganization(),
+			result = inforws.addPositionEquipmentOp(addPosition, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					null, applicationData.getTenant());
 		} else {
-			result = inforws.addPositionEquipmentOp(addPosition, applicationData.getOrganization(), null, null,
+			result = inforws.addPositionEquipmentOp(addPosition, tools.getOrganizationCode(context), null, null,
 					new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
 		//TODO Update CERN properties
@@ -90,11 +90,11 @@ public class PositionServiceImpl implements PositionService {
 		deletePosition.getPOSITIONID().setEQUIPMENTCODE(positionCode);
 
 		if (context.getCredentials() != null) {
-			inforws.deletePositionEquipmentOp(deletePosition, applicationData.getOrganization(),
+			inforws.deletePositionEquipmentOp(deletePosition, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					null, applicationData.getTenant());
 		} else {
-			inforws.deletePositionEquipmentOp(deletePosition, applicationData.getOrganization(), null, null,
+			inforws.deletePositionEquipmentOp(deletePosition, tools.getOrganizationCode(context), null, null,
 					new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
 
@@ -110,11 +110,11 @@ public class PositionServiceImpl implements PositionService {
 
 		MP0328_GetPositionParentHierarchy_002_Result result;
 		if (context.getCredentials() != null) {
-			result = inforws.getPositionParentHierarchyOp(getpositionph, applicationData.getOrganization(),
+			result = inforws.getPositionParentHierarchyOp(getpositionph, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					null, applicationData.getTenant());
 		} else {
-			result = inforws.getPositionParentHierarchyOp(getpositionph, applicationData.getOrganization(), null, null,
+			result = inforws.getPositionParentHierarchyOp(getpositionph, tools.getOrganizationCode(context), null, null,
 					new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
 
@@ -130,11 +130,11 @@ public class PositionServiceImpl implements PositionService {
 		MP0307_GetPositionEquipment_001_Result getPositionResult = new MP0307_GetPositionEquipment_001_Result();
 
 		if (context.getCredentials() != null) {
-			getPositionResult = inforws.getPositionEquipmentOp(getPosition, applicationData.getOrganization(),
+			getPositionResult = inforws.getPositionEquipmentOp(getPosition, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					null, applicationData.getTenant());
 		} else {
-			getPositionResult = inforws.getPositionEquipmentOp(getPosition, applicationData.getOrganization(), null,
+			getPositionResult = inforws.getPositionEquipmentOp(getPosition, tools.getOrganizationCode(context), null,
 					null, new Holder<SessionType>(tools.createInforSession(context)), null,
 					applicationData.getTenant());
 		}
@@ -393,11 +393,11 @@ public class PositionServiceImpl implements PositionService {
 		MP0307_GetPositionEquipment_001_Result getAssetResult = new MP0307_GetPositionEquipment_001_Result();
 
 		if (context.getCredentials() != null) {
-			getAssetResult = inforws.getPositionEquipmentOp(getPosition, applicationData.getOrganization(),
+			getAssetResult = inforws.getPositionEquipmentOp(getPosition, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					null, applicationData.getTenant());
 		} else {
-			getAssetResult = inforws.getPositionEquipmentOp(getPosition, applicationData.getOrganization(), null, null,
+			getAssetResult = inforws.getPositionEquipmentOp(getPosition, tools.getOrganizationCode(context), null, null,
 					new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
 		return getAssetResult.getResultData().getPositionEquipment();
@@ -421,11 +421,11 @@ public class PositionServiceImpl implements PositionService {
 		MP0308_SyncPositionEquipment_001 syncPosition = new MP0308_SyncPositionEquipment_001();
 		syncPosition.setPositionEquipment(positionEquipment);
 		if (context.getCredentials() != null) {
-			inforws.syncPositionEquipmentOp(syncPosition, applicationData.getOrganization(),
+			inforws.syncPositionEquipmentOp(syncPosition, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					null, applicationData.getTenant());
 		} else {
-			inforws.syncPositionEquipmentOp(syncPosition, applicationData.getOrganization(), null, null,
+			inforws.syncPositionEquipmentOp(syncPosition, tools.getOrganizationCode(context), null, null,
 					new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
 		//TODO Update CERN properties
@@ -718,7 +718,7 @@ public class PositionServiceImpl implements PositionService {
 		hierarchySystem.setEQUIPMENTCODE(positionParam.getHierarchyPrimarySystemCode());
 
 		// Asset dependent
-		if (tools.isTrueValue(positionParam.getHierarchyAssetDependent())) {
+		if (tools.getDataTypeTools().isTrueValue(positionParam.getHierarchyAssetDependent())) {
 
 			positionParentHierarchy.setAssetDependency(new AssetDependency());
 			// Non dependent position
@@ -738,7 +738,7 @@ public class PositionServiceImpl implements PositionService {
 					.setDEPENDENTASSET(this.createHierarchyAsset(positionParam, hierarchyAsset));
 		}
 		// Position dependent
-		else if (tools.isTrueValue(positionParam.getHierarchyPositionDependent())) {
+		else if (tools.getDataTypeTools().isTrueValue(positionParam.getHierarchyPositionDependent())) {
 			positionParentHierarchy.setPositionDependency(new PositionDependency());
 
 			// Non dependent asset
@@ -758,7 +758,7 @@ public class PositionServiceImpl implements PositionService {
 					.setDEPENDENTPOSITION(this.createHierarchyPosition(positionParam, hierarchyPosition));
 		}
 		// System dependent
-		else if (tools.isTrueValue(positionParam.getHierarchyPrimarySystemDependent())) {
+		else if (tools.getDataTypeTools().isTrueValue(positionParam.getHierarchyPrimarySystemDependent())) {
 
 			positionParentHierarchy.setPrimarySystemDependency(new PrimarySystemDependency());
 			// Non dependent position
@@ -778,9 +778,9 @@ public class PositionServiceImpl implements PositionService {
 					.setDEPENDENTPRIMARYSYSTEM(this.createHierarchyPrymarySystem(positionParam, hierarchySystem));
 		}
 		// All non dependents
-		else if (tools.isFalseValue(positionParam.getHierarchyAssetDependent())
-				&& tools.isFalseValue(positionParam.getHierarchyPositionDependent())
-				&& tools.isFalseValue(positionParam.getHierarchyPrimarySystemDependent())) {
+		else if (tools.getDataTypeTools().isFalseValue(positionParam.getHierarchyAssetDependent())
+				&& tools.getDataTypeTools().isFalseValue(positionParam.getHierarchyPositionDependent())
+				&& tools.getDataTypeTools().isFalseValue(positionParam.getHierarchyPrimarySystemDependent())) {
 
 			// Non location
 			if (positionParam.getHierarchyLocationCode() == null) {

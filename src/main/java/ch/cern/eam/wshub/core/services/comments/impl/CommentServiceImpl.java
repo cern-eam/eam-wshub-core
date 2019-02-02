@@ -95,10 +95,12 @@ public class CommentServiceImpl implements CommentService {
 
 		long lineNumber;
 		if (context.getCredentials() != null) {
-			MP0109_AddComments_001_Result result = inforws.addCommentsOp(addComments, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
+			MP0109_AddComments_001_Result result = inforws.addCommentsOp(addComments, tools.getOrganizationCode(context),
+					tools.createSecurityHeader(context),"TERMINATE", null,
+					tools.createMessageConfig(), applicationData.getTenant());
 			lineNumber = result.getResultData().getENTITYCOMMENTID().getLINENUM();
 		} else {
-			MP0109_AddComments_001_Result result = inforws.addCommentsOp(addComments, applicationData.getOrganization(), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+			MP0109_AddComments_001_Result result = inforws.addCommentsOp(addComments, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 			lineNumber = result.getResultData().getENTITYCOMMENTID().getLINENUM();
 		}
 		comment.setLineNumber(String.valueOf(lineNumber));
@@ -152,9 +154,9 @@ public class CommentServiceImpl implements CommentService {
 		MP0108_GetComments_001_Result result;
 
 		if (context.getCredentials() != null) {
-			result = inforws.getCommentsOp(getComments, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
+			result = inforws.getCommentsOp(getComments, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
 		} else {
-			result = inforws.getCommentsOp(getComments, applicationData.getOrganization(), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+			result = inforws.getCommentsOp(getComments, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
 
 		Comment[] commentsArray = new Comment[result.getResultData().getComments().getCOMMENT().size()];
@@ -272,9 +274,9 @@ public class CommentServiceImpl implements CommentService {
 		syncComments.setCOMMENT(commentInfor);
 
 		if (context.getCredentials() != null) {
-			inforws.syncCommentsOp(syncComments, applicationData.getOrganization(), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
+			inforws.syncCommentsOp(syncComments, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
 		} else {
-			inforws.syncCommentsOp(syncComments, applicationData.getOrganization(), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+			inforws.syncCommentsOp(syncComments, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
 		return commentParam.getPk();
 	}

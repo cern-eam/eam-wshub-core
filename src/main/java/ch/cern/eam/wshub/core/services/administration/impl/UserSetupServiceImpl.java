@@ -4,7 +4,6 @@ import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.administration.UserSetupService;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.entities.EAMUser;
-import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
@@ -23,8 +22,10 @@ import net.datastream.schemas.mp_results.mp9532_001.MP9532_RunEmptyOp_001_Result
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
 import javax.persistence.EntityManager;
+import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Holder;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 
 public class UserSetupServiceImpl implements UserSetupService {
@@ -39,10 +40,10 @@ public class UserSetupServiceImpl implements UserSetupService {
 		this.inforws = inforWebServicesToolkitClient;
 	}
 
-	public String login(InforContext context) throws InforException {
+	public String login(InforContext context, String userCode) throws InforException {
 		MP9532_RunEmptyOp_001 runEmptyOp = new MP9532_RunEmptyOp_001();
 		if (context != null && context.getCredentials() != null) {
-			MP9532_RunEmptyOp_001_Result result =  inforws.runEmptyOpOp(runEmptyOp, applicationData.getOrganization(),
+			MP9532_RunEmptyOp_001_Result result =  inforws.runEmptyOpOp(runEmptyOp, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "", null, null,
 					applicationData.getTenant());
 			return result.getResultData();
@@ -61,12 +62,12 @@ public class UserSetupServiceImpl implements UserSetupService {
 
 		// Execute operation of reading
 		if (context.getCredentials() != null) {
-			getUserSetupResult = inforws.getUserSetupOp(getUserSetup, applicationData.getOrganization(),
+			getUserSetupResult = inforws.getUserSetupOp(getUserSetup, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					null, applicationData.getTenant());
 
 		} else {
-			getUserSetupResult = inforws.getUserSetupOp(getUserSetup, applicationData.getOrganization(), null, null,
+			getUserSetupResult = inforws.getUserSetupOp(getUserSetup, tools.getOrganizationCode(context), null, null,
 					new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
 
@@ -166,11 +167,11 @@ public class UserSetupServiceImpl implements UserSetupService {
 
 		// Execute operation
 		if (context.getCredentials() != null) {
-			result = inforws.addUserSetupOp(addUser, applicationData.getOrganization(),
+			result = inforws.addUserSetupOp(addUser, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					null, applicationData.getTenant());
 		} else {
-			result = inforws.addUserSetupOp(addUser, applicationData.getOrganization(), null, null,
+			result = inforws.addUserSetupOp(addUser, tools.getOrganizationCode(context), null, null,
 					new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
 
@@ -189,12 +190,12 @@ public class UserSetupServiceImpl implements UserSetupService {
 
 		// Execute operation of reading
 		if (context.getCredentials() != null) {
-			getUserSetupResult = inforws.getUserSetupOp(getUserSetup, applicationData.getOrganization(),
+			getUserSetupResult = inforws.getUserSetupOp(getUserSetup, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					null, applicationData.getTenant());
 
 		} else {
-			getUserSetupResult = inforws.getUserSetupOp(getUserSetup, applicationData.getOrganization(), null, null,
+			getUserSetupResult = inforws.getUserSetupOp(getUserSetup, tools.getOrganizationCode(context), null, null,
 					new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
 
@@ -218,11 +219,11 @@ public class UserSetupServiceImpl implements UserSetupService {
 		// Execute the operation of sync user
 		MP0603_SyncUserSetup_001_Result result = null;
 		if (context.getCredentials() != null) {
-			result = inforws.syncUserSetupOp(syncUser, applicationData.getOrganization(),
+			result = inforws.syncUserSetupOp(syncUser, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					null, applicationData.getTenant());
 		} else {
-			result = inforws.syncUserSetupOp(syncUser, applicationData.getOrganization(), null, null,
+			result = inforws.syncUserSetupOp(syncUser, tools.getOrganizationCode(context), null, null,
 					new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
 		// Return the result of the update
@@ -235,11 +236,11 @@ public class UserSetupServiceImpl implements UserSetupService {
 		deleteUser.getUSERID().setUSERCODE(userCode);
 
 		if (context.getCredentials() != null) {
-			inforws.deleteUserSetupOp(deleteUser, applicationData.getOrganization(),
+			inforws.deleteUserSetupOp(deleteUser, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
 					null, applicationData.getTenant());
 		} else {
-			inforws.deleteUserSetupOp(deleteUser, applicationData.getOrganization(), null, null,
+			inforws.deleteUserSetupOp(deleteUser, tools.getOrganizationCode(context), null, null,
 					new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
 		}
 		return "success";
