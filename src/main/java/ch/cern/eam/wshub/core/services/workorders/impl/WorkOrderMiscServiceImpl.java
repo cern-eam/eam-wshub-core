@@ -57,11 +57,11 @@ public class WorkOrderMiscServiceImpl implements WorkOrderMiscService {
 			throw tools.generateFault("Supply actual reading or difference reading value.");
 		}
 
-		if (meterReadingParam.getReadingDate() == null || meterReadingParam.getReadingDate().trim().equals("")) {
+		if (meterReadingParam.getReadingDate() == null) {
 			meterreadinginfor.setREADINGDATE(tools.getDataTypeTools().formatDate("SYSDATE", "Meter Reading Date"));
 		} else {
 			meterreadinginfor
-					.setREADINGDATE(tools.getDataTypeTools().formatDate(meterReadingParam.getReadingDate(), "Meter Reading Date"));
+					.setREADINGDATE(tools.getDataTypeTools().encodeInforDate(meterReadingParam.getReadingDate(), "Meter Reading Date"));
 		}
 
 		if (meterReadingParam.getEquipmentCode() != null) {
