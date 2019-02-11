@@ -157,6 +157,12 @@ public class PositionServiceImpl implements PositionService {
 			position.setStatusDesc(positionEquipment.getSTATUS().getDESCRIPTION());
 		}
 
+		//
+		if (positionEquipment.getTYPE() != null) {
+			position.setTypeCode(positionEquipment.getTYPE().getTYPECODE());
+			position.setTypeDesc(positionEquipment.getTYPE().getDESCRIPTION());
+		}
+
 		// CLASS ID
 		if (positionEquipment.getCLASSID() != null) {
 			position.setClassCode(positionEquipment.getCLASSID().getCLASSCODE());

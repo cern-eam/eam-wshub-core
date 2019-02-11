@@ -133,8 +133,6 @@ public class AssetServiceImpl implements AssetService {
 		// USER DEFINED FIELDS
 		asset.setUserDefinedFields(tools.getUDFTools().readInforUserDefinedFields(assetEquipment.getUserDefinedFields()));
 
-
-
 		// HIERARCHY
 		assetEquipment.setAssetParentHierarchy(readInforAssetHierarchy(context, assetCode));
 
