@@ -5,6 +5,7 @@ import ch.cern.eam.wshub.core.services.workorders.ChecklistService;
 import ch.cern.eam.wshub.core.services.workorders.entities.Activity;
 import ch.cern.eam.wshub.core.services.workorders.entities.Finding;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
+import ch.cern.eam.wshub.core.tools.BooleanType;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import ch.cern.eam.wshub.core.services.workorders.entities.TaskplanCheckList;
@@ -65,6 +66,11 @@ public class ChecklistServiceImpl implements ChecklistService {
 		//
 		net.datastream.schemas.mp_entities.workorderactivitychecklist_001.WorkOrderActivityCheckList workOrderActivityCheckListInfor = getresult
 				.getResultData().getWorkOrderActivityCheckList();
+
+		// Follow Up
+		if (workOrderActivityCheckList.getFollowUp() != null) {
+			workOrderActivityCheckListInfor.setFOLLOWUP(tools.getDataTypeTools().encodeBoolean(workOrderActivityCheckList.getFollowUp(), BooleanType.PLUS_MINUS));
+		}
 
 		switch (workOrderActivityCheckList.getType()) {
 			case "01":
@@ -258,7 +264,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 		ResultSet v_result = null;
 		try {
 			String sqlQuery = "with checklist_data as(select ack_event,ack_act,ack_code,ack_occurrence,ack_sequence,ack_object, "
-					+ " ack_type,ack_completed,ack_yes,ack_no,ack_finding,ack_possiblefindings,ack_value,ack_uom,ack_notes,ack_finaloccurrence, o.obj_desc, "
+					+ " ack_type,ack_completed,ack_yes,ack_no,ack_finding,ack_possiblefindings,ack_value,ack_uom,ack_notes,ack_finaloccurrence, o.obj_desc, ack_followup, "
 					+ " NVL((SELECT TRA_TEXT FROM U5TRANSLATIONS WHERE TRA_PAGENAME = 'EAM_CHECKLIST' AND TRA_ELEMENTID = ACK_TASKCHECKLISTCODE AND TRA_LANGUAGE = '"
 					+ context.getCredentials().getLanguage() + "'), ack_desc) ack_desc, "
 					+ " NVL((SELECT ROB_LINE FROM R5ROUTOBJECTS WHERE ROB_ROUTE = (SELECT EVT_ROUTE FROM R5EVENTS WHERE EVT_CODE = '"
@@ -280,6 +286,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 				checklistTemp.setEquipmentCode(v_result.getString("ack_object"));
 				checklistTemp.setEquipmentDesc(v_result.getString("obj_desc"));
 				checklistTemp.setType(v_result.getString("ack_type"));
+				checklistTemp.setFollowUp(v_result.getString("ack_followup"));
 				if (checklistTemp.getType().equals("01")) {
 					// CHECKLIST ITEM
 					if ("+".equals(v_result.getString("ack_completed"))) {

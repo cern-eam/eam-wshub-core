@@ -29,6 +29,7 @@ public class WorkOrderActivityCheckList implements Serializable {
 	private String UOM;
 	private String equipmentCode;
 	private String equipmentDesc;
+	private String followUp;
 
 	private String newCheckListCode;
 	private String newWorkOrderCode;
@@ -136,6 +137,14 @@ public class WorkOrderActivityCheckList implements Serializable {
 
 	public void setResult(String result) {
 		this.result = result;
+	}
+
+	public String getFollowUp() {
+		return followUp;
+	}
+
+	public void setFollowUp(String followUp) {
+		this.followUp = followUp;
 	}
 
 	//
@@ -246,30 +255,29 @@ public class WorkOrderActivityCheckList implements Serializable {
 		this.equipmentDesc = equipmentDesc;
 	}
 
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#toString()
-	 */
+
 	@Override
 	public String toString() {
-		return "WorkOrderActivityCheckList [" + (checkListCode != null ? "checkListCode=" + checkListCode + ", " : "")
-				+ (workOrderCode != null ? "workOrderCode=" + workOrderCode + ", " : "")
-				+ (activityCode != null ? "activityCode=" + activityCode + ", " : "")
-				+ (sequence != null ? "sequence=" + sequence + ", " : "")
-				+ (occurrence != null ? "occurrence=" + occurrence + ", " : "")
-				+ (finalOccurrence != null ? "finalOccurrence=" + finalOccurrence + ", " : "")
-				+ (desc != null ? "desc=" + desc + ", " : "")
-				+ (updateCount != null ? "updateCount=" + updateCount + ", " : "")
-				+ (type != null ? "type=" + type + ", " : "") + (result != null ? "result=" + result + ", " : "")
-				+ (finding != null ? "finding=" + finding + ", " : "") + (notes != null ? "notes=" + notes + ", " : "")
-				+ (UOM != null ? "UOM=" + UOM + ", " : "")
-				+ (equipmentCode != null ? "equipmentCode=" + equipmentCode + ", " : "")
-				+ (equipmentDesc != null ? "equipmentDesc=" + equipmentDesc + ", " : "")
-				+ (newCheckListCode != null ? "newCheckListCode=" + newCheckListCode + ", " : "")
-				+ (newWorkOrderCode != null ? "newWorkOrderCode=" + newWorkOrderCode + ", " : "")
-				+ (possibleFindings != null ? "possibleFindings=" + Arrays.toString(possibleFindings) : "") + "]";
+		return "WorkOrderActivityCheckList{" +
+				"checkListCode='" + checkListCode + '\'' +
+				", workOrderCode='" + workOrderCode + '\'' +
+				", activityCode='" + activityCode + '\'' +
+				", sequence='" + sequence + '\'' +
+				", occurrence='" + occurrence + '\'' +
+				", finalOccurrence='" + finalOccurrence + '\'' +
+				", desc='" + desc + '\'' +
+				", updateCount='" + updateCount + '\'' +
+				", type='" + type + '\'' +
+				", result='" + result + '\'' +
+				", finding='" + finding + '\'' +
+				", notes='" + notes + '\'' +
+				", UOM='" + UOM + '\'' +
+				", equipmentCode='" + equipmentCode + '\'' +
+				", equipmentDesc='" + equipmentDesc + '\'' +
+				", followUp='" + followUp + '\'' +
+				", newCheckListCode='" + newCheckListCode + '\'' +
+				", newWorkOrderCode='" + newWorkOrderCode + '\'' +
+				", possibleFindings=" + Arrays.toString(possibleFindings) +
+				'}';
 	}
-
 }
