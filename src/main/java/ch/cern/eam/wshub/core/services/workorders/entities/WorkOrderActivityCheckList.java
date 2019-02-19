@@ -30,6 +30,7 @@ public class WorkOrderActivityCheckList implements Serializable {
 	private String equipmentCode;
 	private String equipmentDesc;
 	private String followUp;
+	private String followUpWorkOrder;
 
 	private String newCheckListCode;
 	private String newWorkOrderCode;
@@ -145,6 +146,14 @@ public class WorkOrderActivityCheckList implements Serializable {
 
 	public void setFollowUp(String followUp) {
 		this.followUp = followUp;
+	}
+
+	public String getFollowUpWorkOrder() {
+		return followUpWorkOrder;
+	}
+
+	public void setFollowUpWorkOrder(String followUpWorkOrder) {
+		this.followUpWorkOrder = followUpWorkOrder;
 	}
 
 	//
@@ -275,6 +284,7 @@ public class WorkOrderActivityCheckList implements Serializable {
 				", equipmentCode='" + equipmentCode + '\'' +
 				", equipmentDesc='" + equipmentDesc + '\'' +
 				", followUp='" + followUp + '\'' +
+				", followUWorkOrder='" + followUpWorkOrder + '\'' +
 				", newCheckListCode='" + newCheckListCode + '\'' +
 				", newWorkOrderCode='" + newWorkOrderCode + '\'' +
 				", possibleFindings=" + Arrays.toString(possibleFindings) +

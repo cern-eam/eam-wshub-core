@@ -18,4 +18,8 @@ public interface ChecklistService {
 
     @Operation(logOperation = INFOR_OPERATION.WO_CHECKL_R)
     WorkOrderActivityCheckList[] readWorkOrderChecklists(InforContext context, Activity activity) throws InforException;
+
+    @Operation(logOperation = INFOR_OPERATION.WO_CHECKL_FOLLOWUPWO_C)
+    Long createFollowUpWorkOrders(InforContext context, Activity activity) throws InforException;
+
 }

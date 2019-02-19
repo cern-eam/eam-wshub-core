@@ -111,7 +111,7 @@
 		<dependency>
 			<groupId>ch.cern.eam</groupId>
 			<artifactId>eam-wshub-proxyclient</artifactId>
-			<version>11.4-0</version>
+			<version>11.4-2-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 

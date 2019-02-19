@@ -15,7 +15,9 @@ import net.datastream.schemas.mp_fields.*;
 import net.datastream.schemas.mp_functions.mp7913_001.MP7913_SyncWorkOrderActivityCheckList_001;
 import net.datastream.schemas.mp_functions.mp7914_001.MP7914_GetWorkOrderActivityCheckList_001;
 import net.datastream.schemas.mp_functions.mp7916_001.MP7916_AddTaskChecklist_001;
+import net.datastream.schemas.mp_functions.mp8000_001.MP8000_CreateFollowUpWorkOrder_001;
 import net.datastream.schemas.mp_results.mp7914_001.MP7914_GetWorkOrderActivityCheckList_001_Result;
+import net.datastream.schemas.mp_results.mp8000_001.MP8000_CreateFollowUpWorkOrder_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -264,7 +266,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 		ResultSet v_result = null;
 		try {
 			String sqlQuery = "with checklist_data as(select ack_event,ack_act,ack_code,ack_occurrence,ack_sequence,ack_object, "
-					+ " ack_type,ack_completed,ack_yes,ack_no,ack_finding,ack_possiblefindings,ack_value,ack_uom,ack_notes,ack_finaloccurrence, o.obj_desc, ack_followup, "
+					+ " ack_type,ack_completed,ack_yes,ack_no,ack_finding,ack_possiblefindings,ack_value,ack_uom,ack_notes,ack_finaloccurrence, o.obj_desc, ack_followup, ack_followupevent, "
 					+ " NVL((SELECT TRA_TEXT FROM U5TRANSLATIONS WHERE TRA_PAGENAME = 'EAM_CHECKLIST' AND TRA_ELEMENTID = ACK_TASKCHECKLISTCODE AND TRA_LANGUAGE = '"
 					+ context.getCredentials().getLanguage() + "'), ack_desc) ack_desc, "
 					+ " NVL((SELECT ROB_LINE FROM R5ROUTOBJECTS WHERE ROB_ROUTE = (SELECT EVT_ROUTE FROM R5EVENTS WHERE EVT_CODE = '"
@@ -287,6 +289,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 				checklistTemp.setEquipmentDesc(v_result.getString("obj_desc"));
 				checklistTemp.setType(v_result.getString("ack_type"));
 				checklistTemp.setFollowUp(v_result.getString("ack_followup"));
+				checklistTemp.setFollowUpWorkOrder(v_result.getString("ack_followupevent"));
 				if (checklistTemp.getType().equals("01")) {
 					// CHECKLIST ITEM
 					if ("+".equals(v_result.getString("ack_completed"))) {
@@ -388,4 +391,40 @@ public class ChecklistServiceImpl implements ChecklistService {
 		}
 	}
 
+	/**
+	 * Webservice to create Follow Up workorders for checklist activities
+	 * @param context
+	 * @param activity
+	 * @return Number of work orders that were created
+	 * @throws InforException
+	 */
+
+	public Long createFollowUpWorkOrders(InforContext context, Activity activity) throws InforException {
+		MP8000_CreateFollowUpWorkOrder_001 createFUWO = new MP8000_CreateFollowUpWorkOrder_001();
+		MP8000_CreateFollowUpWorkOrder_001_Result createFUWOResult;
+
+		Long activityNumber;
+		try {
+			activityNumber = Long.valueOf( activity.getActivityCode());
+		} catch(Exception e) {
+			throw new InforException("Activity code '" + activity.getActivityCode() + "' is not a valid number.", e.getCause(), null);
+		}
+
+		createFUWO.setACTIVITYID(new ACTIVITYID());
+		createFUWO.getACTIVITYID().setWORKORDERID(new WOID_Type());
+		createFUWO.getACTIVITYID().getWORKORDERID().setJOBNUM(activity.getWorkOrderNumber());
+		createFUWO.getACTIVITYID().setACTIVITYCODE(new ACTIVITYCODE());
+		createFUWO.getACTIVITYID().getACTIVITYCODE().setValue(activityNumber);
+		createFUWO.getACTIVITYID().getWORKORDERID().setORGANIZATIONID(tools.getOrganization(context));
+
+		if (context.getCredentials() != null) {
+			createFUWOResult = inforws.createFollowUpWorkOrderOp(createFUWO, "*",
+					tools.createSecurityHeader(context), "TERMINATE", null,
+					tools.createMessageConfig(), applicationData.getTenant());
+		} else {
+			createFUWOResult = inforws.createFollowUpWorkOrderOp(createFUWO, "*", null, null,
+					new Holder<>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
+		}
+		return createFUWOResult.getResultData().getWORKORDERCOUNT();
+	}
 }
