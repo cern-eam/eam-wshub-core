@@ -179,7 +179,7 @@ public class FieldDescriptionTools {
 		if (!tools.isDatabaseConnectionConfigured()) {
 			return null;
 		}
-		if (tools.isEmpty(codeValue)) {
+		if (tools.getDataTypeTools().isEmpty(codeValue)) {
 			return null;
 		}
 		EntityManager em = tools.getEntityManager();

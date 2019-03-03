@@ -693,15 +693,15 @@ public class PositionServiceImpl implements PositionService {
 
 		PositionParentHierarchy positionParentHierarchy = new PositionParentHierarchy();
 
-		if (tools.isEmpty(positionParam.getHierarchyAssetDependent())) {
+		if (tools.getDataTypeTools().isEmpty(positionParam.getHierarchyAssetDependent())) {
 			positionParam.setHierarchyAssetDependent("FALSE");
 		}
 
-		if (tools.isEmpty(positionParam.getHierarchyPositionDependent())) {
+		if (tools.getDataTypeTools().isEmpty(positionParam.getHierarchyPositionDependent())) {
 			positionParam.setHierarchyPositionDependent("FALSE");
 		}
 
-		if (tools.isEmpty(positionParam.getHierarchyPrimarySystemDependent())) {
+		if (tools.getDataTypeTools().isEmpty(positionParam.getHierarchyPrimarySystemDependent())) {
 			positionParam.setHierarchyPrimarySystemDependent("FALSE");
 		}
 
@@ -728,13 +728,13 @@ public class PositionServiceImpl implements PositionService {
 
 			positionParentHierarchy.setAssetDependency(new AssetDependency());
 			// Non dependent position
-			if (!tools.isEmpty(positionParam.getHierarchyPositionCode())) {
+			if (tools.getDataTypeTools().isNotEmpty(positionParam.getHierarchyPositionCode())) {
 				positionParentHierarchy.getAssetDependency()
 						.setNONDEPENDENTPOSITION(this.createHierarchyPosition(positionParam, hierarchyPosition));
 			}
 
 			// Non dependent system
-			if (!tools.isEmpty(positionParam.getHierarchyPrimarySystemCode())) {
+			if (tools.getDataTypeTools().isNotEmpty(positionParam.getHierarchyPrimarySystemCode())) {
 				positionParentHierarchy.getAssetDependency().setNONDEPENDENTPRIMARYSYSTEM(
 						this.createHierarchyPrymarySystem(positionParam, hierarchySystem));
 			}
@@ -748,13 +748,13 @@ public class PositionServiceImpl implements PositionService {
 			positionParentHierarchy.setPositionDependency(new PositionDependency());
 
 			// Non dependent asset
-			if (!tools.isEmpty(positionParam.getHierarchyAssetCode())) {
+			if (tools.getDataTypeTools().isNotEmpty(positionParam.getHierarchyAssetCode())) {
 				positionParentHierarchy.getPositionDependency()
 						.setNONDEPENDENTASSET(this.createHierarchyAsset(positionParam, hierarchyAsset));
 			}
 
 			// Non dependent system
-			if (!tools.isEmpty(positionParam.getHierarchyPrimarySystemCode())) {
+			if (tools.getDataTypeTools().isNotEmpty(positionParam.getHierarchyPrimarySystemCode())) {
 				positionParentHierarchy.getPositionDependency().setNONDEPENDENTPRIMARYSYSTEM(
 						this.createHierarchyPrymarySystem(positionParam, hierarchySystem));
 			}
@@ -768,13 +768,13 @@ public class PositionServiceImpl implements PositionService {
 
 			positionParentHierarchy.setPrimarySystemDependency(new PrimarySystemDependency());
 			// Non dependent position
-			if (!tools.isEmpty(positionParam.getHierarchyPositionCode())) {
+			if (tools.getDataTypeTools().isNotEmpty(positionParam.getHierarchyPositionCode())) {
 				positionParentHierarchy.getPrimarySystemDependency()
 						.setNONDEPENDENTPOSITION(this.createHierarchyPosition(positionParam, hierarchyPosition));
 			}
 
 			// Non dependent asset
-			if (!tools.isEmpty(positionParam.getHierarchyAssetCode())) {
+			if (tools.getDataTypeTools().isNotEmpty(positionParam.getHierarchyAssetCode())) {
 				positionParentHierarchy.getPrimarySystemDependency()
 						.setNONDEPENDENTASSET(this.createHierarchyAsset(positionParam, hierarchyAsset));
 			}
@@ -794,19 +794,19 @@ public class PositionServiceImpl implements PositionService {
 				positionParentHierarchy.setNonDependentParents(new NonDependentParents_Type());
 
 				// There is position
-				if (!tools.isEmpty(positionParam.getHierarchyPositionCode())) {
+				if (tools.getDataTypeTools().isNotEmpty(positionParam.getHierarchyPositionCode())) {
 					positionParentHierarchy.getNonDependentParents()
 							.setNONDEPENDENTPOSITION(this.createHierarchyPosition(positionParam, hierarchyPosition));
 				}
 
 				// There is asset
-				if (!tools.isEmpty(positionParam.getHierarchyAssetCode())) {
+				if (tools.getDataTypeTools().isNotEmpty(positionParam.getHierarchyAssetCode())) {
 					positionParentHierarchy.getNonDependentParents()
 							.setNONDEPENDENTASSET(this.createHierarchyAsset(positionParam, hierarchyAsset));
 				}
 
 				// There is system
-				if (!tools.isEmpty(positionParam.getHierarchyPrimarySystemCode())) {
+				if (tools.getDataTypeTools().isNotEmpty(positionParam.getHierarchyPrimarySystemCode())) {
 					positionParentHierarchy.getNonDependentParents().setNONDEPENDENTPRIMARYSYSTEM(
 							this.createHierarchyPrymarySystem(positionParam, hierarchySystem));
 				}
@@ -826,19 +826,19 @@ public class PositionServiceImpl implements PositionService {
 						.setLOCATIONCODE(positionParam.getHierarchyLocationCode());
 
 				// There is position
-				if (!tools.isEmpty(positionParam.getHierarchyPositionCode())) {
+				if (tools.getDataTypeTools().isNotEmpty(positionParam.getHierarchyPositionCode())) {
 					positionParentHierarchy.getLocationDependency()
 							.setNONDEPENDENTPOSITION(this.createHierarchyPosition(positionParam, hierarchyPosition));
 				}
 
 				// There is asset
-				if (!tools.isEmpty(positionParam.getHierarchyAssetCode())) {
+				if (tools.getDataTypeTools().isNotEmpty(positionParam.getHierarchyAssetCode())) {
 					positionParentHierarchy.getLocationDependency()
 							.setNONDEPENDENTASSET(this.createHierarchyAsset(positionParam, hierarchyAsset));
 				}
 
 				// There is system
-				if (!tools.isEmpty(positionParam.getHierarchyPrimarySystemCode())) {
+				if (tools.getDataTypeTools().isNotEmpty(positionParam.getHierarchyPrimarySystemCode())) {
 					positionParentHierarchy.getLocationDependency().setNONDEPENDENTPRIMARYSYSTEM(
 							this.createHierarchyPrymarySystem(positionParam, hierarchySystem));
 				}
