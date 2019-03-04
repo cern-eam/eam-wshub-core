@@ -156,6 +156,7 @@ public class WorkOrderActivityCheckList implements Serializable {
 
 	public void setFollowUpWorkOrder(String followUpWorkOrder) {
 		this.followUpWorkOrder = followUpWorkOrder;
+	}
 
 	public String getRequiredToClose() {
 		return requiredToClose;
