@@ -31,6 +31,7 @@ public class WorkOrderActivityCheckList implements Serializable {
 	private String equipmentDesc;
 	private String followUp;
 	private String followUpWorkOrder;
+	private String requiredToClose;
 
 	private String newCheckListCode;
 	private String newWorkOrderCode;
@@ -148,12 +149,20 @@ public class WorkOrderActivityCheckList implements Serializable {
 		this.followUp = followUp;
 	}
 
+
 	public String getFollowUpWorkOrder() {
 		return followUpWorkOrder;
 	}
 
 	public void setFollowUpWorkOrder(String followUpWorkOrder) {
 		this.followUpWorkOrder = followUpWorkOrder;
+
+	public String getRequiredToClose() {
+		return requiredToClose;
+	}
+
+	public void setRequiredToClose(String requiredToClose) {
+		this.requiredToClose = requiredToClose;
 	}
 
 	//
@@ -264,7 +273,6 @@ public class WorkOrderActivityCheckList implements Serializable {
 		this.equipmentDesc = equipmentDesc;
 	}
 
-
 	@Override
 	public String toString() {
 		return "WorkOrderActivityCheckList{" +
@@ -285,6 +293,7 @@ public class WorkOrderActivityCheckList implements Serializable {
 				", equipmentDesc='" + equipmentDesc + '\'' +
 				", followUp='" + followUp + '\'' +
 				", followUWorkOrder='" + followUpWorkOrder + '\'' +
+				", requiredToClose='" + requiredToClose + '\'' +
 				", newCheckListCode='" + newCheckListCode + '\'' +
 				", newWorkOrderCode='" + newWorkOrderCode + '\'' +
 				", possibleFindings=" + Arrays.toString(possibleFindings) +

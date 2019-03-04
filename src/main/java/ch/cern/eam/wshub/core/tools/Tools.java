@@ -171,10 +171,6 @@ public class Tools {
 		return new InforException(reason, null, errors);
 	}
 
-	public boolean isEmpty(String value) {
-		return value == null || value.trim().equals("");
-	}
-
 	//
 	// BATCH PROCESSING
 	//

@@ -4,6 +4,7 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 public class DateAdapter extends XmlAdapter<String, Date> {
 
@@ -11,7 +12,7 @@ public class DateAdapter extends XmlAdapter<String, Date> {
     public String marshal(Date date) throws Exception {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(date);
-		SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy HH:mm");
+		SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy HH:mm", Locale.ENGLISH);
 		return formatter.format(cal.getTime()).toUpperCase();
     }
 
@@ -36,7 +37,7 @@ public class DateAdapter extends XmlAdapter<String, Date> {
 		{
 			try
 			{
-				SimpleDateFormat formatter = new SimpleDateFormat(formatString);
+				SimpleDateFormat formatter = new SimpleDateFormat(formatString, Locale.ENGLISH);
 				Calendar calendar = Calendar.getInstance();
 				calendar.setTime(formatter.parse(date));
 				return calendar.getTime();

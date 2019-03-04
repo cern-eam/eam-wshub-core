@@ -311,4 +311,8 @@ public class DataTypeTools {
     public boolean isEmpty(String value) {
         return value == null || value.trim().equals("");
     }
+
+    public boolean isNotEmpty(String value) {
+        return !this.isEmpty(value);
+    }
 }

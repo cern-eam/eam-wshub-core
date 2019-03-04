@@ -521,8 +521,8 @@ public class SystemServiceImpl implements SystemService {
 		systemParentHierarchy.getTYPE().setTYPECODE("S");
 
 		// HIERARCHY - PRIMARY SYSTEM
-		if (!tools.isEmpty(systemParam.getHierarchyPrimarySystemCode())) {
-			if (tools.isEmpty(systemParam.getHierarchyPrimarySystemDependent())) {
+		if (tools.getDataTypeTools().isNotEmpty(systemParam.getHierarchyPrimarySystemCode())) {
+			if (tools.getDataTypeTools().isEmpty(systemParam.getHierarchyPrimarySystemDependent())) {
 				systemParam.setHierarchyAssetDependent("FALSE");
 			}
 			// System
@@ -537,7 +537,7 @@ public class SystemServiceImpl implements SystemService {
 				systemParentHierarchy.setDEPENDENTPRIMARYSYSTEM(systemType);
 
 				// Check for location
-				if (!tools.isEmpty(systemParam.getHierarchyLocationCode())) {
+				if (tools.getDataTypeTools().isNotEmpty(systemParam.getHierarchyLocationCode())) {
 					systemParentHierarchy.setLOCATIONID(new LOCATIONID_Type());
 					systemParentHierarchy.getLOCATIONID().setORGANIZATIONID(tools.getOrganization(context));
 					systemParentHierarchy.getLOCATIONID().setLOCATIONCODE(systemParam.getHierarchyLocationCode());
@@ -551,7 +551,7 @@ public class SystemServiceImpl implements SystemService {
 				systemParentHierarchy.setNONDEPENDENTPRIMARYSYSTEM(systemType);
 
 				// Check for location
-				if (!tools.isEmpty(systemParam.getHierarchyLocationCode())) {
+				if (tools.getDataTypeTools().isNotEmpty(systemParam.getHierarchyLocationCode())) {
 					// Dependent location
 					systemParentHierarchy.setDEPENDENTLOCATION(new LOCATIONPARENT_Type());
 					systemParentHierarchy.getDEPENDENTLOCATION().setLOCATIONID(new LOCATIONID_Type());
@@ -563,7 +563,7 @@ public class SystemServiceImpl implements SystemService {
 			}
 		}
 		// Just Locations
-		else if (!tools.isEmpty(systemParam.getHierarchyLocationCode())) {
+		else if (tools.getDataTypeTools().isNotEmpty(systemParam.getHierarchyLocationCode())) {
 			// Dependent location
 			systemParentHierarchy.setDEPENDENTLOCATION(new LOCATIONPARENT_Type());
 			systemParentHierarchy.getDEPENDENTLOCATION().setLOCATIONID(new LOCATIONID_Type());
