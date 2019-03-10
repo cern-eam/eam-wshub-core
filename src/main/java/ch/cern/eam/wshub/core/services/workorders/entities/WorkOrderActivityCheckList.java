@@ -149,7 +149,6 @@ public class WorkOrderActivityCheckList implements Serializable {
 		this.followUp = followUp;
 	}
 
-
 	public String getFollowUpWorkOrder() {
 		return followUpWorkOrder;
 	}

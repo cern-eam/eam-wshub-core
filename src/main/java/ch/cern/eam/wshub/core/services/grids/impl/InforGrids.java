@@ -109,12 +109,27 @@ public class InforGrids implements Serializable {
 				if (filter.getJoiner() != null && filter.getJoiner().toUpperCase().equals("OR")) {
 					inforFilter.setJOINER(AND_OR.OR);
 				}
-				// 
+				//
 				inforFilter.setOPERATOR(filter.getOperator());
 				inforFilter.setALIAS_NAME(filter.getFieldName());
 				inforFilter.setVALUE(filter.getFieldValue());
 				inforFilter.setLPAREN(filter.getLeftParenthesis());
 				inforFilter.setRPAREN(filter.getRightParenthesis());
+				switch(inforFilter.getOPERATOR()) {
+					case "LESS_THAN":
+						inforFilter.setOPERATOR("<");
+						break;
+					case "GREATER_THAN":
+						inforFilter.setOPERATOR(">");
+						break;
+					case "LESS_THAN_EQUALS":
+						inforFilter.setOPERATOR("<=");
+						break;
+					case "GREATER_THAN_EQUALS":
+						inforFilter.setOPERATOR(">=");
+						break;
+				}
+
 				funRequest.getMULTIADDON_FILTERS().getMADDON_FILTER().add(inforFilter);
 			}
 		} else {
