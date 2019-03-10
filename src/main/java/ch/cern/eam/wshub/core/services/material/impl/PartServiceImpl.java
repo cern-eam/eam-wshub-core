@@ -9,6 +9,7 @@ import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.BooleanType;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
+import net.datastream.schemas.mp_entities.part_001.UserDefinedFields;
 import net.datastream.schemas.mp_fields.*;
 import net.datastream.schemas.mp_functions.SessionType;
 import net.datastream.schemas.mp_functions.mp0240_001.MP0240_AddPart_001;
@@ -136,7 +137,7 @@ public class PartServiceImpl implements PartService {
 			}
 		}
 		//
-		//
+		partInfor.setUserDefinedFields(new UserDefinedFields());
 		//
 		initializeInforPartObject(partInfor, partParam, context);
 

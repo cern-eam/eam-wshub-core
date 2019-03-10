@@ -21,7 +21,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ch.cern.eam</groupId>
 	<artifactId>eam-wshub-core</artifactId>
-	<version>11.4-8-SNAPSHOT</version>
+	<version>11.4-9-SNAPSHOT</version>
 
 	<name>EAM WS Hub Core</name>
 	<description>High-level Java SE library that provides all core functionalities of EAM WS Hub.</description>
@@ -111,7 +111,7 @@
 		<dependency>
 			<groupId>ch.cern.eam</groupId>
 			<artifactId>eam-wshub-proxyclient</artifactId>
-			<version>11.4-2</version>
+			<version>11.4-3</version>
 		</dependency>
 	</dependencies>
 

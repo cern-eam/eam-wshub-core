@@ -6,6 +6,7 @@ import java.sql.Clob;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 public class JPAFieldDataConverter {
 
@@ -25,7 +26,7 @@ public class JPAFieldDataConverter {
 				result = DecimalFormat.getInstance().format(value);
 				break;
 			case "DATE":
-				result =  new SimpleDateFormat("dd-MMM-yyyy").format(value).toUpperCase();
+				result =  new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH).format(value).toUpperCase();
 				break;
 			case "CHKBOOLEAN":
 				if("-".equals(value))

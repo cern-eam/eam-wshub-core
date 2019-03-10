@@ -317,8 +317,6 @@ public class JPAGrids implements Serializable {
 			// SORT from the User and Dataspy
 			//
 
-
-
 			for(GridRequestSort sort : dataspySortArr){
 				String so = Arrays.asList("DESC", "ASC").stream()
 						.filter(str -> sort.getSortType() != null && str.equals(sort.getSortType().toUpperCase()))
@@ -785,8 +783,8 @@ public class JPAGrids implements Serializable {
 		//format date
 		Date date = null;
 		try {
-			date = new SimpleDateFormat(dateInputFormat).parse(filter.getFieldValue().toString());
-			return new SimpleDateFormat(dateOutputFormat).format(date);
+			date = new SimpleDateFormat(dateInputFormat, Locale.ENGLISH).parse(filter.getFieldValue().toString());
+			return new SimpleDateFormat(dateOutputFormat, Locale.ENGLISH).format(date);
 		} catch (ParseException e) {
 			tools.log(Level.SEVERE, "Couldn't retrieve given date type");
 			logger.error("Error in formatDateToProperPattern dateInputFormat=" + dateInputFormat + " dateOutputFormat=" + dateOutputFormat, e);
@@ -851,12 +849,12 @@ public class JPAGrids implements Serializable {
 		String dateWithOneMoreDay = "";
 		String dateValue = filter.getFieldValue();
 		try {
-			dt = new SimpleDateFormat(dateInputFormat).parse(dateValue);
+			dt = new SimpleDateFormat(dateInputFormat, Locale.ENGLISH).parse(dateValue);
 			Calendar c = Calendar.getInstance();
 			c.setTime(dt);
 			c.add(Calendar.DATE, 1);
 			dt = c.getTime();
-			dateWithOneMoreDay = new SimpleDateFormat(dateOutputFormat).format(dt);
+			dateWithOneMoreDay = new SimpleDateFormat(dateOutputFormat, Locale.ENGLISH).format(dt);
 			
 		} catch (ParseException e) {
 			tools.log(Level.SEVERE, "Couldn't retrieve given date type");

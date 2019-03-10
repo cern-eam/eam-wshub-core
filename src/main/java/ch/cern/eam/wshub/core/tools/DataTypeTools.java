@@ -13,6 +13,7 @@ import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 public class DataTypeTools {
 
@@ -34,7 +35,7 @@ public class DataTypeTools {
 
         for (String formatString : formatStrings) {
             try {
-                SimpleDateFormat formatter = new SimpleDateFormat(formatString);
+                SimpleDateFormat formatter = new SimpleDateFormat(formatString, Locale.ENGLISH);
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(formatter.parse(date));
                 return calendar;
@@ -113,7 +114,7 @@ public class DataTypeTools {
         cal.set(inforDateTime.getYEAR().getYear(), inforDateTime.getMONTH().intValue() - 1,
                 inforDateTime.getDAY().intValue(), inforDateTime.getHOUR().intValue(),
                 inforDateTime.getMINUTE().intValue(), inforDateTime.getSECOND().intValue());
-        SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
+        SimpleDateFormat formatter = new SimpleDateFormat(dateFormat, Locale.ENGLISH);
         return formatter.format(cal.getTime()).toUpperCase();
     }
 
