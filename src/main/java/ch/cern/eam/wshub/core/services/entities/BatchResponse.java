@@ -23,4 +23,8 @@ public final class BatchResponse<T> implements Serializable {
     public void setResponseList(List<BatchSingleResponse<T>> responseList) {
         this.responseList = responseList;
     }
+
+    public boolean hasErrors() {
+        return responseList.stream().anyMatch(batchSingleResponse -> batchSingleResponse.getErrorMessage() != null);
+    }
 }
