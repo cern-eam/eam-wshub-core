@@ -22,10 +22,10 @@ public class DataTypeTools {
     public DataTypeTools(Tools tools) {
         this.tools = tools;
     }
+
     //
     // DATES
     //
-
     private Calendar tryParse(String date) {
         if (date.trim().toUpperCase().equals("SYSDATE")) {
             return Calendar.getInstance();
@@ -135,7 +135,7 @@ public class DataTypeTools {
     }
 
     //
-    // NUMBERS:
+    // NUMBERS
     //
     public QUANTITY encodeQuantity(String numberValue, String numberLabel) throws InforException {
         if (numberValue == null || numberValue.trim().equals("")) {
@@ -290,14 +290,6 @@ public class DataTypeTools {
         return resultStr;
     }
 
-    public boolean isTrueValue(String value) {
-        return value != null && value.trim().toUpperCase().equals("TRUE");
-    }
-
-    public boolean isFalseValue(String value) {
-        return value == null || value.trim().toUpperCase().equals("FALSE");
-    }
-
     /**
      * Decode a boolean
      *
@@ -307,6 +299,14 @@ public class DataTypeTools {
      */
     public String decodeBoolean(String value) {
         return encodeBoolean(value, BooleanType.TRUE_FALSE);
+    }
+
+    public boolean isTrueValue(String value) {
+        return value != null && value.trim().toUpperCase().equals("TRUE");
+    }
+
+    public boolean isFalseValue(String value) {
+        return value == null || value.trim().toUpperCase().equals("FALSE");
     }
 
     public boolean isEmpty(String value) {
