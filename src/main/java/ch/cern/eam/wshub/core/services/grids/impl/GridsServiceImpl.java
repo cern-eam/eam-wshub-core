@@ -40,10 +40,10 @@ public class GridsServiceImpl implements GridsService {
 
 	public GridRequestResult executeQuery(InforContext context, GridRequest gridRequest) throws InforException {
 		if (gridRequest.getUseNative()) {
-			return jpaGrids.executeQuery(context, gridRequest);
+			return inforGrids.executeQuery(context, gridRequest);
 		} else {
 			tools.demandDatabaseConnection();
-			return inforGrids.executeQuery(context, gridRequest);
+			return jpaGrids.executeQuery(context, gridRequest);
 		}
 	}
 
