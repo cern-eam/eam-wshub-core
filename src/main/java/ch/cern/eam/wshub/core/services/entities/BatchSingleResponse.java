@@ -47,4 +47,14 @@ public final class BatchSingleResponse<T> implements Serializable {
     public BATCH_SINGLE_RESPONSE_STATUS getStatus() {
         return status;
     }
+
+    @Override
+    public String toString() {
+        return "BatchSingleResponse{" +
+                "response=" + response +
+                ", errorMessage='" + errorMessage + '\'' +
+                ", status=" + status +
+                '}';
+    }
+
 }

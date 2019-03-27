@@ -49,7 +49,7 @@ public class EquipmentFacadeServiceImpl implements EquipmentFacadeService {
 	@Override
 	public BatchResponse<Equipment> readEquipmentBatch(InforContext inforContext, List<String> equipmentCodes) {
 		List<Callable<Equipment>> callableList = equipmentCodes.stream()
-				.<Callable<Equipment>>map(number -> () -> readEquipment(inforContext, number))
+				.<Callable<Equipment>>map(equipmentCode -> () -> readEquipment(inforContext, equipmentCode))
 				.collect(Collectors.toList());
 		return tools.processCallables(callableList);
 	}

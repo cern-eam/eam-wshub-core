@@ -184,15 +184,15 @@ public class Tools {
 					return new BatchSingleResponse(future.get(), null);
 				}
 				catch (ExecutionException exception) {
-					SOAPFaultException soapFaultException = (SOAPFaultException) exception.getCause();
-					return new BatchSingleResponse(null, soapFaultException.getMessage());
+					//SOAPFaultException soapFaultException = (SOAPFaultException) exception.getCause();
+					return new BatchSingleResponse(null, exception.getCause().getMessage());
 				}
 				catch (Exception exception) {
 					return new BatchSingleResponse(null, "Server error");
 				}
 			}).collect(Collectors.toList());
 		} catch (Exception e) {
-			// TODO
+			e.printStackTrace();
 		}
 
 		BatchResponse<T> response = new BatchResponse<>();
