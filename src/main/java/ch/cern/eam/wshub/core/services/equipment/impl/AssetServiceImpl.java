@@ -625,11 +625,6 @@ public class AssetServiceImpl implements AssetService {
             assetInfor.getDORMANT().setDORMANTREUSE(assetParam.getDormantReusePeriod());
         }
 
-        //
-        if (assetParam.getValue() != null) {
-            assetInfor.setASSETVALUE(tools.getDataTypeTools().encodeAmount(assetParam.getValue(), "Asset Value"));
-        }
-
         // VARIABLES
         if (assetInfor.getVariables() == null) {
             assetInfor.setVariables(new Variables());

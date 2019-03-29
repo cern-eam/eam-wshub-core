@@ -79,8 +79,6 @@ public class Equipment implements Serializable {
 	@Transient
 	private String criticality;
 	@Transient
-	private String value;
-	@Transient
 	private String cGMP;
 	@Transient
 	private String originalReceiptDate;
@@ -683,14 +681,6 @@ public class Equipment implements Serializable {
 		this.dormantReusePeriod = dormantReusePeriod;
 	}
 
-	public String getValue() {
-		return value;
-	}
-
-	public void setValue(String value) {
-		this.value = value;
-	}
-
 	public String getcGMP() {
 		return cGMP;
 	}
@@ -1013,7 +1003,7 @@ public class Equipment implements Serializable {
 				+ (assignedToDesc != null ? "assignedToDesc=" + assignedToDesc + ", " : "")
 				+ (meterUnit != null ? "meterUnit=" + meterUnit + ", " : "")
 				+ (criticality != null ? "criticality=" + criticality + ", " : "")
-				+ (value != null ? "value=" + value + ", " : "") + (cGMP != null ? "cGMP=" + cGMP + ", " : "")
+				+ (cGMP != null ? "cGMP=" + cGMP + ", " : "")
 				+ (originalReceiptDate != null ? "originalReceiptDate=" + originalReceiptDate + ", " : "")
 				+ (manufacturerCode != null ? "manufacturerCode=" + manufacturerCode + ", " : "")
 				+ (manufacturerDesc != null ? "manufacturerDesc=" + manufacturerDesc + ", " : "")
