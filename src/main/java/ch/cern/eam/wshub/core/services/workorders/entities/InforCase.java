@@ -194,7 +194,7 @@ public class InforCase implements Serializable, Cloneable {
 			
 			return clone;
 		} catch (CloneNotSupportedException e) {
-//			logger.error("Error during cloning ", e);
+//			tools.log(Level.SEVERE,"Error during cloning ", e);
 			return null;
 		}
 	}

@@ -4,7 +4,6 @@ import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.entities.Credentials;
 import ch.cern.eam.wshub.core.services.grids.entities.*;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.tools.FieldDescriptionTools;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import ch.cern.eam.wshub.core.services.grids.customfields.GridCustomFieldHandler;
@@ -12,8 +11,6 @@ import ch.cern.eam.wshub.core.services.grids.exceptions.IncorrectParenthesesGrid
 import ch.cern.eam.wshub.core.services.grids.exceptions.IncorrectSortTypeException;
 import ch.cern.eam.wshub.core.services.grids.exceptions.MissingJoinerGridFilterException;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -37,8 +34,6 @@ import java.util.stream.Collectors;
 public class JPAGrids implements Serializable {
 
 	private static final long serialVersionUID = -7463612088169746465L;
-
-	private static final Logger logger = LoggerFactory.getLogger(FieldDescriptionTools.class);
 
 	private static String QUERY_TIMEOUT_DEFAULT_VALUE = "15000";
 
@@ -511,7 +506,7 @@ public class JPAGrids implements Serializable {
 			throw tools.generateFault("Couldn't fetch data for this grid. Incorrect sort type defined in gridSort.");
 		}
 		catch (Exception e) {
-			logger.error("Error whlie executing Grid Query", e);
+			tools.log(Level.SEVERE,"Error whlie executing Grid Query");
 			throw tools.generateFault("Couldn't fetch data for this grid.");
 		} finally {
 			em.clear();
@@ -787,7 +782,7 @@ public class JPAGrids implements Serializable {
 			return new SimpleDateFormat(dateOutputFormat, Locale.ENGLISH).format(date);
 		} catch (ParseException e) {
 			tools.log(Level.SEVERE, "Couldn't retrieve given date type");
-			logger.error("Error in formatDateToProperPattern dateInputFormat=" + dateInputFormat + " dateOutputFormat=" + dateOutputFormat, e);
+			tools.log(Level.SEVERE,"Error in formatDateToProperPattern dateInputFormat=" + dateInputFormat + " dateOutputFormat=" + dateOutputFormat);
 		}
 		return filter.getFieldValue().toString();
 	}
@@ -858,7 +853,7 @@ public class JPAGrids implements Serializable {
 			
 		} catch (ParseException e) {
 			tools.log(Level.SEVERE, "Couldn't retrieve given date type");
-			logger.error("Error in dateIncrementOfOneDay dateInputFormat=" + dateInputFormat + " dateOutputFormat=" + dateOutputFormat, e);
+			tools.log(Level.SEVERE,"Error in dateIncrementOfOneDay dateInputFormat=" + dateInputFormat + " dateOutputFormat=" + dateOutputFormat);
 		}
 		return dateWithOneMoreDay;
 	}

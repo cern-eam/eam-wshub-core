@@ -19,8 +19,6 @@ import net.datastream.schemas.mp_functions.mp8000_001.MP8000_CreateFollowUpWorkO
 import net.datastream.schemas.mp_results.mp7914_001.MP7914_GetWorkOrderActivityCheckList_001_Result;
 import net.datastream.schemas.mp_results.mp8000_001.MP8000_CreateFollowUpWorkOrder_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.xml.ws.Holder;
@@ -33,8 +31,6 @@ import java.util.List;
 import java.util.logging.Level;
 
 public class ChecklistServiceImpl implements ChecklistService {
-
-	private static final Logger logger = LoggerFactory.getLogger(ChecklistServiceImpl.class);
 
 	private Tools tools;
 	private InforWebServicesPT inforws;
@@ -320,7 +316,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 							Finding findingTemp = em.find(Finding.class, findingCode);
 							findings.add(findingTemp);
 						} catch (Exception e) {
-							logger.error("Error in readWOActivityChecklists", e);
+							tools.log(Level.SEVERE,"Error in readWOActivityChecklists");
 						} finally {
 							em.close();
 						}
@@ -352,7 +348,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 							Finding findingTemp = em.find(Finding.class, findingCode);
 							findings.add(findingTemp);
 						} catch (Exception e) {
-							logger.error("Error in readWOActivityChecklists", e);
+							tools.log(Level.SEVERE,"Error in readWOActivityChecklists");
 						} finally {
 							em.close();
 						}

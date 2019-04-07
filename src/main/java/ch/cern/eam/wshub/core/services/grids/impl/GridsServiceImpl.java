@@ -8,18 +8,14 @@ import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.persistence.EntityManager;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class GridsServiceImpl implements GridsService {
-
-	private static final Logger logger = LoggerFactory.getLogger(GridsServiceImpl.class);
 
 	private Tools tools;
 	private InforWebServicesPT inforws;
@@ -101,7 +97,7 @@ public class GridsServiceImpl implements GridsService {
 			
 			return result;
 		} catch (Exception e) {
-			logger.error("Error while fetching grid metadata for gridCode " + gridCode, e);
+			tools.log(Level.SEVERE,"Error while fetching grid metadata for gridCode " + gridCode);
 			throw tools.generateFault("Couldn't fetch the metadata for this grid.");
 		} finally {
 			em.clear();
@@ -142,7 +138,7 @@ public class GridsServiceImpl implements GridsService {
 			result.setDataSpyId(ddSpyId);
 			return result;
 		} catch (Exception e) {
-			logger.error("Error", e);
+			tools.log(Level.SEVERE,"Error");
 			throw tools.generateFault("Couldn't fetch the metadata for this grid.");
 		} finally {
 			em.clear();
@@ -175,7 +171,7 @@ public class GridsServiceImpl implements GridsService {
 			
 			return gridDataspy;
 		} catch (Exception e) {
-			logger.error("Error while fetching default dataspy for grid code " + gridCode + " and view type " + viewType, e);
+			tools.log(Level.SEVERE,"Error while fetching default dataspy for grid code " + gridCode + " and view type " + viewType);
 			throw tools.generateFault("Couldn't fetch the metadata for this grid.");
 		} finally {
 			em.clear();

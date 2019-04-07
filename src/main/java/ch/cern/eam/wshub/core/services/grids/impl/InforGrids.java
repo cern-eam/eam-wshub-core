@@ -65,6 +65,11 @@ public class InforGrids implements Serializable {
 		} else {
 			throw tools.generateFault("Please supply grid name and grid id.");
 		}
+
+		// USER FUNCTION NAME
+		if (tools.getDataTypeTools().isNotEmpty(gridRequest.getUserFunctionName())) {
+			funRequest.getGRID().setUSER_FUNCTION_NAME(gridRequest.getUserFunctionName());
+		}
 		// SET NUMBERS OF ROWS TO RETURN
 		if (gridRequest.getRowCount() != null && !gridRequest.getRowCount().trim().equals("")) {
 			funRequest.getGRID().setNUMBER_OF_ROWS_FIRST_RETURNED(new BigInteger(gridRequest.getRowCount()));

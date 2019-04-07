@@ -21,7 +21,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ch.cern.eam</groupId>
 	<artifactId>eam-wshub-core</artifactId>
-	<version>11.4-14-SNAPSHOT</version>
+	<version>11.4-15-SNAPSHOT</version>
 
 	<name>EAM WS Hub Core</name>
 	<description>High-level Java SE library that provides all core functionalities of EAM WS Hub.</description>
@@ -91,21 +91,9 @@
 			<version>3.0.5</version>
 		</dependency>
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.25</version>
-		</dependency>
-		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.12</version>
-			<scope>test</scope>
-		</dependency>
-		<!-- Logger backend included only for testing (demo) purposes. End application should include its own logger binding. -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
-			<version>1.7.25</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

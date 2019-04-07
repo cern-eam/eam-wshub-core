@@ -2,11 +2,10 @@ package ch.cern.eam.wshub.core.tools;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.logging.Level;
 import javax.persistence.EntityManager;
 
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Fetch the description of some fields that are missing when reading from
@@ -14,8 +13,6 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class FieldDescriptionTools {
-
-	private static final Logger logger = LoggerFactory.getLogger(FieldDescriptionTools.class);
 
 	private Tools tools;
 
@@ -34,7 +31,7 @@ public class FieldDescriptionTools {
 					.setParameter("personCode", personCode).getSingleResult();
 			return result[0].toString();
 		} catch (Exception e) {
-			logger.error("Error in readPersonDesc for personCode " + personCode, e);
+			tools.log(Level.SEVERE, "Error in readPersonDesc for personCode " + personCode);
 			return null;
 		} finally {
 			em.close();
@@ -51,7 +48,7 @@ public class FieldDescriptionTools {
 				return em.createNativeQuery("SELECT MRC_DESC FROM R5MRCS WHERE MRC_CODE = :mrc_code")
 						.setParameter("mrc_code", departmentCode).getSingleResult().toString();
 		} catch (Exception e) {
-			logger.error("Error in readDepartmentDesc for departmentCode " + departmentCode, e);
+			tools.log(Level.SEVERE,"Error in readDepartmentDesc for departmentCode " + departmentCode);
 		} finally {
 			em.close();
 		}
@@ -70,7 +67,7 @@ public class FieldDescriptionTools {
 						.setParameter("entityType", entityType).setParameter("classCode", classCode).getSingleResult()
 						.toString();
 		} catch (Exception e) {
-			logger.error("Error in readClassDesc for entityType " + entityType + " and classCode " + classCode, e);
+			tools.log(Level.SEVERE,"Error in readClassDesc for entityType " + entityType + " and classCode " + classCode);
 		} finally {
 			em.close();
 		}
@@ -87,7 +84,7 @@ public class FieldDescriptionTools {
 				return em.createNativeQuery("SELECT UOM_DESC FROM R5UOMS WHERE UOM_CODE = :uomCode")
 						.setParameter("uomCode", uomCode).getSingleResult().toString();
 		} catch (Exception e) {
-			logger.error("Error in readUOMDesc for uomCode " + uomCode, e);
+			tools.log(Level.SEVERE,"Error in readUOMDesc for uomCode " + uomCode);
 		} finally {
 			em.close();
 		}
@@ -104,7 +101,7 @@ public class FieldDescriptionTools {
 				return em.createNativeQuery("SELECT CAT_DESC FROM R5CATEGORIES where CAT_CODE = :categoryCode")
 						.setParameter("categoryCode", categoryCode).getSingleResult().toString();
 		} catch (Exception e) {
-			logger.error("Error in readCategoryDesc for categoryCode " + categoryCode, e);
+			tools.log(Level.SEVERE,"Error in readCategoryDesc for categoryCode " + categoryCode);
 		} finally {
 			em.close();
 		}
@@ -121,7 +118,7 @@ public class FieldDescriptionTools {
 				return em.createNativeQuery("SELECT CMD_DESC FROM R5COMMODITIES WHERE CMD_CODE = :commodityCode")
 						.setParameter("commodityCode", commodityCode).getSingleResult().toString();
 		} catch (Exception e) {
-			logger.error("Error in readCommodityDesc for commodityCode " + commodityCode, e);
+			tools.log(Level.SEVERE,"Error in readCommodityDesc for commodityCode " + commodityCode);
 		} finally {
 			em.close();
 		}
@@ -138,7 +135,7 @@ public class FieldDescriptionTools {
 				return em.createNativeQuery("SELECT MFG_DESC FROM R5MANUFACTURERS where MFG_CODE = :manufacturerCode")
 						.setParameter("manufacturerCode", manufacturerCode).getSingleResult().toString();
 		} catch (Exception e) {
-			logger.error("Error in readManufacturerDesc for manufacturerCode " + manufacturerCode, e);
+			tools.log(Level.SEVERE,"Error in readManufacturerDesc for manufacturerCode " + manufacturerCode);
 		} finally {
 			em.close();
 		}
@@ -158,7 +155,7 @@ public class FieldDescriptionTools {
 						.setParameter("storeCode", storeCode).setParameter("binCode", binCode).getSingleResult()
 						.toString();
 		} catch (Exception e) {
-			logger.error("Error in readBinDesc for storeCode " + storeCode + " and binCode " + binCode , e);
+			tools.log(Level.SEVERE,"Error in readBinDesc for storeCode " + storeCode + " and binCode " + binCode);
 		} finally {
 			em.close();
 		}
@@ -190,7 +187,7 @@ public class FieldDescriptionTools {
 						.setParameter("entityCode", entityCode).setParameter("codeValue", codeValue).getSingleResult()
 						.toString();
 		} catch (Exception e) {
-			logger.error("Error in readCustomFieldDesc for entityCode " + entityCode + " and codeValue " + codeValue , e);
+			tools.log(Level.SEVERE,"Error in readCustomFieldDesc for entityCode " + entityCode + " and codeValue " + codeValue );
 		} finally {
 			em.close();
 		}
@@ -253,7 +250,7 @@ public class FieldDescriptionTools {
 				}
 			}
 		} catch (Exception e) {
-			logger.error("Error in readUDFRENTDescriptions", e);
+			tools.log(Level.SEVERE,"Error in readUDFRENTDescriptions");
 		} finally {
 			em.close();
 		}

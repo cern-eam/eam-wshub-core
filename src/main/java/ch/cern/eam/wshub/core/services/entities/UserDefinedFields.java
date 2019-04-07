@@ -141,7 +141,7 @@ public class UserDefinedFields implements Serializable, Cloneable {
 		try {
 			return (UserDefinedFields) this.clone();
 		} catch (CloneNotSupportedException e) {
-//			logger.error("Error during cloning ", e);
+//			tools.log(Level.SEVERE,"Error during cloning ", e);
 			return null;
 		}
 	}

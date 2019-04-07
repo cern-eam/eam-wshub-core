@@ -14,6 +14,7 @@ public class GridRequest implements Serializable {
 	private String dataspyID;
 	private String rowCount;
 	private String cursorPosition;
+	private String userFunctionName;
 	private String gridName;
 	private String gridType = "LIST";
 	private Boolean useNative = true;
@@ -190,7 +191,15 @@ public class GridRequest implements Serializable {
 	public void setLang(String lang) {
 		this.lang = lang;
 	}
-	
+
+	public String getUserFunctionName() {
+		return userFunctionName;
+	}
+
+	public void setUserFunctionName(String userFunctionName) {
+		this.userFunctionName = userFunctionName;
+	}
+
 	@Override
 	public String toString() {
 		return "GridRequest [" + (gridID != null ? "gridID=" + gridID + ", " : "")

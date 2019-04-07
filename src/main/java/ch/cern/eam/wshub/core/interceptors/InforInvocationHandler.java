@@ -9,8 +9,7 @@ import ch.cern.eam.wshub.core.interceptors.beans.InforResponseData;
 import ch.cern.eam.wshub.core.services.INFOR_OPERATION;
 import ch.cern.eam.wshub.core.tools.ExceptionInfo;
 import ch.cern.eam.wshub.core.tools.InforException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import ch.cern.eam.wshub.core.tools.Tools;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -19,21 +18,21 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.LinkedList;
+import java.util.logging.Level;
 
 /**
  * Handler allowing the user to decorate Infor services
  */
 public class InforInvocationHandler<T> implements InvocationHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(InforInvocationHandler.class);
-
     private final T target;
-
     private final InforInterceptor inforInterceptor;
+    private final Tools tools;
 
-    public InforInvocationHandler(T target, InforInterceptor inforInterceptor) {
+    public InforInvocationHandler(T target, InforInterceptor inforInterceptor, Tools tools) {
         this.target = target;
         this.inforInterceptor = inforInterceptor;
+        this.tools = tools;
     }
 
     @Override
@@ -90,7 +89,7 @@ public class InforInvocationHandler<T> implements InvocationHandler {
                 InforExtractedData extractedData = extractDataReference(operation, input, null);
                 inforInterceptor.afterError(inforOperation, request, error, extractedData);
 
-                logger.error("Error while calling Infor service " + inforOperation, e);
+                tools.log(Level.SEVERE,"Error while calling Infor service " + inforOperation);
                 throw ie;
             }
         }
