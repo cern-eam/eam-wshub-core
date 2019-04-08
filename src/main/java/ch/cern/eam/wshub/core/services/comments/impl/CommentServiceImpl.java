@@ -222,6 +222,7 @@ public class CommentServiceImpl implements CommentService {
 		}
 
 		// FETCH UPDATE COUNT IF NOT PROVIDED
+		String entityKeyCode = commentParam.getEntityKeyCode();
 		if (commentParam.getUpdateCount() == null ||
 				commentParam.getUpdateCount().trim().equals("") ||
 				commentParam.getTypeCode() == null ||
@@ -233,7 +234,7 @@ public class CommentServiceImpl implements CommentService {
 					commentParam.setTypeCode(comment.getTypeCode());
 
 					if ("OBJ".equals(commentParam.getEntityCode()) || "PART".equals(commentParam.getEntityCode())) {
-						commentParam.setEntityKeyCode(commentParam.getEntityKeyCode()+"#*");
+						entityKeyCode = commentParam.getEntityKeyCode()+"#*";
 					}
 
 				}
@@ -247,7 +248,7 @@ public class CommentServiceImpl implements CommentService {
 		if (commentParam.getEntityCode() != null) {
 			commentInfor.setENTITYCOMMENTID(new ENTITYCOMMENTID_Type());
 			commentInfor.getENTITYCOMMENTID().setENTITY(commentParam.getEntityCode());
-			commentInfor.getENTITYCOMMENTID().setENTITYKEYCODE(commentParam.getEntityKeyCode());
+			commentInfor.getENTITYCOMMENTID().setENTITYKEYCODE(entityKeyCode);
 			commentInfor.getENTITYCOMMENTID().setLANGUAGEID(new LANGUAGEID_Type());
 			commentInfor.getENTITYCOMMENTID().getLANGUAGEID().setLANGUAGECODE("EN");
 			commentInfor.getENTITYCOMMENTID().setLINENUM(tools.getDataTypeTools().encodeLong(commentParam.getLineNumber(), "Line Number"));
