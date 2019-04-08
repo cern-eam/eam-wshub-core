@@ -31,19 +31,23 @@ public class ApplicationData {
 	}
 
 	public String getQueryTimeout() {
-		return "QUERY_TIMEOUT";
+		return "15000";
 	}
 
 	public String getDateFormat() {
-		return "DATE_FORMAT";
+		return "dd-MMM-yyyy";
+	}
+
+	public String getDateDBFormat() {
+		return "MM/dd/yyyy";
 	}
 
 	public String getDateTimeFormat() {
-		return "DATETIME_FORMAT";
+		return "dd-MMM-yyyy HH:mm";
 	}
 
 	public String getDateTimeDBFormat() {
-		return "DATETIME_DB_FORMAT";
+		return "MM/dd/yyyy HH:mm";
 	}
 
 }

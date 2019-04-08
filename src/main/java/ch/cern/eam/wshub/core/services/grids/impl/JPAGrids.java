@@ -723,9 +723,9 @@ public class JPAGrids implements Serializable {
 				break;
 			default: 
 				dateFormat = applicationData.getDateFormat();
-				parameter = formatDateToProperPattern(filter, dateFormat, dateFormat);
+				dateDBFormat = applicationData.getDateDBFormat();
+				parameter = formatDateToProperPattern(filter, dateFormat, dateDBFormat);
 				dateWithOneMoreDay = dateIncrementOfOneDay(filter, dateFormat, dateFormat);
-				dateDBFormat = dateFormat;
 				break;
 		}
 		
