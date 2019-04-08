@@ -51,8 +51,9 @@ public class CommentServiceImpl implements CommentService {
 			throw tools.generateFault("Entity key code can't end with '#*'");
 		}
 
+		String entityKeyCode = comment.getEntityKeyCode();
 		if ("OBJ".equals(comment.getEntityCode()) || "PART".equals(comment.getEntityCode())) {
-			comment.setEntityKeyCode(comment.getEntityKeyCode() + "#*");
+			entityKeyCode = comment.getEntityKeyCode() + "#*";
 		}
 
 		//
@@ -63,7 +64,7 @@ public class CommentServiceImpl implements CommentService {
 		if (comment.getEntityCode() != null) {
 			commentInfor.setENTITYCOMMENTID(new ENTITYCOMMENTID_Type());
 			commentInfor.getENTITYCOMMENTID().setENTITY(comment.getEntityCode());
-			commentInfor.getENTITYCOMMENTID().setENTITYKEYCODE(comment.getEntityKeyCode());
+			commentInfor.getENTITYCOMMENTID().setENTITYKEYCODE(entityKeyCode);
 			commentInfor.getENTITYCOMMENTID().setLANGUAGEID(new LANGUAGEID_Type());
 			commentInfor.getENTITYCOMMENTID().getLANGUAGEID().setLANGUAGECODE("EN");
 			if (comment.getTypeCode() != null) {
