@@ -177,6 +177,7 @@ public class PositionServiceImpl implements PositionService {
 
 		// ASSIGNED TO
 		if (positionEquipment.getASSIGNEDTO() != null) {
+			position.setAssignedTo(positionEquipment.getASSIGNEDTO().getPERSONCODE());
 			position.setAssignedTo(tools.getFieldDescriptionsTools().readPersonDesc(position.getAssignedTo()));
 		}
 
