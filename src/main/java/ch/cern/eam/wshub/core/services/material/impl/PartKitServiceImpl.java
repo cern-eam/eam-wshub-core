@@ -38,7 +38,7 @@ public class PartKitServiceImpl implements PartKitService {
 	}
 
 	@Override
-	public String addPartKitTemplate(PartKitTemplate partKitParam, InforContext context) throws InforException {
+	public String addPartKitTemplate(InforContext context, PartKitTemplate partKitParam) throws InforException {
 
 		KitTemplate kitTemplate = new KitTemplate();
 		
@@ -87,7 +87,7 @@ public class PartKitServiceImpl implements PartKitService {
 	}	
 
 
-	public String createKitSession(BuildKitParam buildKitParam, InforContext context) throws InforException{
+	public String createKitSession(InforContext context, BuildKitParam buildKitParam) throws InforException{
 
 		// CREATE KIT SESSION
 		
@@ -133,7 +133,7 @@ public class PartKitServiceImpl implements PartKitService {
 	}
 
 
-	public String buildKit(String kitSessionId, InforContext context) throws InforException{
+	public String buildKit(InforContext context, String kitSessionId) throws InforException{
 		MP2235_CreateKit_001 createKitMsg = new MP2235_CreateKit_001();
 		MP2235_CreateKit_001_Result createKitResult = new MP2235_CreateKit_001_Result();
 		createKitMsg.setDBSESSIONID(new QUANTITY());

@@ -88,6 +88,7 @@ public class InforClient {
     private PartManufacturerService partManufacturerService;
     private PartBinStockService partBinStockService;
     private PurchaseOrdersService purchaseOrdersService;
+    private PickTicketService pickTicketService;
 
     private UserSetupService userSetupService;
     private GridsService gridsService;
@@ -213,6 +214,8 @@ public class InforClient {
             inforClient.userSetupService = proxy(UserSetupService.class, new UserSetupServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.gridsService = proxy(GridsService.class, new GridsServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.documentsService = proxy(DocumentsService.class, new DocumentsServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
+            inforClient.pickTicketService = proxy(PickTicketService.class, new PickTicketServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
+
 
             inforClient.inforWebServicesToolkitClient = inforWebServicesToolkitClient;
             return inforClient;
@@ -332,6 +335,8 @@ public class InforClient {
     public PurchaseOrdersService getPurchaseOrdersService() { return purchaseOrdersService; }
 
     public DocumentsService getDocumentsService() {return documentsService; }
+
+    public PickTicketService getPickTicketService() {return pickTicketService; }
 
     public InforWebServicesPT getInforWebServicesToolkitClient() {return inforWebServicesToolkitClient; }
 
