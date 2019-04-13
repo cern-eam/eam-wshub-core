@@ -129,7 +129,9 @@ public enum INFOR_OPERATION {
     // PICKTICKET
     PICKTICKET_C("PICKTICKET_C"),
     PICKTICKET_U("PICKTICKET_U"),
-    PICKTICKEL_C("PICKTICKEL_C")
+    PICKTICKEL_C("PICKTICKEL_C"),
+    //
+    OTHER("OTHER")
     ;
 
     private String code;

@@ -42,6 +42,7 @@ import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Service;
 import javax.xml.ws.handler.HandlerResolver;
 
+import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.concurrent.ExecutorService;
@@ -53,7 +54,7 @@ import java.util.logging.Logger;
  * This class is thread-safe. On single instance can and should be reused to handle multiple calls,
  * even if it involves different Infor users.
  */
-public class InforClient {
+public class InforClient implements Serializable {
 
     private Tools tools;
     private InvocationHandler invocationHandler;

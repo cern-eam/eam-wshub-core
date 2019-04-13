@@ -10,8 +10,11 @@ import java.lang.annotation.Target;
 @Target(java.lang.annotation.ElementType.METHOD)
 public @interface Operation {
     INFOR_OPERATION logOperation();
+    String otherInforOperation() default "";
     LogDataReferenceType logDataReference1() default LogDataReferenceType.NONE;
     String logDataReference1FieldName() default "";
     LogDataReferenceType logDataReference2() default LogDataReferenceType.NONE;
     String logDataReference2FieldName() default "";
+    boolean useValidation() default false;
+    Class<?>[] validationGroups() default {};
 }
