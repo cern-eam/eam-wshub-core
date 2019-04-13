@@ -111,12 +111,12 @@
 
 	<distributionManagement>
 		<repository>
-			<id>eis</id>
-			<url>https://edmstools.cern.ch/nexus/content/repositories/ase-eds-releases</url>
+			<id>maven-staging</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
 		</repository>
 		<snapshotRepository>
-			<id>eis</id>
-			<url>https://edmstools.cern.ch/nexus/content/repositories/ase-eds-snapshots</url>
+			<id>maven-snapshots</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
 
