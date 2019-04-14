@@ -6,6 +6,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.StringJoiner;
 
 @XmlAccessorType(XmlAccessType.PROPERTY)
 public class CustomField implements Serializable {

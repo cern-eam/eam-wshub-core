@@ -12,7 +12,7 @@ import ch.cern.eam.wshub.core.tools.InforException;
 
 public interface WorkOrderService {
 
-    @Operation(logOperation = INFOR_OPERATION.WORKORDERS_BC, logDataReference1 = LogDataReferenceType.RESULT)
+    @Operation(logOperation = INFOR_OPERATION.WORKORDER_BC, logDataReference1 = LogDataReferenceType.RESULT)
     BatchResponse<String> createWorkOrderBatch(InforContext context, List<WorkOrder> workOrderParam)
             throws InforException;
 

@@ -6,6 +6,7 @@ import javax.persistence.Embeddable;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.StringJoiner;
 
 @Embeddable
 public class UserDefinedFields implements Serializable, Cloneable {
@@ -1431,11 +1432,6 @@ public class UserDefinedFields implements Serializable, Cloneable {
 		this.udfchar45Desc = udfchar45Desc;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#toString()
-	 */
 	@Override
 	public String toString() {
 		return "UserDefinedFields [" + (udfchar01 != null ? "udfchar01=" + udfchar01 + ", " : "")
@@ -1559,5 +1555,6 @@ public class UserDefinedFields implements Serializable, Cloneable {
 				+ (udfdate09 != null ? "udfdate09=" + udfdate09 + ", " : "")
 				+ (udfdate10 != null ? "udfdate10=" + udfdate10 : "") + "]";
 	}
+
 
 }

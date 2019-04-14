@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.StringJoiner;
 
 @XmlAccessorType(XmlAccessType.PROPERTY)
 //@Dependent
@@ -562,58 +563,55 @@ public class WorkOrder implements Serializable {
 
 	@Override
 	public String toString() {
-		return "WorkOrder{" +
-				"number='" + number + '\'' +
-				", description='" + description + '\'' +
-				", classCode='" + classCode + '\'' +
-				", classDesc='" + classDesc + '\'' +
-				", updateCount='" + updateCount + '\'' +
-				", eventType='" + eventType + '\'' +
-				", statusCode='" + statusCode + '\'' +
-				", statusDesc='" + statusDesc + '\'' +
-				", typeCode='" + typeCode + '\'' +
-				", typeDesc='" + typeDesc + '\'' +
-				", departmentCode='" + departmentCode + '\'' +
-				", departmentDesc='" + departmentDesc + '\'' +
-				", equipmentCode='" + equipmentCode + '\'' +
-				", equipmentDesc='" + equipmentDesc + '\'' +
-				", projectCode='" + projectCode + '\'' +
-				", projectDesc='" + projectDesc + '\'' +
-				", projectBudget='" + projectBudget + '\'' +
-				", locationCode='" + locationCode + '\'' +
-				", locationDesc='" + locationDesc + '\'' +
-				", priorityCode='" + priorityCode + '\'' +
-				", priorityDesc='" + priorityDesc + '\'' +
-				", customFields=" + Arrays.toString(customFields) +
-				", reportedDate=" + reportedDate +
-				", requestedEndDate=" + requestedEndDate +
-				", requestedStartDate=" + requestedStartDate +
-				", scheduledStartDate=" + scheduledStartDate +
-				", scheduledEndDate=" + scheduledEndDate +
-				", startDate=" + startDate +
-				", completedDate=" + completedDate +
-				", dueDate=" + dueDate +
-				", createdDate=" + createdDate +
-				", createdBy='" + createdBy + '\'' +
-				", problemCode='" + problemCode + '\'' +
-				", failureCode='" + failureCode + '\'' +
-				", causeCode='" + causeCode + '\'' +
-				", actionCode='" + actionCode + '\'' +
-				", costCode='" + costCode + '\'' +
-				", costCodeDesc='" + costCodeDesc + '\'' +
-				", assignedBy='" + assignedBy + '\'' +
-				", reportedBy='" + reportedBy + '\'' +
-				", reportedByDesc='" + reportedByDesc + '\'' +
-				", assignedTo='" + assignedTo + '\'' +
-				", assignedToDesc='" + assignedToDesc + '\'' +
-				", standardWO='" + standardWO + '\'' +
-				", parentWO='" + parentWO + '\'' +
-				", parentWODesc='" + parentWODesc + '\'' +
-				", route='" + route + '\'' +
-				", comment='" + comment + '\'' +
-				", targetValue='" + targetValue + '\'' +
-				", userDefinedFields=" + userDefinedFields +
-				", origWO='" + origWO + '\'' +
-				'}';
+		return "WorkOrder [" + (number != null ? "number=" + number + ", " : "")
+				+ (description != null ? "description=" + description + ", " : "")
+				+ (classCode != null ? "classCode=" + classCode + ", " : "")
+				+ (classDesc != null ? "classDesc=" + classDesc + ", " : "")
+				+ (updateCount != null ? "updateCount=" + updateCount + ", " : "")
+				+ (eventType != null ? "eventType=" + eventType + ", " : "")
+				+ (statusCode != null ? "statusCode=" + statusCode + ", " : "")
+				+ (statusDesc != null ? "statusDesc=" + statusDesc + ", " : "")
+				+ (typeCode != null ? "typeCode=" + typeCode + ", " : "")
+				+ (typeDesc != null ? "typeDesc=" + typeDesc + ", " : "")
+				+ (departmentCode != null ? "departmentCode=" + departmentCode + ", " : "")
+				+ (departmentDesc != null ? "departmentDesc=" + departmentDesc + ", " : "")
+				+ (equipmentCode != null ? "equipmentCode=" + equipmentCode + ", " : "")
+				+ (equipmentDesc != null ? "equipmentDesc=" + equipmentDesc + ", " : "")
+				+ (projectCode != null ? "projectCode=" + projectCode + ", " : "")
+				+ (projectDesc != null ? "projectDesc=" + projectDesc + ", " : "")
+				+ (projectBudget != null ? "projectBudget=" + projectBudget + ", " : "")
+				+ (locationCode != null ? "locationCode=" + locationCode + ", " : "")
+				+ (locationDesc != null ? "locationDesc=" + locationDesc + ", " : "")
+				+ (priorityCode != null ? "priorityCode=" + priorityCode + ", " : "")
+				+ (priorityDesc != null ? "priorityDesc=" + priorityDesc + ", " : "")
+				+ (customFields != null ? "customFields=" + Arrays.toString(customFields) + ", " : "")
+				+ (reportedDate != null ? "reportedDate=" + reportedDate + ", " : "")
+				+ (requestedEndDate != null ? "requestedEndDate=" + requestedEndDate + ", " : "")
+				+ (requestedStartDate != null ? "requestedStartDate=" + requestedStartDate + ", " : "")
+				+ (scheduledStartDate != null ? "scheduledStartDate=" + scheduledStartDate + ", " : "")
+				+ (scheduledEndDate != null ? "scheduledEndDate=" + scheduledEndDate + ", " : "")
+				+ (startDate != null ? "startDate=" + startDate + ", " : "")
+				+ (completedDate != null ? "completedDate=" + completedDate + ", " : "")
+				+ (dueDate != null ? "dueDate=" + dueDate + ", " : "")
+				+ (createdDate != null ? "createdDate=" + createdDate + ", " : "")
+				+ (createdBy != null ? "createdBy=" + createdBy + ", " : "")
+				+ (problemCode != null ? "problemCode=" + problemCode + ", " : "")
+				+ (failureCode != null ? "failureCode=" + failureCode + ", " : "")
+				+ (causeCode != null ? "causeCode=" + causeCode + ", " : "")
+				+ (actionCode != null ? "actionCode=" + actionCode + ", " : "")
+				+ (costCode != null ? "costCode=" + costCode + ", " : "")
+				+ (costCodeDesc != null ? "costCodeDesc=" + costCodeDesc + ", " : "")
+				+ (assignedBy != null ? "assignedBy=" + assignedBy + ", " : "")
+				+ (reportedBy != null ? "reportedBy=" + reportedBy + ", " : "")
+				+ (reportedByDesc != null ? "reportedByDesc=" + reportedByDesc + ", " : "")
+				+ (assignedTo != null ? "assignedTo=" + assignedTo + ", " : "")
+				+ (assignedToDesc != null ? "assignedToDesc=" + assignedToDesc + ", " : "")
+				+ (standardWO != null ? "standardWO=" + standardWO + ", " : "")
+				+ (parentWO != null ? "parentWO=" + parentWO + ", " : "")
+				+ (parentWODesc != null ? "parentWODesc=" + parentWODesc + ", " : "")
+				+ (route != null ? "route=" + route + ", " : "") + (comment != null ? "comment=" + comment + ", " : "")
+				+ (targetValue != null ? "targetValue=" + targetValue + ", " : "")
+				+ (userDefinedFields != null ? "userDefinedFields=" + userDefinedFields + ", " : "")
+				+ (origWO != null ? "origWO=" + origWO : "") + "]";
 	}
 }
