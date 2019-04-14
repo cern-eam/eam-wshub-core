@@ -266,6 +266,11 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			workOrder.setCreatedDate(tools.getDataTypeTools().decodeInforDate(inforWorkOrder.getCREATEDDATE()));
 		}
 
+		// TARGET VALUE
+		if (inforWorkOrder.getTARGETVALUE() != null) {
+			workOrder.setTargetValue(tools.getDataTypeTools().decodeAmount(inforWorkOrder.getTARGETVALUE()));
+		}
+
 		// UPDATE COUNT
 		workOrder.setUpdateCount(inforWorkOrder.getRecordid().toString());
 
@@ -694,6 +699,11 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		// PROJECT BUDGET
 		if (workorderParam.getProjectBudget() != null) {
 			inforWorkOrder.setPROJBUD(workorderParam.getProjectBudget());
+		}
+
+		// TARGET VALUE
+		if (workorderParam.getTargetValue() != null) {
+			inforWorkOrder.setTARGETVALUE(tools.getDataTypeTools().encodeAmount(workorderParam.getTargetValue(), "Target Value"));
 		}
 	}
 

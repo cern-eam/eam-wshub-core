@@ -196,7 +196,12 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 			activityInfor.getMATLIST().setMTLCODE(activityParam.getMaterialList());
 		}
 
-		//
+		// NOTE
+		if (tools.getDataTypeTools().isNotEmpty(activityParam.getActivityNote())) {
+			activityInfor.getACTIVITYID().setACTIVITYNOTE(activityParam.getActivityNote());
+		}
+
+
 		// CALL THE WS
 		//
 		MP0037_AddActivity_001 addActivity = new MP0037_AddActivity_001();
@@ -294,6 +299,11 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 				activityInfor.setMATLIST(new MATLIST_Type());
 			}
 			activityInfor.getMATLIST().setMTLCODE(activityParam.getMaterialList());
+		}
+
+		// NOTE
+		if (activityParam.getActivityNote() != null) {
+			activityInfor.getACTIVITYID().setACTIVITYNOTE(activityParam.getActivityNote());
 		}
 
 		//

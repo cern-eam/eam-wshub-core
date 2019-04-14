@@ -1,6 +1,7 @@
 package ch.cern.eam.wshub.core.tools;
 
 import javax.xml.ws.WebFault;
+import java.util.Arrays;
 
 @WebFault(name="ExceptionInfoList")
 public class InforException extends Exception {
@@ -9,7 +10,7 @@ public class InforException extends Exception {
 	private ExceptionInfo[] ExceptionInfoList;
 
 	public InforException(String msg, Throwable cause, ExceptionInfo[] details) {
-		super(msg, cause);
+		super(msg);
 		ExceptionInfoList = details;
 	}
 
@@ -20,5 +21,12 @@ public class InforException extends Exception {
 	public void setExceptionInfoList(ExceptionInfo[] exceptionInfoList) {
 		ExceptionInfoList = exceptionInfoList;
 	}
-		
+
+	@Override
+	public String toString() {
+		return "InforException{" +
+				"Message: " + getMessage() + ", " +
+				"ExceptionInfoList=" + Arrays.toString(ExceptionInfoList) +
+				'}';
+	}
 }

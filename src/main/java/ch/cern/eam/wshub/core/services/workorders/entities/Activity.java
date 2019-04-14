@@ -19,6 +19,8 @@ public class Activity implements Serializable {
 	@Id
 	@Column(name = "ACT_ACT")
 	private String activityCode;
+	@Column(name = "ACT_NOTE")
+	private String activityNote;
 	@Column(name = "ACT_EVENT")
 	private String workOrderNumber;
 	@Column(name = "ACT_PERSONS")
@@ -153,10 +155,15 @@ public class Activity implements Serializable {
 		this.taskQty = taskQty;
 	}
 
+	public String getActivityNote() {return activityNote;}
+
+	public void setActivityNote(String activityNote) {this.activityNote = activityNote; }
+
 	@Override
 	public String toString() {
 		return "Activity{" +
 				"activityCode='" + activityCode + '\'' +
+				", activityNote='" + activityNote + '\'' +
 				", workOrderNumber='" + workOrderNumber + '\'' +
 				", peopleRequired='" + peopleRequired + '\'' +
 				", estimatedHours='" + estimatedHours + '\'' +
@@ -171,4 +178,5 @@ public class Activity implements Serializable {
 				", checklists=" + Arrays.toString(checklists) +
 				'}';
 	}
+
 }
