@@ -686,13 +686,14 @@ public class AssetServiceImpl implements AssetService {
             }
         }
 
-        // REPLACEMENT VALUE
-
         // HIERARCHY
         if (assetParam.getHierarchyAssetCode() != null || assetParam.getHierarchyPositionCode() != null
                 || assetParam.getHierarchyPrimarySystemCode() != null
                 || assetParam.getHierarchyLocationCode() != null) {
             initializeAssetHierarchy(assetInfor, assetParam, context);
+        } else {
+            // Setting to null won't touch the existing structure
+            assetInfor.setAssetParentHierarchy(null);
         }
 
         // OUT OF SERVICE
