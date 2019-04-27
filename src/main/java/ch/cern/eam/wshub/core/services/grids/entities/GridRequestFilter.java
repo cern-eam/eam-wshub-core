@@ -5,16 +5,31 @@ import java.io.Serializable;
 public class GridRequestFilter implements Serializable {
 	private static final long serialVersionUID = 2336324664740111857L;
 
+	public enum JOINER {AND, OR};
+
 	private String fieldName;
 	private String fieldValue;
 	private String operator;
-	private String joiner;
+	private JOINER joiner;
 	private String leftParenthesis;
 	private String rightParenthesis;
 	private Boolean forceCaseInsensitive = false;
 	private Boolean upperCase = false;
-	
-	public GridRequestFilter(String fieldName, String fieldValue, String operator, String joiner,
+
+	public GridRequestFilter(String fieldName, String fieldValue, String operator) {
+		this.fieldName = fieldName;
+		this.fieldValue = fieldValue;
+		this.operator = operator;
+	}
+
+	public GridRequestFilter(String fieldName, String fieldValue, String operator, JOINER joiner) {
+		this.fieldName = fieldName;
+		this.fieldValue = fieldValue;
+		this.operator = operator;
+		this.joiner = joiner;
+	}
+
+	public GridRequestFilter(String fieldName, String fieldValue, String operator, JOINER joiner,
 			String leftParenthesis, String rightParenthesis) {
 		this.fieldName = fieldName;
 		this.fieldValue = fieldValue;
@@ -24,7 +39,7 @@ public class GridRequestFilter implements Serializable {
 		this.rightParenthesis = rightParenthesis;
 	}
 	
-	public GridRequestFilter(String fieldName, String fieldValue, String operator, String joiner,
+	public GridRequestFilter(String fieldName, String fieldValue, String operator, JOINER joiner,
 			String leftParenthesis, String rightParenthesis, Boolean forceCaseInsensitive, Boolean upperCase) {
 		this.fieldName = fieldName;
 		this.fieldValue = fieldValue;
@@ -78,11 +93,11 @@ public class GridRequestFilter implements Serializable {
 		this.operator = operator;
 	}
 
-	public String getJoiner() {
+	public JOINER getJoiner() {
 		return joiner;
 	}
 
-	public void setJoiner(String joiner) {
+	public void setJoiner(JOINER joiner) {
 		this.joiner = joiner;
 	}
 	

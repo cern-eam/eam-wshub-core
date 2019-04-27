@@ -34,6 +34,9 @@ public interface WorkOrderService {
     @Operation(logOperation = INFOR_OPERATION.WORKORDER_READ, logDataReference1 = LogDataReferenceType.INPUT)
     WorkOrder readWorkOrder(InforContext context, String number) throws InforException;
 
+    @Operation(logOperation = INFOR_OPERATION.WORKORDER_READ_DEFAULT)
+    WorkOrder readWorkOrderDefault(InforContext context, String number) throws InforException;
+
     @Operation(logOperation = INFOR_OPERATION.STANDARDWO_READ)
     WorkOrder readStandardWorkOrder(InforContext context, WorkOrder workorder) throws InforException;
 

@@ -253,7 +253,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 	}
 
 	public WorkOrderActivityCheckList[] readWorkOrderChecklists(InforContext context, Activity activity) throws InforException {
-		// Check if the client was configured with the DB connection
+		// Check if the aisws was configured with the DB connection
 		tools.demandDatabaseConnection();
 
 		LinkedList<WorkOrderActivityCheckList> checklists = new LinkedList<WorkOrderActivityCheckList>();

@@ -100,6 +100,12 @@ public class AssetServiceImpl implements AssetService {
             asset.setComissionDate(tools.getDataTypeTools().decodeInforDate(assetEquipment.getCOMMISSIONDATE()));
         }
 
+        // STATE
+        if (assetEquipment.getEQUIPMENTSTATEID() != null) {
+            asset.setStateCode(assetEquipment.getEQUIPMENTSTATEID().getSTATECODE());
+            asset.setStateDesc(assetEquipment.getEQUIPMENTSTATEID().getDESCRIPTION());
+        }
+
         //
         if (assetEquipment.getManufacturerInfo() != null) {
             asset.setManufacturerCode(assetEquipment.getManufacturerInfo().getMANUFACTURERCODE());
@@ -549,6 +555,12 @@ public class AssetServiceImpl implements AssetService {
 
         if (assetParam.getMeterUnit() != null) {
             assetInfor.setMETERUNIT(assetParam.getMeterUnit());
+        }
+
+        // STATE ID
+        if (assetParam.getStateCode() != null) {
+            assetInfor.setEQUIPMENTSTATEID(new EQUIPMENTSTATEID());
+            assetInfor.getEQUIPMENTSTATEID().setSTATECODE(assetParam.getStateCode());
         }
 
         //

@@ -108,10 +108,10 @@ public class InforGrids implements Serializable {
 				inforFilter.setSEQNUM(BigInteger.valueOf(counter++));
 
 				// JOINER
-				if (filter.getJoiner() != null && filter.getJoiner().toUpperCase().equals("AND")) {
+				if (filter.getJoiner() == GridRequestFilter.JOINER.AND) {
 					inforFilter.setJOINER(AND_OR.AND);
 				}
-				if (filter.getJoiner() != null && filter.getJoiner().toUpperCase().equals("OR")) {
+				if (filter.getJoiner() == GridRequestFilter.JOINER.OR) {
 					inforFilter.setJOINER(AND_OR.OR);
 				}
 				//

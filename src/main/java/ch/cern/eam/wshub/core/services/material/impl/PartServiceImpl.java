@@ -99,14 +99,19 @@ public class PartServiceImpl implements PartService {
 			part.setTrackingMethod(partInfor.getTRACKMETHOD().getTYPECODE());
 		}
 
-		//
+		// TRACK BY ASSET
 		if (partInfor.getBYASSET() != null) {
 			part.setTrackByAsset(tools.getDataTypeTools().decodeBoolean(partInfor.getBYASSET()));
 		}
 
-		//
+		// TRACK CORES
 		if (partInfor.getREPAIRABLE() != null) {
 			part.setTrackCores(tools.getDataTypeTools().decodeBoolean(partInfor.getREPAIRABLE()));
+		}
+
+		// TRACK BY LOT
+		if (partInfor.getBYLOT() != null) {
+			part.setTrackByLot(tools.getDataTypeTools().decodeBoolean(partInfor.getBYLOT()));
 		}
 
 		// Long description

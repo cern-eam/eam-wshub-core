@@ -82,6 +82,10 @@ public class Equipment implements Serializable {
 	private String cGMP;
 	@Transient
 	private String originalReceiptDate;
+	@Transient
+	private String stateCode;
+	@Transient
+	private String stateDesc;
 
 	@Transient
 	private String manufacturerCode;
@@ -976,6 +980,22 @@ public class Equipment implements Serializable {
 
 	public void setHierarchyPrimarySystemCostRollUp(String hierarchyPrimarySystemCostRollUp) {
 		this.hierarchyPrimarySystemCostRollUp = hierarchyPrimarySystemCostRollUp;
+	}
+
+	public String getStateCode() {
+		return stateCode;
+	}
+
+	public void setStateCode(String stateCode) {
+		this.stateCode = stateCode;
+	}
+
+	public String getStateDesc() {
+		return stateDesc;
+	}
+
+	public void setStateDesc(String stateDesc) {
+		this.stateDesc = stateDesc;
 	}
 
 	@Override

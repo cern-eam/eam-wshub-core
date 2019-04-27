@@ -62,8 +62,8 @@ InforContext context = new InforContext.Builder()
 ### Example
 Here is a complete example, in which we update a work order with EAM WSHub Core:
 ```java
-import ch.cern.eam.wshub.core.client.InforClient;
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.aisws.InforClient;
+import ch.cern.eam.wshub.core.aisws.InforContext;
 import ch.cern.eam.wshub.core.services.entities.Credentials;
 import ch.cern.eam.wshub.core.services.workorders.WorkOrderService;
 import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrder;

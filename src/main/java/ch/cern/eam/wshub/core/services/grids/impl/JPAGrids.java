@@ -205,9 +205,16 @@ public class JPAGrids implements Serializable {
 						Node nNode = nl.item(n);
 						if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 							Element el = (Element) nNode;
+
+							String joiner = el.getAttribute("JOINER");
+							GridRequestFilter.JOINER gridJoiner = GridRequestFilter.JOINER.OR;
+							if (joiner != null && joiner.equals("AND")) {
+								gridJoiner = GridRequestFilter.JOINER.AND;
+							}
+
 							GridRequestFilter filter = new GridRequestFilter(el.getAttribute("ALIAS_NAME"),
 									el.getAttribute("VALUE"), el.getAttribute("OPERATOR"),
-									el.getAttribute("JOINER"), el.getAttribute("LPAREN"),
+									gridJoiner, el.getAttribute("LPAREN"),
 									el.getAttribute("RPAREN"));
 							//skip custom fields
 							if(tagNames.get(filter.getFieldName()) != null){
@@ -656,10 +663,10 @@ public class JPAGrids implements Serializable {
 					filterString += ")";
 	
 				// JOINER
-				if (filter.getJoiner() != null && filter.getJoiner().toUpperCase().equals("AND")) {
+				if (filter.getJoiner() ==  GridRequestFilter.JOINER.AND) {
 					filterString += " AND ";
 				}
-				if (filter.getJoiner() != null && filter.getJoiner().toUpperCase().equals("OR")) {
+				if (filter.getJoiner() == GridRequestFilter.JOINER.OR) {
 					filterString += " OR ";
 				}
 				

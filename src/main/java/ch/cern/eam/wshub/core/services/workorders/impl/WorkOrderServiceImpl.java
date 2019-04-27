@@ -17,11 +17,14 @@ import net.datastream.schemas.mp_functions.SessionType;
 import net.datastream.schemas.mp_functions.mp0023_001.MP0023_AddWorkOrder_001;
 import net.datastream.schemas.mp_functions.mp0024_001.MP0024_GetWorkOrder_001;
 import net.datastream.schemas.mp_functions.mp0025_001.MP0025_SyncWorkOrder_001;
+import net.datastream.schemas.mp_functions.mp0026_001.MP0026_GetWorkOrderDefault_001;
 import net.datastream.schemas.mp_functions.mp0055_001.MP0055_DeleteWorkOrder_001;
 import net.datastream.schemas.mp_functions.mp7082_001.MP7082_GetStandardWorkOrder_001;
 import net.datastream.schemas.mp_functions.mp7161_001.MP7161_ChangeWorkOrderStatus_001;
 import net.datastream.schemas.mp_results.mp0023_001.MP0023_AddWorkOrder_001_Result;
 import net.datastream.schemas.mp_results.mp0024_001.MP0024_GetWorkOrder_001_Result;
+import net.datastream.schemas.mp_results.mp0026_001.MP0026_GetWorkOrderDefault_001_Result;
+import net.datastream.schemas.mp_results.mp0026_001.ResultData;
 import net.datastream.schemas.mp_results.mp7082_001.MP7082_GetStandardWorkOrder_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 import javax.xml.ws.Holder;
@@ -279,6 +282,59 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
 		return workOrder;
 	}
+
+	public WorkOrder readWorkOrderDefault(InforContext context, String number) throws InforException {
+		//
+		// Fetch WO
+		//
+		MP0026_GetWorkOrderDefault_001 getWorkOrderDefault = new MP0026_GetWorkOrderDefault_001();
+
+		getWorkOrderDefault.setORGANIZATIONID(new ORGANIZATIONID_Type());
+		getWorkOrderDefault.getORGANIZATIONID().setORGANIZATIONCODE(context.getOrganizationCode());
+		MP0026_GetWorkOrderDefault_001_Result getWODefaultResult = null;
+
+		if (context.getCredentials() != null) {
+			getWODefaultResult = inforws.getWorkOrderDefaultOp(getWorkOrderDefault, tools.getOrganizationCode(context),
+					tools.createSecurityHeader(context), "TERMINATE", null,
+					tools.createMessageConfig(), applicationData.getTenant());
+		} else {
+			getWODefaultResult = inforws.getWorkOrderDefaultOp(getWorkOrderDefault, tools.getOrganizationCode(context), null, "",
+					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
+		}
+		ResultData resultData = getWODefaultResult.getResultData();
+		//
+		// Populate the 'workOrder' object
+		//
+		WorkOrder workOrder = new WorkOrder();
+
+		// STATUS
+		if (resultData.getSTATUS() != null) {
+			workOrder.setStatusCode(resultData.getSTATUS().getSTATUSCODE());
+		}
+
+		// TYPE
+		if (resultData.getTYPE() != null) {
+			workOrder.setTypeCode(resultData.getTYPE().getTYPECODE());
+		}
+
+		// TARGET (SCHEDULED START) DATE
+		if (resultData.getTARGETDATE() != null) {
+			workOrder.setScheduledStartDate(tools.getDataTypeTools().decodeInforDate(resultData.getTARGETDATE()));
+		}
+
+		// SCHEDULED END DATE
+		if (resultData.getSCHEDEND() != null) {
+			workOrder.setScheduledEndDate(tools.getDataTypeTools().decodeInforDate(resultData.getSCHEDEND()));
+		}
+
+		// REPORTED DATE
+		if (resultData.getREPORTED() != null) {
+			workOrder.setReportedDate(tools.getDataTypeTools().decodeInforDate(resultData.getREPORTED()));
+		}
+
+		return workOrder;
+	}
+
 
 	public WorkOrder readStandardWorkOrder(InforContext context, WorkOrder workorderParam) throws InforException {
 		// Just do it if the StandardWO parameter is setted
