@@ -585,15 +585,20 @@ public class AssetServiceImpl implements AssetService {
                 assetInfor.getPartAssociation().getPARTID().setORGANIZATIONID(tools.getOrganization(context));
                 assetInfor.getPartAssociation().getPARTID().setPARTCODE(assetParam.getPartCode().toUpperCase().trim());
 
-                if (assetParam.getStoreCode() != null) {
+                if (assetParam.getStoreCode() != null || assetParam.getLot() != null || assetParam.getBin() != null) {
                     assetInfor.getPartAssociation().setSTORELOCATION(new STORELOCATION());
-                    assetInfor.getPartAssociation().getSTORELOCATION().setSTOREID(new STOREID_Type());
-                    assetInfor.getPartAssociation().getSTORELOCATION().getSTOREID()
-                            .setORGANIZATIONID(tools.getOrganization(context));
-                    assetInfor.getPartAssociation().getSTORELOCATION().getSTOREID()
-                            .setSTORECODE(assetParam.getStoreCode().trim().toUpperCase());
-                    assetInfor.getPartAssociation().getSTORELOCATION().setBIN(assetParam.getBin());
-                    assetInfor.getPartAssociation().getSTORELOCATION().setLOT(assetParam.getLot());
+                    
+                    if (assetParam.getStoreCode() != null) {
+                        assetInfor.getPartAssociation().getSTORELOCATION().setSTOREID(new STOREID_Type());
+                        assetInfor.getPartAssociation().getSTORELOCATION().getSTOREID().setORGANIZATIONID(tools.getOrganization(context));
+                        assetInfor.getPartAssociation().getSTORELOCATION().getSTOREID().setSTORECODE(assetParam.getStoreCode().trim().toUpperCase());
+                    }
+                    if (assetParam.getBin() != null) {
+                        assetInfor.getPartAssociation().getSTORELOCATION().setBIN(assetParam.getBin());
+                    }
+                    if (assetParam.getLot() != null) {
+                        assetInfor.getPartAssociation().getSTORELOCATION().setLOT(assetParam.getLot());
+                    }
                 }
             }
         }
