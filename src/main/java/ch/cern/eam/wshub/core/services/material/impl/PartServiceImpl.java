@@ -305,22 +305,22 @@ public class PartServiceImpl implements PartService {
 
 		// OUT OF SERVICE
 		if (partParam.getOutOfService() != null) {
-			partInfor.setOUTOFSERVICE(partParam.getOutOfService());
+			partInfor.setOUTOFSERVICE(tools.getDataTypeTools().encodeBoolean(partParam.getOutOfService(), BooleanType.TRUE_FALSE));
 		}
 
 		// TRACK AS KIT
 		if (partParam.getTrackAsKit() != null) {
-			partInfor.setKIT(partParam.getTrackAsKit());
+			partInfor.setKIT(tools.getDataTypeTools().encodeBoolean(partParam.getTrackAsKit(), BooleanType.TRUE_FALSE));
 		}
 
 		// TRACK BY LOT
 		if (partParam.getTrackByLot() != null) {
-			partInfor.setBYLOT(partParam.getTrackByLot());
+			partInfor.setBYLOT(tools.getDataTypeTools().encodeBoolean(partParam.getTrackByLot(), BooleanType.PLUS_MINUS));
 		}
 
 		// PREVENT REORDERS
 		if (partParam.getPreventReorders() != null) {
-			partInfor.setPREVENTREORDERS(partParam.getPreventReorders());
+			partInfor.setPREVENTREORDERS(tools.getDataTypeTools().encodeBoolean(partParam.getPreventReorders(), BooleanType.TRUE_FALSE));
 		}
 
 		// TRACK CORES
