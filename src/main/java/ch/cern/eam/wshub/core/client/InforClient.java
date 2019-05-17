@@ -9,6 +9,7 @@ import ch.cern.eam.wshub.core.services.comments.impl.CommentServiceImpl;
 import ch.cern.eam.wshub.core.services.documents.DocumentsService;
 import ch.cern.eam.wshub.core.services.documents.impl.DocumentsServiceImpl;
 import ch.cern.eam.wshub.core.services.equipment.*;
+import ch.cern.eam.wshub.core.services.equipment.entities.EquipmentGeneration;
 import ch.cern.eam.wshub.core.services.equipment.impl.*;
 import ch.cern.eam.wshub.core.services.grids.GridsService;
 import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
@@ -94,6 +95,9 @@ public class InforClient implements Serializable {
     private UserSetupService userSetupService;
     private GridsService gridsService;
     private DocumentsService documentsService;
+
+    private EquipmentGenerationService equipmentGenerationService;
+    private EquipmentConfigurationService equipmentConfigurationService;
 
     // Prevent initializing the class without the builder
     private InforClient() {}
@@ -216,7 +220,8 @@ public class InforClient implements Serializable {
             inforClient.gridsService = proxy(GridsService.class, new GridsServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.documentsService = proxy(DocumentsService.class, new DocumentsServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.pickTicketService = proxy(PickTicketService.class, new PickTicketServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
-
+            inforClient.equipmentGenerationService = proxy(EquipmentGenerationService.class, new EquipmentGenerationServiceImpl(applicationData, tools, inforWebServicesToolkitClient),inforInterceptor, tools);
+            inforClient.equipmentConfigurationService = proxy(EquipmentConfigurationService.class, new EquipmentConfigurationServiceImpl(applicationData, tools, inforWebServicesToolkitClient),inforInterceptor, tools);
 
             inforClient.inforWebServicesToolkitClient = inforWebServicesToolkitClient;
             return inforClient;
@@ -345,4 +350,11 @@ public class InforClient implements Serializable {
         return tools;
     }
 
+    public EquipmentGenerationService getEquipmentGenerationService() {
+        return equipmentGenerationService;
+    }
+
+    public EquipmentConfigurationService getEquipmentConfigurationService() {
+        return equipmentConfigurationService;
+    }
 }
