@@ -9,6 +9,8 @@ import net.datastream.schemas.mp_functions.MessageConfigType;
 import net.datastream.schemas.mp_functions.MessageItemConfigType;
 import net.datastream.schemas.mp_functions.SessionType;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xmlsoap.schemas.ws._2002._04.secext.Password;
 import org.xmlsoap.schemas.ws._2002._04.secext.Username;
 import org.xmlsoap.schemas.ws._2002._04.secext.UsernameToken;
@@ -184,8 +186,12 @@ public class Tools {
 					return new BatchSingleResponse(future.get(), null);
 				}
 				catch (ExecutionException exception) {
-					//SOAPFaultException soapFaultException = (SOAPFaultException) exception.getCause();
-					return new BatchSingleResponse(null, exception.getCause().getMessage());
+					if (exception.getCause() instanceof SOAPFaultException) {
+						SOAPFaultException soapFaultException = (SOAPFaultException) exception.getCause();
+						return new BatchSingleResponse(null, decodeExceptionInfoList(soapFaultException));
+					} else {
+						return new BatchSingleResponse(null, exception.getCause().getMessage());
+					}
 				}
 				catch (Exception exception) {
 					return new BatchSingleResponse(null, "Server error");
@@ -198,6 +204,19 @@ public class Tools {
 		BatchResponse<T> response = new BatchResponse<>();
 		response.setResponseList(responseList);
 		return response;
+	}
+
+	private String decodeExceptionInfoList(SOAPFaultException soapFaultException) {
+		String errorMessage = soapFaultException.getMessage();
+		try {
+			NodeList nodeList = soapFaultException.getFault().getDetail().getFirstChild().getChildNodes();
+			for (int i = 0; i < nodeList.getLength(); i++) {
+				errorMessage += ", " + nodeList.item(i).getFirstChild().getLastChild().getTextContent();
+			}
+		} catch (Exception exception) {
+			exception.printStackTrace();
+		}
+		return errorMessage;
 	}
 
 	//
@@ -213,30 +232,6 @@ public class Tools {
 
 	public InforContext getInforContext(Credentials credentials) {
 		return new InforContext(credentials);
-	}
-
-	/**
-	 * Close the connection with the database
-	 *
-	 * @param connection
-	 *            Connection to be closed
-	 * @param statement
-	 *            statement to be closed
-	 * @param resultSet
-	 *            Resultset to be closed
-	 */
-	public void closeConnection(Connection connection, Statement statement, ResultSet resultSet) {
-		try {
-			if (resultSet != null)
-				resultSet.close();
-			if (statement != null)
-				statement.close();
-			if (connection != null)
-				connection.close();
-		} catch (Exception e) {/* Error closing connection */
-			e.printStackTrace();
-			log(Level.SEVERE, "Couldn't close the DB connection: " + e.getMessage());
-		}
 	}
 
 	public void demandDatabaseConnection() throws InforException {
