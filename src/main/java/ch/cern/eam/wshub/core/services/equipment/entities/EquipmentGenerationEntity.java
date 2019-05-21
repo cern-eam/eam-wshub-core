@@ -2,21 +2,15 @@ package ch.cern.eam.wshub.core.services.equipment.entities;
 
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.util.Date;
 
-public class EquipmentGeneration implements Serializable {
-
-//    MP3231_AddEquipmentGeneration_001
-
-//    @Transient
-//    public String equipmentGenerationId;
-//    @Transient
-//    public String organizationID ;
-//    @Transient
-//    public String equipmentConfigurationID;
+@Entity
+public class EquipmentGenerationEntity implements Serializable {
 
     @Transient
     private String equipmentGenerationCode;
@@ -52,14 +46,6 @@ public class EquipmentGeneration implements Serializable {
     private String statusDesc;
     @Transient
     private String generateCount;
-    @Transient
-    private String value;
-    @Transient
-    private String numofDec ;
-    @Transient
-    private String sign;
-    @Transient
-    private String uom;
     @Transient
     private String processed;
     @Transient
@@ -242,38 +228,6 @@ public class EquipmentGeneration implements Serializable {
 
     public void setGenerateCount(String generateCount) {
         this.generateCount = generateCount;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public String getNumofDec() {
-        return numofDec;
-    }
-
-    public void setNumofDec(String numofDec) {
-        this.numofDec = numofDec;
-    }
-
-    public String getSign() {
-        return sign;
-    }
-
-    public void setSign(String sign) {
-        this.sign = sign;
-    }
-
-    public String getUom() {
-        return uom;
-    }
-
-    public void setUom(String uom) {
-        this.uom = uom;
     }
 
     public String getStatusDesc() {
@@ -486,7 +440,7 @@ public class EquipmentGeneration implements Serializable {
 
     @Override
     public String toString() {
-        return "EquipmentGeneration{" +
+        return "EquipmentGenerationEntity{" +
                 "equipmentGenerationCode='" + equipmentGenerationCode + '\'' +
                 ", equipmentGenerationDesc='" + equipmentGenerationDesc + '\'' +
                 ", organizationCode='" + organizationCode + '\'' +
@@ -504,10 +458,6 @@ public class EquipmentGeneration implements Serializable {
                 ", statusCode='" + statusCode + '\'' +
                 ", statusDesc='" + statusDesc + '\'' +
                 ", generateCount='" + generateCount + '\'' +
-                ", value='" + value + '\'' +
-                ", numofDec='" + numofDec + '\'' +
-                ", sign='" + sign + '\'' +
-                ", uom='" + uom + '\'' +
                 ", processed='" + processed + '\'' +
                 ", active='" + active + '\'' +
                 ", awaitingPurchase='" + awaitingPurchase + '\'' +

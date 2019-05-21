@@ -9,7 +9,6 @@ import ch.cern.eam.wshub.core.services.comments.impl.CommentServiceImpl;
 import ch.cern.eam.wshub.core.services.documents.DocumentsService;
 import ch.cern.eam.wshub.core.services.documents.impl.DocumentsServiceImpl;
 import ch.cern.eam.wshub.core.services.equipment.*;
-import ch.cern.eam.wshub.core.services.equipment.entities.EquipmentGeneration;
 import ch.cern.eam.wshub.core.services.equipment.impl.*;
 import ch.cern.eam.wshub.core.services.grids.GridsService;
 import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
