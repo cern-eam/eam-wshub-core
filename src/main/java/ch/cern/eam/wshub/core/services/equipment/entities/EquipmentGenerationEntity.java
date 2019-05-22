@@ -39,7 +39,9 @@ public class EquipmentGenerationEntity implements Serializable {
     @Transient
     private String updatedBy;
     @Transient
-    private String equipmentStatus;
+    private String equipmentStatusCode;
+    @Transient
+    private String equipmentStatusDesc;
     @Transient
     private String statusCode;
     @Transient
@@ -96,6 +98,28 @@ public class EquipmentGenerationEntity implements Serializable {
     private String copyCalibration;
     @Transient
     private String copyTestPoints;
+    @Transient
+    private String commissioningWONumber;
+    @Transient
+    private String commissioningWODesc;
+    @Transient
+    private String commissioningWOCostCode;
+    @Transient
+    private String commissioningWOCostDesc;
+    @Transient
+    private String commissioningWOAssignedTo;
+    @Transient
+    private String commissioningWOStatusCode;
+    @Transient
+    private String commissioningWOStatusDesc;
+    @Transient
+    private String commissioningWOLocationCode;
+    @Transient
+    private String commissioningWOLocationDesc;
+    @Transient
+    private String commissioningWODepartmentCode;
+    @Transient
+    private String commissioningWODepartmentDesc;
 
 
 
@@ -202,12 +226,20 @@ public class EquipmentGenerationEntity implements Serializable {
         this.revisionNum = revisionNum;
     }
 
-    public String getEquipmentStatus() {
-        return equipmentStatus;
+    public String getEquipmentStatusCode() {
+        return equipmentStatusCode;
     }
 
-    public void setEquipmentStatus(String equipmentStatus) {
-        this.equipmentStatus = equipmentStatus;
+    public void setEquipmentStatusCode(String equipmentStatusCode) {
+        this.equipmentStatusCode = equipmentStatusCode;
+    }
+
+    public String getEquipmentStatusDesc() {
+        return equipmentStatusDesc;
+    }
+
+    public void setEquipmentStatusDesc(String equipmentStatusDesc) {
+        this.equipmentStatusDesc = equipmentStatusDesc;
     }
 
     public String getStatusCode() {
@@ -438,6 +470,94 @@ public class EquipmentGenerationEntity implements Serializable {
         this.copyTestPoints = copyTestPoints;
     }
 
+    public String getCommissioningWONumber() {
+        return commissioningWONumber;
+    }
+
+    public void setCommissioningWONumber(String commissioningWONumber) {
+        this.commissioningWONumber = commissioningWONumber;
+    }
+
+    public String getCommissioningWODesc() {
+        return commissioningWODesc;
+    }
+
+    public void setCommissioningWODesc(String commissioningWODesc) {
+        this.commissioningWODesc = commissioningWODesc;
+    }
+
+    public String getCommissioningWOCostCode() {
+        return commissioningWOCostCode;
+    }
+
+    public void setCommissioningWOCostCode(String commissioningWOCostCode) {
+        this.commissioningWOCostCode = commissioningWOCostCode;
+    }
+
+    public String getCommissioningWOCostDesc() {
+        return commissioningWOCostDesc;
+    }
+
+    public void setCommissioningWOCostDesc(String commissioningWOCostDesc) {
+        this.commissioningWOCostDesc = commissioningWOCostDesc;
+    }
+
+    public String getCommissioningWOAssignedTo() {
+        return commissioningWOAssignedTo;
+    }
+
+    public void setCommissioningWOAssignedTo(String commissioningWOAssignedTo) {
+        this.commissioningWOAssignedTo = commissioningWOAssignedTo;
+    }
+
+    public String getCommissioningWOStatusCode() {
+        return commissioningWOStatusCode;
+    }
+
+    public void setCommissioningWOStatusCode(String commissioningWOStatusCode) {
+        this.commissioningWOStatusCode = commissioningWOStatusCode;
+    }
+
+    public String getCommissioningWOStatusDesc() {
+        return commissioningWOStatusDesc;
+    }
+
+    public void setCommissioningWOStatusDesc(String commissioningWOStatusDesc) {
+        this.commissioningWOStatusDesc = commissioningWOStatusDesc;
+    }
+
+    public String getCommissioningWOLocationCode() {
+        return commissioningWOLocationCode;
+    }
+
+    public void setCommissioningWOLocationCode(String commissioningWOLocationCode) {
+        this.commissioningWOLocationCode = commissioningWOLocationCode;
+    }
+
+    public String getCommissioningWOLocationDesc() {
+        return commissioningWOLocationDesc;
+    }
+
+    public void setCommissioningWOLocationDesc(String commissioningWOLocationDesc) {
+        this.commissioningWOLocationDesc = commissioningWOLocationDesc;
+    }
+
+    public String getCommissioningWODepartmentCode() {
+        return commissioningWODepartmentCode;
+    }
+
+    public void setCommissioningWODepartmentCode(String commissioningWODepartmentCode) {
+        this.commissioningWODepartmentCode = commissioningWODepartmentCode;
+    }
+
+    public String getCommissioningWODepartmentDesc() {
+        return commissioningWODepartmentDesc;
+    }
+
+    public void setCommissioningWODepartmentDesc(String commissioningWODepartmentDesc) {
+        this.commissioningWODepartmentDesc = commissioningWODepartmentDesc;
+    }
+
     @Override
     public String toString() {
         return "EquipmentGenerationEntity{" +
@@ -454,7 +574,8 @@ public class EquipmentGenerationEntity implements Serializable {
                 ", dateUpdated=" + dateUpdated +
                 ", createdBy='" + createdBy + '\'' +
                 ", updatedBy='" + updatedBy + '\'' +
-                ", equipmentStatus='" + equipmentStatus + '\'' +
+                ", equipmentStatusCode='" + equipmentStatusCode + '\'' +
+                ", equipmentStatusDesc='" + equipmentStatusDesc + '\'' +
                 ", statusCode='" + statusCode + '\'' +
                 ", statusDesc='" + statusDesc + '\'' +
                 ", generateCount='" + generateCount + '\'' +
@@ -483,6 +604,17 @@ public class EquipmentGenerationEntity implements Serializable {
                 ", copyPermits='" + copyPermits + '\'' +
                 ", copyCalibration='" + copyCalibration + '\'' +
                 ", copyTestPoints='" + copyTestPoints + '\'' +
+                ", commissioningWONumber='" + commissioningWONumber + '\'' +
+                ", commissioningWODesc='" + commissioningWODesc + '\'' +
+                ", commissioningWOCostCode='" + commissioningWOCostCode + '\'' +
+                ", commissioningWOCostDesc='" + commissioningWOCostDesc + '\'' +
+                ", commissioningWOAssignedTo='" + commissioningWOAssignedTo + '\'' +
+                ", commissioningWOStatusCode='" + commissioningWOStatusCode + '\'' +
+                ", commissioningWOStatusDesc='" + commissioningWOStatusDesc + '\'' +
+                ", commissioningWOLocationCode='" + commissioningWOLocationCode + '\'' +
+                ", commissioningWOLocationDesc='" + commissioningWOLocationDesc + '\'' +
+                ", commissioningWODepartmentCode='" + commissioningWODepartmentCode + '\'' +
+                ", commissioningWODepartmentDesc='" + commissioningWODepartmentDesc + '\'' +
                 '}';
     }
 }
