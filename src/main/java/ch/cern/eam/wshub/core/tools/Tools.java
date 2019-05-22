@@ -234,6 +234,30 @@ public class Tools {
 		return new InforContext(credentials);
 	}
 
+	/**
+	 * Close the connection with the database
+	 *
+	 * @param connection
+	 *            Connection to be closed
+	 * @param statement
+	 *            statement to be closed
+	 * @param resultSet
+	 *            Resultset to be closed
+	 */
+	public void closeConnection(Connection connection, Statement statement, ResultSet resultSet) {
+		try {
+			if (resultSet != null)
+				resultSet.close();
+			if (statement != null)
+				statement.close();
+			if (connection != null)
+				connection.close();
+		} catch (Exception e) {/* Error closing connection */
+			e.printStackTrace();
+			log(Level.SEVERE, "Couldn't close the DB connection: " + e.getMessage());
+		}
+	}
+
 	public void demandDatabaseConnection() throws InforException {
 		if (this.entityManagerFactory == null || getDataSource() == null) {
 			throw generateFault("This operation requires DB connection.");
