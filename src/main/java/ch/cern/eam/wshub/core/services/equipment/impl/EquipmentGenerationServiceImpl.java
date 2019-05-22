@@ -239,6 +239,9 @@ public class EquipmentGenerationServiceImpl implements EquipmentGenerationServic
             if(equipmentDetails.getALLSPECIFIC() != null){
                 equipmentGeneration.setAllSpecific(inforEquipmentGeneration.getEquipmentDetails().getALLSPECIFIC());
             }
+            if(equipmentDetails.getCOMMISSIONDATE() != null){
+                equipmentGeneration.setCommissionDate(tools.getDataTypeTools().decodeInforDate(inforEquipmentGeneration.getEquipmentDetails().getCOMMISSIONDATE()));
+            }
         }
 
         if(inforEquipmentGeneration.getCommissioningWorkOrderDetails() != null) {
@@ -495,6 +498,10 @@ public class EquipmentGenerationServiceImpl implements EquipmentGenerationServic
         }
         if(equipmentGeneration.getEquipmentStatusDesc() != null){
             equipmentDetails.getEQUIPMENTSTATUS().setDESCRIPTION(equipmentGeneration.getEquipmentStatusDesc());
+        }
+
+        if(equipmentGeneration.getCommissionDate() != null){
+            equipmentDetails.setCOMMISSIONDATE(tools.getDataTypeTools().encodeInforDate(equipmentGeneration.getCommissionDate(), "Commission Date"));
         }
 
         if(equipmentGeneration.getAllSpecific() != null){

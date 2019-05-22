@@ -35,6 +35,8 @@ public class EquipmentGenerationEntity implements Serializable {
     @Transient
     private Date dateUpdated;
     @Transient
+    private Date commissionDate;
+    @Transient
     private String createdBy;
     @Transient
     private String updatedBy;
@@ -178,6 +180,15 @@ public class EquipmentGenerationEntity implements Serializable {
     public void setDateUpdated(Date dateUpdated) {
         this.dateUpdated = dateUpdated;
     }
+
+    public Date getCommissionDate() {
+        return commissionDate;
+    }
+
+    public void setCommissionDate(Date commissionDate) {
+        this.commissionDate = commissionDate;
+    }
+
     public String getCreatedBy() {
         return createdBy;
     }
