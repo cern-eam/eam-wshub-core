@@ -95,6 +95,9 @@ public class InforClient implements Serializable {
     private GridsService gridsService;
     private DocumentsService documentsService;
 
+    private EquipmentGenerationService equipmentGenerationService;
+    private EquipmentConfigurationService equipmentConfigurationService;
+
     // Prevent initializing the class without the builder
     private InforClient() {}
 
@@ -216,7 +219,8 @@ public class InforClient implements Serializable {
             inforClient.gridsService = proxy(GridsService.class, new GridsServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.documentsService = proxy(DocumentsService.class, new DocumentsServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.pickTicketService = proxy(PickTicketService.class, new PickTicketServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
-
+            inforClient.equipmentGenerationService = proxy(EquipmentGenerationService.class, new EquipmentGenerationServiceImpl(applicationData, tools, inforWebServicesToolkitClient),inforInterceptor, tools);
+            inforClient.equipmentConfigurationService = proxy(EquipmentConfigurationService.class, new EquipmentConfigurationServiceImpl(applicationData, tools, inforWebServicesToolkitClient),inforInterceptor, tools);
 
             inforClient.inforWebServicesToolkitClient = inforWebServicesToolkitClient;
             return inforClient;
@@ -345,4 +349,11 @@ public class InforClient implements Serializable {
         return tools;
     }
 
+    public EquipmentGenerationService getEquipmentGenerationService() {
+        return equipmentGenerationService;
+    }
+
+    public EquipmentConfigurationService getEquipmentConfigurationService() {
+        return equipmentConfigurationService;
+    }
 }
