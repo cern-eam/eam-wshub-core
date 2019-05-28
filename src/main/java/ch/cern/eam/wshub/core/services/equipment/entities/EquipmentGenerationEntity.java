@@ -27,6 +27,22 @@ public class EquipmentGenerationEntity implements Serializable {
     @Transient
     private String equipmentConfigurationDesc;
     @Transient
+    private String equipmentDepartmentCode;
+    @Transient
+    private String equipmentDepartmentDesc;
+    @Transient
+    private String equipmentLocationCode;
+    @Transient
+    private String equipmentLocationDesc;
+    @Transient
+    private String equipmentCostCode;
+    @Transient
+    private String equipmentCostCodeDesc;
+    @Transient
+    private String equipmentAssignedToCode;
+    @Transient
+    private String equipmentAssignedToDesc;
+    @Transient
     private String revisionNum;
     @Transient
     private Date lastUpdatedDate;
@@ -567,6 +583,70 @@ public class EquipmentGenerationEntity implements Serializable {
 
     public void setCommissioningWODepartmentDesc(String commissioningWODepartmentDesc) {
         this.commissioningWODepartmentDesc = commissioningWODepartmentDesc;
+    }
+
+    public String getEquipmentDepartmentCode() {
+        return equipmentDepartmentCode;
+    }
+
+    public void setEquipmentDepartmentCode(String equipmentDepartmentCode) {
+        this.equipmentDepartmentCode = equipmentDepartmentCode;
+    }
+
+    public String getEquipmentDepartmentDesc() {
+        return equipmentDepartmentDesc;
+    }
+
+    public void setEquipmentDepartmentDesc(String equipmentDepartmentDesc) {
+        this.equipmentDepartmentDesc = equipmentDepartmentDesc;
+    }
+
+    public String getEquipmentLocationCode() {
+        return equipmentLocationCode;
+    }
+
+    public void setEquipmentLocationCode(String equipmentLocationCode) {
+        this.equipmentLocationCode = equipmentLocationCode;
+    }
+
+    public String getEquipmentLocationDesc() {
+        return equipmentLocationDesc;
+    }
+
+    public void setEquipmentLocationDesc(String equipmentLocationDesc) {
+        this.equipmentLocationDesc = equipmentLocationDesc;
+    }
+
+    public String getEquipmentCostCode() {
+        return equipmentCostCode;
+    }
+
+    public void setEquipmentCostCode(String equipmentCostCode) {
+        this.equipmentCostCode = equipmentCostCode;
+    }
+
+    public String getEquipmentCostCodeDesc() {
+        return equipmentCostCodeDesc;
+    }
+
+    public void setEquipmentCostCodeDesc(String equipmentCostCodeDesc) {
+        this.equipmentCostCodeDesc = equipmentCostCodeDesc;
+    }
+
+    public String getEquipmentAssignedToCode() {
+        return equipmentAssignedToCode;
+    }
+
+    public void setEquipmentAssignedToCode(String equipmentAssignedToCode) {
+        this.equipmentAssignedToCode = equipmentAssignedToCode;
+    }
+
+    public String getEquipmentAssignedToDesc() {
+        return equipmentAssignedToDesc;
+    }
+
+    public void setEquipmentAssignedToDesc(String equipmentAssignedToDesc) {
+        this.equipmentAssignedToDesc = equipmentAssignedToDesc;
     }
 
     @Override
