@@ -18,6 +18,7 @@ import java.util.Locale;
 public class DataTypeTools {
 
     private Tools tools;
+    String[] formatStrings = { "dd-MMM-yyyy HH:mm", "dd-MMM-yyyy", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM-dd", "dd/MM/yyyy HH:mm:ss", "dd/MM/yyyy" };
 
     public DataTypeTools(Tools tools) {
         this.tools = tools;
@@ -26,12 +27,14 @@ public class DataTypeTools {
     //
     // DATES
     //
-    private Calendar tryParse(String date) {
+    public Calendar convertStringToCalendar(String date) {
+        if (date == null || date.trim().equals("")) {
+            return null;
+        }
+
         if (date.trim().toUpperCase().equals("SYSDATE")) {
             return Calendar.getInstance();
         }
-        String[] formatStrings = { "dd-MMM-yyyy HH:mm", "dd-MMM-yyyy", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm",
-                "yyyy-MM-dd", "dd/MM/yyyy HH:mm:ss", "dd/MM/yyyy" };
 
         for (String formatString : formatStrings) {
             try {
@@ -45,6 +48,16 @@ public class DataTypeTools {
 
         return null;
     }
+
+    public Date convertStringToDate(String date) {
+        Calendar calendar = convertStringToCalendar(date);
+        if (calendar != null) {
+            return calendar.getTime();
+        } else {
+            return null;
+        }
+    }
+
 
     public DATETIME encodeInforDate(Date dateValue, String dateLabel) throws InforException {
         if (dateValue.getTime() == 0l) {
@@ -81,7 +94,7 @@ public class DataTypeTools {
             return null;
         }
 
-        Calendar calendar = tryParse(dateValue);
+        Calendar calendar = convertStringToCalendar(dateValue);
 
         if (calendar == null) {
             throw tools.generateFault((dateLabel + " has invalid format. Please change it to dd-MMM-yyyy [HH:mm]"));

@@ -230,7 +230,7 @@ public class JPAGrids implements Serializable {
 				if (!dataspyFiltersArr.isEmpty()) {
 					String filterString = "";
 					filterString = createFilterSQLStatement(
-							dataspyFiltersArr.toArray(new GridRequestFilter[dataspyFiltersArr.size()]), tagNames, params,
+							dataspyFiltersArr, tagNames, params,
 							"D");
 					if(!filterString.isEmpty()){
 						sqlStatementWhere = sqlStatementWhere + " AND (" + filterString + ")";
@@ -273,7 +273,7 @@ public class JPAGrids implements Serializable {
 			//
 			// FILTERS from the User
 			//
-			if (gridRequest.getGridRequestFilters() != null && gridRequest.getGridRequestFilters().length > 0) {
+			if (gridRequest.getGridRequestFilters() != null && gridRequest.getGridRequestFilters().size() > 0) {
 				String filterString = "";
 				filterString = createFilterSQLStatement(gridRequest.getGridRequestFilters(), tagNames, params, "U");
 				if(!filterString.isEmpty()){
@@ -602,11 +602,11 @@ public class JPAGrids implements Serializable {
 	 * @return SQL statement for the filters
 	 * @throws MissingJoinerGridFilterException When the joiner is missing for not last grid filter.
 	 */
-	private String createFilterSQLStatement(GridRequestFilter[] filters, Map<String, DataField> tagNames,
+	private String createFilterSQLStatement(List<GridRequestFilter> filters, Map<String, DataField> tagNames,
 			Map<String, Object> params, String filterType) throws Exception  {
 		String filterString = "";
 		int count = 0;
-		int filtersLengthMinusOne = filters.length-1;
+		int filtersLengthMinusOne = filters.size() - 1;
 		for (GridRequestFilter filter : filters) {
 			//skip custom fields
 			if(tagNames.get(filter.getFieldName()) != null){
@@ -699,7 +699,7 @@ public class JPAGrids implements Serializable {
 	 * @param filters
 	 * @return
 	 */
-	private boolean isParenthesisSyntacticallyCorrect(GridRequestFilter[] filters){
+	private boolean isParenthesisSyntacticallyCorrect(List<GridRequestFilter> filters){
 		int parenthesisCounter = 0;
 		for (GridRequestFilter filter : filters){
 			if(filter.getLeftParenthesis() != null && filter.getLeftParenthesis().equals("true"))

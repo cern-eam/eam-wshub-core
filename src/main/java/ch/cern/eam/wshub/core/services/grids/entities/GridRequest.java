@@ -3,9 +3,7 @@ package ch.cern.eam.wshub.core.services.grids.entities;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class GridRequest implements Serializable {
 	private static final long serialVersionUID = 6690766576660475229L;
@@ -37,7 +35,7 @@ public class GridRequest implements Serializable {
 	
 	private Map<String, Object> params = new HashMap<String, Object>();
 	
-	private GridRequestFilter[] gridRequestFilters;
+	private List<GridRequestFilter> gridRequestFilters;
 	private String[] gridRequestParameterNames;
 	private String[] gridRequestParameterValues;
 	private GridRequestSort[] gridRequestSorts;
@@ -45,7 +43,15 @@ public class GridRequest implements Serializable {
 	public GridRequest() {
 		// Default Constructor
 	}
-	
+
+	public GridRequest(String gridID, String gridName, String dataspyID) {
+		this.gridID = gridID;
+		this.dataspyID = dataspyID;
+		this.gridName = gridName;
+		this.cursorPosition = "1";
+		this.rowCount = "100";
+	}
+
 	public GridRequest(GridRequest o) {
 		super();
 		this.gridID = o.gridID;
@@ -115,14 +121,20 @@ public class GridRequest implements Serializable {
 	public void setGridRequestSorts(GridRequestSort[] gridRequestSorts) {
 		this.gridRequestSorts = gridRequestSorts;
 	}
-	@XmlElementWrapper(name="gridFilters") 
+
+	@XmlElementWrapper(name="gridFilters")
     @XmlElement(name="gridFilter")
-	public GridRequestFilter[] getGridRequestFilters() {
+	public List<GridRequestFilter> getGridRequestFilters() {
+		if (gridRequestFilters == null) {
+			gridRequestFilters = new LinkedList<>();
+		}
 		return gridRequestFilters;
 	}
-	public void setGridRequestFilters(GridRequestFilter[] gridRequestFilters) {
+
+	public void setGridRequestFilters(List<GridRequestFilter> gridRequestFilters) {
 		this.gridRequestFilters = gridRequestFilters;
 	}
+
 	public String[] getGridRequestParameterNames() {
 		return gridRequestParameterNames;
 	}
@@ -217,7 +229,7 @@ public class GridRequest implements Serializable {
 				+ (departmentSecurityGridColumn != null
 						? "departmentSecurityGridColumn=" + departmentSecurityGridColumn + ", " : "")
 				+ (params != null ? "params=" + params + ", " : "")
-				+ (gridRequestFilters != null ? "gridRequestFilters=" + Arrays.toString(gridRequestFilters) + ", " : "")
+				+ (gridRequestFilters != null ? "gridRequestFilters=" + gridRequestFilters + ", " : "")
 				+ (gridRequestParameterNames != null
 						? "gridRequestParameterNames=" + Arrays.toString(gridRequestParameterNames) + ", " : "")
 				+ (gridRequestParameterValues != null

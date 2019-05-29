@@ -48,6 +48,7 @@ public class Tools {
 	private DataTypeTools dataTypeTools;
 	private UserDefinedFieldsTools udfTools;
 	private FieldDescriptionTools fieldDescriptionsTools;
+	private GridTools gridTools;
 
 	public Tools(ApplicationData applicationData,
 				 InforWebServicesPT inforWebServicesToolkitClient,
@@ -66,6 +67,7 @@ public class Tools {
 		this.dataTypeTools = new DataTypeTools(this);
 		this.udfTools = new UserDefinedFieldsTools(this);
 		this.fieldDescriptionsTools = new FieldDescriptionTools(this);
+		this.gridTools = new GridTools(this);
 
 		//
 		this.logger = logger;
@@ -91,6 +93,9 @@ public class Tools {
 	}
 
 	public FieldDescriptionTools getFieldDescriptionsTools() {return fieldDescriptionsTools; }
+
+	public GridTools getGridTools() {return gridTools;}
+
 	//
 	//
 	//

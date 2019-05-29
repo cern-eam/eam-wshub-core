@@ -100,7 +100,7 @@ public class InforGrids implements Serializable {
 		//
 		// FILTERS
 		//
-		if (gridRequest.getGridRequestFilters() != null && gridRequest.getGridRequestFilters().length > 0) {
+		if (gridRequest.getGridRequestFilters() != null && gridRequest.getGridRequestFilters().size() > 0) {
 			funRequest.setMULTIADDON_FILTERS(new MULTIADDON_FILTERS());
 			int counter = 0;
 			for (GridRequestFilter filter: gridRequest.getGridRequestFilters()) {
