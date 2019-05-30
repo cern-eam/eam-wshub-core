@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 public class InforGrids implements Serializable {
 	private static final long serialVersionUID = 5957161022766799698L;
 
-
 	private ApplicationData applicationData;
 	private Tools tools;
 	private InforWebServicesPT inforws;
@@ -58,12 +57,16 @@ public class InforGrids implements Serializable {
 		} else {
 			funRequest.getGRID().setCURSOR_POSITION(BigInteger.valueOf(100));
 		}
-		// GRID ID, GRID NAME
-		if (gridRequest.getGridID() != null && gridRequest.getGridName() != null) {
-			funRequest.getGRID().setGRID_ID(new BigInteger(gridRequest.getGridID()));
+		// GRID NAME
+		if (gridRequest.getGridName() != null) {
 			funRequest.getGRID().setGRID_NAME(gridRequest.getGridName());
 		} else {
-			throw tools.generateFault("Please supply grid name and grid id.");
+			throw tools.generateFault("Please supply grid name.");
+		}
+
+		// GRID ID
+		if (gridRequest.getGridID() != null) {
+			funRequest.getGRID().setGRID_ID(new BigInteger(gridRequest.getGridID()));
 		}
 
 		// USER FUNCTION NAME
