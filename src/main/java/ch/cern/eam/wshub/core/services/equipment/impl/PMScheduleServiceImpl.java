@@ -50,11 +50,15 @@ public class PMScheduleServiceImpl implements PMScheduleService {
 
 		// INTERVAL
 		pmschedule.getPMScheduleData().setPERIODINTERVAL(new PERIODINTERVAL());
+
 		if (pmSchedule.getPeriodLength() != null && pmSchedule.getPeriodUOM() != null) {
 			pmschedule.getPMScheduleData().getPERIODINTERVAL().setINTERVAL(tools.getDataTypeTools().encodeLong(pmSchedule.getPeriodLength(), "Period Length"));
 			pmschedule.getPMScheduleData().getPERIODINTERVAL().setUOM(pmSchedule.getPeriodUOM());
 		}
-		pmschedule.getPMScheduleData().getPERIODINTERVAL().setDUEDATE(tools.getDataTypeTools().formatDate(pmSchedule.getDueDate(), "PM Schedule Due Date"));
+
+		if (pmSchedule.getDueDate() != null) {
+			pmschedule.getPMScheduleData().getPERIODINTERVAL().setDUEDATE(tools.getDataTypeTools().formatDate(pmSchedule.getDueDate(), "PM Schedule Due Date"));
+		}
 
 		// PM SCHEDULE
 		pmschedule.getPMScheduleData().setPMSCHEDULEEQUIPMENTID(new PMSCHEDULEEQUIPMENTID());
@@ -247,16 +251,28 @@ public class PMScheduleServiceImpl implements PMScheduleService {
 		//
 		PMScheduleData pmScheduleData = getresult.getResultData().getPMSchedule().getPMScheduleData();
 
-		// INTERVAL
-		if (pmSchedule.getPeriodLength() != null && pmSchedule.getPeriodUOM() != null) {
-			pmScheduleData.setPERIODINTERVAL(new PERIODINTERVAL());
+		// PERIOD INTERVAL
+		if (pmSchedule.getPeriodLength() != null) {
+			if (pmScheduleData.getPERIODINTERVAL() == null) {
+				pmScheduleData.setPERIODINTERVAL(new PERIODINTERVAL());
+			}
 			pmScheduleData.getPERIODINTERVAL().setINTERVAL(tools.getDataTypeTools().encodeLong(pmSchedule.getPeriodLength(), "Period Length"));
+		}
+
+		// PERIOD UOM
+		if (pmSchedule.getPeriodUOM() != null) {
+			if (pmScheduleData.getPERIODINTERVAL() == null) {
+				pmScheduleData.setPERIODINTERVAL(new PERIODINTERVAL());
+			}
 			pmScheduleData.getPERIODINTERVAL().setUOM(pmSchedule.getPeriodUOM());
+		}
+
+		// DUE DATE
+		if (pmSchedule.getDueDate() != null) {
+			if (pmScheduleData.getPERIODINTERVAL() == null) {
+				pmScheduleData.setPERIODINTERVAL(new PERIODINTERVAL());
+			}
 			pmScheduleData.getPERIODINTERVAL().setDUEDATE(tools.getDataTypeTools().formatDate(pmSchedule.getDueDate(), "PM Schedule Due Date"));
-		} else if (pmSchedule.getPeriodLength() != null) {
-			pmScheduleData.getPERIODINTERVAL().setINTERVAL(tools.getDataTypeTools().encodeLong(pmSchedule.getPeriodLength(), "Period Length"));
-		} else if (pmSchedule.getPeriodUOM() != null) {
-			pmScheduleData.getPERIODINTERVAL().setUOM(pmSchedule.getPeriodUOM());
 		}
 
 		// DEPARTMENT
