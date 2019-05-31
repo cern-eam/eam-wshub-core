@@ -1,11 +1,13 @@
 package ch.cern.eam.wshub.core.services.workorders.entities;
 
+import ch.cern.eam.wshub.core.adapters.DateAdapter;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Date;
@@ -78,26 +80,46 @@ public class InforCase implements Serializable, Cloneable {
 	// SCHEDULING
 	//
 	@Transient
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	private Date scheduledStartDate;
+
 	@Transient
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	private Date scheduledEndDate;
+
 	@Transient
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	private Date requestedStartDate;
+
 	@Transient
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	private Date requestedEndDate;
+
 	@Transient
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	private Date startDate;
+
 	@Transient
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	private Date completedDate;
+
 	@Transient
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	private Date createDate;
+
 	@Transient
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	private Date updatedDate;
+
 	@Transient
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	private Date daterequested;
 	@Transient
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	private Date eventstartdate;
+
 	@Transient
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	private Date eventenddate;
 	
 	@Transient
@@ -406,7 +428,7 @@ public class InforCase implements Serializable, Cloneable {
 	public void setCompletedDate(Date completedDate) {
 		this.completedDate = completedDate;
 	}
-	
+
 	public Date getCreateDate() {
 		return createDate;
 	}
@@ -414,7 +436,7 @@ public class InforCase implements Serializable, Cloneable {
 	public void setCreateDate(Date createDate) {
 		this.createDate = createDate;
 	}
-	
+
 	public Date getUpdatedDate() {
 		return updatedDate;
 	}
@@ -422,7 +444,7 @@ public class InforCase implements Serializable, Cloneable {
 	public void setUpdatedDate(Date updatedDate) {
 		this.updatedDate = updatedDate;
 	}
-	
+
 	public Date getDaterequested() {
 		return daterequested;
 	}
@@ -430,7 +452,7 @@ public class InforCase implements Serializable, Cloneable {
 	public void setDaterequested(Date daterequested) {
 		this.daterequested = daterequested;
 	}
-	
+
 	public Date getEventenddate() {
 		return eventenddate;
 	}
@@ -438,7 +460,7 @@ public class InforCase implements Serializable, Cloneable {
 	public void setEventenddate(Date eventenddate) {
 		this.eventenddate = eventenddate;
 	}
-	
+
 	public Date getEventstartdate() {
 		return eventstartdate;
 	}
