@@ -2,6 +2,7 @@ package ch.cern.eam.wshub.core.tools;
 
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestCell;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestRow;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -52,7 +53,13 @@ public class GridTools {
             tools.log(Level.SEVERE, exception.getMessage());
             return null;
         }
+    }
 
+    public static String getCellContent(String cellid, GridRequestRow gridRequestRow) {
+        if (gridRequestRow == null || gridRequestRow.getCell() == null) {
+            return null;
+        }
+        return Arrays.stream(gridRequestRow.getCell()).filter(cell -> cell.getTag().equals(cellid) || cell.getCol().equals(cellid)).map(GridRequestCell::getContent).findFirst().orElse(null);
     }
 
 }

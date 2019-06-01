@@ -1,6 +1,11 @@
 package ch.cern.eam.wshub.core.services.workorders.impl;
 
 import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.services.grids.GridsService;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestRow;
+import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.services.workorders.ChecklistService;
 import ch.cern.eam.wshub.core.services.workorders.entities.Activity;
 import ch.cern.eam.wshub.core.services.workorders.entities.Finding;
@@ -19,6 +24,7 @@ import net.datastream.schemas.mp_functions.mp8000_001.MP8000_CreateFollowUpWorkO
 import net.datastream.schemas.mp_results.mp7914_001.MP7914_GetWorkOrderActivityCheckList_001_Result;
 import net.datastream.schemas.mp_results.mp8000_001.MP8000_CreateFollowUpWorkOrder_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
+import static ch.cern.eam.wshub.core.tools.GridTools.getCellContent;
 
 import javax.persistence.EntityManager;
 import javax.xml.ws.Holder;
@@ -35,11 +41,13 @@ public class ChecklistServiceImpl implements ChecklistService {
 	private Tools tools;
 	private InforWebServicesPT inforws;
 	private ApplicationData applicationData;
+	private GridsService gridsService;
 
 	public ChecklistServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
 		this.applicationData = applicationData;
 		this.tools = tools;
 		this.inforws = inforWebServicesToolkitClient;
+		this.gridsService = new GridsServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
 	}
 
 	public String updateWorkOrderChecklist(InforContext context, WorkOrderActivityCheckList workOrderActivityCheckList) throws InforException {
@@ -253,128 +261,102 @@ public class ChecklistServiceImpl implements ChecklistService {
 	}
 
 	public WorkOrderActivityCheckList[] readWorkOrderChecklists(InforContext context, Activity activity) throws InforException {
-		// Check if the aisws was configured with the DB connection
-		tools.demandDatabaseConnection();
-
 		LinkedList<WorkOrderActivityCheckList> checklists = new LinkedList<WorkOrderActivityCheckList>();
-		Connection v_connection = null;
-		Statement stmt = null;
-		ResultSet v_result = null;
-		try {
-			String sqlQuery = "with checklist_data as(select ack_event,ack_act,ack_code,ack_occurrence,ack_sequence,ack_object, "
-					+ " ack_type,ack_completed,ack_yes,ack_no,ack_finding,ack_possiblefindings,ack_value,ack_uom,ack_notes, ack_finaloccurrence, o.obj_desc, ack_followup, ack_requiredtoclose, ack_followupevent, "
-					+ " NVL((SELECT TRA_TEXT FROM U5TRANSLATIONS WHERE TRA_PAGENAME = 'EAM_CHECKLIST' AND TRA_ELEMENTID = ACK_TASKCHECKLISTCODE AND TRA_LANGUAGE = '"
-					+ context.getCredentials().getLanguage() + "'), ack_desc) ack_desc, "
-					+ " NVL((SELECT ROB_LINE FROM R5ROUTOBJECTS WHERE ROB_ROUTE = (SELECT EVT_ROUTE FROM R5EVENTS WHERE EVT_CODE = '"
-					+ activity.getWorkOrderNumber() + "') AND ROB_OBJECT = ack_object), 1) eqp_order "
-					+ " from R5ACTCHECKLISTS c, R5OBJECTS o where obj_code = ack_object and ack_event = '"
-					+ activity.getWorkOrderNumber() + "' and ack_act = '" + activity.getActivityCode()
-					+ "' order by ack_object, ack_sequence, ack_occurrence)  "
-					+ " select * from checklist_data order by eqp_order,ack_sequence, ack_occurrence";
-			v_connection = tools.getDataSource().getConnection();
-			stmt = v_connection.createStatement();
-			v_result = stmt.executeQuery(sqlQuery);
-			while (v_result.next()) {
-				WorkOrderActivityCheckList checklistTemp = new WorkOrderActivityCheckList();
-				checklistTemp.setWorkOrderCode(v_result.getString("ack_event"));
-				checklistTemp.setActivityCode(v_result.getString("ack_act"));
-				checklistTemp.setCheckListCode(v_result.getString("ack_code"));
-				checklistTemp.setOccurrence(v_result.getString("ack_occurrence"));
-				checklistTemp.setSequence(v_result.getString("ack_sequence"));
-				checklistTemp.setEquipmentCode(v_result.getString("ack_object"));
-				checklistTemp.setEquipmentDesc(v_result.getString("obj_desc"));
-				checklistTemp.setType(v_result.getString("ack_type"));
-				checklistTemp.setFollowUp(v_result.getString("ack_followup"));
-				checklistTemp.setFollowUpWorkOrder(v_result.getString("ack_followupevent"));
-				checklistTemp.setRequiredToClose(v_result.getString("ack_requiredtoclose"));
-				if (checklistTemp.getType().equals("01")) {
-					// CHECKLIST ITEM
-					if ("+".equals(v_result.getString("ack_completed"))) {
-						checklistTemp.setResult("COMPLETED");
-					} else {
-						checklistTemp.setResult(null);
-					}
-				}
-				if (checklistTemp.getType().equals("02")) {
-					// QUESTION
-					if (v_result.getString("ack_yes") != null && v_result.getString("ack_yes").equals("+")) {
-						checklistTemp.setResult("YES");
-					}
-					if (v_result.getString("ack_no") != null && v_result.getString("ack_no").equals("+")) {
-						checklistTemp.setResult("NO");
-					}
-				}
-				if (checklistTemp.getType().equals("03")) {
-					// QUALITATIVE
-					checklistTemp.setFinding(v_result.getString("ack_finding"));
-					String[] possibleFindings = v_result.getString("ack_possiblefindings").split(",");
-					List<Finding> findings = new LinkedList<Finding>();
+		// Fetch the data
+		GridRequest gridRequest = new GridRequest("WSJOBS_ACK");
+		gridRequest.setGridRequestParameterNames(new String[] {"param.workordernum", "param.activity", "param.jobseq"});
+		gridRequest.setGridRequestParameterValues(new String[] {activity.getWorkOrderNumber(), activity.getActivityCode(), "0"});
+		GridRequestResult gridRequestResult = gridsService.executeQuery(context, gridRequest);
 
-					for (String findingCode : possibleFindings) {
-						EntityManager em = tools.getEntityManager();
-						try {
-							Finding findingTemp = em.find(Finding.class, findingCode);
-							findings.add(findingTemp);
-						} catch (Exception e) {
-							tools.log(Level.SEVERE,"Error in readWOActivityChecklists");
-						} finally {
-							em.close();
-						}
-					}
-					checklistTemp.setPossibleFindings(findings.toArray(new Finding[findings.size()]));
+		for (GridRequestRow gridRequestRow : gridRequestResult.getRows()) {
 
-				}
-				if (checklistTemp.getType().equals("04")) {
-					// QUANTITATIVE
-					checklistTemp.setResult(getValue(v_result));
-					checklistTemp.setUOM(v_result.getString("ack_uom"));
-				}
-				if (checklistTemp.getType().equals("05")) {
-					// METER READING
-					checklistTemp.setResult(getValue(v_result));
-					checklistTemp.setUOM(v_result.getString("ack_uom"));
-				}
-				if (checklistTemp.getType().equals("06")) {
-					// INSPECTION
-					checklistTemp.setResult(getValue(v_result));
-					checklistTemp.setUOM(v_result.getString("ack_uom"));
-					checklistTemp.setFinding(v_result.getString("ack_finding"));
-					String[] possibleFindings = v_result.getString("ack_possiblefindings").split(",");
-					List<Finding> findings = new LinkedList<Finding>();
+			WorkOrderActivityCheckList checklistTemp = new WorkOrderActivityCheckList();
+			checklistTemp.setWorkOrderCode(activity.getWorkOrderNumber());
+			checklistTemp.setActivityCode(activity.getActivityCode());
+			checklistTemp.setCheckListCode(getCellContent("checklistcode", gridRequestRow));
+			//checklistTemp.setOccurrence(v_result.getString("ack_occurrence"));
+			checklistTemp.setSequence(getCellContent("checklistsequence", gridRequestRow));
+			checklistTemp.setEquipmentCode(getCellContent("equipment", gridRequestRow));
+			//checklistTemp.setEquipmentDesc(v_result.getString("obj_desc"));
+			checklistTemp.setType(getCellContent("checklisttype", gridRequestRow));
+			checklistTemp.setFollowUp(getCellContent("followup", gridRequestRow));
+			//checklistTemp.setFollowUpWorkOrder(v_result.getString("ack_followupevent"));
+			//checklistTemp.setRequiredToClose(v_result.getString("ack_requiredtoclose"));
+			checklistTemp.setNotes(getCellContent("notes", gridRequestRow));
+			//checklistTemp.setFinalOccurrence(v_result.getString("ack_finaloccurrence"));
+			checklistTemp.setDesc(getCellContent("checklistdescription", gridRequestRow));
 
-					for (String findingCode : possibleFindings) {
-						EntityManager em = tools.getEntityManager();
-						try {
-							Finding findingTemp = em.find(Finding.class, findingCode);
-							findings.add(findingTemp);
-						} catch (Exception e) {
-							tools.log(Level.SEVERE,"Error in readWOActivityChecklists");
-						} finally {
-							em.close();
-						}
-					}
-					checklistTemp.setPossibleFindings(findings.toArray(new Finding[findings.size()]));
+			if (checklistTemp.getType().equals("01")) {
+				// CHECKLIST ITEM
+				if ("+".equals(getCellContent("completed", gridRequestRow))) {
+					checklistTemp.setResult("COMPLETED");
+				} else {
+					checklistTemp.setResult(null);
 				}
-				checklistTemp.setNotes(v_result.getString("ack_notes"));
-				checklistTemp.setFinalOccurrence(v_result.getString("ack_finaloccurrence"));
-				checklistTemp.setDesc(v_result.getString("ack_desc"));
-				checklists.add(checklistTemp);
 			}
-
-		} catch (SQLException e) {
-			tools.log(Level.WARNING, "Couldn't read checklist line: " + e.getMessage());
-		} finally {
-			try {
-				if (v_result != null)
-					v_result.close();
-				if (stmt != null)
-					stmt.close();
-				if (v_connection != null)
-					v_connection.close();
-			} catch (Exception e) {
-				tools.log(Level.WARNING, "Couldn't close the connection!" + e.getMessage());
+			if (checklistTemp.getType().equals("02")) {
+				// QUESTION
+				if (getCellContent("yes", gridRequestRow) != null && getCellContent("yes", gridRequestRow).equals("+")) {
+					checklistTemp.setResult("YES");
+				}
+				if (getCellContent("no", gridRequestRow) != null && getCellContent("no", gridRequestRow).equals("+")) {
+					checklistTemp.setResult("NO");
+				}
 			}
+			if (checklistTemp.getType().equals("03")) {
+				// QUALITATIVE
+				checklistTemp.setFinding(getCellContent("finding", gridRequestRow));
+				String[] possibleFindings = getCellContent("possiblefindings", gridRequestRow).split(",");
+				List<Finding> findings = new LinkedList<Finding>();
+
+				for (String findingCode : possibleFindings) {
+					EntityManager em = tools.getEntityManager();
+					try {
+						Finding findingTemp = em.find(Finding.class, findingCode);
+						findings.add(findingTemp);
+					} catch (Exception e) {
+						tools.log(Level.SEVERE,"Error in readWOActivityChecklists");
+					} finally {
+						em.close();
+					}
+				}
+				checklistTemp.setPossibleFindings(findings.toArray(new Finding[findings.size()]));
+
+			}
+			if (checklistTemp.getType().equals("04")) {
+				// QUANTITATIVE
+				checklistTemp.setResult(getCellContent("result", gridRequestRow));
+				checklistTemp.setUOM(getCellContent("uom", gridRequestRow));
+			}
+			if (checklistTemp.getType().equals("05")) {
+				// METER READING
+				checklistTemp.setResult(getCellContent("result", gridRequestRow));
+				checklistTemp.setUOM(getCellContent("uom", gridRequestRow));
+			}
+			if (checklistTemp.getType().equals("06")) {
+				// INSPECTION
+				checklistTemp.setResult(getCellContent("result", gridRequestRow));
+				checklistTemp.setUOM(getCellContent("uom", gridRequestRow));
+				checklistTemp.setFinding(getCellContent("finding", gridRequestRow));
+				String[] possibleFindings =getCellContent("possiblefindings", gridRequestRow).split(",");
+				List<Finding> findings = new LinkedList<Finding>();
+
+				for (String findingCode : possibleFindings) {
+					EntityManager em = tools.getEntityManager();
+					try {
+						Finding findingTemp = em.find(Finding.class, findingCode);
+						findings.add(findingTemp);
+					} catch (Exception e) {
+						tools.log(Level.SEVERE,"Error in readWOActivityChecklists");
+					} finally {
+						em.close();
+					}
+				}
+				checklistTemp.setPossibleFindings(findings.toArray(new Finding[findings.size()]));
+			}
+			checklists.add(checklistTemp);
 		}
+
 
 		return checklists.toArray(new WorkOrderActivityCheckList[] {});
 	}

@@ -4,7 +4,6 @@ import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.grids.entities.*;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
-import ch.cern.eam.wshub.core.services.grids.entities.*;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_functions.SessionType;
 import net.datastream.schemas.mp_functions.gridrequest.*;
@@ -14,19 +13,20 @@ import net.datastream.schemas.mp_functions.gridrequest.MULTIADDON_FILTERS.MADDON
 import net.datastream.schemas.mp_functions.mp0116_getgriddataonly_001.FUNCTION_REQUEST_INFO;
 import net.datastream.schemas.mp_functions.mp0116_getgriddataonly_001.FUNCTION_REQUEST_TYPE;
 import net.datastream.schemas.mp_functions.mp0116_getgriddataonly_001.MP0116_GetGridDataOnly_001;
-import net.datastream.schemas.mp_functions.mp0116_getgriddataonly_001_result.DATA.ROW;
 import net.datastream.schemas.mp_functions.mp0116_getgriddataonly_001_result.MP0116_GetGridDataOnly_001_Result;
+import net.datastream.schemas.mp_functions.mp0118_getgridheaderdata_001.MP0118_GetGridHeaderData_001;
+import net.datastream.schemas.mp_functions.mp0118_getgridheaderdata_001_result.FIELD;
+import net.datastream.schemas.mp_functions.mp0118_getgridheaderdata_001_result.MP0118_GetGridHeaderData_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import javax.xml.ws.Holder;
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class InforGrids implements Serializable {
@@ -35,6 +35,7 @@ public class InforGrids implements Serializable {
 	private ApplicationData applicationData;
 	private Tools tools;
 	private InforWebServicesPT inforws;
+	private static Map<String, Map<BigInteger, GridField>> gridFieldCache = new ConcurrentHashMap<>();
 
 	public InforGrids(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
 		this.applicationData = applicationData;
@@ -43,68 +44,254 @@ public class InforGrids implements Serializable {
 	}
 
 	public GridRequestResult executeQuery(InforContext context, GridRequest gridRequest) throws InforException {
-		//
-		//
+		if (gridFieldCache.containsKey(gridRequest.getGridName())) {
+			return executeQueryDataOnly(context, gridRequest);
+		} else {
+			return executeQueryHeaderData(context, gridRequest);
+		}
+	}
+
+	public GridRequestResult executeQueryDataOnly(InforContext context, GridRequest gridRequest) throws InforException {
 		//
 		FUNCTION_REQUEST_INFO funRequest = new FUNCTION_REQUEST_INFO();
+
+		// GRID BASICS
+		funRequest.setGRID(createGrid(gridRequest));
+
+		// DATA SPY
+		if (gridRequest.getDataspyID() != null) {
+			funRequest.setDATASPY(new DATASPY());
+			funRequest.getDATASPY().setDATASPY_ID(new BigInteger(gridRequest.getDataspyID()));
+		}
+
+		// REQUEST TYPE
+		funRequest.setREQUEST_TYPE(FUNCTION_REQUEST_TYPE.LIST___DATA___ONLY___STORED);
+
+		// GRID TYPE
+		funRequest.setGRID_TYPE(createGridType(gridRequest));
+
+		// FILTERS
+		funRequest.setMULTIADDON_FILTERS(createGridFilters(gridRequest));
+
+		// SORT
+		funRequest.setADDON_SORT(createSort(gridRequest));
+
+		// LOV PARAMETERS
+		funRequest.setLOV(createLovParams(gridRequest));
+
+		//
+		// CALL THE WEB SERVICE
+		//
+		MP0116_GetGridDataOnly_001 getgridd = new MP0116_GetGridDataOnly_001();
+		getgridd.setFUNCTION_REQUEST_INFO(funRequest);
+		MP0116_GetGridDataOnly_001_Result result = new MP0116_GetGridDataOnly_001_Result();
+
+		if (context.getCredentials() != null) {
+			result = inforws.getGridDataOnlyOp(getgridd, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
+		} else 
+		{
+			SessionType session = new SessionType();
+			session.setSessionId(context.getSessionID());
+			result = inforws.getGridDataOnlyOp(getgridd, tools.getOrganizationCode(context), null,"", new Holder<SessionType>(session), null, applicationData.getTenant());
+		}
+
+		//
+		// META DATA
+		//
+		GridRequestResult grr = new GridRequestResult();
+		if (result.getGRIDRESULT().getGRID().getMETADATA().getMORERECORDPRESENT().equals("+")) {
+			grr.setMoreRowsPresent("TRUE");
+		} else {
+			grr.setMoreRowsPresent("FALSE");
+		}
+		grr.setRecords(result.getGRIDRESULT().getGRID().getMETADATA().getRECORDS());
+		//
+		// RESULT DATA
+		//
+
+		if (result.getGRIDRESULT().getGRID().getDATA() != null && 
+				result.getGRIDRESULT().getGRID().getDATA().getROW() != null &&
+				result.getGRIDRESULT().getGRID().getDATA().getROW().size() > 0) {
+
+			LinkedList<GridRequestRow> rows = new LinkedList<GridRequestRow>();
+			for (net.datastream.schemas.mp_functions.mp0116_getgriddataonly_001_result.DATA.ROW inforRow : result.getGRIDRESULT().getGRID().getDATA().getROW()) {
+
+				//
+				List<GridRequestCell> cells = inforRow.getD().stream().map(inforCell -> {
+					return new GridRequestCell(inforCell.getN().toString(),
+							inforCell.getContent(),
+							Integer.parseInt(gridFieldCache.get(gridRequest.getGridName()).get(inforCell.getN()).getOrder()),
+							gridFieldCache.get(gridRequest.getGridName()).get(inforCell.getN()).getName());
+				}).collect(Collectors.toList());
+
+				// SET ORDER AND TAG NAME
+				
+				// Sort using the order 
+				cells = cells.stream().sorted(Comparator.comparing(GridRequestCell::getOrder)).collect(Collectors.toList());
+				
+				GridRequestRow row = new GridRequestRow();
+				row.setId(inforRow.getId().toString());
+				row.setCells(cells.toArray(new GridRequestCell[0]));
+				rows.add(row);
+			}
+			grr.setRows(rows.toArray(new GridRequestRow[0]));
+		} 
+		else {
+			grr.setRows(new GridRequestRow[0]);
+		}
+
+		return grr;
+	}
+
+	public GridRequestResult executeQueryHeaderData(InforContext context, GridRequest gridRequest) throws InforException {
+		//
+		net.datastream.schemas.mp_functions.mp0118_getgridheaderdata_001.FUNCTION_REQUEST_INFO funRequest = new net.datastream.schemas.mp_functions.mp0118_getgridheaderdata_001.FUNCTION_REQUEST_INFO();
+
+		// GRID BASICS
+		funRequest.setGRID(createGrid(gridRequest));
+
+		// DATA SPY
+		if (gridRequest.getDataspyID() != null) {
+			funRequest.setDATASPY(new DATASPY());
+			funRequest.getDATASPY().setDATASPY_ID(new BigInteger(gridRequest.getDataspyID()));
+		}
+
+		// REQUEST TYPE
+		funRequest.setREQUEST_TYPE(net.datastream.schemas.mp_functions.mp0118_getgridheaderdata_001.FUNCTION_REQUEST_TYPE.LIST___HEAD___DATA___STORED);
+
+		// GRID TYPE
+		funRequest.setGRID_TYPE(createGridType(gridRequest));
+
+		// FILTERS
+		funRequest.setMULTIADDON_FILTERS(createGridFilters(gridRequest));
+
+		// SORT
+		funRequest.setADDON_SORT(createSort(gridRequest));
+
+		// LOV PARAMETERS
+		funRequest.setLOV(createLovParams(gridRequest));
+
+		//
+		// CALL THE WEB SERVICE
+		//
+		MP0118_GetGridHeaderData_001 getgridd = new MP0118_GetGridHeaderData_001();
+		getgridd.setFUNCTION_REQUEST_INFO(funRequest);
+		MP0118_GetGridHeaderData_001_Result result = new MP0118_GetGridHeaderData_001_Result();
+
+		if (context.getCredentials() != null) {
+			result = inforws.getGridHeaderDataOp(getgridd, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
+		} else
+		{
+			SessionType session = new SessionType();
+			session.setSessionId(context.getSessionID());
+			result = inforws.getGridHeaderDataOp(getgridd, tools.getOrganizationCode(context), null,"", new Holder<SessionType>(session), null, applicationData.getTenant());
+		}
+		//
+		// POPULATE GRID FIELD CACHE
+		//
+		gridFieldCache.put(gridRequest.getGridName(), new ConcurrentHashMap<>());
+		for (FIELD field : result.getGRIDRESULT().getGRID().getFIELDS().getFIELD()) {
+			GridField gridField = new GridField();
+			if (field.getType() != null) {
+				gridField.setDataType(field.getType().value());
+			}
+			gridField.setId(field.getAliasnum().toString());
+			gridField.setName(field.getName());
+			gridField.setOrder(field.getOrder());
+			gridFieldCache.get(gridRequest.getGridName()).put(field.getAliasnum(), gridField);
+		}
+
+		//
+		// META DATA
+		//
+		GridRequestResult grr = new GridRequestResult();
+		if (result.getGRIDRESULT().getGRID().getMETADATA().getMORERECORDPRESENT().equals("+")) {
+			grr.setMoreRowsPresent("TRUE");
+		} else {
+			grr.setMoreRowsPresent("FALSE");
+		}
+		grr.setRecords(result.getGRIDRESULT().getGRID().getMETADATA().getRECORDS());
+		//
+		// RESULT DATA
+		//
+
+		if (result.getGRIDRESULT().getGRID().getDATA() != null &&
+				result.getGRIDRESULT().getGRID().getDATA().getROW() != null &&
+				result.getGRIDRESULT().getGRID().getDATA().getROW().size() > 0) {
+
+			LinkedList<GridRequestRow> rows = new LinkedList<GridRequestRow>();
+			for (net.datastream.schemas.mp_functions.mp0118_getgridheaderdata_001_result.DATA.ROW inforRow : result.getGRIDRESULT().getGRID().getDATA().getROW()) {
+
+				//
+				List<GridRequestCell> cells = inforRow.getD().stream().map(inforCell -> {
+					return new GridRequestCell(inforCell.getN().toString(),
+											   inforCell.getContent(),
+											   Integer.parseInt(gridFieldCache.get(gridRequest.getGridName()).get(inforCell.getN()).getOrder()),
+											   gridFieldCache.get(gridRequest.getGridName()).get(inforCell.getN()).getName());
+				}).collect(Collectors.toList());
+
+				// Sort using the order
+				cells = cells.stream().sorted(Comparator.comparing(GridRequestCell::getOrder)).collect(Collectors.toList());
+
+				GridRequestRow row = new GridRequestRow();
+				row.setId(inforRow.getId().toString());
+				row.setCells(cells.toArray(new GridRequestCell[0]));
+				rows.add(row);
+			}
+			grr.setRows(rows.toArray(new GridRequestRow[0]));
+		}
+		else {
+			grr.setRows(new GridRequestRow[0]);
+		}
+
+		return grr;
+	}
+
+	private GRID createGrid(GridRequest gridRequest) throws InforException {
 		//
 		// GRID BASICS
 		//
-		funRequest.setGRID(new GRID());
-		// 
+		GRID grid = new GRID();
+		//
 		if (gridRequest.getCursorPosition() != null && !gridRequest.getCursorPosition().trim().equals("")) {
-			funRequest.getGRID().setCURSOR_POSITION(new BigInteger(gridRequest.getCursorPosition()));
+			grid.setCURSOR_POSITION(new BigInteger(gridRequest.getCursorPosition()));
 		} else {
-			funRequest.getGRID().setCURSOR_POSITION(BigInteger.valueOf(100));
+			grid.setCURSOR_POSITION(BigInteger.valueOf(1));
 		}
 		// GRID NAME
 		if (gridRequest.getGridName() != null) {
-			funRequest.getGRID().setGRID_NAME(gridRequest.getGridName());
+			grid.setGRID_NAME(gridRequest.getGridName());
 		} else {
 			throw tools.generateFault("Please supply grid name.");
 		}
 
 		// GRID ID
 		if (gridRequest.getGridID() != null) {
-			funRequest.getGRID().setGRID_ID(new BigInteger(gridRequest.getGridID()));
+			grid.setGRID_ID(new BigInteger(gridRequest.getGridID()));
 		}
 
 		// USER FUNCTION NAME
 		if (tools.getDataTypeTools().isNotEmpty(gridRequest.getUserFunctionName())) {
-			funRequest.getGRID().setUSER_FUNCTION_NAME(gridRequest.getUserFunctionName());
+			grid.setUSER_FUNCTION_NAME(gridRequest.getUserFunctionName());
 		}
 		// SET NUMBERS OF ROWS TO RETURN
 		if (gridRequest.getRowCount() != null && !gridRequest.getRowCount().trim().equals("")) {
-			funRequest.getGRID().setNUMBER_OF_ROWS_FIRST_RETURNED(new BigInteger(gridRequest.getRowCount()));
+			grid.setNUMBER_OF_ROWS_FIRST_RETURNED(new BigInteger(gridRequest.getRowCount()));
 		} else {
-			funRequest.getGRID().setNUMBER_OF_ROWS_FIRST_RETURNED(BigInteger.ZERO);
+			grid.setNUMBER_OF_ROWS_FIRST_RETURNED(BigInteger.valueOf(100));
 		}
-		// DON'T SHORTEN THE RESPONSE 
-		funRequest.getGRID().setTERSERESPONSE("false");
-		//
-		//
-		//
-		funRequest.setDATASPY(new DATASPY());
-		funRequest.getDATASPY().setDATASPY_ID(new BigInteger(gridRequest.getDataspyID()));
+		// DON'T SHORTEN THE RESPONSE
+		grid.setTERSERESPONSE("false");
 
-		//
-		// GRID TYPE
-		// LIST: business data query
-		// LOV: List of values to validate field entry 
-		//
-		funRequest.setGRID_TYPE(new GRID_TYPE());
-		if (gridRequest.getGridType() == null || "LIST".equals(gridRequest.getGridType())) {
-			funRequest.getGRID_TYPE().setTYPE(GRID_TYPE_Type.LIST);
-		} else {
-			funRequest.getGRID_TYPE().setTYPE(GRID_TYPE_Type.LOV);
-		}
-		funRequest.setREQUEST_TYPE(FUNCTION_REQUEST_TYPE.LIST___DATA___ONLY___STORED);
+		return  grid;
+	}
 
+	private MULTIADDON_FILTERS createGridFilters(GridRequest gridRequest) {
+		MULTIADDON_FILTERS multiaddon_filters = new MULTIADDON_FILTERS();
 		//
 		// FILTERS
 		//
 		if (gridRequest.getGridRequestFilters() != null && gridRequest.getGridRequestFilters().size() > 0) {
-			funRequest.setMULTIADDON_FILTERS(new MULTIADDON_FILTERS());
 			int counter = 0;
 			for (GridRequestFilter filter: gridRequest.getGridRequestFilters()) {
 				MADDON_FILTER inforFilter = new MADDON_FILTER();
@@ -138,158 +325,55 @@ public class InforGrids implements Serializable {
 						break;
 				}
 
-				funRequest.getMULTIADDON_FILTERS().getMADDON_FILTER().add(inforFilter);
-			}
-		} else {
-			funRequest.setMULTIADDON_FILTERS(new MULTIADDON_FILTERS());
-		}
-
-		//
-		// SORT
-		//
-		if(gridRequest.getGridRequestSorts() != null){
-			for(GridRequestSort sort : gridRequest.getGridRequestSorts()){
-				funRequest.setADDON_SORT(new ADDON_SORT());
-				if (sort.getSortType() != null && sort.getSortType().toUpperCase().equals("DESC")) {
-					funRequest.getADDON_SORT().setTYPE(SORT_TYPE.DESC);
-				} else {
-					funRequest.getADDON_SORT().setTYPE(SORT_TYPE.ASC);
-				}
-				funRequest.getADDON_SORT().setALIAS_NAME(sort.getSortBy());
+				multiaddon_filters.getMADDON_FILTER().add(inforFilter);
 			}
 		}
+		return multiaddon_filters;
+	}
 
-		//
-		// LOV PARAMETERS 
-		//
-		if (gridRequest.getGridRequestParameterNames() != null 
+	private LOV createLovParams(GridRequest gridRequest) {
+		LOV lov = new LOV();
+		if (gridRequest.getGridRequestParameterNames() != null
 				&& gridRequest.getGridRequestParameterNames().length > 0
-				&& gridRequest.getGridRequestParameterValues() != null 
+				&& gridRequest.getGridRequestParameterValues() != null
 				&& gridRequest.getGridRequestParameterValues().length > 0
 				&& gridRequest.getGridRequestParameterNames().length == gridRequest.getGridRequestParameterValues().length) {
-			funRequest.setLOV(new LOV());
-			funRequest.getLOV().setLOV_PARAMETERS(new LOV_PARAMETERS());
+			lov.setLOV_PARAMETERS(new LOV_PARAMETERS());
 			for (int i = 0; i < gridRequest.getGridRequestParameterNames().length; i++) {
 				LOV_PARAMETER lovParameter = new LOV_PARAMETER();
 				lovParameter.setTYPE("VARCHAR");
 				lovParameter.setALIAS_NAME(gridRequest.getGridRequestParameterNames()[i]);
 				lovParameter.setVALUE(gridRequest.getGridRequestParameterValues()[i]);
-				funRequest.getLOV().getLOV_PARAMETERS().getLOV_PARAMETER().add(lovParameter);
+				lov.getLOV_PARAMETERS().getLOV_PARAMETER().add(lovParameter);
 			}
 		}
+		return lov;
+	}
 
-		MP0116_GetGridDataOnly_001 getgridd = new MP0116_GetGridDataOnly_001();
-		getgridd.setFUNCTION_REQUEST_INFO(funRequest);
-		MP0116_GetGridDataOnly_001_Result result = new MP0116_GetGridDataOnly_001_Result();
-		//
-		// CALL THE WEB SERVICE
-		//
-		if (context.getCredentials() != null) {
-			result = inforws.getGridDataOnlyOp(getgridd, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
-		} else 
-		{
-			SessionType session = new SessionType();
-			session.setSessionId(context.getSessionID());
-			result = inforws.getGridDataOnlyOp(getgridd, tools.getOrganizationCode(context), null,"", new Holder<SessionType>(session), null, applicationData.getTenant());
-		}
-
-		//
-		// META DATA
-		//
-		GridRequestResult grr = new GridRequestResult();
-		if (result.getGRIDRESULT().getGRID().getMETADATA().getMORERECORDPRESENT().equals("+")) {
-			grr.setMoreRowsPresent("TRUE");
-		} else {
-			grr.setMoreRowsPresent("FALSE");
-		}
-		grr.setRecords(result.getGRIDRESULT().getGRID().getMETADATA().getRECORDS());
-		//
-		// RESULT DATA
-		//
-		List<DataspyField> fields = new LinkedList<DataspyField>();
-		EntityManager em = tools.getEntityManager();
-		try {
-			fields =  em.createNamedQuery(DataspyField.GETDATASPYFIELDS, DataspyField.class)  
-						  .setParameter("requestType", gridRequest.getGridType())
-						  .setParameter("dataspyid", gridRequest.getDataspyID())
-						  .getResultList();
-		} catch (Exception e) {
-			throw tools.generateFault("Couldn't fetch data spy fields" + e.getMessage());
-		} finally {
-			em.close();
-		}
-		
-		if (result.getGRIDRESULT().getGRID().getDATA() != null && 
-				result.getGRIDRESULT().getGRID().getDATA().getROW() != null &&
-				result.getGRIDRESULT().getGRID().getDATA().getROW().size() > 0) {
-			
-			// Load Customs fields info			
-			final List<Object[]> customFields = loadCustomFieldsInfo(gridRequest);
-
-			LinkedList<GridRequestRow> rows = new LinkedList<GridRequestRow>();
-			for (ROW inforRow : result.getGRIDRESULT().getGRID().getDATA().getROW()) {
-				
-				// 
-				List<GridRequestCell> cells = inforRow.getD().stream().map(inforCell -> {
-					return new GridRequestCell(inforCell.getN().toString(), 
-							                   inforCell.getContent());
-				}).collect(Collectors.toList());
-
-				// Extend each cell with the order and tagname
-				for (DataspyField dataspyField : fields) {
-					// Normal fields
-					cells.stream().filter(cell -> cell.getCol().equals(dataspyField.getId())).forEach(cell -> {
-						cell.setOrder(dataspyField.getOrder()); //order 
-						cell.setTag(dataspyField.getTagName()); //tagname 
-					});
-				
-					// Custom fields
-					AtomicInteger atomicInteger = new AtomicInteger(0);
-					cells.stream().filter(cell -> (Integer.parseInt(cell.getCol())<-1)).forEach(cell -> {
-						cell.setOrder(Integer.parseInt(customFields.get(atomicInteger.get())[0].toString())); //order 
-						cell.setTag(customFields.get(atomicInteger.getAndIncrement())[1].toString()); //tagname 
-					});
+	private ADDON_SORT createSort(GridRequest gridRequest) {
+		if(gridRequest.getGridRequestSorts() != null && gridRequest.getGridRequestSorts().length > 0){
+			ADDON_SORT addon_sort = new ADDON_SORT();
+				GridRequestSort sort = gridRequest.getGridRequestSorts()[0];
+				if (sort.getSortType() != null && sort.getSortType().toUpperCase().equals("DESC")) {
+					addon_sort.setTYPE(SORT_TYPE.DESC);
+				} else {
+					addon_sort.setTYPE(SORT_TYPE.ASC);
 				}
-				
-				// Sort using the order 
-				cells = cells.stream().sorted( (e1, e2) -> Integer.compare(e1.getOrder(), e2.getOrder()))
-						.collect(Collectors.toList());
-				
-				GridRequestRow row = new GridRequestRow();
-				row.setId(inforRow.getId().toString());
-				row.setCells(cells.toArray(new GridRequestCell[0]));
-				rows.add(row);
-			}
-			grr.setRows(rows.toArray(new GridRequestRow[0]));
-		} 
-		else {
-			grr.setRows(new GridRequestRow[0]);
+			addon_sort.setALIAS_NAME(sort.getSortBy());
+			return addon_sort;
+		} else {
+			return null;
 		}
+	}
 
-		return grr;
-	}
-	
-	private static String SELECT_CUSTOM_FIELDS = "select dcf_order, dcf_tagname from R5DDCUSTOMFIELDS where DCF_DDSPYID = :dataspyid";
-	
-	@SuppressWarnings("unchecked")
-	private List<Object[]> loadCustomFieldsInfo(GridRequest gridRequest) throws InforException {
-		EntityManager em = tools.getEntityManager();
-		List<Object[]> customFieldsL = null; 
-		try {
-			em = tools.getEntityManager();
-			Query q = em.createNativeQuery(SELECT_CUSTOM_FIELDS);
-			q.setParameter("dataspyid", gridRequest.getDataspyID());  
-			customFieldsL = (List<Object[]>) q.getResultList();
-		} catch (IllegalArgumentException | NullPointerException exception) {
-			tools.log(Level.FINE, exception.getMessage());
-			throw tools.generateFault("Error loading Custom Fields information");
-		} catch(javax.persistence.NoResultException exception) {
-			customFieldsL = null;
-		} finally {
-			em.close();
+	private GRID_TYPE createGridType(GridRequest gridRequest) {
+		GRID_TYPE grid_type = new GRID_TYPE();
+		if (gridRequest.getGridType() == null || "LIST".equals(gridRequest.getGridType())) {
+			grid_type.setTYPE(GRID_TYPE_Type.LIST); // LIST: business data query
+		} else {
+			grid_type.setTYPE(GRID_TYPE_Type.LOV); // LOV: List of values to validate field entry
 		}
-		
-		return customFieldsL;		
+		return grid_type;
 	}
-	
+
 }

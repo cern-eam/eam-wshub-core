@@ -44,12 +44,15 @@ public class GridRequest implements Serializable {
 		// Default Constructor
 	}
 
+	public GridRequest(String gridName) {
+		this.gridName = gridName;
+	}
+
 	public GridRequest(String gridID, String gridName, String dataspyID) {
 		this.gridID = gridID;
 		this.dataspyID = dataspyID;
 		this.gridName = gridName;
 		this.cursorPosition = "1";
-		this.rowCount = "100";
 	}
 
 	public GridRequest(GridRequest o) {
