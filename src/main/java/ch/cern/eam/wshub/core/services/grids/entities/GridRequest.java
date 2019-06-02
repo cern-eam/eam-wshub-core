@@ -21,6 +21,7 @@ public class GridRequest implements Serializable {
 	private Boolean queryTimeout = false;
 	private Integer queryTimeoutWaitingTime = 15000; //milliseconds
 	private String lang = "EN";
+	private Boolean returnHeaderData = false;
 	
 	/**
 	 * Flag to indicate if fetch all the results
@@ -33,11 +34,9 @@ public class GridRequest implements Serializable {
 	 */
 	private String departmentSecurityGridColumn = null;
 	
-	private Map<String, Object> params = new HashMap<String, Object>();
+	private Map<String, Object> params = new HashMap<>();
 	
 	private List<GridRequestFilter> gridRequestFilters;
-	private String[] gridRequestParameterNames;
-	private String[] gridRequestParameterValues;
 	private GridRequestSort[] gridRequestSorts;
 
 	public GridRequest() {
@@ -46,6 +45,8 @@ public class GridRequest implements Serializable {
 
 	public GridRequest(String gridName) {
 		this.gridName = gridName;
+		this.cursorPosition = "1";
+		this.rowCount = "100";
 	}
 
 	public GridRequest(String gridID, String gridName, String dataspyID) {
@@ -53,6 +54,7 @@ public class GridRequest implements Serializable {
 		this.dataspyID = dataspyID;
 		this.gridName = gridName;
 		this.cursorPosition = "1";
+		this.rowCount = "100";
 	}
 
 	public GridRequest(GridRequest o) {
@@ -70,8 +72,6 @@ public class GridRequest implements Serializable {
 		this.queryTimeoutWaitingTime = o.queryTimeoutWaitingTime;
 		this.params = o.params;
 		this.gridRequestFilters = o.gridRequestFilters;
-		this.gridRequestParameterNames = o.gridRequestParameterNames;
-		this.gridRequestParameterValues = o.gridRequestParameterValues;
 		this.gridRequestSorts = o.gridRequestSorts;
 		this.fetchAllResults = o.fetchAllResults;
 		this.departmentSecurityGridColumn = o.departmentSecurityGridColumn;
@@ -83,35 +83,41 @@ public class GridRequest implements Serializable {
 	public void setGridID(String gridID) {
 		this.gridID = gridID;
 	}
+
 	public String getDataspyID() {
 		return dataspyID;
 	}
 	public void setDataspyID(String dataspyID) {
 		this.dataspyID = dataspyID;
 	}
+
 	public String getRowCount() {
 		return rowCount;
 	}
 	public void setRowCount(String rowCount) {
 		this.rowCount = rowCount;
 	}
+
 	public String getCursorPosition() {
 		return cursorPosition;
 	}
 	public void setCursorPosition(String cursorPosition) {
 		this.cursorPosition = cursorPosition;
 	}
+
 	public String getGridName() {
 		return gridName;
 	}
 	public void setGridName(String gridName) {
 		this.gridName = gridName;
 	}
-	
+
+	public Boolean getReturnHeaderData() {return returnHeaderData; }
+	public void setReturnHeaderData(Boolean returnHeaderData) { this.returnHeaderData = returnHeaderData; }
+
 	public Boolean getFetchAllResults() {
 		return fetchAllResults;
 	}
-
 	public void setFetchAllResults(Boolean fetchAllResults) {
 		this.fetchAllResults = fetchAllResults;
 	}
@@ -138,18 +144,7 @@ public class GridRequest implements Serializable {
 		this.gridRequestFilters = gridRequestFilters;
 	}
 
-	public String[] getGridRequestParameterNames() {
-		return gridRequestParameterNames;
-	}
-	public void setGridRequestParameterNames(String[] gridRequestParameterNames) {
-		this.gridRequestParameterNames = gridRequestParameterNames;
-	}
-	public String[] getGridRequestParameterValues() {
-		return gridRequestParameterValues;
-	}
-	public void setGridRequestParameterValues(String[] gridRequestParameterValues) {
-		this.gridRequestParameterValues = gridRequestParameterValues;
-	}
+
 	public String getGridType() {
 		return gridType;
 	}
@@ -176,6 +171,7 @@ public class GridRequest implements Serializable {
 	public void setParams(Map<String, Object> params) {
 		this.params = params;
 	}
+
 	public String getJPAType() {
 		return JPAType;
 	}
@@ -233,10 +229,6 @@ public class GridRequest implements Serializable {
 						? "departmentSecurityGridColumn=" + departmentSecurityGridColumn + ", " : "")
 				+ (params != null ? "params=" + params + ", " : "")
 				+ (gridRequestFilters != null ? "gridRequestFilters=" + gridRequestFilters + ", " : "")
-				+ (gridRequestParameterNames != null
-						? "gridRequestParameterNames=" + Arrays.toString(gridRequestParameterNames) + ", " : "")
-				+ (gridRequestParameterValues != null
-						? "gridRequestParameterValues=" + Arrays.toString(gridRequestParameterValues) + ", " : "")
 				+ (gridRequestSorts != null ? "gridRequestSorts=" + Arrays.toString(gridRequestSorts) : "") + "]";
 	}
 	

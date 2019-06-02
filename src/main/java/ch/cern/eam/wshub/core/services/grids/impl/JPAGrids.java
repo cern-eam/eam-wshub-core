@@ -178,7 +178,17 @@ public class JPAGrids implements Serializable {
 			// FILTERS and SORT from Dataspy
 			// Obtain list of filters and sorting layers
 			//
-			Map<String, Object> params = gridRequest.getParams();
+
+			// Remove "param." prefix from the parameter names
+			Map<String, Object> params = new HashMap<>();
+			gridRequest.getParams().forEach((key, value) -> {
+				if (key.startsWith("param.")) {
+					params.put(key.substring(6), value);
+				} else {
+					params.put(key, value);
+				}
+			});
+
 			List<Object[]> gridListOfSortAndFilters = em.createNamedQuery(GridDataspy.GETGRIDDDSFILTER_AND_SORT_STRXML)
 					.setParameter("dataspyid", dataSpyID)
 					.setParameter("userid", context.getCredentials().getUsername())

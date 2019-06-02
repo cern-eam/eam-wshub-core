@@ -263,9 +263,10 @@ public class ChecklistServiceImpl implements ChecklistService {
 	public WorkOrderActivityCheckList[] readWorkOrderChecklists(InforContext context, Activity activity) throws InforException {
 		LinkedList<WorkOrderActivityCheckList> checklists = new LinkedList<WorkOrderActivityCheckList>();
 		// Fetch the data
-		GridRequest gridRequest = new GridRequest("WSJOBS_ACK");
-		gridRequest.setGridRequestParameterNames(new String[] {"param.workordernum", "param.activity", "param.jobseq"});
-		gridRequest.setGridRequestParameterValues(new String[] {activity.getWorkOrderNumber(), activity.getActivityCode(), "0"});
+		GridRequest gridRequest = new GridRequest("3315", "WSJOBS_ACK", "3369");
+		gridRequest.getParams().put("param.workordernum", activity.getWorkOrderNumber());
+		gridRequest.getParams().put("param.activity", activity.getActivityCode());
+		gridRequest.getParams().put("param.jobseq", "0");
 		GridRequestResult gridRequestResult = gridsService.executeQuery(context, gridRequest);
 
 		for (GridRequestRow gridRequestRow : gridRequestResult.getRows()) {
@@ -279,16 +280,23 @@ public class ChecklistServiceImpl implements ChecklistService {
 			checklistTemp.setEquipmentCode(getCellContent("equipment", gridRequestRow));
 			//checklistTemp.setEquipmentDesc(v_result.getString("obj_desc"));
 			checklistTemp.setType(getCellContent("checklisttype", gridRequestRow));
-			checklistTemp.setFollowUp(getCellContent("followup", gridRequestRow));
-			//checklistTemp.setFollowUpWorkOrder(v_result.getString("ack_followupevent"));
-			//checklistTemp.setRequiredToClose(v_result.getString("ack_requiredtoclose"));
+
+			String followUp = getCellContent("followup", gridRequestRow);
+			if ("-1".equals(followUp)) {
+				checklistTemp.setFollowUp("+");
+			} else {
+				checklistTemp.setFollowUp("-");
+			}
+
+			checklistTemp.setFollowUpWorkOrder(getCellContent("followupwoactivity", gridRequestRow));
+			checklistTemp.setRequiredToClose(getCellContent("requiredtoclosedocument", gridRequestRow));
 			checklistTemp.setNotes(getCellContent("notes", gridRequestRow));
 			//checklistTemp.setFinalOccurrence(v_result.getString("ack_finaloccurrence"));
 			checklistTemp.setDesc(getCellContent("checklistdescription", gridRequestRow));
 
 			if (checklistTemp.getType().equals("01")) {
 				// CHECKLIST ITEM
-				if ("+".equals(getCellContent("completed", gridRequestRow))) {
+				if ("-1".equals(getCellContent("completed", gridRequestRow))) {
 					checklistTemp.setResult("COMPLETED");
 				} else {
 					checklistTemp.setResult(null);
@@ -296,10 +304,10 @@ public class ChecklistServiceImpl implements ChecklistService {
 			}
 			if (checklistTemp.getType().equals("02")) {
 				// QUESTION
-				if (getCellContent("yes", gridRequestRow) != null && getCellContent("yes", gridRequestRow).equals("+")) {
+				if (getCellContent("yes", gridRequestRow) != null && getCellContent("yes", gridRequestRow).equals("-1")) {
 					checklistTemp.setResult("YES");
 				}
-				if (getCellContent("no", gridRequestRow) != null && getCellContent("no", gridRequestRow).equals("+")) {
+				if (getCellContent("no", gridRequestRow) != null && getCellContent("no", gridRequestRow).equals("-1")) {
 					checklistTemp.setResult("NO");
 				}
 			}

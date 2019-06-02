@@ -3,6 +3,7 @@ package ch.cern.eam.wshub.core.tools;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestCell;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestRow;
+import javafx.scene.control.Cell;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -24,6 +25,7 @@ public class GridTools {
         return Arrays.stream(gridRequestResult.getRows())
                 .map(gridRequestRow ->
                     Arrays.stream(gridRequestRow.getCell()).filter(cell -> columns.contains(cell.getCol()) || columns.contains(cell.getTag()))
+                                                           .filter(cell -> cell.getContent() != null)
                                                            .collect(Collectors.toMap(GridRequestCell::getCol, GridRequestCell::getContent))
                 ).collect(Collectors.toList());
     }
@@ -59,7 +61,10 @@ public class GridTools {
         if (gridRequestRow == null || gridRequestRow.getCell() == null) {
             return null;
         }
-        return Arrays.stream(gridRequestRow.getCell()).filter(cell -> cell.getTag().equals(cellid) || cell.getCol().equals(cellid)).map(GridRequestCell::getContent).findFirst().orElse(null);
+        return Arrays.stream(gridRequestRow.getCell())
+                .filter(cell -> cell.getTag().equals(cellid) || cell.getCol().equals(cellid))
+                .filter(cell -> cell.getContent() != null)
+                .map(GridRequestCell::getContent).findFirst().orElse(null);
     }
 
 }

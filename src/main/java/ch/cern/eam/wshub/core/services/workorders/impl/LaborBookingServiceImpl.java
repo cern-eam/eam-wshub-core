@@ -132,7 +132,8 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 			}
 			return activities.stream().toArray(Activity[]::new);
 		} catch (Exception e) {
-			throw tools.generateFault("Couldn't fetch activities for this work order.");
+			e.printStackTrace();
+			throw tools.generateFault("Couldn't fetch activities for this work order: " + e.getMessage());
 		} finally {
 			em.close();
 		}

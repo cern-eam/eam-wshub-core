@@ -333,20 +333,14 @@ public class InforGrids implements Serializable {
 
 	private LOV createLovParams(GridRequest gridRequest) {
 		LOV lov = new LOV();
-		if (gridRequest.getGridRequestParameterNames() != null
-				&& gridRequest.getGridRequestParameterNames().length > 0
-				&& gridRequest.getGridRequestParameterValues() != null
-				&& gridRequest.getGridRequestParameterValues().length > 0
-				&& gridRequest.getGridRequestParameterNames().length == gridRequest.getGridRequestParameterValues().length) {
-			lov.setLOV_PARAMETERS(new LOV_PARAMETERS());
-			for (int i = 0; i < gridRequest.getGridRequestParameterNames().length; i++) {
-				LOV_PARAMETER lovParameter = new LOV_PARAMETER();
-				lovParameter.setTYPE("VARCHAR");
-				lovParameter.setALIAS_NAME(gridRequest.getGridRequestParameterNames()[i]);
-				lovParameter.setVALUE(gridRequest.getGridRequestParameterValues()[i]);
-				lov.getLOV_PARAMETERS().getLOV_PARAMETER().add(lovParameter);
-			}
-		}
+		lov.setLOV_PARAMETERS(new LOV_PARAMETERS());
+		gridRequest.getParams().forEach( (paramName, paramValue) -> {
+			LOV_PARAMETER lovParameter = new LOV_PARAMETER();
+			lovParameter.setTYPE("VARCHAR");
+			lovParameter.setALIAS_NAME(paramName);
+			lovParameter.setVALUE(paramValue.toString());
+			lov.getLOV_PARAMETERS().getLOV_PARAMETER().add(lovParameter);
+		});
 		return lov;
 	}
 
