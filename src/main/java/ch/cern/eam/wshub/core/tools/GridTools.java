@@ -40,7 +40,10 @@ public class GridTools {
         try {
             T object = clazz.newInstance();
             for (String column : columns.keySet()) {
-                String value = gridRequestCellList.stream().filter(cell -> cell.getCol().equals(column)).map(GridRequestCell::getContent).findFirst().orElse(null);
+                String value = gridRequestCellList.stream()
+                        .filter(cell -> cell.getCol().equals(column) || cell.getTag().equals(column))
+                        .filter(cell -> cell.getContent() != null)
+                        .map(GridRequestCell::getContent).findFirst().orElse(null);
                 // Populate field with the value extracted above
                 Field field = object.getClass().getDeclaredField(columns.get(column));
                 field.setAccessible(true);

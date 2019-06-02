@@ -25,10 +25,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -209,6 +206,15 @@ public class Tools {
 		BatchResponse<T> response = new BatchResponse<>();
 		response.setResponseList(responseList);
 		return response;
+	}
+
+
+	public void processRunnables(List<Runnable> mylist) throws InforException {
+		try {
+			executorService.invokeAll(mylist.stream().map(runnable -> Executors.callable(runnable)).collect(Collectors.toList()));
+		} catch (Exception exception) {
+			log(Level.SEVERE, "Error during Tools.processRunnables() execution");
+		}
 	}
 
 	private String decodeExceptionInfoList(SOAPFaultException soapFaultException) {

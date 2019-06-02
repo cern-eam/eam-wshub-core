@@ -1,8 +1,12 @@
 package ch.cern.eam.wshub.core.services.workorders.impl;
 
 import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.services.grids.GridsService;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
+import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.services.workorders.ChecklistService;
 import ch.cern.eam.wshub.core.services.workorders.LaborBookingService;
+import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrderActivityCheckList;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
@@ -22,7 +26,12 @@ import net.datastream.wsdls.inforws.InforWebServicesPT;
 
 import javax.persistence.EntityManager;
 import javax.xml.ws.Holder;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
 public class LaborBookingServiceImpl implements LaborBookingService {
 
@@ -30,12 +39,14 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 	private InforWebServicesPT inforws;
 	private ApplicationData applicationData;
 	private ChecklistService checklistService;
+	private GridsService gridsService;
 
 	public LaborBookingServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
 		this.applicationData = applicationData;
 		this.tools = tools;
 		this.inforws = inforWebServicesToolkitClient;
 		this.checklistService = new ChecklistServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
+		this.gridsService = new GridsServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
 	}
 
 	public LaborBooking[] readLaborBookings(InforContext context, String workOrderNumber) throws InforException {
@@ -121,21 +132,41 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 
 
 	public Activity[] readActivities(InforContext context, String workOrderNumber) throws InforException {
-		tools.demandDatabaseConnection();
-		EntityManager em = tools.getEntityManager();
 		try {
-			List<Activity> activities = em.createNamedQuery("FINDACT", Activity.class)
-					.setParameter("workOrder", workOrderNumber).getResultList();
-			// Read checklists for each activity
-			for (Activity activity : activities) {
-				activity.setChecklists(checklistService.readWorkOrderChecklists(context, activity));
-			}
+			GridRequest gridRequest = new GridRequest("WSJOBS_ACT");
+			gridRequest.setUserFunctionName("WSJOBS");
+			gridRequest.getParams().put("param.jobnum", workOrderNumber);
+
+			Map map = new HashMap<>();
+			map.put("activity", "activityCode");
+			map.put("activitynote", "activityNote");
+			map.put("workordernum", "workOrderNumber");
+			map.put("personsreq", "peopleRequired");
+			map.put("esthrs", "estimatedHours");
+			map.put("hrsremain", "hoursRemaining");
+			map.put("actstartdate", "startDate");
+			map.put("actenddate", "endDate");
+			map.put("matlcode", "materialList");
+			map.put("task", "taskCode");
+			map.put("trade", "tradeCode");
+			map.put("taskqty", "taskQty");
+
+			List<Activity> activities = tools.getGridTools().converGridResultToObject(Activity.class, map, gridsService.executeQuery(context, gridRequest));
+
+			// Read checklists for all activities in parallel
+			List<Runnable> runnables = activities.stream()
+					.<Runnable>map(activity -> () -> {
+						try {
+							activity.setChecklists(checklistService.readWorkOrderChecklists(context, activity));
+						} catch (Exception e) {
+							activity.setChecklists(new WorkOrderActivityCheckList[0]);
+						} })
+					.collect(Collectors.toList());
+			tools.processRunnables(runnables);
+			//
 			return activities.stream().toArray(Activity[]::new);
 		} catch (Exception e) {
-			e.printStackTrace();
 			throw tools.generateFault("Couldn't fetch activities for this work order: " + e.getMessage());
-		} finally {
-			em.close();
 		}
 	}
 

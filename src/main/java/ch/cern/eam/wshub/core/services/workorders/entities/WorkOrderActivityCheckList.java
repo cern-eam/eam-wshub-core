@@ -31,7 +31,7 @@ public class WorkOrderActivityCheckList implements Serializable {
 	private String equipmentDesc;
 	private String followUp;
 	private String followUpWorkOrder;
-	private String requiredToClose;
+	private Boolean requiredToClose;
 
 	private String newCheckListCode;
 	private String newWorkOrderCode;
@@ -157,11 +157,11 @@ public class WorkOrderActivityCheckList implements Serializable {
 		this.followUpWorkOrder = followUpWorkOrder;
 	}
 
-	public String getRequiredToClose() {
+	public Boolean getRequiredToClose() {
 		return requiredToClose;
 	}
 
-	public void setRequiredToClose(String requiredToClose) {
+	public void setRequiredToClose(Boolean requiredToClose) {
 		this.requiredToClose = requiredToClose;
 	}
 
