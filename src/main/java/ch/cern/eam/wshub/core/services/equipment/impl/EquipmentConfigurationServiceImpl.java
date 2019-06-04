@@ -8,7 +8,6 @@ import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_entities.equipmentconfiguration_001.EquipmentConfiguration;
 import net.datastream.schemas.mp_fields.EQUIPMENTCONFIGURATIONID_Type;
-import net.datastream.schemas.mp_functions.SessionType;
 import net.datastream.schemas.mp_functions.mp3228_001.MP3228_GetEquipmentConfiguration_001;
 import net.datastream.schemas.mp_results.mp3228_001.MP3228_GetEquipmentConfiguration_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
@@ -90,6 +89,11 @@ public class EquipmentConfigurationServiceImpl implements EquipmentConfiguration
             if(inforEquipmentConfiguration.getConfigurationDetails().getCLASSID() != null){
                 equipmentConfiguration.setConfigurationClassCode(inforEquipmentConfiguration.getConfigurationDetails().getCLASSID().getCLASSCODE());
                 equipmentConfiguration.setConfigurationClassDesc(inforEquipmentConfiguration.getConfigurationDetails().getCLASSID().getDESCRIPTION());
+            }
+
+            if(inforEquipmentConfiguration.getConfigurationDetails().getCATEGORYID() != null){
+                equipmentConfiguration.setConfigurationCategoryCode(inforEquipmentConfiguration.getConfigurationDetails().getCATEGORYID().getCATEGORYCODE());
+                equipmentConfiguration.setConfigurationCategoryDesc(inforEquipmentConfiguration.getConfigurationDetails().getCATEGORYID().getDESCRIPTION());
             }
 
             if(inforEquipmentConfiguration.getConfigurationDetails().getCREATEDDATE() != null){

@@ -21,6 +21,10 @@ public class EquipmentConfigurationEntity implements Serializable {
     @Transient
     private String configurationClassDesc;
     @Transient
+    private String configurationCategoryCode;
+    @Transient
+    private String configurationCategoryDesc;
+    @Transient
     private String revisionNum;
     @Transient
     private String equipmentPrefix;
@@ -269,6 +273,22 @@ public class EquipmentConfigurationEntity implements Serializable {
         this.revisionNum = revisionNum;
     }
 
+    public String getConfigurationCategoryCode() {
+        return configurationCategoryCode;
+    }
+
+    public void setConfigurationCategoryCode(String configurationCategoryCode) {
+        this.configurationCategoryCode = configurationCategoryCode;
+    }
+
+    public String getConfigurationCategoryDesc() {
+        return configurationCategoryDesc;
+    }
+
+    public void setConfigurationCategoryDesc(String configurationCategoryDesc) {
+        this.configurationCategoryDesc = configurationCategoryDesc;
+    }
+
     @Override
     public String toString() {
         return "EquipmentConfigurationEntity{" +
@@ -278,6 +298,8 @@ public class EquipmentConfigurationEntity implements Serializable {
                 ", configurationDepartmentDesc='" + configurationDepartmentDesc + '\'' +
                 ", configurationClassCode='" + configurationClassCode + '\'' +
                 ", configurationClassDesc='" + configurationClassDesc + '\'' +
+                ", configurationCategoryCode='" + configurationCategoryCode + '\'' +
+                ", configurationCategoryDesc='" + configurationCategoryDesc + '\'' +
                 ", revisionNum='" + revisionNum + '\'' +
                 ", equipmentPrefix='" + equipmentPrefix + '\'' +
                 ", equipmentSuffix='" + equipmentSuffix + '\'' +
