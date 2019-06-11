@@ -134,6 +134,7 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 	public Activity[] readActivities(InforContext context, String workOrderNumber, Boolean includeChecklists) throws InforException {
 		try {
 			GridRequest gridRequest = new GridRequest("WSJOBS_ACT");
+			gridRequest.setRowCount("1000");
 			gridRequest.setUserFunctionName("WSJOBS");
 			gridRequest.getParams().put("param.jobnum", workOrderNumber);
 
