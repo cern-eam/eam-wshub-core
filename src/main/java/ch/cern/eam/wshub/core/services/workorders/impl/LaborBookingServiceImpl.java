@@ -131,7 +131,7 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 	}
 
 
-	public Activity[] readActivities(InforContext context, String workOrderNumber) throws InforException {
+	public Activity[] readActivities(InforContext context, String workOrderNumber, Boolean includeChecklists) throws InforException {
 		try {
 			GridRequest gridRequest = new GridRequest("WSJOBS_ACT");
 			gridRequest.setUserFunctionName("WSJOBS");
@@ -153,16 +153,19 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 
 			List<Activity> activities = tools.getGridTools().converGridResultToObject(Activity.class, map, gridsService.executeQuery(context, gridRequest));
 
-			// Read checklists for all activities in parallel
-			List<Runnable> runnables = activities.stream()
-					.<Runnable>map(activity -> () -> {
-						try {
-							activity.setChecklists(checklistService.readWorkOrderChecklists(context, activity));
-						} catch (Exception e) {
-							activity.setChecklists(new WorkOrderActivityCheckList[0]);
-						} })
-					.collect(Collectors.toList());
-			tools.processRunnables(runnables);
+			if (includeChecklists) {
+				// Read checklists for all activities in parallel
+				List<Runnable> runnables = activities.stream()
+						.<Runnable>map(activity -> () -> {
+							try {
+								activity.setChecklists(checklistService.readWorkOrderChecklists(context, activity));
+							} catch (Exception e) {
+								activity.setChecklists(new WorkOrderActivityCheckList[0]);
+							}
+						})
+						.collect(Collectors.toList());
+				tools.processRunnables(runnables);
+			}
 			//
 			return activities.stream().toArray(Activity[]::new);
 		} catch (Exception e) {

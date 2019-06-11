@@ -264,6 +264,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 		LinkedList<WorkOrderActivityCheckList> checklists = new LinkedList<WorkOrderActivityCheckList>();
 		// Fetch the data
 		GridRequest gridRequest = new GridRequest("WSJOBS_ACK");
+		gridRequest.setRowCount("1000");
 		gridRequest.getParams().put("param.workordernum", activity.getWorkOrderNumber());
 		gridRequest.getParams().put("param.activity", activity.getActivityCode());
 		gridRequest.getParams().put("param.jobseq", "0");
@@ -278,7 +279,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 			//checklistTemp.setOccurrence(v_result.getString("ack_occurrence"));
 			checklistTemp.setSequence(getCellContent("checklistsequence", gridRequestRow));
 			checklistTemp.setEquipmentCode(getCellContent("equipment", gridRequestRow));
-			//checklistTemp.setEquipmentDesc(v_result.getString("obj_desc"));
+			checklistTemp.setEquipmentDesc(getCellContent("equipmentdesc", gridRequestRow));
 			checklistTemp.setType(getCellContent("checklisttype", gridRequestRow));
 
 			// FOLLOW-UP

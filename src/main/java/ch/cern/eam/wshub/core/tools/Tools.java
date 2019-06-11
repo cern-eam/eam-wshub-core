@@ -213,7 +213,7 @@ public class Tools {
 		try {
 			executorService.invokeAll(mylist.stream().map(runnable -> Executors.callable(runnable)).collect(Collectors.toList()));
 		} catch (Exception exception) {
-			log(Level.SEVERE, "Error during Tools.processRunnables() execution");
+			log(Level.SEVERE, "Error during Tools.processRunnables() execution: " + exception.getMessage());
 		}
 	}
 

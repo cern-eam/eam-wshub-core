@@ -16,7 +16,7 @@ public interface LaborBookingService {
     String createLaborBooking(InforContext context, LaborBooking laborBookingParam) throws InforException;
 
     @Operation(logOperation = INFOR_OPERATION.ACTIVITY_R)
-    Activity[] readActivities(InforContext context, String workOrderNumbers) throws InforException;
+    Activity[] readActivities(InforContext context, String workOrderNumbers, Boolean includeChecklists) throws InforException;
 
     @Operation(logOperation = INFOR_OPERATION.ACTIVITY_C)
     String createActivity(InforContext context, Activity activityParam) throws InforException;

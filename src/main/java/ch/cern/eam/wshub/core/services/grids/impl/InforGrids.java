@@ -338,7 +338,9 @@ public class InforGrids implements Serializable {
 			LOV_PARAMETER lovParameter = new LOV_PARAMETER();
 			lovParameter.setTYPE("VARCHAR");
 			lovParameter.setALIAS_NAME(paramName);
-			lovParameter.setVALUE(paramValue.toString());
+			if (paramValue != null) {
+				lovParameter.setVALUE(paramValue.toString());
+			}
 			lov.getLOV_PARAMETERS().getLOV_PARAMETER().add(lovParameter);
 		});
 		return lov;
