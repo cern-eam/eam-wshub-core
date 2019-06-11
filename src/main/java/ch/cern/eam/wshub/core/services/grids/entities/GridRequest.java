@@ -231,5 +231,8 @@ public class GridRequest implements Serializable {
 				+ (gridRequestFilters != null ? "gridRequestFilters=" + gridRequestFilters + ", " : "")
 				+ (gridRequestSorts != null ? "gridRequestSorts=" + Arrays.toString(gridRequestSorts) : "") + "]";
 	}
-	
+
+	public String getRequestKey() {
+		return this.gridName + "#" + this.getDataspyID();
+	}
 }

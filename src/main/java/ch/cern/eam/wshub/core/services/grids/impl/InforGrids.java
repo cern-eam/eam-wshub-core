@@ -44,7 +44,7 @@ public class InforGrids implements Serializable {
 	}
 
 	public GridRequestResult executeQuery(InforContext context, GridRequest gridRequest) throws InforException {
-		if (gridFieldCache.containsKey(gridRequest.getGridName())) {
+		if (gridFieldCache.containsKey(gridRequest.getRequestKey())) {
 			return executeQueryDataOnly(context, gridRequest);
 		} else {
 			return executeQueryHeaderData(context, gridRequest);
@@ -120,8 +120,8 @@ public class InforGrids implements Serializable {
 				List<GridRequestCell> cells = inforRow.getD().stream().map(inforCell -> {
 					return new GridRequestCell(inforCell.getN().toString(),
 							inforCell.getContent(),
-							Integer.parseInt(gridFieldCache.get(gridRequest.getGridName()).get(inforCell.getN()).getOrder()),
-							gridFieldCache.get(gridRequest.getGridName()).get(inforCell.getN()).getName());
+							Integer.parseInt(gridFieldCache.get(gridRequest.getRequestKey()).get(inforCell.getN()).getOrder()),
+							gridFieldCache.get(gridRequest.getRequestKey()).get(inforCell.getN()).getName());
 				}).collect(Collectors.toList());
 
 				// SET ORDER AND TAG NAME
@@ -189,7 +189,7 @@ public class InforGrids implements Serializable {
 		//
 		// POPULATE GRID FIELD CACHE
 		//
-		gridFieldCache.put(gridRequest.getGridName(), new ConcurrentHashMap<>());
+		gridFieldCache.put(gridRequest.getRequestKey(), new ConcurrentHashMap<>());
 		for (FIELD field : result.getGRIDRESULT().getGRID().getFIELDS().getFIELD()) {
 			GridField gridField = new GridField();
 			if (field.getType() != null) {
@@ -198,7 +198,7 @@ public class InforGrids implements Serializable {
 			gridField.setId(field.getAliasnum().toString());
 			gridField.setName(field.getName());
 			gridField.setOrder(field.getOrder());
-			gridFieldCache.get(gridRequest.getGridName()).put(field.getAliasnum(), gridField);
+			gridFieldCache.get(gridRequest.getRequestKey()).put(field.getAliasnum(), gridField);
 		}
 
 		//
@@ -226,8 +226,8 @@ public class InforGrids implements Serializable {
 				List<GridRequestCell> cells = inforRow.getD().stream().map(inforCell -> {
 					return new GridRequestCell(inforCell.getN().toString(),
 											   inforCell.getContent(),
-											   Integer.parseInt(gridFieldCache.get(gridRequest.getGridName()).get(inforCell.getN()).getOrder()),
-											   gridFieldCache.get(gridRequest.getGridName()).get(inforCell.getN()).getName());
+											   Integer.parseInt(gridFieldCache.get(gridRequest.getRequestKey()).get(inforCell.getN()).getOrder()),
+											   gridFieldCache.get(gridRequest.getRequestKey()).get(inforCell.getN()).getName());
 				}).collect(Collectors.toList());
 
 				// Sort using the order
