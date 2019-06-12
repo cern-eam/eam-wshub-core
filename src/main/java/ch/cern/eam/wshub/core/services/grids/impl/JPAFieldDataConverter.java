@@ -29,7 +29,7 @@ public class JPAFieldDataConverter {
 				result =  new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH).format(value).toUpperCase();
 				break;
 			case "CHKBOOLEAN":
-				if("-".equals(value))
+				if("-".equals(value) || "false".equals(value) || "No".equals(value))
 					result = "false";
 				else
 					result = "true";
