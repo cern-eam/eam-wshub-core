@@ -61,8 +61,6 @@ public class EAMUser implements Serializable {
 	@Column(name = "USR_UDFCHAR09")
 	private String udfchar09;
 	@Transient
-	private List<String> userDepartments;
-	@Transient
 	private String cernId;
 	@Transient
 	private UserDefinedFields userDefinedFields;
@@ -151,24 +149,17 @@ public class EAMUser implements Serializable {
 		this.passwordExpirationDate = passwordExpirationDate;
 	}
 
-	/**
-	 * @param userDepartments
-	 *            the userDepartments to set
-	 */
-	public void setUserDepartments(List<String> userDepartments) {
-		this.userDepartments = userDepartments;
-		// Add the default department
-		if (this.department != null && !"".equals(this.department) && !this.userDepartments.contains(this.department))
-			this.userDepartments.add(department);
-	}
-
 	public List<String> getUserDepartments() {
-		if (userDepartments == null) {
-			userDepartments = new LinkedList<>();
-			if (this.department != null && !"".equals(this.department))
-				this.userDepartments.add(department);
+		List<String> userDepartments = new LinkedList<>();
+
+		if (getDepartment() != null) {
+			userDepartments.add(getDepartment());
 		}
-		// Sort list
+
+		if (getUserDefinedFields() != null && getUserDefinedFields().getUdfchar10() != null) {
+			String[] udfDepartments = getUserDefinedFields().getUdfchar10().replaceAll("\\s+", "").trim().split(",");
+			userDepartments.addAll(Arrays.asList(udfDepartments));
+		}
 		Collections.sort(userDepartments);
 		return userDepartments;
 	}
@@ -364,7 +355,6 @@ public class EAMUser implements Serializable {
 				+ (udfchar07 != null ? "udfchar07=" + udfchar07 + ", " : "")
 				+ (udfchar08 != null ? "udfchar08=" + udfchar08 + ", " : "")
 				+ (udfchar09 != null ? "udfchar09=" + udfchar09 + ", " : "")
-				+ (userDepartments != null ? "userDepartments=" + userDepartments + ", " : "")
 				+ (cernId != null ? "cernId=" + cernId + ", " : "")
 				+ (userDefinedFields != null ? "userDefinedFields=" + userDefinedFields : "") + "]";
 	}
