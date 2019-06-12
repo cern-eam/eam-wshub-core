@@ -5,6 +5,8 @@ import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -12,6 +14,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Date;
 
+@XmlAccessorType(XmlAccessType.PROPERTY)
 @Entity
 @Table(name = "R5CASEMANAGEMENT")
 public class InforCase implements Serializable, Cloneable {
@@ -80,46 +83,35 @@ public class InforCase implements Serializable, Cloneable {
 	// SCHEDULING
 	//
 	@Transient
-	@XmlJavaTypeAdapter(DateAdapter.class)
 	private Date scheduledStartDate;
 
 	@Transient
-	@XmlJavaTypeAdapter(DateAdapter.class)
 	private Date scheduledEndDate;
 
 	@Transient
-	@XmlJavaTypeAdapter(DateAdapter.class)
 	private Date requestedStartDate;
 
 	@Transient
-	@XmlJavaTypeAdapter(DateAdapter.class)
 	private Date requestedEndDate;
 
 	@Transient
-	@XmlJavaTypeAdapter(DateAdapter.class)
 	private Date startDate;
 
 	@Transient
-	@XmlJavaTypeAdapter(DateAdapter.class)
 	private Date completedDate;
 
 	@Transient
-	@XmlJavaTypeAdapter(DateAdapter.class)
 	private Date createDate;
 
 	@Transient
-	@XmlJavaTypeAdapter(DateAdapter.class)
 	private Date updatedDate;
 
 	@Transient
-	@XmlJavaTypeAdapter(DateAdapter.class)
 	private Date daterequested;
 	@Transient
-	@XmlJavaTypeAdapter(DateAdapter.class)
 	private Date eventstartdate;
 
 	@Transient
-	@XmlJavaTypeAdapter(DateAdapter.class)
 	private Date eventenddate;
 	
 	@Transient
@@ -381,6 +373,7 @@ public class InforCase implements Serializable, Cloneable {
 		this.locationDesc = locationDesc;
 	}
 
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	public Date getScheduledStartDate() {
 		return scheduledStartDate;
 	}
@@ -389,6 +382,7 @@ public class InforCase implements Serializable, Cloneable {
 		this.scheduledStartDate = scheduledStartDate;
 	}
 
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	public Date getScheduledEndDate() {
 		return scheduledEndDate;
 	}
@@ -397,6 +391,7 @@ public class InforCase implements Serializable, Cloneable {
 		this.scheduledEndDate = scheduledEndDate;
 	}
 
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	public Date getRequestedStartDate() {
 		return requestedStartDate;
 	}
@@ -405,6 +400,7 @@ public class InforCase implements Serializable, Cloneable {
 		this.requestedStartDate = requestedStartDate;
 	}
 
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	public Date getRequestedEndDate() {
 		return requestedEndDate;
 	}
@@ -413,6 +409,7 @@ public class InforCase implements Serializable, Cloneable {
 		this.requestedEndDate = requestedEndDate;
 	}
 
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	public Date getStartDate() {
 		return startDate;
 	}
@@ -421,6 +418,7 @@ public class InforCase implements Serializable, Cloneable {
 		this.startDate = startDate;
 	}
 
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	public Date getCompletedDate() {
 		return completedDate;
 	}
@@ -429,6 +427,7 @@ public class InforCase implements Serializable, Cloneable {
 		this.completedDate = completedDate;
 	}
 
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	public Date getCreateDate() {
 		return createDate;
 	}
@@ -437,6 +436,7 @@ public class InforCase implements Serializable, Cloneable {
 		this.createDate = createDate;
 	}
 
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	public Date getUpdatedDate() {
 		return updatedDate;
 	}
@@ -445,6 +445,7 @@ public class InforCase implements Serializable, Cloneable {
 		this.updatedDate = updatedDate;
 	}
 
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	public Date getDaterequested() {
 		return daterequested;
 	}
@@ -453,6 +454,7 @@ public class InforCase implements Serializable, Cloneable {
 		this.daterequested = daterequested;
 	}
 
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	public Date getEventenddate() {
 		return eventenddate;
 	}
@@ -461,6 +463,7 @@ public class InforCase implements Serializable, Cloneable {
 		this.eventenddate = eventenddate;
 	}
 
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	public Date getEventstartdate() {
 		return eventstartdate;
 	}

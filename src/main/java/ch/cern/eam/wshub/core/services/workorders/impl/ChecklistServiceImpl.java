@@ -284,7 +284,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 
 			// FOLLOW-UP
 			String followUp = getCellContent("followup", gridRequestRow);
-			if ("-1".equals(followUp)) {
+			if ("true".equals(followUp)) {
 				checklistTemp.setFollowUp("+");
 			} else {
 				checklistTemp.setFollowUp("-");
@@ -316,7 +316,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 			//
 			if (checklistTemp.getType().equals("01")) {
 				// CHECKLIST ITEM
-				if ("-1".equals(getCellContent("completed", gridRequestRow))) {
+				if ("true".equals(getCellContent("completed", gridRequestRow))) {
 					checklistTemp.setResult("COMPLETED");
 				} else {
 					checklistTemp.setResult(null);
@@ -324,10 +324,10 @@ public class ChecklistServiceImpl implements ChecklistService {
 			}
 			if (checklistTemp.getType().equals("02")) {
 				// QUESTION
-				if (getCellContent("yes", gridRequestRow) != null && getCellContent("yes", gridRequestRow).equals("-1")) {
+				if (getCellContent("yes", gridRequestRow) != null && getCellContent("yes", gridRequestRow).equals("true")) {
 					checklistTemp.setResult("YES");
 				}
-				if (getCellContent("no", gridRequestRow) != null && getCellContent("no", gridRequestRow).equals("-1")) {
+				if (getCellContent("no", gridRequestRow) != null && getCellContent("no", gridRequestRow).equals("true")) {
 					checklistTemp.setResult("NO");
 				}
 			}

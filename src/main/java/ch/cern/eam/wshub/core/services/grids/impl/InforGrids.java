@@ -375,7 +375,7 @@ public class InforGrids implements Serializable {
 	private String decodeCellContent(GridField gridField, String content) {
 		switch (gridField.getDataType()) {
 			case "CHKBOOLEAN":
-				if ("true".equalsIgnoreCase(content) || "+".equalsIgnoreCase(content) || "Yes".equalsIgnoreCase(content)) {
+				if ("true".equalsIgnoreCase(content) || "+".equalsIgnoreCase(content) || "Yes".equalsIgnoreCase(content) || "-1".equalsIgnoreCase(content)) {
 					return "true";
 				} else {
 					return "false";
