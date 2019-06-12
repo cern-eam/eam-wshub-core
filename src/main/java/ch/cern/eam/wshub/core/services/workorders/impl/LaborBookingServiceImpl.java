@@ -331,10 +331,12 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 
 		//
 		if (activityParam.getMaterialList() != null) {
-			if (activityInfor.getMATLIST() == null) {
+			if (activityParam.getMaterialList().trim().equals("")) {
+				activityInfor.setMATLIST(null);
+			} else {
 				activityInfor.setMATLIST(new MATLIST_Type());
+				activityInfor.getMATLIST().setMTLCODE(activityParam.getMaterialList());
 			}
-			activityInfor.getMATLIST().setMTLCODE(activityParam.getMaterialList());
 		}
 
 		// NOTE
