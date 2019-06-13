@@ -22,6 +22,7 @@ public class GridRequest implements Serializable {
 	private Integer queryTimeoutWaitingTime = 15000; //milliseconds
 	private String lang = "EN";
 	private Boolean returnHeaderData = false;
+	private Boolean includeMetadata;
 	
 	/**
 	 * Flag to indicate if fetch all the results
@@ -40,7 +41,8 @@ public class GridRequest implements Serializable {
 	private GridRequestSort[] gridRequestSorts;
 
 	public GridRequest() {
-		// Default Constructor
+		this.cursorPosition = "1";
+		this.rowCount = "100";
 	}
 
 	public GridRequest(String gridName) {
@@ -151,6 +153,7 @@ public class GridRequest implements Serializable {
 	public void setGridType(String gridType) {
 		this.gridType = gridType;
 	}
+
 	public Boolean getUseNative() {
 		return useNative;
 	}
@@ -164,6 +167,9 @@ public class GridRequest implements Serializable {
 	public void setCountTotal(Boolean countTotal) {
 		this.countTotal = countTotal;
 	}
+
+	public Boolean getIncludeMetadata() {return includeMetadata; }
+	public void setIncludeMetadata(Boolean includeMetadata) {this.includeMetadata = includeMetadata; }
 
 	public Map<String, Object> getParams() {
 		return params;
@@ -187,6 +193,7 @@ public class GridRequest implements Serializable {
 	public Integer getQueryTimeoutWaitingTime() {
 		return queryTimeoutWaitingTime;
 	}
+
 	public void setQueryTimeoutWaitingTime(Integer queryTimeoutWaitingTime) {
 		this.queryTimeoutWaitingTime = queryTimeoutWaitingTime;
 	}

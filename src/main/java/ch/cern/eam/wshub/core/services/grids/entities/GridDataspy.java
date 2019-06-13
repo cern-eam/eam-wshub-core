@@ -132,7 +132,16 @@ public class GridDataspy implements Serializable {
 	@Column(name="dds_autorun")
 	@Convert(converter=BooleanTFConverter.class)
 	private boolean autorun;
-	
+
+	public GridDataspy() {
+
+	}
+
+	public GridDataspy(String code, String label) {
+		this.code = code;
+		this.label = label;
+	}
+
 	public String getCode() {
 		return code;
 	}

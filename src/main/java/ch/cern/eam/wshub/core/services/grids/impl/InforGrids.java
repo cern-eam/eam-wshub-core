@@ -44,10 +44,10 @@ public class InforGrids implements Serializable {
 	}
 
 	public GridRequestResult executeQuery(InforContext context, GridRequest gridRequest) throws InforException {
-		if (gridFieldCache.containsKey(gridRequest.getRequestKey())) {
-			return executeQueryDataOnly(context, gridRequest);
-		} else {
+		if (gridRequest.getIncludeMetadata() || !gridFieldCache.containsKey(gridRequest.getRequestKey())) {
 			return executeQueryHeaderData(context, gridRequest);
+		} else {
+			return executeQueryDataOnly(context, gridRequest);
 		}
 	}
 
@@ -186,35 +186,41 @@ public class InforGrids implements Serializable {
 			session.setSessionId(context.getSessionID());
 			result = inforws.getGridHeaderDataOp(getgridd, tools.getOrganizationCode(context), null,"", new Holder<SessionType>(session), null, applicationData.getTenant());
 		}
+
+		GridRequestResult grr = new GridRequestResult();
 		//
 		// POPULATE GRID FIELD CACHE
 		//
 		gridFieldCache.put(gridRequest.getRequestKey(), new ConcurrentHashMap<>());
 		for (FIELD field : result.getGRIDRESULT().getGRID().getFIELDS().getFIELD()) {
-			GridField gridField = new GridField();
-			if (field.getType() != null) {
-				gridField.setDataType(field.getType().value());
-			}
-			gridField.setId(field.getAliasnum().toString());
-			gridField.setName(field.getName());
-			gridField.setOrder(field.getOrder());
-			gridFieldCache.get(gridRequest.getRequestKey()).put(field.getAliasnum(), gridField);
+			gridFieldCache.get(gridRequest.getRequestKey()).put(field.getAliasnum(), decodeInforGridField(field));
 		}
 
 		//
 		// META DATA
 		//
-		GridRequestResult grr = new GridRequestResult();
+		grr.setGridCode(result.getGRIDRESULT().getGRID().getMETADATA().getGRIDID().toString());
+		grr.setGridName(result.getGRIDRESULT().getGRID().getMETADATA().getGRIDNAME());
+		grr.setDataSpyId(result.getGRIDRESULT().getDATASPY().getId());
+		grr.setRecords(result.getGRIDRESULT().getGRID().getMETADATA().getRECORDS());
+
 		if (result.getGRIDRESULT().getGRID().getMETADATA().getMORERECORDPRESENT().equals("+")) {
 			grr.setMoreRowsPresent("TRUE");
 		} else {
 			grr.setMoreRowsPresent("FALSE");
 		}
-		grr.setRecords(result.getGRIDRESULT().getGRID().getMETADATA().getRECORDS());
+
+		grr.setGridDataspies(result.getGRIDRESULT().getTOOLBAR().getFIELDVALUES().getROW().getDataspylist_Options().getOption().stream()
+				.map(option -> new GridDataspy(option.getValue().get(0), option.getDisplay().get(0))).collect(Collectors.toList()));
+
+		grr.setGridFields(result.getGRIDRESULT().getGRID().getFIELDS().getFIELD().stream()
+				.filter(field -> Integer.parseInt(field.getOrder()) >= 0)
+				.map(field -> decodeInforGridField(field))
+				.collect(Collectors.toList()));
+
 		//
 		// RESULT DATA
 		//
-
 		if (result.getGRIDRESULT().getGRID().getDATA() != null &&
 				result.getGRIDRESULT().getGRID().getDATA().getROW() != null &&
 				result.getGRIDRESULT().getGRID().getDATA().getROW().size() > 0) {
@@ -305,12 +311,14 @@ public class InforGrids implements Serializable {
 					inforFilter.setJOINER(AND_OR.OR);
 				}
 				//
-				inforFilter.setOPERATOR(filter.getOperator());
 				inforFilter.setALIAS_NAME(filter.getFieldName());
 				inforFilter.setVALUE(filter.getFieldValue());
 				inforFilter.setLPAREN(filter.getLeftParenthesis());
 				inforFilter.setRPAREN(filter.getRightParenthesis());
 				switch(inforFilter.getOPERATOR()) {
+					case "EQUALS":
+						inforFilter.setOPERATOR("=");
+						break;
 					case "LESS_THAN":
 						inforFilter.setOPERATOR("<");
 						break;
@@ -323,6 +331,8 @@ public class InforGrids implements Serializable {
 					case "GREATER_THAN_EQUALS":
 						inforFilter.setOPERATOR(">=");
 						break;
+					default:
+						inforFilter.setOPERATOR(filter.getOperator());
 				}
 
 				multiaddon_filters.getMADDON_FILTER().add(inforFilter);
@@ -383,6 +393,19 @@ public class InforGrids implements Serializable {
 			default:
 				return content;
 		}
+	}
+
+	private GridField decodeInforGridField(FIELD field) {
+		GridField gridField = new GridField();
+		if (field.getType() != null) {
+			gridField.setDataType(field.getType().value());
+		}
+		gridField.setId(field.getAliasnum().toString());
+		gridField.setName(field.getName());
+		gridField.setOrder(field.getOrder());
+		gridField.setWidth(field.getWidth());
+		gridField.setLabel(field.getLabel());
+		return gridField;
 	}
 
 }

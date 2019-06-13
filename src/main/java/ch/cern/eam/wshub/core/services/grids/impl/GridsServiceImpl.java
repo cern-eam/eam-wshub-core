@@ -35,7 +35,7 @@ public class GridsServiceImpl implements GridsService {
 	}
 
 	public GridRequestResult executeQuery(InforContext context, GridRequest gridRequest) throws InforException {
-		if (gridRequest.getUseNative()) {
+		if (gridRequest.getUseNative() || !tools.isDatabaseConnectionConfigured()) {
 			return inforGrids.executeQuery(context, gridRequest);
 		} else {
 			tools.demandDatabaseConnection();
