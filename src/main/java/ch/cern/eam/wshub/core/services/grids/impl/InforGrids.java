@@ -311,6 +311,7 @@ public class InforGrids implements Serializable {
 					inforFilter.setJOINER(AND_OR.OR);
 				}
 				//
+				inforFilter.setOPERATOR(filter.getOperator());
 				inforFilter.setALIAS_NAME(filter.getFieldName());
 				inforFilter.setVALUE(filter.getFieldValue());
 				inforFilter.setLPAREN(filter.getLeftParenthesis());
@@ -331,8 +332,6 @@ public class InforGrids implements Serializable {
 					case "GREATER_THAN_EQUALS":
 						inforFilter.setOPERATOR(">=");
 						break;
-					default:
-						inforFilter.setOPERATOR(filter.getOperator());
 				}
 
 				multiaddon_filters.getMADDON_FILTER().add(inforFilter);

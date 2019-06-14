@@ -22,7 +22,7 @@ public class GridRequest implements Serializable {
 	private Integer queryTimeoutWaitingTime = 15000; //milliseconds
 	private String lang = "EN";
 	private Boolean returnHeaderData = false;
-	private Boolean includeMetadata;
+	private Boolean includeMetadata = false;
 	
 	/**
 	 * Flag to indicate if fetch all the results
