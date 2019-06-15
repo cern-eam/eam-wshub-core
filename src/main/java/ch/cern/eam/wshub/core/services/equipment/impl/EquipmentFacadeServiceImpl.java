@@ -4,13 +4,21 @@ import javax.persistence.EntityManager;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.entities.BatchResponse;
 import ch.cern.eam.wshub.core.services.equipment.*;
+import ch.cern.eam.wshub.core.services.grids.GridsService;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
+import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
+import ch.cern.eam.wshub.core.tools.GridTools;
 import ch.cern.eam.wshub.core.tools.Tools;
 import ch.cern.eam.wshub.core.tools.InforException;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 import ch.cern.eam.wshub.core.services.equipment.entities.Equipment;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
@@ -23,6 +31,7 @@ public class EquipmentFacadeServiceImpl implements EquipmentFacadeService {
 	private PositionService positionService;
 	private SystemService systemService;
 	private LocationService locationService;
+	private GridsService gridsService;
 
 	public EquipmentFacadeServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
 		this.applicationData = applicationData;
@@ -32,6 +41,7 @@ public class EquipmentFacadeServiceImpl implements EquipmentFacadeService {
 		this.positionService = new PositionServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
 		this.systemService = new SystemServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
 		this.locationService = new LocationServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
+		this.gridsService = new GridsServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
 	}
 
 	//
@@ -81,7 +91,7 @@ public class EquipmentFacadeServiceImpl implements EquipmentFacadeService {
 	public String updateEquipment(InforContext inforContext, Equipment equipment) throws InforException {
 
 		if (equipment.getTypeCode() == null) {
-			equipment.setTypeCode(getEquipmentTypeCode(equipment.getCode()));
+			equipment.setTypeCode(getEquipmentTypeCode(inforContext, equipment.getCode()));
 		}
 
 		switch (equipment.getTypeCode()) {
@@ -123,7 +133,7 @@ public class EquipmentFacadeServiceImpl implements EquipmentFacadeService {
 	public Equipment readEquipment(InforContext inforContext, String equipmentCode)
 			throws InforException {
 
-		String equipmentTypeCode = getEquipmentTypeCode(equipmentCode);
+		String equipmentTypeCode = getEquipmentTypeCode(inforContext, equipmentCode);
 
 		switch (equipmentTypeCode) {
 		case "A":
@@ -145,7 +155,7 @@ public class EquipmentFacadeServiceImpl implements EquipmentFacadeService {
 	@Override
 	public String deleteEquipment(InforContext inforContext, String equipmentCode) throws InforException {
 
-		String equipmentTypeCode = getEquipmentTypeCode(equipmentCode);
+		String equipmentTypeCode = getEquipmentTypeCode(inforContext, equipmentCode);
 
 		switch (equipmentTypeCode) {
 		case "A":
@@ -164,16 +174,27 @@ public class EquipmentFacadeServiceImpl implements EquipmentFacadeService {
 		}
 	}
 
-	private String getEquipmentTypeCode(String equipmentCode) throws InforException {
-			tools.demandDatabaseConnection();
-			EntityManager em = tools.getEntityManager();
-			try {
-				return em.find(Equipment.class, equipmentCode).getTypeCode();
-			} catch (IllegalArgumentException | NullPointerException exception) {
-				throw tools.generateFault("The equipment record couldn't be found.");
-			} finally {
-				em.close();
-			}
+	private String getEquipmentTypeCode(InforContext inforContext, String equipmentCode) throws InforException {
+		//TODO: Find more suitable grid to fetch equipment type
+		Map<String, String> types = new HashMap<>();
+		types.put("Equipement", "A");
+		types.put("Asset", "A");
+		types.put("Position", "P");
+		types.put("Position fonctionelle", "P");
+		types.put("System", "S");
+		types.put("Systeme", "S");
+		types.put("Location", "L");
+		types.put("Localisation", "L");
+
+		GridRequest gridRequest = new GridRequest("LVREPCOGALLEQUIPMENT");
+		gridRequest.setGridType("LOV");
+		gridRequest.getGridRequestFilters().add(new GridRequestFilter("code", equipmentCode, "="));
+		GridRequestResult requestResult = gridsService.executeQuery(inforContext, gridRequest);
+		if (requestResult.getRows().length == 1) {
+			return types.get(GridTools.getCellContent("type", requestResult.getRows()[0]));
+		} else {
+			throw tools.generateFault("The equipment record couldn't be found.");
+		}
 	}
 
 }

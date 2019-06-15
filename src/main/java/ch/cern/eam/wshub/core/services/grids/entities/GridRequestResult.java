@@ -12,6 +12,7 @@ public class GridRequestResult implements Serializable {
 	private String gridName;
 	private String dataSpyId;
 	private String moreRowsPresent;
+	private int cursorPosition;
 	private String records;
 
 	private List<GridDataspy> gridDataspies;
@@ -67,6 +68,7 @@ public class GridRequestResult implements Serializable {
 	public void setRecords(String records) {
 		this.records = records;
 	}
-	
-	
+
+	public int getCursorPosition() {return cursorPosition; }
+	public void setCursorPosition(int cursorPosition) { this.cursorPosition = cursorPosition; }
 }

@@ -95,16 +95,22 @@ public class InforGrids implements Serializable {
 			result = inforws.getGridDataOnlyOp(getgridd, tools.getOrganizationCode(context), null,"", new Holder<SessionType>(session), null, applicationData.getTenant());
 		}
 
+		GridRequestResult grr = new GridRequestResult();
 		//
 		// META DATA
 		//
-		GridRequestResult grr = new GridRequestResult();
+		grr.setGridCode(result.getGRIDRESULT().getGRID().getMETADATA().getGRIDID().toString());
+		grr.setGridName(result.getGRIDRESULT().getGRID().getMETADATA().getGRIDNAME());
+		grr.setDataSpyId(result.getGRIDRESULT().getDATASPY().getId());
+		grr.setRecords(result.getGRIDRESULT().getGRID().getMETADATA().getRECORDS());
+		grr.setCursorPosition(result.getGRIDRESULT().getGRID().getMETADATA().getCURRENTCURSORPOSITION().intValue());
+
+
 		if (result.getGRIDRESULT().getGRID().getMETADATA().getMORERECORDPRESENT().equals("+")) {
 			grr.setMoreRowsPresent("TRUE");
 		} else {
 			grr.setMoreRowsPresent("FALSE");
 		}
-		grr.setRecords(result.getGRIDRESULT().getGRID().getMETADATA().getRECORDS());
 		//
 		// RESULT DATA
 		//
@@ -203,6 +209,7 @@ public class InforGrids implements Serializable {
 		grr.setGridName(result.getGRIDRESULT().getGRID().getMETADATA().getGRIDNAME());
 		grr.setDataSpyId(result.getGRIDRESULT().getDATASPY().getId());
 		grr.setRecords(result.getGRIDRESULT().getGRID().getMETADATA().getRECORDS());
+		grr.setCursorPosition(result.getGRIDRESULT().getGRID().getMETADATA().getCURRENTCURSORPOSITION().intValue());
 
 		if (result.getGRIDRESULT().getGRID().getMETADATA().getMORERECORDPRESENT().equals("+")) {
 			grr.setMoreRowsPresent("TRUE");
@@ -217,6 +224,8 @@ public class InforGrids implements Serializable {
 				.filter(field -> Integer.parseInt(field.getOrder()) >= 0)
 				.map(field -> decodeInforGridField(field))
 				.collect(Collectors.toList()));
+
+
 
 		//
 		// RESULT DATA

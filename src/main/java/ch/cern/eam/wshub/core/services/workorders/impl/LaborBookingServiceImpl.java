@@ -49,16 +49,24 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 		this.gridsService = new GridsServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
 	}
 
-	public LaborBooking[] readLaborBookings(InforContext context, String workOrderNumber) throws InforException {
-		tools.demandDatabaseConnection();
-		EntityManager em = tools.getEntityManager();
-		try {
-			return em.createNamedQuery(LaborBooking.GETBOOKEDLABOR, LaborBooking.class).setParameter("workOrder", workOrderNumber).getResultList().toArray(new LaborBooking[0]);
-		} catch (Exception e) {
-			throw tools.generateFault("Couldn't fetch labor bookings for this work order.");
-		} finally {
-			em.close();
-		}
+	public List<LaborBooking> readLaborBookings(InforContext context, String workOrderNumber) throws InforException {
+		GridRequest gridRequest = new GridRequest("WSJOBS_BOO");
+		gridRequest.setUserFunctionName("WSJOBS");
+		gridRequest.getParams().put("param.jobnum", workOrderNumber);
+		gridRequest.getParams().put("param.headeractivity", "0");
+		gridRequest.getParams().put("param.headerjob", "0");
+
+		Map map = new HashMap();
+		map.put("octype", "typeOfHours");
+		map.put("hours", "hoursWorked");
+		map.put("boodate", "dateWorked");
+		map.put("department", "departmentCode");
+		map.put("employee", "employeeCode");
+		map.put("employeedesc", "employeeDesc");
+		map.put("booactivity", "activityCode");
+		map.put("emptrade", "tradeCode");
+
+		return tools.getGridTools().converGridResultToObject(LaborBooking.class, map, gridsService.executeQuery(context, gridRequest));
 	}
 
 	public String createLaborBooking(InforContext context, LaborBooking laborBookingParam) throws InforException {
