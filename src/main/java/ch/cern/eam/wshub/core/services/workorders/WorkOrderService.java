@@ -43,12 +43,12 @@ public interface WorkOrderService {
     @Operation(logOperation = INFOR_OPERATION.WORKORDER_CREATE, logDataReference1 = LogDataReferenceType.RESULT)
     String createWorkOrder(InforContext context, WorkOrder workorder) throws InforException;
 
-    @Operation(logOperation = INFOR_OPERATION.WORKORDER_U, logDataReference1 = LogDataReferenceType.INPUTFIELD, logDataReference1FieldName = "number")
+    @Operation(logOperation = INFOR_OPERATION.WORKORDER_UPDATE, logDataReference1 = LogDataReferenceType.INPUTFIELD, logDataReference1FieldName = "number")
     String updateWorkOrder(InforContext context, WorkOrder workorder) throws InforException;
 
-    @Operation(logOperation = INFOR_OPERATION.WORKORDER_D)
+    @Operation(logOperation = INFOR_OPERATION.WORKORDER_DELETE)
     String deleteWorkOrder(InforContext context, String workOrderNumber) throws InforException;
 
-    @Operation(logOperation = INFOR_OPERATION.WO_STATUS_U)
+    @Operation(logOperation = INFOR_OPERATION.WO_STATUS_UPDATE)
     String updateWorkOrderStatus(InforContext context, String workOrderNumber, String statusCode) throws InforException;
 }

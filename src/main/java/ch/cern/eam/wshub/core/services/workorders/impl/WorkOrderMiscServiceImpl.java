@@ -194,9 +194,11 @@ public class WorkOrderMiscServiceImpl implements WorkOrderMiscService {
 		wop.getPARTID().setPARTCODE(workOrderPart.getPartCode());
 
 		// STORE ID
-		wop.setSTOREID(new STOREID_Type());
-		wop.getSTOREID().setORGANIZATIONID(tools.getOrganization(context));
-		wop.getSTOREID().setSTORECODE(workOrderPart.getStoreCode());
+		if (workOrderPart.getStoreCode() != null) {
+			wop.setSTOREID(new STOREID_Type());
+			wop.getSTOREID().setORGANIZATIONID(tools.getOrganization(context));
+			wop.getSTOREID().setSTORECODE(workOrderPart.getStoreCode());
+		}
 
 		// WORK ORDER PART ID
 		wop.setWORKORDERPARTID(new WORKORDERPARTID());
