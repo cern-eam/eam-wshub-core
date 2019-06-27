@@ -2,78 +2,97 @@ package ch.cern.eam.wshub.core.services.entities;
 
 public class WorkOrderPart {
 
-	private String PartCode;
-	private String PlannedQty;
-	private String ReservedQty;
-	private String ActivityCode;
-	private String TradeCode;
-	private String StoreCode;
-	private String AllocatedQty;
-	private String PlannedSource;
-	private String Available;
-	private String WorkOrderNumber;
+	private String partCode;
+	private String partDesc;
+	private String plannedQty;
+	private String reservedQty;
+	private String allocatedQty;
+	private String usedQty;
+	private String quantity;
+	private String activityCode;
+	private String activityDesc;
+	private String tradeCode;
+	private String storeCode;
+
+	private String plannedSource;
+	private String available;
+	private String workOrderNumber;
+	private String transType;
 
 	public String getPartCode() {
-		return PartCode;
+		return partCode;
 	}
 	public void setPartCode(String partCode) {
-		PartCode = partCode;
+		this.partCode = partCode;
 	}
 	public String getPlannedQty() {
-		return PlannedQty;
+		return plannedQty;
 	}
 	public void setPlannedQty(String plannedQty) {
-		PlannedQty = plannedQty;
+		this.plannedQty = plannedQty;
 	}
 	public String getReservedQty() {
-		return ReservedQty;
+		return reservedQty;
 	}
 	public void setReservedQty(String reservedQty) {
-		ReservedQty = reservedQty;
+		this.reservedQty = reservedQty;
 	}
 	public String getActivityCode() {
-		return ActivityCode;
+		return activityCode;
 	}
 	public void setActivityCode(String activityCode) {
-		ActivityCode = activityCode;
+		this.activityCode = activityCode;
 	}
 	public String getTradeCode() {
-		return TradeCode;
+		return tradeCode;
 	}
 	public void setTradeCode(String tradeCode) {
-		TradeCode = tradeCode;
+		this.tradeCode = tradeCode;
 	}
 	public String getStoreCode() {
-		return StoreCode;
+		return storeCode;
 	}
 	public void setStoreCode(String storeCode) {
-		StoreCode = storeCode;
+		this.storeCode = storeCode;
 	}
 	public String getAllocatedQty() {
-		return AllocatedQty;
+		return allocatedQty;
 	}
 	public void setAllocatedQty(String allocatedQty) {
-		AllocatedQty = allocatedQty;
+		this.allocatedQty = allocatedQty;
 	}
 	public String getPlannedSource() {
-		return PlannedSource;
+		return plannedSource;
 	}
 	public void setPlannedSource(String plannedSource) {
-		PlannedSource = plannedSource;
+		this.plannedSource = plannedSource;
 	}
 	public String getAvailable() {
-		return Available;
+		return available;
 	}
 	public void setAvailable(String available) {
-		Available = available;
+		this.available = available;
 	}
 	public String getWorkOrderNumber() {
-		return WorkOrderNumber;
+		return workOrderNumber;
 	}
 	public void setWorkOrderNumber(String workOrderNumber) {
-		WorkOrderNumber = workOrderNumber;
+		this.workOrderNumber = workOrderNumber;
 	}
-	
-	
-	
+
+	public String getPartDesc() { return partDesc; }
+	public void setPartDesc(String partDesc) { this.partDesc = partDesc; }
+
+	public String getActivityDesc() { return activityDesc; }
+	public void setActivityDesc(String activityDesc) { this.activityDesc = activityDesc; }
+
+	public String getUsedQty() { return usedQty; }
+	public void setUsedQty(String usedQty) { this.usedQty = usedQty; }
+
+	public String getTransType() { return transType; }
+	public void setTransType(String transType) { this.transType = transType; }
+
+	public String getQuantity() { return quantity; }
+
+	public void setQuantity(String quantity) { this.quantity = quantity; }
 }
