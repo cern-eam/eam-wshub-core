@@ -38,11 +38,6 @@ public class CommentServiceImpl implements CommentService {
 			throw tools.generateFault("Comment can not be empty");
 		}
 
-		String[] supportedEntities = {"OBJ", "EVNT", "PART", "CASE"};
-		if (!Arrays.asList(supportedEntities).contains(comment.getEntityCode())) {
-			throw tools.generateFault("This entity is not supported");
-		}
-
 		if (comment.getText() == null || comment.getEntityCode() == null || comment.getEntityKeyCode() == null) {
 			throw tools.generateFault("Please supply entity code, entity key code and comment text.");
 		}
