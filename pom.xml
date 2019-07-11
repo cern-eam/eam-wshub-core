@@ -21,7 +21,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ch.cern.eam</groupId>
 	<artifactId>eam-wshub-core</artifactId>
-	<version>11.4-33</version>
+	<version>11.4-34</version>
 
 	<name>EAM WS Hub Core</name>
 	<description>High-level Java SE library that provides all core functionalities of EAM WS Hub.</description>
@@ -99,7 +99,7 @@
 		<dependency>
 			<groupId>ch.cern.eam</groupId>
 			<artifactId>eam-wshub-proxyclient</artifactId>
-			<version>11.4-3</version>
+			<version>11.4-4</version>
 		</dependency>
 	</dependencies>
 
@@ -143,17 +143,7 @@
 				</configuration>
 			</plugin>
 
-			<plugin>
-				<groupId>org.sonatype.plugins</groupId>
-				<artifactId>nexus-staging-maven-plugin</artifactId>
-				<version>1.6.8</version>
-				<extensions>true</extensions>
-				<configuration>
-					<serverId>oss-cern-eam</serverId>
-					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
-					<autoReleaseAfterClose>false</autoReleaseAfterClose>
-				</configuration>
-			</plugin>
+
 		</plugins>
 	</build>
 

@@ -88,6 +88,7 @@ public class InforClient implements Serializable {
     private PartStoreService partStoreService;
     private PartManufacturerService partManufacturerService;
     private PartBinStockService partBinStockService;
+    private PartLotService partLotService;
     private PurchaseOrdersService purchaseOrdersService;
     private PickTicketService pickTicketService;
 
@@ -212,6 +213,7 @@ public class InforClient implements Serializable {
             inforClient.partStoreService = proxy(PartStoreService.class, new PartStoreServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.partManufacturerService = proxy(PartManufacturerService.class, new PartManufacturerServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.partBinStockService = proxy(PartBinStockService.class, new PartBinStockServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
+            inforClient.partLotService = proxy(PartLotService.class, new PartLotServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.locationService = proxy(LocationService.class, new LocationServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.partKitService = proxy(PartKitService.class, new PartKitServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.purchaseOrdersService = proxy(PurchaseOrdersService.class, new PurchaseOrdersImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
@@ -294,6 +296,8 @@ public class InforClient implements Serializable {
     public PartBinStockService getPartBinStockService() {
         return partBinStockService;
     }
+
+    public PartLotService getPartLotService() {return partLotService; }
 
     public LocationService getLocationService() {
         return locationService;

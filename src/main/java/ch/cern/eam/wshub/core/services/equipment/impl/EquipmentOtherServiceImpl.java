@@ -337,10 +337,10 @@ public class EquipmentOtherServiceImpl implements EquipmentOtherService {
 		if (context.getCredentials() != null) {
 			inforws.changeEquipmentNumberOp(changeeqpnum, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					null, applicationData.getTenant());
+					tools.createMessageConfig(), applicationData.getTenant());
 		} else {
 			inforws.changeEquipmentNumberOp(changeeqpnum, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
 		}
 
 		return "OK";
