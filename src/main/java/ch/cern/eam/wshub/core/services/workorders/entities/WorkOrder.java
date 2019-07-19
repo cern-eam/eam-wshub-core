@@ -138,6 +138,8 @@ public class WorkOrder implements Serializable {
 	@Transient
 	private String targetValue;
 	@Transient
+	private String downtimeHours;
+	@Transient
 	private UserDefinedFields userDefinedFields;
 
 	@Column(name = "EVT_ORIGWO")
@@ -561,7 +563,9 @@ public class WorkOrder implements Serializable {
 
 	public void setTargetValue(String targetValue) { this.targetValue = targetValue; }
 
+	public String getDowntimeHours() { return downtimeHours; }
 
+	public void setDowntimeHours(String downtimeHours) { this.downtimeHours = downtimeHours; }
 
 	@Override
 	public String toString() {

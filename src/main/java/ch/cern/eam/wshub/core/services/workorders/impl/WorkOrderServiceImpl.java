@@ -274,6 +274,11 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			workOrder.setTargetValue(tools.getDataTypeTools().decodeAmount(inforWorkOrder.getTARGETVALUE()));
 		}
 
+		// DOWNTIME HOURS
+		if (inforWorkOrder.getDOWNTIMEHOURS() != null) {
+			workOrder.setDowntimeHours(tools.getDataTypeTools().decodeQuantity(inforWorkOrder.getDOWNTIMEHOURS()));
+		}
+
 		// UPDATE COUNT
 		workOrder.setUpdateCount(inforWorkOrder.getRecordid().toString());
 
@@ -425,7 +430,9 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			StandardWorkOrder standardWO = getSWOResult.getResultData().getStandardWorkOrder();
 			// assign properties
 			inforWorkOrder.setPERMITREVIEWEDBY(standardWO.getPERMITREVIEWEDBY());
-			inforWorkOrder.setPRIORITY(standardWO.getPRIORITY());
+			if (workorderParam.getPriorityCode() == null) {
+				inforWorkOrder.setPRIORITY(standardWO.getPRIORITY());
+			}
 			inforWorkOrder.setPROBLEMCODEID(standardWO.getPROBLEMCODEID());
 			inforWorkOrder.setSAFETYREVIEWEDBY(standardWO.getSAFETYREVIEWEDBY());
 			inforWorkOrder.setSTANDARDWO(standardWO.getSTANDARDWO());
@@ -760,6 +767,11 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		// TARGET VALUE
 		if (workorderParam.getTargetValue() != null) {
 			inforWorkOrder.setTARGETVALUE(tools.getDataTypeTools().encodeAmount(workorderParam.getTargetValue(), "Target Value"));
+		}
+
+		// DOWNTIME HOURS
+		if (workorderParam.getDowntimeHours() != null) {
+			inforWorkOrder.setDOWNTIMEHOURS(tools.getDataTypeTools().encodeQuantity(workorderParam.getDowntimeHours(), "Downtime Hours"));
 		}
 	}
 

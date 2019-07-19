@@ -48,6 +48,8 @@ public class Equipment implements Serializable {
 	private String outOfService;
 	@Transient
 	private String inProduction;
+	@Transient
+	private String profileCode;
 	//
 	@Transient
 	private String statusCode;
@@ -997,6 +999,10 @@ public class Equipment implements Serializable {
 	public void setStateDesc(String stateDesc) {
 		this.stateDesc = stateDesc;
 	}
+
+	public String getProfileCode() { return profileCode; }
+
+	public void setProfileCode(String profileCode) { this.profileCode = profileCode; }
 
 	@Override
 	public String toString() {

@@ -515,6 +515,12 @@ public class AssetServiceImpl implements AssetService {
             assetInfor.getDEPARTMENTID().setDEPARTMENTCODE(assetParam.getDepartmentCode().toUpperCase().trim());
         }
 
+        if (assetParam.getProfileCode() != null) {
+            assetInfor.setPROFILEID(new OBJECT_Type());
+            assetInfor.getPROFILEID().setORGANIZATIONID(tools.getOrganization(context));
+            assetInfor.getPROFILEID().setOBJECTCODE(assetParam.getProfileCode());
+        }
+
         if (assetParam.getManufacturerCode() != null || assetParam.getSerialNumber() != null
                 || assetParam.getModel() != null || assetParam.getRevision() != null
                 || assetParam.getxCoordinate() != null || assetParam.getyCoordinate() != null

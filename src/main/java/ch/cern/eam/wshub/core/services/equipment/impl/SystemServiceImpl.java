@@ -339,6 +339,12 @@ public class SystemServiceImpl implements SystemService {
 			systemInfor.getDEPARTMENTID().setDEPARTMENTCODE(systemParam.getDepartmentCode());
 		}
 
+		if (systemParam.getProfileCode() != null) {
+			systemInfor.setPROFILEID(new OBJECT_Type());
+			systemInfor.getPROFILEID().setORGANIZATIONID(tools.getOrganization(context));
+			systemInfor.getPROFILEID().setOBJECTCODE(systemParam.getProfileCode());
+		}
+
 		if (systemParam.getManufacturerCode() != null || systemParam.getSerialNumber() != null
 				|| systemParam.getModel() != null || systemParam.getRevision() != null
 				|| systemParam.getxCoordinate() != null || systemParam.getyCoordinate() != null

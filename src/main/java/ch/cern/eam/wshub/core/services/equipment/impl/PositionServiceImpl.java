@@ -497,6 +497,12 @@ public class PositionServiceImpl implements PositionService {
 			positionInfor.getDEPARTMENTID().setDEPARTMENTCODE(positionParam.getDepartmentCode().toUpperCase().trim());
 		}
 
+		if (positionParam.getProfileCode() != null) {
+			positionInfor.setPROFILEID(new OBJECT_Type());
+			positionInfor.getPROFILEID().setORGANIZATIONID(tools.getOrganization(context));
+			positionInfor.getPROFILEID().setOBJECTCODE(positionParam.getProfileCode());
+		}
+
 		if (positionParam.getManufacturerCode() != null || positionParam.getSerialNumber() != null
 				|| positionParam.getModel() != null || positionParam.getRevision() != null
 				|| positionParam.getxCoordinate() != null || positionParam.getyCoordinate() != null
