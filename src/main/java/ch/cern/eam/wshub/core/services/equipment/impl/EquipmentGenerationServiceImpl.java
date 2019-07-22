@@ -2,7 +2,6 @@ package ch.cern.eam.wshub.core.services.equipment.impl;
 
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.equipment.EquipmentGenerationService;
-import ch.cern.eam.wshub.core.services.equipment.entities.Equipment;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
@@ -18,7 +17,6 @@ import net.datastream.schemas.mp_functions.mp3235_001.MP3235_CreateEquipmentGene
 import net.datastream.schemas.mp_functions.mp3251_001.MP3251_GenerateEquipmentGeneration_001;
 import net.datastream.schemas.mp_results.mp3230_001.MP3230_GetEquipmentGenerationDefault_001_Result;
 import net.datastream.schemas.mp_results.mp3231_001.MP3231_AddEquipmentGeneration_001_Result;
-import net.datastream.schemas.mp_results.mp3232_001.MP3232_SyncEquipmentGeneration_001_Result;
 import net.datastream.schemas.mp_results.mp3234_001.MP3234_GetEquipmentGeneration_001_Result;
 import net.datastream.schemas.mp_results.mp3235_001.MP3235_CreateEquipmentGenerationPreview_001_Result;
 import net.datastream.schemas.mp_results.mp3251_001.MP3251_GenerateEquipmentGeneration_001_Result;
@@ -543,7 +541,9 @@ public class EquipmentGenerationServiceImpl implements EquipmentGenerationServic
 
         }
         if(equipmentGeneration.getEquipmentStatusDesc() != null){
-            equipmentDetails.getEQUIPMENTSTATUS().setDESCRIPTION(equipmentGeneration.getEquipmentStatusDesc());
+            STATUS_Type statusType = new STATUS_Type();
+            statusType.setDESCRIPTION(equipmentGeneration.getEquipmentStatusDesc());
+            equipmentDetails.setEQUIPMENTSTATUS(statusType);
         }
 
         if(equipmentGeneration.getCommissionDate() != null){
@@ -555,36 +555,52 @@ public class EquipmentGenerationServiceImpl implements EquipmentGenerationServic
         }
 
         if(equipmentGeneration.getEquipmentAssignedToCode() != null){
-            equipmentDetails.getASSIGNEDTO().setPERSONCODE(equipmentGeneration.getEquipmentAssignedToCode());
+            PERSONID_Type personidType = new PERSONID_Type();
+            personidType.setPERSONCODE(equipmentGeneration.getEquipmentAssignedToCode());
+            equipmentDetails.setASSIGNEDTO(personidType);
         }
 
         if(equipmentGeneration.getEquipmentAssignedToDesc() != null){
-            equipmentDetails.getASSIGNEDTO().setDESCRIPTION(equipmentGeneration.getEquipmentAssignedToDesc());
+            PERSONID_Type personid_type = new PERSONID_Type();
+            personid_type.setDESCRIPTION(equipmentGeneration.getEquipmentAssignedToDesc());
+            equipmentDetails.setASSIGNEDTO(personid_type);
         }
 
         if(equipmentGeneration.getEquipmentCostCode() != null){
-            equipmentDetails.getCOSTCODEID().setCOSTCODE(equipmentGeneration.getEquipmentCostCode());
+            COSTCODEID_Type costcodeidType = new COSTCODEID_Type();
+            costcodeidType.setCOSTCODE(equipmentGeneration.getEquipmentCostCode());
+            equipmentDetails.setCOSTCODEID(costcodeidType);
         }
 
 
         if(equipmentGeneration.getEquipmentCostCodeDesc() != null){
-            equipmentDetails.getCOSTCODEID().setDESCRIPTION(equipmentGeneration.getEquipmentCostCodeDesc());
+            COSTCODEID_Type costcodeidType = new COSTCODEID_Type();
+            costcodeidType.setDESCRIPTION(equipmentGeneration.getEquipmentCostCodeDesc());
+            equipmentDetails.setCOSTCODEID(costcodeidType);
         }
 
         if(equipmentGeneration.getEquipmentDepartmentCode() != null){
-            equipmentDetails.getDEPARTMENTID().setDEPARTMENTCODE(equipmentGeneration.getEquipmentDepartmentCode());
+            DEPARTMENTID_Type departmentidType = new DEPARTMENTID_Type();
+            departmentidType.setDEPARTMENTCODE(equipmentGeneration.getEquipmentDepartmentCode());
+            equipmentDetails.setDEPARTMENTID(departmentidType);
         }
 
         if(equipmentGeneration.getEquipmentDepartmentDesc() != null){
-            equipmentDetails.getDEPARTMENTID().setDESCRIPTION(equipmentGeneration.getEquipmentDepartmentDesc());
+            DEPARTMENTID_Type departmentidType = new DEPARTMENTID_Type();
+            departmentidType.setDESCRIPTION(equipmentGeneration.getEquipmentDepartmentDesc());
+            equipmentDetails.setDEPARTMENTID(departmentidType);
         }
 
         if(equipmentGeneration.getEquipmentLocationCode() != null){
-            equipmentDetails.getLOCATIONID().setLOCATIONCODE(equipmentGeneration.getEquipmentLocationCode());
+            LOCATIONID_Type locationidType = new LOCATIONID_Type();
+            locationidType.setLOCATIONCODE(equipmentGeneration.getEquipmentLocationCode());
+            equipmentDetails.setLOCATIONID(locationidType);
         }
 
         if(equipmentGeneration.getEquipmentLocationDesc() != null){
-            equipmentDetails.getLOCATIONID().setLOCATIONCODE(equipmentGeneration.getEquipmentLocationDesc());
+            LOCATIONID_Type locationidType = new LOCATIONID_Type();
+            locationidType.setDESCRIPTION(equipmentGeneration.getEquipmentLocationDesc());
+            equipmentDetails.setLOCATIONID(locationidType);
         }
 
 
