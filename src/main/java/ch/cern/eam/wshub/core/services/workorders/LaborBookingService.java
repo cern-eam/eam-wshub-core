@@ -25,4 +25,7 @@ public interface LaborBookingService {
 
     @Operation(logOperation = INFOR_OPERATION.ACTIVITY_U)
     String updateActivity(InforContext context, Activity activityParam) throws InforException;
+
+    @Operation(logOperation = INFOR_OPERATION.ACTIVITY_D)
+    String deleteActivity(InforContext context, Activity activityParam) throws InforException;
 }
