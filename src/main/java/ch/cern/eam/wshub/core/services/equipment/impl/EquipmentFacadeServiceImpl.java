@@ -183,6 +183,7 @@ public class EquipmentFacadeServiceImpl implements EquipmentFacadeService {
 		types.put("Position fonctionelle", "P");
 		types.put("System", "S");
 		types.put("Systeme", "S");
+		types.put("Lot", "S");
 		types.put("Location", "L");
 		types.put("Localisation", "L");
 
