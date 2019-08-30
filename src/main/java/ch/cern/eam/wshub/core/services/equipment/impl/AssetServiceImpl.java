@@ -419,9 +419,6 @@ public class AssetServiceImpl implements AssetService {
         //
         //
         initializeAssetObject(assetEquipment, assetParam, context);
-
-        assetEquipment.setTYPE(new TYPE_Type());
-        assetEquipment.getTYPE().setTYPECODE("A");
         //
         //
         //
@@ -478,6 +475,14 @@ public class AssetServiceImpl implements AssetService {
         if (assetParam.getStatusCode() != null) {
             assetInfor.setSTATUS(new STATUS_Type());
             assetInfor.getSTATUS().setSTATUSCODE(assetParam.getStatusCode().toUpperCase().trim());
+        }
+
+        if (assetParam.getTypeCode() != null) {
+            assetInfor.setTYPE(new TYPE_Type());
+            assetInfor.getTYPE().setTYPECODE(assetParam.getTypeCode());
+        } else {
+            assetInfor.setTYPE(new TYPE_Type());
+            assetInfor.getTYPE().setTYPECODE("A");
         }
 
         if (assetParam.getClassCode() != null) {
