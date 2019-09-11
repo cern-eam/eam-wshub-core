@@ -2,7 +2,9 @@ package ch.cern.eam.wshub.core.client;
 
 import ch.cern.eam.wshub.core.interceptors.InforInterceptor;
 import ch.cern.eam.wshub.core.interceptors.InforInvocationHandler;
+import ch.cern.eam.wshub.core.services.administration.DataspyService;
 import ch.cern.eam.wshub.core.services.administration.UserSetupService;
+import ch.cern.eam.wshub.core.services.administration.impl.DataspyServiceImpl;
 import ch.cern.eam.wshub.core.services.administration.impl.UserSetupServiceImpl;
 import ch.cern.eam.wshub.core.services.comments.CommentService;
 import ch.cern.eam.wshub.core.services.comments.impl.CommentServiceImpl;
@@ -95,6 +97,7 @@ public class InforClient implements Serializable {
     private UserSetupService userSetupService;
     private GridsService gridsService;
     private DocumentsService documentsService;
+    private DataspyService dataspyService;
 
     private EquipmentGenerationService equipmentGenerationService;
     private EquipmentConfigurationService equipmentConfigurationService;
@@ -223,6 +226,7 @@ public class InforClient implements Serializable {
             inforClient.pickTicketService = proxy(PickTicketService.class, new PickTicketServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.equipmentGenerationService = proxy(EquipmentGenerationService.class, new EquipmentGenerationServiceImpl(applicationData, tools, inforWebServicesToolkitClient),inforInterceptor, tools);
             inforClient.equipmentConfigurationService = proxy(EquipmentConfigurationService.class, new EquipmentConfigurationServiceImpl(applicationData, tools, inforWebServicesToolkitClient),inforInterceptor, tools);
+            inforClient.dataspyService = proxy(DataspyService.class, new DataspyServiceImpl(applicationData, tools, inforWebServicesToolkitClient),inforInterceptor, tools);
 
             inforClient.inforWebServicesToolkitClient = inforWebServicesToolkitClient;
             return inforClient;
@@ -360,4 +364,6 @@ public class InforClient implements Serializable {
     public EquipmentConfigurationService getEquipmentConfigurationService() {
         return equipmentConfigurationService;
     }
+
+    public DataspyService getDataspyService() { return dataspyService; }
 }
