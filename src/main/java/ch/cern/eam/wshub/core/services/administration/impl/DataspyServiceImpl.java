@@ -49,10 +49,10 @@ public class DataspyServiceImpl implements DataspyService {
         if (context.getCredentials() != null) {
             result = inforws.copyScreenDataspyOp(copyScreenDataspy, tools.getOrganizationCode(context),
                     tools.createSecurityHeader(context), "TERMINATE", null,
-                    null, applicationData.getTenant());
+                    null, tools.getTenant(context));
         } else {
             result = inforws.copyScreenDataspyOp(copyScreenDataspy, tools.getOrganizationCode(context), null, null,
-                    new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+                    new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
         }
 
         return tools.getDataTypeTools().decodeQuantity(result.getResultData().getSCREENDATASPYID().getDDSPYID());

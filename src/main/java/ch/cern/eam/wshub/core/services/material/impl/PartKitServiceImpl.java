@@ -78,9 +78,9 @@ public class PartKitServiceImpl implements PartKitService {
 		addKitTemplate.setKitTemplate(kitTemplate);
 		
 		if (context.getCredentials() != null) {
-			inforws.addKitTemplateOp(addKitTemplate, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
+			inforws.addKitTemplateOp(addKitTemplate, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
 		} else {
-			inforws.addKitTemplateOp(addKitTemplate, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+			inforws.addKitTemplateOp(addKitTemplate, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
 		}
 
 		return null;
@@ -124,9 +124,9 @@ public class PartKitServiceImpl implements PartKitService {
 		MP2231_CreateKitSession_001_Result r = null;
 		kitSessionMsg.setKitSession(kitSession);
 		if (context.getCredentials() != null) {
-			r = inforws.createKitSessionOp(kitSessionMsg, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
+			r = inforws.createKitSessionOp(kitSessionMsg, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
 		} else {
-			r = inforws.createKitSessionOp(kitSessionMsg, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+			r = inforws.createKitSessionOp(kitSessionMsg, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
 		} 
 
 		return r.getResultData().getDBSESSIONID().getVALUE().toString();
@@ -143,9 +143,9 @@ public class PartKitServiceImpl implements PartKitService {
 		createKitMsg.getDBSESSIONID().setUOM("default");
 		createKitMsg.getDBSESSIONID().setQualifier("OTHER");
 		if (context.getCredentials() != null) {
-			createKitResult = inforws.createKitOp(createKitMsg, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
+			createKitResult = inforws.createKitOp(createKitMsg, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
 		} else {
-			createKitResult = inforws.createKitOp(createKitMsg, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+			createKitResult = inforws.createKitOp(createKitMsg, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
 		}  		
 
 		return createKitResult.getResultData().getDBSESSIONID().getVALUE().toString();

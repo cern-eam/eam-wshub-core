@@ -1,5 +1,7 @@
 package ch.cern.eam.wshub.core.services.grids.entities;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
+
 import java.io.Serializable;
 
 public class GridRequestFilter implements Serializable {
@@ -11,8 +13,8 @@ public class GridRequestFilter implements Serializable {
 	private String fieldValue;
 	private String operator;
 	private JOINER joiner;
-	private String leftParenthesis;
-	private String rightParenthesis;
+	private Boolean leftParenthesis;
+	private Boolean rightParenthesis;
 	private Boolean forceCaseInsensitive = false;
 	private Boolean upperCase = false;
 
@@ -30,7 +32,7 @@ public class GridRequestFilter implements Serializable {
 	}
 
 	public GridRequestFilter(String fieldName, String fieldValue, String operator, JOINER joiner,
-			String leftParenthesis, String rightParenthesis) {
+							 Boolean leftParenthesis, Boolean rightParenthesis) {
 		this.fieldName = fieldName;
 		this.fieldValue = fieldValue;
 		this.operator = operator;
@@ -40,7 +42,7 @@ public class GridRequestFilter implements Serializable {
 	}
 	
 	public GridRequestFilter(String fieldName, String fieldValue, String operator, JOINER joiner,
-			String leftParenthesis, String rightParenthesis, Boolean forceCaseInsensitive, Boolean upperCase) {
+							 Boolean leftParenthesis, Boolean rightParenthesis, Boolean forceCaseInsensitive, Boolean upperCase) {
 		this.fieldName = fieldName;
 		this.fieldValue = fieldValue;
 		this.operator = operator;
@@ -53,19 +55,19 @@ public class GridRequestFilter implements Serializable {
 	
 	public GridRequestFilter(){};
 
-	public String getLeftParenthesis() {
+	public Boolean getLeftParenthesis() {
 		return leftParenthesis;
 	}
 
-	public void setLeftParenthesis(String leftParenthesis) {
+	public void setLeftParenthesis(Boolean leftParenthesis) {
 		this.leftParenthesis = leftParenthesis;
 	}
 
-	public String getRightParenthesis() {
+	public Boolean getRightParenthesis() {
 		return rightParenthesis;
 	}
 
-	public void setRightParenthesis(String rightParenthesis) {
+	public void setRightParenthesis(Boolean rightParenthesis) {
 		this.rightParenthesis = rightParenthesis;
 	}
 
@@ -105,6 +107,7 @@ public class GridRequestFilter implements Serializable {
 		return forceCaseInsensitive;
 	}
 	
+
 	public void setForceCaseInsensitive(Boolean forceCaseInsensitive) {
 		this.forceCaseInsensitive = forceCaseInsensitive!=null && forceCaseInsensitive;
 	}

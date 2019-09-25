@@ -50,11 +50,11 @@ public class PartServiceImpl implements PartService {
 		if (context.getCredentials() != null) {
 			getPartResult = inforws.getPartOp(getPart, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					null, applicationData.getTenant());
+					null, tools.getTenant(context));
 
 		} else {
 			getPartResult = inforws.getPartOp(getPart, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
 		}
 
 		net.datastream.schemas.mp_entities.part_001.Part partInfor = getPartResult.getResultData().getPart();
@@ -154,10 +154,10 @@ public class PartServiceImpl implements PartService {
 		if (context.getCredentials() != null) {
 			result = inforws.addPartOp(addPart, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					null, applicationData.getTenant());
+					null, tools.getTenant(context));
 		} else {
 			result = inforws.addPartOp(addPart, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
 		}
 
 		return result.getPARTID().getPARTCODE();
@@ -181,11 +181,11 @@ public class PartServiceImpl implements PartService {
 			if (context.getCredentials() != null) {
 				inforws.changePartNumberOp(changePartNumber, tools.getOrganizationCode(context),
 						tools.createSecurityHeader(context), "TERMINATE",
-						null, null, applicationData.getTenant());
+						null, null, tools.getTenant(context));
 			} else {
 				inforws.changePartNumberOp(changePartNumber, tools.getOrganizationCode(context), null, null,
 						new Holder<SessionType>(tools.createInforSession(context)), null,
-						applicationData.getTenant());
+						tools.getTenant(context));
 			}
 
 			return partParam.getNewCode();
@@ -204,11 +204,11 @@ public class PartServiceImpl implements PartService {
 			if (context.getCredentials() != null) {
 				getPartResult = inforws.getPartOp(getPart, tools.getOrganizationCode(context),
 						tools.createSecurityHeader(context), "TERMINATE",
-						null, null, applicationData.getTenant());
+						null, null, tools.getTenant(context));
 			} else {
 				getPartResult = inforws.getPartOp(getPart, tools.getOrganizationCode(context), null, null,
 						new Holder<SessionType>(tools.createInforSession(context)), null,
-						applicationData.getTenant());
+						tools.getTenant(context));
 			}
 
 			partInfor = getPartResult.getResultData().getPart();
@@ -235,11 +235,11 @@ public class PartServiceImpl implements PartService {
 			if (context.getCredentials() != null) {
 				result = inforws.syncPartOp(syncPart, tools.getOrganizationCode(context),
 						tools.createSecurityHeader(context), "TERMINATE",
-						null, null, applicationData.getTenant());
+						null, null, tools.getTenant(context));
 			} else {
 				result = inforws.syncPartOp(syncPart, tools.getOrganizationCode(context), null, null,
 						new Holder<SessionType>(tools.createInforSession(context)), null,
-						applicationData.getTenant());
+						tools.getTenant(context));
 			}
 
 			return result.getResultData().getPart().getPARTID().getPARTCODE();
@@ -388,10 +388,10 @@ public class PartServiceImpl implements PartService {
 		if (context.getCredentials() != null) {
 			inforws.deletePartOp(deletePart, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					null, applicationData.getTenant());
+					null, tools.getTenant(context));
 		} else {
 			inforws.deletePartOp(deletePart, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
 		}
 		return partCode;
 	}

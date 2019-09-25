@@ -45,10 +45,10 @@ public class CaseTaskServiceImpl implements CaseTaskService {
 		if (context.getCredentials() != null) {
 			result = inforws.getCaseManagementTaskOp(getCaseTask, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), applicationData.getTenant());
+					tools.createMessageConfig(), tools.getTenant(context));
 		} else {
 			result = inforws.getCaseManagementTaskOp(getCaseTask, tools.getOrganizationCode(context), null, "",
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
+					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
 		}
 
 		CaseManagementTask caseTaskInfor = result.getResultData().getCaseManagementTask();
@@ -164,11 +164,11 @@ public class CaseTaskServiceImpl implements CaseTaskService {
 		if (context.getCredentials() != null) {
 			initCaseTaskResult = inforws.addCaseManagementTaskOp(initCaseTask, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), applicationData.getTenant());
+					tools.createMessageConfig(), tools.getTenant(context));
 		} else {
 			initCaseTaskResult = inforws.addCaseManagementTaskOp(initCaseTask, tools.getOrganizationCode(context), null,
 					"", new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(),
-					applicationData.getTenant());
+					tools.getTenant(context));
 		}
 		return initCaseTaskResult.getResultData().getCASEMANAGEMENTTASKID().getCASEMANAGEMENTTASKCODE();
 	}
@@ -185,10 +185,10 @@ public class CaseTaskServiceImpl implements CaseTaskService {
 		if (context.getCredentials() != null) {
 			result = inforws.getCaseManagementTaskOp(getCaseTask, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), applicationData.getTenant());
+					tools.createMessageConfig(), tools.getTenant(context));
 		} else {
 			result = inforws.getCaseManagementTaskOp(getCaseTask, tools.getOrganizationCode(context), null, "",
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
+					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
 		}
 
 		CaseManagementTask caseManagementTask = result.getResultData().getCaseManagementTask();
@@ -204,10 +204,10 @@ public class CaseTaskServiceImpl implements CaseTaskService {
 		if (context.getCredentials() != null) {
 			syncCaseResult = inforws.syncCaseManagementTaskOp(syncCase, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), applicationData.getTenant());
+					tools.createMessageConfig(), tools.getTenant(context));
 		} else {
 			syncCaseResult = inforws.syncCaseManagementTaskOp(syncCase, tools.getOrganizationCode(context), null, "",
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
+					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
 		}
 		return syncCaseResult.getResultData().getCASEMANAGEMENTTASKID().getCASEMANAGEMENTTASKCODE();
 	}
@@ -223,10 +223,10 @@ public class CaseTaskServiceImpl implements CaseTaskService {
 		if (context.getCredentials() != null) {
 			inforws.deleteCaseManagementTaskOp(deleteCaseTask, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), applicationData.getTenant());
+					tools.createMessageConfig(), tools.getTenant(context));
 		} else {
 			inforws.deleteCaseManagementTaskOp(deleteCaseTask, tools.getOrganizationCode(context), null, "",
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
+					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
 		}
 		return deleteCaseTask.getCASEMANAGEMENTTASKID().getCASEMANAGEMENTTASKCODE();
 	}

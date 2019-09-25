@@ -61,10 +61,10 @@ public class ChecklistServiceImpl implements ChecklistService {
 		if (context.getCredentials() != null) {
 			getresult = inforws.getWorkOrderActivityCheckListOp(getwoactchl, "*",
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), applicationData.getTenant());
+					tools.createMessageConfig(), tools.getTenant(context));
 		} else {
 			getresult = inforws.getWorkOrderActivityCheckListOp(getwoactchl, "*", null, null,
-					new Holder<>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
+					new Holder<>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
 		}
 
 		//
@@ -136,10 +136,10 @@ public class ChecklistServiceImpl implements ChecklistService {
 		if (context.getCredentials() != null) {
 			inforws.syncWorkOrderActivityCheckListOp(syncwoactchl, "*",
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), applicationData.getTenant());
+					tools.createMessageConfig(), tools.getTenant(context));
 		} else {
 			inforws.syncWorkOrderActivityCheckListOp(syncwoactchl, "*", null, null,
-					new Holder<>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
+					new Holder<>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
 		}
 
 		return null;
@@ -251,10 +251,10 @@ public class ChecklistServiceImpl implements ChecklistService {
 		if (context.getCredentials() != null) {
 			inforws.addTaskChecklistOp(addTaskChecklist, "*",
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), applicationData.getTenant());
+					tools.createMessageConfig(), tools.getTenant(context));
 		} else {
 			inforws.addTaskChecklistOp(addTaskChecklist, "*", null, null,
-					new Holder<>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
+					new Holder<>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
 		}
 
 		return "OK";
@@ -264,7 +264,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 		LinkedList<WorkOrderActivityCheckList> checklists = new LinkedList<WorkOrderActivityCheckList>();
 		// Fetch the data
 		GridRequest gridRequest = new GridRequest("3315", "WSJOBS_ACK", "3369");
-		gridRequest.setRowCount("1000");
+		gridRequest.setRowCount(1000);
 		gridRequest.setUseNative(false);
 		gridRequest.getParams().put("param.workordernum", activity.getWorkOrderNumber());
 		gridRequest.getParams().put("param.activity", activity.getActivityCode());
@@ -428,10 +428,10 @@ public class ChecklistServiceImpl implements ChecklistService {
 		if (context.getCredentials() != null) {
 			createFUWOResult = inforws.createFollowUpWorkOrderOp(createFUWO, "*",
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), applicationData.getTenant());
+					tools.createMessageConfig(), tools.getTenant(context));
 		} else {
 			createFUWOResult = inforws.createFollowUpWorkOrderOp(createFUWO, "*", null, null,
-					new Holder<>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
+					new Holder<>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
 		}
 		return createFUWOResult.getResultData().getWORKORDERCOUNT();
 	}

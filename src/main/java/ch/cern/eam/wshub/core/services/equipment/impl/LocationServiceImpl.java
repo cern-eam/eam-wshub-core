@@ -35,9 +35,9 @@ public class LocationServiceImpl implements LocationService {
 		MP0318_GetLocation_001_Result getLocationResult = new MP0318_GetLocation_001_Result();
 
 		if (context.getCredentials() != null)
-			getLocationResult = inforws.getLocationOp(getLocation, "*", tools.createSecurityHeader(context), "TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
+			getLocationResult = inforws.getLocationOp(getLocation, "*", tools.createSecurityHeader(context), "TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
 		else {
-			getLocationResult = inforws.getLocationOp(getLocation, "*", null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+			getLocationResult = inforws.getLocationOp(getLocation, "*", null, null, new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
 		}
 		net.datastream.schemas.mp_entities.location_001.Location locationInfor = getLocationResult.getResultData().getLocation();
 
@@ -81,9 +81,9 @@ public class LocationServiceImpl implements LocationService {
 		MP0318_GetLocation_001_Result getLocationResult = new MP0318_GetLocation_001_Result();
 
 		if (credentials != null)
-			getLocationResult = inforws.getLocationOp(getLocation, "*", tools.createSecurityHeader(credentials.getUsername(), credentials.getPassword()), "TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
+			getLocationResult = inforws.getLocationOp(getLocation, "*", tools.createSecurityHeader(credentials.getUsername(), credentials.getPassword()), "TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
 		else {
-			getLocationResult = inforws.getLocationOp(getLocation, "*", null, null, new Holder<SessionType>(tools.createInforSession(sessionID)), null, applicationData.getTenant());
+			getLocationResult = inforws.getLocationOp(getLocation, "*", null, null, new Holder<SessionType>(tools.createInforSession(sessionID)), null, tools.getTenant(context));
 		}
 		locationInfor = getLocationResult.getResultData().getLocation();
 
@@ -91,9 +91,9 @@ public class LocationServiceImpl implements LocationService {
 		syncLocation.setLocation(locationInfor);
 
 		if (credentials != null)
-			inforws.syncLocationOp(syncLocation, "*", tools.createSecurityHeader(credentials.getUsername(), credentials.getPassword()), "TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
+			inforws.syncLocationOp(syncLocation, "*", tools.createSecurityHeader(credentials.getUsername(), credentials.getPassword()), "TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
 		else {
-			inforws.syncLocationOp(syncLocation, "*", null, null, new Holder<SessionType>(tools.createInforSession(sessionID)), null, applicationData.getTenant());
+			inforws.syncLocationOp(syncLocation, "*", null, null, new Holder<SessionType>(tools.createInforSession(sessionID)), null, tools.getTenant(context));
 		}
 		return null;
 	}

@@ -91,10 +91,10 @@ public class PartMiscServiceImpl implements PartMiscService {
 		if (context.getCredentials() != null) {
 			inforws.addCatalogueOp(addCatalogue, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					null, applicationData.getTenant());
+					null, tools.getTenant(context));
 		} else {
 			inforws.addCatalogueOp(addCatalogue, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
 		}
 
 		return null;
@@ -260,9 +260,9 @@ public class PartMiscServiceImpl implements PartMiscService {
 		addIssueReturnTransaction.setIssueReturnTransaction(issueReturnTransactionInfor);
 
 		if (context.getCredentials() != null) {
-			result = inforws.addIssueReturnTransactionOp(addIssueReturnTransaction, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
+			result = inforws.addIssueReturnTransactionOp(addIssueReturnTransaction, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
 		} else {
-			result = inforws.addIssueReturnTransactionOp(addIssueReturnTransaction, tools.getOrganizationCode(context),  null, null, new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
+			result = inforws.addIssueReturnTransactionOp(addIssueReturnTransaction, tools.getOrganizationCode(context),  null, null, new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
 		}
 
 		return result.getResultData().getIssueReturnTransaction().getTRANSACTIONID().getTRANSACTIONCODE();
@@ -309,10 +309,10 @@ public class PartMiscServiceImpl implements PartMiscService {
 		if (context.getCredentials() != null) {
 			result = inforws.addPartsAssociatedOp(addpass, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					null, applicationData.getTenant());
+					null, tools.getTenant(context));
 		} else {
 			result = inforws.addPartsAssociatedOp(addpass, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
 		}
 
 		return result.getResultData().getPartsAssociated().getPARTASSOCIATEDID().getPARTASSOCIATEDPK();
@@ -341,10 +341,10 @@ public class PartMiscServiceImpl implements PartMiscService {
 		if (context.getCredentials() != null) {
 			inforws.deletePartsAssociatedOp(deletepass, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					null, applicationData.getTenant());
+					null, tools.getTenant(context));
 		} else {
 			inforws.deletePartsAssociatedOp(deletepass, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
 		}
 		return "OK";
 	}
@@ -383,10 +383,10 @@ public class PartMiscServiceImpl implements PartMiscService {
 		if (context.getCredentials() != null) {
 			inforws.addSubstitutePartOp(addPartSub, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					null, applicationData.getTenant());
+					null, tools.getTenant(context));
 		} else {
 			inforws.addSubstitutePartOp(addPartSub, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
 		}
 
 		return "OK";
@@ -418,10 +418,10 @@ public class PartMiscServiceImpl implements PartMiscService {
 		if (context.getCredentials() != null) {
 			inforws.addStoreBinOp(storeBin, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					null, applicationData.getTenant());
+					null, tools.getTenant(context));
 		} else {
 			inforws.addStoreBinOp(storeBin, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
 		}
 		return null;
 	}

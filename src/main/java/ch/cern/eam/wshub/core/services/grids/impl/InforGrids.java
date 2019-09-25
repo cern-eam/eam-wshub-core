@@ -87,12 +87,12 @@ public class InforGrids implements Serializable {
 		MP0116_GetGridDataOnly_001_Result result = new MP0116_GetGridDataOnly_001_Result();
 
 		if (context.getCredentials() != null) {
-			result = inforws.getGridDataOnlyOp(getgridd, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
+			result = inforws.getGridDataOnlyOp(getgridd, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
 		} else 
 		{
 			SessionType session = new SessionType();
 			session.setSessionId(context.getSessionID());
-			result = inforws.getGridDataOnlyOp(getgridd, tools.getOrganizationCode(context), null,"", new Holder<SessionType>(session), null, applicationData.getTenant());
+			result = inforws.getGridDataOnlyOp(getgridd, tools.getOrganizationCode(context), null,"", new Holder<SessionType>(session), null, tools.getTenant(context));
 		}
 
 		GridRequestResult grr = new GridRequestResult();
@@ -185,12 +185,12 @@ public class InforGrids implements Serializable {
 		MP0118_GetGridHeaderData_001_Result result = new MP0118_GetGridHeaderData_001_Result();
 
 		if (context.getCredentials() != null) {
-			result = inforws.getGridHeaderDataOp(getgridd, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
+			result = inforws.getGridHeaderDataOp(getgridd, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
 		} else
 		{
 			SessionType session = new SessionType();
 			session.setSessionId(context.getSessionID());
-			result = inforws.getGridHeaderDataOp(getgridd, tools.getOrganizationCode(context), null,"", new Holder<SessionType>(session), null, applicationData.getTenant());
+			result = inforws.getGridHeaderDataOp(getgridd, tools.getOrganizationCode(context), null,"", new Holder<SessionType>(session), null, tools.getTenant(context));
 		}
 
 		GridRequestResult grr = new GridRequestResult();
@@ -224,8 +224,6 @@ public class InforGrids implements Serializable {
 				.filter(field -> Integer.parseInt(field.getOrder()) >= 0)
 				.map(field -> decodeInforGridField(field))
 				.collect(Collectors.toList()));
-
-
 
 		//
 		// RESULT DATA
@@ -268,8 +266,8 @@ public class InforGrids implements Serializable {
 		//
 		GRID grid = new GRID();
 		//
-		if (gridRequest.getCursorPosition() != null && !gridRequest.getCursorPosition().trim().equals("")) {
-			grid.setCURSOR_POSITION(new BigInteger(gridRequest.getCursorPosition()));
+		if (gridRequest.getCursorPosition() != null) {
+			grid.setCURSOR_POSITION(BigInteger.valueOf(gridRequest.getCursorPosition()));
 		} else {
 			grid.setCURSOR_POSITION(BigInteger.valueOf(1));
 		}
@@ -290,8 +288,8 @@ public class InforGrids implements Serializable {
 			grid.setUSER_FUNCTION_NAME(gridRequest.getUserFunctionName());
 		}
 		// SET NUMBERS OF ROWS TO RETURN
-		if (gridRequest.getRowCount() != null && !gridRequest.getRowCount().trim().equals("")) {
-			grid.setNUMBER_OF_ROWS_FIRST_RETURNED(new BigInteger(gridRequest.getRowCount()));
+		if (gridRequest.getRowCount() != null) {
+			grid.setNUMBER_OF_ROWS_FIRST_RETURNED(BigInteger.valueOf(gridRequest.getRowCount()));
 		} else {
 			grid.setNUMBER_OF_ROWS_FIRST_RETURNED(BigInteger.valueOf(100));
 		}
@@ -323,8 +321,8 @@ public class InforGrids implements Serializable {
 				inforFilter.setOPERATOR(filter.getOperator());
 				inforFilter.setALIAS_NAME(filter.getFieldName());
 				inforFilter.setVALUE(filter.getFieldValue());
-				inforFilter.setLPAREN(filter.getLeftParenthesis());
-				inforFilter.setRPAREN(filter.getRightParenthesis());
+				inforFilter.setLPAREN(tools.getDataTypeTools().decodeBoolean(filter.getLeftParenthesis()));
+				inforFilter.setRPAREN(tools.getDataTypeTools().decodeBoolean(filter.getRightParenthesis()));
 				switch(inforFilter.getOPERATOR()) {
 					case "EQUALS":
 						inforFilter.setOPERATOR("=");
@@ -382,7 +380,7 @@ public class InforGrids implements Serializable {
 
 	private GRID_TYPE createGridType(GridRequest gridRequest) {
 		GRID_TYPE grid_type = new GRID_TYPE();
-		if (gridRequest.getGridType() == null || "LIST".equals(gridRequest.getGridType())) {
+		if (gridRequest.getGridType() == null || gridRequest.getGridType() == GridRequest.GRIDTYPE.LIST) {
 			grid_type.setTYPE(GRID_TYPE_Type.LIST); // LIST: business data query
 		} else {
 			grid_type.setTYPE(GRID_TYPE_Type.LOV); // LOV: List of values to validate field entry

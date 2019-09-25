@@ -69,12 +69,12 @@ public class EquipmentOtherServiceImpl implements EquipmentOtherService {
 			depreciationDefault = inforws
 					.getDepreciationDefaultOp(getdepdef, tools.getOrganizationCode(context),
 							tools.createSecurityHeader(context),
-							"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant())
+							"TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context))
 					.getResultData().getDepreciationDefault();
 		} else {
 			depreciationDefault = inforws.getDepreciationDefaultOp(getdepdef, tools.getOrganizationCode(context), null,
 					null, new Holder<SessionType>(tools.createInforSession(context)), null,
-					applicationData.getTenant()).getResultData().getDepreciationDefault();
+					tools.getTenant(context)).getResultData().getDepreciationDefault();
 		}
 
 		Depreciation depreciation = new Depreciation();
@@ -185,10 +185,10 @@ public class EquipmentOtherServiceImpl implements EquipmentOtherService {
 		if (context.getCredentials() != null) {
 			inforws.addDepreciationOp(adddep, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					null, applicationData.getTenant());
+					null, tools.getTenant(context));
 		} else {
 			inforws.addDepreciationOp(adddep, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
 		}
 
 		return "OK";
@@ -225,10 +225,10 @@ public class EquipmentOtherServiceImpl implements EquipmentOtherService {
 		if (context.getCredentials() != null) {
 			result = inforws.getDepreciationOp(getdep, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					null, applicationData.getTenant());
+					null, tools.getTenant(context));
 		} else {
 			result = inforws.getDepreciationOp(getdep, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
 		}
 		//
 		// UPDATE DEPRECIATION
@@ -311,10 +311,10 @@ public class EquipmentOtherServiceImpl implements EquipmentOtherService {
 		if (context.getCredentials() != null) {
 			inforws.syncDepreciationOp(syncdep, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					null, applicationData.getTenant());
+					null, tools.getTenant(context));
 		} else {
 			inforws.syncDepreciationOp(syncdep, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
 		}
 
 		return "OK";
@@ -337,10 +337,10 @@ public class EquipmentOtherServiceImpl implements EquipmentOtherService {
 		if (context.getCredentials() != null) {
 			inforws.changeEquipmentNumberOp(changeeqpnum, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), applicationData.getTenant());
+					tools.createMessageConfig(), tools.getTenant(context));
 		} else {
 			inforws.changeEquipmentNumberOp(changeeqpnum, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
+					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
 		}
 
 		return "OK";
@@ -369,10 +369,10 @@ public class EquipmentOtherServiceImpl implements EquipmentOtherService {
 		if (context.getCredentials() != null) {
 			inforws.addCampaignEquipmentOp(addCampaignEquipment, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					null, applicationData.getTenant());
+					null, tools.getTenant(context));
 		} else {
 			inforws.addCampaignEquipmentOp(addCampaignEquipment, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
 		}
 
 		return null;

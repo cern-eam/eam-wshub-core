@@ -133,9 +133,9 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 		MP0042_AddLaborBooking_001_Result result = null;
 
 		if (context.getCredentials() != null) {
-			result = inforws.addLaborBookingOp(addLaborBoking, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
+			result = inforws.addLaborBookingOp(addLaborBoking, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
 		} else {
-			result = inforws.addLaborBookingOp(addLaborBoking, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
+			result = inforws.addLaborBookingOp(addLaborBoking, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
 		}
 		return laborBookingParam.getActivityCode();
 	}
@@ -144,7 +144,7 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 	public Activity[] readActivities(InforContext context, String workOrderNumber, Boolean includeChecklists) throws InforException {
 		try {
 			GridRequest gridRequest = new GridRequest("WSJOBS_ACT");
-			gridRequest.setRowCount("1000");
+			gridRequest.setRowCount(1000);
 			gridRequest.setUserFunctionName("WSJOBS");
 			gridRequest.getParams().put("param.jobnum", workOrderNumber);
 
@@ -261,10 +261,10 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 		if (context.getCredentials() != null) {
 			result = inforws.addActivityOp(addActivity, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), applicationData.getTenant());
+					tools.createMessageConfig(), tools.getTenant(context));
 		} else {
 			result = inforws.addActivityOp(addActivity, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
+					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
 		}
 		return result.getResultData().getACTIVITYID().getACTIVITYCODE().getValue() + "";
 	}
@@ -291,10 +291,10 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 		if (context.getCredentials() != null) {
 			getresult = inforws.getActivityOp(getActivity, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), applicationData.getTenant());
+					tools.createMessageConfig(), tools.getTenant(context));
 		} else {
 			getresult = inforws.getActivityOp(getActivity, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
+					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
 		}
 
 		net.datastream.schemas.mp_entities.activity_001.Activity activityInfor = getresult.getResultData().getActivity();
@@ -369,10 +369,10 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 		if (context.getCredentials() != null) {
 			syncresult = inforws.syncActivityOp(syncActivity, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), applicationData.getTenant());
+					tools.createMessageConfig(), tools.getTenant(context));
 		} else {
 			syncresult = inforws.syncActivityOp(syncActivity, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
+					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
 		}
 		return syncresult.getResultData().getACTIVITYID().getACTIVITYCODE().getValue() + "";
 	}
@@ -395,10 +395,10 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 		if (context.getCredentials() != null) {
 			result = inforws.deleteActivityOp(deleteActivity, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), applicationData.getTenant());
+					tools.createMessageConfig(), tools.getTenant(context));
 		} else {
 			result = inforws.deleteActivityOp(deleteActivity, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
+					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
 		}
 		return result.getResultData().getACTIVITYID().getACTIVITYCODE().getValue() + "";
 	}

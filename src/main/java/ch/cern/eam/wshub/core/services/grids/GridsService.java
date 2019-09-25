@@ -17,6 +17,9 @@ public interface GridsService {
 	@Operation(logOperation = INFOR_OPERATION.GRIDMETAD_R)
 	GridMetadataRequestResult getGridMetadata(InforContext context, String gridCode, String viewType, String language) throws InforException;
 
+	@Operation(logOperation = INFOR_OPERATION.GRIDMETAD_R)
+	GridMetadataRequestResult getGridMetadataInfor(InforContext context, String gridName) throws InforException;
+
 	@Operation(logOperation = INFOR_OPERATION.GRIDDDSPY_R)
 	GridDDSpyFieldsResult getDDspyFields(InforContext context, String gridCode, String viewType, String ddSpyId, String language) throws InforException;
 

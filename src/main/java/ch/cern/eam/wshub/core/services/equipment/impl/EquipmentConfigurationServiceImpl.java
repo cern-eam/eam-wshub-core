@@ -50,10 +50,10 @@ public class EquipmentConfigurationServiceImpl implements EquipmentConfiguration
             getEquipmentConfigurationResult = inforws.getEquipmentConfigurationOp(getEquipmentConfiguration,
                     tools.getOrganizationCode(context),
                     tools.createSecurityHeader(context), "TERMINATE", null,
-                    tools.createMessageConfig(), applicationData.getTenant());
+                    tools.createMessageConfig(), tools.getTenant(context));
         } else {
             getEquipmentConfigurationResult = inforws.getEquipmentConfigurationOp(getEquipmentConfiguration, tools.getOrganizationCode(context), null, "",
-                    new Holder<>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
+                    new Holder<>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
         }
         return getEquipmentConfigurationResult.getResultData().getEquipmentConfiguration();
     }

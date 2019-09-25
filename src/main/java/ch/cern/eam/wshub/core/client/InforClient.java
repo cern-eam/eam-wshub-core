@@ -116,9 +116,13 @@ public class InforClient implements Serializable {
         private EntityManagerFactory entityManagerFactory;
         private Logger logger;
 
-        public Builder(String url, String tenant) {
+        public Builder(String url) {
             this.url = url;
-            this.tenant = tenant;
+        }
+
+        public Builder withDefaultTenant(String defaultTenant) {
+            this.tenant = defaultTenant;
+            return this;
         }
 
         public Builder withDefaultOrganizationCode(String defaultOrganizationCode) {

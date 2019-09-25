@@ -48,11 +48,11 @@ public class PickTicketServiceImpl implements PickTicketService {
             result = inforws.addPickListOp(createPickTicket,
                     applicationData.getOrganization(),
                     tools.createSecurityHeader(context),
-                    "TERMINATE", null, null, applicationData.getTenant());
+                    "TERMINATE", null, null, tools.getTenant(context));
         } else {
             result = inforws.addPickListOp(createPickTicket, applicationData.getOrganization(),
                     null, null, new Holder<>(tools.createInforSession(context)), null,
-                    applicationData.getTenant());
+                    tools.getTenant(context));
         }
 
         return result.getPICKLISTID().getPICKLIST();
@@ -144,11 +144,11 @@ public class PickTicketServiceImpl implements PickTicketService {
             result = inforws.syncPickListOp(syncPickTicket,
                     applicationData.getOrganization(),
                     tools.createSecurityHeader(context),
-                    "TERMINATE", null, null, applicationData.getTenant());
+                    "TERMINATE", null, null, tools.getTenant(context));
         } else {
             result = inforws.syncPickListOp(syncPickTicket, applicationData.getOrganization(),
                     null, null, new Holder<>(tools.createInforSession(context)), null,
-                    applicationData.getTenant());
+                    tools.getTenant(context));
         }
 
         return result.getResultData().getPICKLISTID().getPICKLIST();
@@ -163,11 +163,11 @@ public class PickTicketServiceImpl implements PickTicketService {
             pickListResult = inforws.getPickListOp(getPickList, applicationData.getOrganization(),
                     tools.createSecurityHeader(context),
                     "TERMINATE", null, null,
-                    applicationData.getTenant());
+                    tools.getTenant(context));
         } else {
             pickListResult = inforws.getPickListOp(getPickList, applicationData.getOrganization(), null,
                     null, new Holder<>(tools.createInforSession(context)), null,
-                    applicationData.getTenant());
+                    tools.getTenant(context));
         }
         return pickListResult.getResultData().getPickList();
     }
@@ -200,11 +200,11 @@ public class PickTicketServiceImpl implements PickTicketService {
             result = inforws.addPickListPartOp(addPickListPart, applicationData.getOrganization(),
                     tools.createSecurityHeader(context),
                     "TERMINATE", null, null,
-                    applicationData.getTenant());
+                    tools.getTenant(context));
         } else {
             result = inforws.addPickListPartOp(addPickListPart, applicationData.getOrganization(), null,
                     null, new Holder<>(tools.createInforSession(context)), null,
-                    applicationData.getTenant());
+                    tools.getTenant(context));
         }
         return result.toString();
     }

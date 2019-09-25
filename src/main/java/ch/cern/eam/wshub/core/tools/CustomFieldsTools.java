@@ -282,10 +282,10 @@ public class CustomFieldsTools {
         if (context.getCredentials() != null) {
             result = inforws.getCustomFieldsOp(getcustomfields, tools.getOrganizationCode(context),
                     tools.createSecurityHeader(context), "TERMINATE", null, null,
-                    applicationData.getTenant());
+                    tools.getTenant(context));
         } else {
             result = inforws.getCustomFieldsOp(getcustomfields, tools.getOrganizationCode(context), null, null,
-                    new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+                    new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
         }
 
         return result.getUSERDEFINEDAREA();
@@ -315,10 +315,10 @@ public class CustomFieldsTools {
         if (context.getCredentials() != null) {
             result = inforws.getCustomFieldsOp(getcustomfields, tools.getOrganizationCode(context),
                     tools.createSecurityHeader(context), "TERMINATE", null, null,
-                    applicationData.getTenant());
+                    tools.getTenant(context));
         } else {
             result = inforws.getCustomFieldsOp(getcustomfields, tools.getOrganizationCode(context), null, null,
-                    new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+                    new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
         }
 
         return readInforCustomFields(result.getUSERDEFINEDAREA());

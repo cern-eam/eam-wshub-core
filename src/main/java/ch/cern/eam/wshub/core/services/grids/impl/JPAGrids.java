@@ -30,6 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class JPAGrids implements Serializable {
 
@@ -135,7 +136,7 @@ public class JPAGrids implements Serializable {
 			// Get Query SQL STATEMENT
 			//
 			List<String> sqlStatements = em.createNamedQuery(GridDataspy.GETGRIDDATASPYSELECTSTATEMENT)
-					.setParameter("requestType", gridRequest.getGridType()).setParameter("gridID", gridID)
+					.setParameter("requestType", gridRequest.getGridType().toString()).setParameter("gridID", gridID)
 					.setParameter("dataSpyID", dataSpyID).getResultList();
 
 			if (USE_CUSTOM_FIELDS) {
@@ -224,8 +225,8 @@ public class JPAGrids implements Serializable {
 
 							GridRequestFilter filter = new GridRequestFilter(el.getAttribute("ALIAS_NAME"),
 									el.getAttribute("VALUE"), el.getAttribute("OPERATOR"),
-									gridJoiner, el.getAttribute("LPAREN"),
-									el.getAttribute("RPAREN"));
+									gridJoiner, "true".equalsIgnoreCase(el.getAttribute("LPAREN")),
+                                    "true".equalsIgnoreCase(el.getAttribute("RPAREN")));
 							//skip custom fields
 							if(tagNames.get(filter.getFieldName()) != null){
 								dataspyFiltersArr.add(filter);
@@ -461,7 +462,7 @@ public class JPAGrids implements Serializable {
 			}
 
 			List<DataspyField> fields = em.createNamedQuery(DataspyField.GETDATASPYFIELDS, DataspyField.class)
-					.setParameter("requestType", gridRequest.getGridType())
+					.setParameter("requestType", gridRequest.getGridType().toString())
 					.setParameter("dataspyid", gridRequest.getDataspyID())
 					.getResultList();
 
@@ -523,6 +524,7 @@ public class JPAGrids implements Serializable {
 			throw tools.generateFault("Couldn't fetch data for this grid. Incorrect sort type defined in gridSort.");
 		}
 		catch (Exception e) {
+			e.printStackTrace();
 			tools.log(Level.SEVERE,"Error whlie executing Grid Query");
 			throw tools.generateFault("Couldn't fetch data for this grid.");
 		} finally {
@@ -1005,5 +1007,138 @@ public class JPAGrids implements Serializable {
 		// as being case insensitive
 		return tagNames.get(filter.getFieldName()).getDatatype().toString().equals("MIXVARCHAR");
 	}
+
+
+    public GridMetadataRequestResult getGridMetadata(InforContext context, String gridCode, String viewType, String language) throws InforException {
+        tools.demandDatabaseConnection();
+        if (gridCode == null || gridCode.trim().equals("")) {
+            throw tools.generateFault("Grid code is a mandatory field.");
+        }
+        if (viewType == null || viewType.trim().equals("")) {
+            throw tools.generateFault("View Type is a mandatory field.");
+        }
+        // Fetch grid data
+        EntityManager em = tools.getEntityManager();
+        try {
+            // Grid name
+            GridMetadataRequestResult result = em.find(GridMetadataRequestResult.class, gridCode);
+            if (result == null) {
+                // Just 'forward' the exception to the catch block.
+                throw new Exception();
+            }
+            // Grid fields and data spies
+            GridDataspy[] gridDataspies = em.createNamedQuery(GridDataspy.GETGRIDDATASPIES, GridDataspy.class)
+                    .setParameter("gridid", gridCode)
+                    .setParameter("userid", context.getCredentials().getUsername()).getResultList().toArray(new GridDataspy[0]);
+
+            // select default dataspy
+            List<GridDataspy> selectedDataSpyList = Arrays.stream(gridDataspies).filter(ds -> ds.isDefaultDataspy()).collect(Collectors.toList());
+            GridDataspy selectedDataSpy = gridDataspies[0];
+            if(!selectedDataSpyList.isEmpty())
+                selectedDataSpy = selectedDataSpyList.get(0);
+
+            result.setGridCode(gridCode);
+            result.setGridDataspies(gridDataspies);
+            result.setDataSpyId(selectedDataSpy.getCode());
+
+            // This code is fetching all fields for the dataspy
+            GridField[] gridFields = em.createNamedQuery(GridField.GETDDSPYFIELDS, GridField.class)
+                    .setParameter("gridid", gridCode)
+                    .setParameter("ddspyid", selectedDataSpy.getCode())
+                    .setParameter("viewtype", viewType)
+                    .setParameter("language", language != null ? language.toUpperCase() : "EN")
+                    .getResultList().toArray(new GridField[0]);
+
+            // Concat with custom fields
+            if (JPAGrids.USE_CUSTOM_FIELDS) {
+                gridFields = Stream.of(gridFields, gridCustomFieldHandler.getCustomFieldsAsGridFields(selectedDataSpy.getCode())).flatMap(Stream::of).toArray(GridField[]::new);
+            }
+
+            result.setGridFields(gridFields);
+
+            return result;
+        } catch (Exception e) {
+            tools.log(Level.SEVERE,"Error while fetching grid metadata for gridCode " + gridCode);
+            throw tools.generateFault("Couldn't fetch the metadata for this grid.");
+        } finally {
+            em.clear();
+            em.close();
+        }
+    }
+
+    public GridDDSpyFieldsResult getDDspyFields(InforContext context, String gridCode, String viewType, String ddSpyId, String language) throws InforException {
+        tools.demandDatabaseConnection();
+        if (gridCode == null || gridCode.trim().equals("")) {
+            throw tools.generateFault("Grid code is a mandatory field.");
+        }
+        if (ddSpyId == null || ddSpyId.trim().equals("")) {
+            throw tools.generateFault("DataSpy id is a mandatory field.");
+        }
+        if (viewType == null || viewType.trim().equals("")) {
+            throw tools.generateFault("View Type is a mandatory field.");
+        }
+        // Fetch fields data
+        EntityManager em = tools.getEntityManager();
+        try {
+            // Grid name
+            GridDDSpyFieldsResult result = new GridDDSpyFieldsResult();
+            // Grid fields and data spies
+            GridField[] gridFields = em.createNamedQuery(GridField.GETDDSPYFIELDS, GridField.class)
+                    .setParameter("gridid", gridCode)
+                    .setParameter("ddspyid", ddSpyId)
+                    .setParameter("viewtype", viewType)
+                    .setParameter("language", language != null ? language.toUpperCase() : "EN")
+                    .getResultList().toArray(new GridField[0]);
+
+            // Concat with custom fields
+            if (JPAGrids.USE_CUSTOM_FIELDS) {
+                gridFields = Stream.of(gridFields, gridCustomFieldHandler.getCustomFieldsAsGridFields(ddSpyId)).flatMap(Stream::of).toArray(GridField[]::new);
+            }
+
+            result.setGridFields(gridFields);
+            result.setDataSpyId(ddSpyId);
+            return result;
+        } catch (Exception e) {
+            tools.log(Level.SEVERE,"Error");
+            throw tools.generateFault("Couldn't fetch the metadata for this grid.");
+        } finally {
+            em.clear();
+            em.close();
+        }
+    }
+
+    public GridDataspy getDefaultDataspy(InforContext context, String gridCode, String viewType) throws InforException {
+        tools.demandDatabaseConnection();
+        if (gridCode == null || gridCode.trim().equals("")) {
+            throw tools.generateFault("Grid code is a mandatory field.");
+        }
+        if (viewType == null || viewType.trim().equals("")) {
+            throw tools.generateFault("View Type is a mandatory field.");
+        }
+        // Fetch grid data
+        EntityManager em = tools.getEntityManager();
+        try {
+            // Check Grid Code
+            GridMetadataRequestResult result = em.find(GridMetadataRequestResult.class, gridCode);
+            if (result == null) {
+                // Just 'forward' the exception to the catch block.
+                throw new Exception();
+            }
+            // Grid DataSpy
+            GridDataspy gridDataspy = em.createNamedQuery(GridDataspy.GETDEFAULTDATASPY, GridDataspy.class)
+                    .setParameter("gridid", gridCode)
+                    .setParameter("userid", context.getCredentials().getUsername())
+                    .getSingleResult();
+
+            return gridDataspy;
+        } catch (Exception e) {
+            tools.log(Level.SEVERE,"Error while fetching default dataspy for grid code " + gridCode + " and view type " + viewType);
+            throw tools.generateFault("Couldn't fetch the metadata for this grid.");
+        } finally {
+            em.clear();
+            em.close();
+        }
+    }
+
 
 }

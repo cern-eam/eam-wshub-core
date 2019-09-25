@@ -93,10 +93,10 @@ public class CommentServiceImpl implements CommentService {
 		if (context.getCredentials() != null) {
 			MP0109_AddComments_001_Result result = inforws.addCommentsOp(addComments, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context),"TERMINATE", null,
-					tools.createMessageConfig(), applicationData.getTenant());
+					tools.createMessageConfig(), tools.getTenant(context));
 			lineNumber = result.getResultData().getENTITYCOMMENTID().getLINENUM();
 		} else {
-			MP0109_AddComments_001_Result result = inforws.addCommentsOp(addComments, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+			MP0109_AddComments_001_Result result = inforws.addCommentsOp(addComments, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
 			lineNumber = result.getResultData().getENTITYCOMMENTID().getLINENUM();
 		}
 		comment.setLineNumber(String.valueOf(lineNumber));
@@ -150,9 +150,9 @@ public class CommentServiceImpl implements CommentService {
 		MP0108_GetComments_001_Result result;
 
 		if (context.getCredentials() != null) {
-			result = inforws.getCommentsOp(getComments, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
+			result = inforws.getCommentsOp(getComments, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
 		} else {
-			result = inforws.getCommentsOp(getComments, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+			result = inforws.getCommentsOp(getComments, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
 		}
 
 		Comment[] commentsArray = new Comment[result.getResultData().getComments().getCOMMENT().size()];
@@ -271,9 +271,9 @@ public class CommentServiceImpl implements CommentService {
 		syncComments.setCOMMENT(commentInfor);
 
 		if (context.getCredentials() != null) {
-			inforws.syncCommentsOp(syncComments, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
+			inforws.syncCommentsOp(syncComments, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
 		} else {
-			inforws.syncCommentsOp(syncComments, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+			inforws.syncCommentsOp(syncComments, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
 		}
 		return commentParam.getPk();
 	}

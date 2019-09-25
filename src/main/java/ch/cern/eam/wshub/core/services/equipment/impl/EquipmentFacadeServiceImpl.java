@@ -200,8 +200,7 @@ public class EquipmentFacadeServiceImpl implements EquipmentFacadeService {
         types.put("Location", "L");
         types.put("Localisation", "L");
 
-        GridRequest gridRequest = new GridRequest("LVREPCOGALLEQUIPMENT");
-        gridRequest.setGridType("LOV");
+        GridRequest gridRequest = new GridRequest("LVREPCOGALLEQUIPMENT", GridRequest.GRIDTYPE.LOV);
         gridRequest.getGridRequestFilters().add(new GridRequestFilter("code", equipmentCode, "="));
         GridRequestResult requestResult = gridsService.executeQuery(inforContext, gridRequest);
         if (requestResult.getRows().length == 1) {

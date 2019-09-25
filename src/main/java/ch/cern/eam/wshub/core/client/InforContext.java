@@ -12,10 +12,10 @@ public class InforContext implements Serializable {
     private Credentials credentials;
     private String sessionID;
     private String organizationCode;
+    private String tenant;
 
-    public InforContext () {
 
-    }
+    public InforContext () { }
 
     public InforContext(Credentials credentials) {
         this.credentials = credentials;
@@ -46,4 +46,8 @@ public class InforContext implements Serializable {
     public void setOrganizationCode(String organizationCode) {
         this.organizationCode = organizationCode;
     }
+
+    public String getTenant() { return tenant; }
+
+    public void setTenant(String tenant) { this.tenant = tenant; }
 }

@@ -47,10 +47,10 @@ public class CaseServiceImpl implements CaseService {
 		if (context.getCredentials() != null) {
 			result = inforws.getCaseManagementOp(getCase, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), applicationData.getTenant());
+					tools.createMessageConfig(), tools.getTenant(context));
 		} else {
 			result = inforws.getCaseManagementOp(getCase, tools.getOrganizationCode(context), null, "",
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
+					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
 		}
 
 		CaseManagement caseManagement = result.getResultData().getCaseManagement();
@@ -208,10 +208,10 @@ public class CaseServiceImpl implements CaseService {
 		if (context.getCredentials() != null) {
 			addCaseResult = inforws.addCaseManagementOp(addCase, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), applicationData.getTenant());
+					tools.createMessageConfig(), tools.getTenant(context));
 		} else {
 			addCaseResult = inforws.addCaseManagementOp(addCase, tools.getOrganizationCode(context), null, "",
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
+					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
 		}
 		return addCaseResult.getResultData().getCASEID().getCASECODE();
 	}
@@ -226,10 +226,10 @@ public class CaseServiceImpl implements CaseService {
 		if (context.getCredentials() != null) {
 			inforws.deleteCaseManagementOp(deleteCase, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), applicationData.getTenant());
+					tools.createMessageConfig(), tools.getTenant(context));
 		} else {
 			inforws.deleteCaseManagementOp(deleteCase, tools.getOrganizationCode(context), null, "",
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
+					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
 		}
 		return caseID;
 	}
@@ -248,10 +248,10 @@ public class CaseServiceImpl implements CaseService {
 		if (context.getCredentials() != null) {
 			result = inforws.getCaseManagementOp(getCase, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), applicationData.getTenant());
+					tools.createMessageConfig(), tools.getTenant(context));
 		} else {
 			result = inforws.getCaseManagementOp(getCase, tools.getOrganizationCode(context), null, "",
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
+					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
 		}
 
 		CaseManagement caseManagement = result.getResultData().getCaseManagement();
@@ -275,10 +275,10 @@ public class CaseServiceImpl implements CaseService {
 		if (context.getCredentials() != null) {
 			syncCaseResult = inforws.syncCaseManagementOp(syncCase, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), applicationData.getTenant());
+					tools.createMessageConfig(), tools.getTenant(context));
 		} else {
 			syncCaseResult = inforws.syncCaseManagementOp(syncCase, tools.getOrganizationCode(context), null, "",
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
+					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
 		}
 		return syncCaseResult.getResultData().getCASEID().getCASECODE();
 	}

@@ -314,19 +314,30 @@ public class DataTypeTools {
         return encodeBoolean(value, BooleanType.TRUE_FALSE);
     }
 
-    public boolean isTrueValue(String value) {
+    public static boolean isTrueValue(String value) {
         return value != null && value.trim().toUpperCase().equals("TRUE");
     }
 
-    public boolean isFalseValue(String value) {
+    public static boolean isFalseValue(String value) {
         return value == null || value.trim().toUpperCase().equals("FALSE");
     }
 
-    public boolean isEmpty(String value) {
+    public static boolean isEmpty(String value) {
         return value == null || value.trim().equals("");
     }
 
-    public boolean isNotEmpty(String value) {
-        return !this.isEmpty(value);
+    public static boolean isNotEmpty(String value) {
+        return !isEmpty(value);
+    }
+
+    public String decodeBoolean(Boolean value) {
+        if (value == null) {
+            return null;
+        }
+        if (value) {
+            return "true";
+        } else {
+            return "false";
+        }
     }
 }

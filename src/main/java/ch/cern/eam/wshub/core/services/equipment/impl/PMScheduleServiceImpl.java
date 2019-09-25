@@ -158,9 +158,9 @@ public class PMScheduleServiceImpl implements PMScheduleService {
 		MP0364_AddEquipmentPMSchedule_001_Result result = null;
 
 		if (context.getCredentials() != null) {
-			result = inforws.addEquipmentPMScheduleOp(pmschedule, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
+			result = inforws.addEquipmentPMScheduleOp(pmschedule, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
 		} else {
-			result = inforws.addEquipmentPMScheduleOp(pmschedule, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+			result = inforws.addEquipmentPMScheduleOp(pmschedule, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
 		}
 		return result.getResultData().getPMSCHEDULEEQUIPMENTID().getSEQUENCENUMBER() + "";
 	}
@@ -201,9 +201,9 @@ public class PMScheduleServiceImpl implements PMScheduleService {
 		MP7006_DeletePMScheduleEquipment_001_Result result = null;
 
 		if (context.getCredentials() != null) {
-			result = inforws.deletePMScheduleEquipmentOp(pmschedule, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
+			result = inforws.deletePMScheduleEquipmentOp(pmschedule, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
 		} else {
-			result = inforws.deletePMScheduleEquipmentOp(pmschedule, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+			result = inforws.deletePMScheduleEquipmentOp(pmschedule, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
 		}
 		return result.getResultData().getPMSCHEDULEEQUIPMENTID().getSEQUENCENUMBER() + "";
 	}
@@ -242,9 +242,9 @@ public class PMScheduleServiceImpl implements PMScheduleService {
 
 		MP3014_GetEquipmentPMSchedule_001_Result getresult = null;
 		if (context.getCredentials() != null) {
-			getresult = inforws.getEquipmentPMScheduleOp(getpm, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
+			getresult = inforws.getEquipmentPMScheduleOp(getpm, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
 		} else {
-			getresult = inforws.getEquipmentPMScheduleOp(getpm, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+			getresult = inforws.getEquipmentPMScheduleOp(getpm, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
 		}
 		//
 		// Update it
@@ -368,9 +368,9 @@ public class PMScheduleServiceImpl implements PMScheduleService {
 		MP0365_SyncEquipmentPMSchedule_001_Result syncresult = null;
 
 		if (context.getCredentials() != null) {
-			syncresult = inforws.syncEquipmentPMScheduleOp(syncpm, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
+			syncresult = inforws.syncEquipmentPMScheduleOp(syncpm, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
 		} else {
-			syncresult = inforws.syncEquipmentPMScheduleOp(syncpm, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, applicationData.getTenant());
+			syncresult = inforws.syncEquipmentPMScheduleOp(syncpm, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
 		}
 
 		return syncresult.getResultData().getPMSCHEDULEEQUIPMENTID().getSEQUENCENUMBER() + "";

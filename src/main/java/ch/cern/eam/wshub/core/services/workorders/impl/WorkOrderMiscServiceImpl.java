@@ -83,10 +83,10 @@ public class WorkOrderMiscServiceImpl implements WorkOrderMiscService {
 		if (context.getCredentials() != null) {
 			result = this.inforws.addMeterReadingOp(addmeterreading, "*",
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), applicationData.getTenant());
+					tools.createMessageConfig(), tools.getTenant(context));
 		} else {
 			result = this.inforws.addMeterReadingOp(addmeterreading, "*", null, null,
-					new Holder<>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
+					new Holder<>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
 		}
 		return result.getResultData().getMETERREADINGCODE();
 
@@ -126,10 +126,10 @@ public class WorkOrderMiscServiceImpl implements WorkOrderMiscService {
 		if (context.getCredentials() != null) {
 			inforws.addWorkOrderAdditionalCostsOp(addCost, "*",
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), applicationData.getTenant());
+					tools.createMessageConfig(), tools.getTenant(context));
 		} else {
 			inforws.addWorkOrderAdditionalCostsOp(addCost, "*", null, null,
-					new Holder<>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
+					new Holder<>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
 		}
 		return "done";
 
@@ -176,10 +176,10 @@ public class WorkOrderMiscServiceImpl implements WorkOrderMiscService {
 		if (context.getCredentials() != null) {
 			inforws.addMaterialListPartOp(matList, "*",
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), applicationData.getTenant());
+					tools.createMessageConfig(), tools.getTenant(context));
 		} else {
 			inforws.addMaterialListPartOp(matList, "*", null, null, new Holder<>(tools.createInforSession(context)),
-					tools.createMessageConfig(), applicationData.getTenant());
+					tools.createMessageConfig(), tools.getTenant(context));
 		}
 		return "done";
 
@@ -236,10 +236,10 @@ public class WorkOrderMiscServiceImpl implements WorkOrderMiscService {
 		if (context.getCredentials() != null) {
 			inforws.addWorkOrderPartOp(addwop, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), applicationData.getTenant());
+					tools.createMessageConfig(), tools.getTenant(context));
 		} else {
 			inforws.addWorkOrderPartOp(addwop, tools.getOrganizationCode(context), null, "",
-					new Holder<>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
+					new Holder<>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
 		}
 		return "done";
 	}
@@ -278,10 +278,10 @@ public class WorkOrderMiscServiceImpl implements WorkOrderMiscService {
 		if (context.getCredentials() != null) {
 			inforws.addRouteEquipmentOp(addRouteEquipment, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), applicationData.getTenant());
+					tools.createMessageConfig(), tools.getTenant(context));
 		} else {
 			inforws.addRouteEquipmentOp(addRouteEquipment, tools.getOrganizationCode(context), null, "",
-					new Holder<>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
+					new Holder<>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
 		}
 		return "done";
 	}
@@ -306,10 +306,10 @@ public class WorkOrderMiscServiceImpl implements WorkOrderMiscService {
 		if (context.getCredentials() != null) {
 			inforws.deleteRouteEquipmentOp(deleteRouteEquipment, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), applicationData.getTenant());
+					tools.createMessageConfig(), tools.getTenant(context));
 		} else {
 			inforws.deleteRouteEquipmentOp(deleteRouteEquipment, tools.getOrganizationCode(context), null, "",
-					new Holder<>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
+					new Holder<>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
 		}
 		return "done";
 	}
@@ -438,10 +438,10 @@ public class WorkOrderMiscServiceImpl implements WorkOrderMiscService {
 		if (context.getCredentials() != null) {
 			inforws.addTaskOp(addTask, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), applicationData.getTenant());
+					tools.createMessageConfig(), tools.getTenant(context));
 		} else {
 			inforws.addTaskOp(addTask, tools.getOrganizationCode(context), null, "",
-					new Holder<>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
+					new Holder<>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
 		}
 		return "done";
 	}

@@ -1,5 +1,7 @@
 package ch.cern.eam.wshub.core.services.grids.entities;
 
+import net.datastream.schemas.mp_functions.gridrequest.GRID;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import java.io.Serializable;
@@ -8,13 +10,15 @@ import java.util.*;
 public class GridRequest implements Serializable {
 	private static final long serialVersionUID = 6690766576660475229L;
 
+	public enum GRIDTYPE {LIST, LOV};
+
 	private String gridID;
 	private String dataspyID;
-	private String rowCount;
-	private String cursorPosition;
+	private Integer rowCount;
+	private Integer cursorPosition;
 	private String userFunctionName;
 	private String gridName;
-	private String gridType = "LIST";
+	private GRIDTYPE gridType = GRIDTYPE.LIST;
 	private Boolean useNative = true;
 	private String JPAType;
 	private Boolean countTotal = false;
@@ -41,22 +45,32 @@ public class GridRequest implements Serializable {
 	private GridRequestSort[] gridRequestSorts;
 
 	public GridRequest() {
-		this.cursorPosition = "1";
-		this.rowCount = "100";
+		this.cursorPosition = 1;
+		this.rowCount = 100;
 	}
 
 	public GridRequest(String gridName) {
+		this();
 		this.gridName = gridName;
-		this.cursorPosition = "1";
-		this.rowCount = "100";
+	}
+
+	public GridRequest(String gridName, Integer rowCount) {
+		this();
+		this.rowCount = rowCount;
+		this.gridName = gridName;
+	}
+
+	public GridRequest(String gridName, GRIDTYPE gridType) {
+		this();
+		this.gridName = gridName;
+		this.gridType = gridType;
 	}
 
 	public GridRequest(String gridID, String gridName, String dataspyID) {
+		this();
 		this.gridID = gridID;
 		this.dataspyID = dataspyID;
 		this.gridName = gridName;
-		this.cursorPosition = "1";
-		this.rowCount = "100";
 	}
 
 	public GridRequest(GridRequest o) {
@@ -93,17 +107,17 @@ public class GridRequest implements Serializable {
 		this.dataspyID = dataspyID;
 	}
 
-	public String getRowCount() {
+	public Integer getRowCount() {
 		return rowCount;
 	}
-	public void setRowCount(String rowCount) {
+	public void setRowCount(Integer rowCount) {
 		this.rowCount = rowCount;
 	}
 
-	public String getCursorPosition() {
+	public Integer getCursorPosition() {
 		return cursorPosition;
 	}
-	public void setCursorPosition(String cursorPosition) {
+	public void setCursorPosition(Integer cursorPosition) {
 		this.cursorPosition = cursorPosition;
 	}
 
@@ -147,10 +161,10 @@ public class GridRequest implements Serializable {
 	}
 
 
-	public String getGridType() {
+	public GRIDTYPE getGridType() {
 		return gridType;
 	}
-	public void setGridType(String gridType) {
+	public void setGridType(GRIDTYPE gridType) {
 		this.gridType = gridType;
 	}
 

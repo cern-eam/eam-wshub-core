@@ -98,7 +98,7 @@ public class DocumentsServiceImpl implements DocumentsService {
 		document.setOUTOFSERVICE("false");
 		
 		addDoc.setDocument(document);
-		MP6001_AddDocument_001_Result result = inforws.addDocumentOp(addDoc, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
+		MP6001_AddDocument_001_Result result = inforws.addDocumentOp(addDoc, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
 
 		return result.getResultData().getDOCUMENTID().getDOCUMENTCODE();
 	}
@@ -136,7 +136,7 @@ public class DocumentsServiceImpl implements DocumentsService {
 		addDocAssoc.getDOCUMENTENTITY().getDOCUMENTENTITYID().setCode(inforObjectCode);   
 		addDocAssoc.getDOCUMENTENTITY().getDOCUMENTENTITYID().setDocument(document);
 		addDocAssoc.getDOCUMENTENTITY().getDOCUMENTENTITYID().setRentity(entity);
-		MP0112_AddDocumentAssociation_001_Result result = inforws.addDocumentAssociationOp(addDocAssoc, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), applicationData.getTenant());
+		MP0112_AddDocumentAssociation_001_Result result = inforws.addDocumentAssociationOp(addDocAssoc, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
 
 		return result.getDOCUMENTENTITYID().getDocument(); 
 	}

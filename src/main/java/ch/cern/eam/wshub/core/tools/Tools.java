@@ -147,7 +147,7 @@ public class Tools {
 	}
 
 	//
-	// OTHER
+	// ORGANIZATION
 	//
 	public ORGANIZATIONID_Type getOrganization(InforContext inforContext) {
 		ORGANIZATIONID_Type org = new ORGANIZATIONID_Type();
@@ -164,6 +164,19 @@ public class Tools {
 			return inforContext.getOrganizationCode();
 		} else {
 			return applicationData.getOrganization();
+		}
+	}
+
+	//
+	// TENANT
+	//
+	public String getTenant(InforContext inforContext) {
+		System.out.println("TENANT: " + inforContext.getTenant());
+		if (inforContext != null && inforContext.getTenant() != null) {
+
+			return inforContext.getTenant();
+		} else {
+			return applicationData.getTenant();
 		}
 	}
 

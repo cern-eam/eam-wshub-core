@@ -2,18 +2,17 @@ package ch.cern.eam.wshub.core.services.grids.impl;
 
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.grids.GridsService;
-import ch.cern.eam.wshub.core.services.grids.customfields.GridCustomFieldHandler;
+
 import ch.cern.eam.wshub.core.services.grids.entities.*;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.isEmpty;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
-import javax.persistence.EntityManager;
-import java.util.Arrays;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static ch.cern.eam.wshub.core.tools.GridTools.getCellContent;
 
 public class GridsServiceImpl implements GridsService {
 
@@ -22,7 +21,7 @@ public class GridsServiceImpl implements GridsService {
 
 	private InforGrids inforGrids;
 	private JPAGrids jpaGrids;
-	private GridCustomFieldHandler gridCustomFieldHandler;
+	private static Map<String, GridMetadataRequestResult> gridIdCache = new ConcurrentHashMap<>();
 
 	public GridsServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
 		this.tools = tools;
@@ -39,7 +38,35 @@ public class GridsServiceImpl implements GridsService {
 			return inforGrids.executeQuery(context, gridRequest);
 		} else {
 			tools.demandDatabaseConnection();
+			if (isEmpty(gridRequest.getDataspyID()) || isEmpty(gridRequest.getGridID())) {
+				gridRequest.setDataspyID(getGridMetadataInfor(context, gridRequest.getGridName()).getDataSpyId());
+				gridRequest.setGridID(getGridMetadataInfor(context, gridRequest.getGridName()).getGridCode());
+			}
 			return jpaGrids.executeQuery(context, gridRequest);
+		}
+	}
+
+	public GridMetadataRequestResult getGridMetadataInfor(InforContext context, String gridName)  {
+		try {
+			if (gridIdCache.containsKey(gridName)) {
+				return gridIdCache.get(gridName);
+			}
+			GridRequest gridRequest = new GridRequest("BEWSGR");
+			gridRequest.setIncludeMetadata(true);
+			gridRequest.setRowCount(1);
+			gridRequest.getGridRequestFilters().add(new GridRequestFilter("grd_gridname", gridName, "="));
+			GridRequestResult result = inforGrids.executeQuery(context, gridRequest);
+
+			GridMetadataRequestResult gridData = new GridMetadataRequestResult();
+			gridData.setGridName(gridName);
+			gridData.setGridCode(getCellContent("grd_gridid", result.getRows()[0]));
+			gridData.setDataSpyId(getCellContent("dds_ddspyid", result.getRows()[0]).replaceAll(",", ""));
+			// Store the gridId in the cache
+			gridIdCache.put(gridName, gridData);
+			//
+			return gridData;
+		} catch (Exception e) {
+			return null;
 		}
 	}
 
@@ -47,136 +74,20 @@ public class GridsServiceImpl implements GridsService {
 		tools.demandDatabaseConnection();
 		return getGridMetadata(context, gridCode, viewType, "EN");
 	}
-	
+
 	public GridMetadataRequestResult getGridMetadata(InforContext context, String gridCode, String viewType, String language) throws InforException {
 		tools.demandDatabaseConnection();
-		if (gridCode == null || gridCode.trim().equals("")) {
-			throw tools.generateFault("Grid code is a mandatory field.");
-		}
-		if (viewType == null || viewType.trim().equals("")) {
-			throw tools.generateFault("View Type is a mandatory field.");
-		}
-		// Fetch grid data
-		EntityManager em = tools.getEntityManager();
-		try {
-			// Grid name
-			GridMetadataRequestResult result = em.find(GridMetadataRequestResult.class, gridCode);
-			if (result == null) {
-				// Just 'forward' the exception to the catch block. 
-				throw new Exception();
-			}
-			// Grid fields and data spies
-			GridDataspy[] gridDataspies = em.createNamedQuery(GridDataspy.GETGRIDDATASPIES, GridDataspy.class)
-											.setParameter("gridid", gridCode)
-											.setParameter("userid", context.getCredentials().getUsername()).getResultList().toArray(new GridDataspy[0]);
-			
-			// select default dataspy
-			List<GridDataspy> selectedDataSpyList = Arrays.stream(gridDataspies).filter(ds -> ds.isDefaultDataspy()).collect(Collectors.toList());
-			GridDataspy selectedDataSpy = gridDataspies[0];
-			if(!selectedDataSpyList.isEmpty())
-				selectedDataSpy = selectedDataSpyList.get(0);
-			
-			result.setGridCode(gridCode);
-			result.setGridDataspies(gridDataspies);
-			result.setDataSpyId(selectedDataSpy.getCode());
-
-			// This code is fetching all fields for the dataspy
-			GridField[] gridFields = em.createNamedQuery(GridField.GETDDSPYFIELDS, GridField.class)
-									   .setParameter("gridid", gridCode) 
-									   .setParameter("ddspyid", selectedDataSpy.getCode()) 
-									   .setParameter("viewtype", viewType) 
-									   .setParameter("language", language != null ? language.toUpperCase() : "EN")
-									   .getResultList().toArray(new GridField[0]);
-
-			// Concat with custom fields
-			if (JPAGrids.USE_CUSTOM_FIELDS) {
-				gridFields = Stream.of(gridFields, gridCustomFieldHandler.getCustomFieldsAsGridFields(selectedDataSpy.getCode())).flatMap(Stream::of).toArray(GridField[]::new);
-			}
-			
-			result.setGridFields(gridFields);
-			
-			return result;
-		} catch (Exception e) {
-			tools.log(Level.SEVERE,"Error while fetching grid metadata for gridCode " + gridCode);
-			throw tools.generateFault("Couldn't fetch the metadata for this grid.");
-		} finally {
-			em.clear();
-			em.close();
-		}
+		return jpaGrids.getGridMetadata(context, gridCode, viewType, language);
 	}
-	
+
 	public GridDDSpyFieldsResult getDDspyFields(InforContext context, String gridCode, String viewType, String ddSpyId, String language) throws InforException {
 		tools.demandDatabaseConnection();
-		if (gridCode == null || gridCode.trim().equals("")) {
-			throw tools.generateFault("Grid code is a mandatory field.");
-		}
-		if (ddSpyId == null || ddSpyId.trim().equals("")) {
-			throw tools.generateFault("DataSpy id is a mandatory field.");
-		}
-		if (viewType == null || viewType.trim().equals("")) {
-			throw tools.generateFault("View Type is a mandatory field.");
-		}
-		// Fetch fields data
-		EntityManager em = tools.getEntityManager();
-		try {
-			// Grid name
-			GridDDSpyFieldsResult result = new GridDDSpyFieldsResult();
-			// Grid fields and data spies
-			GridField[] gridFields = em.createNamedQuery(GridField.GETDDSPYFIELDS, GridField.class)
-					   .setParameter("gridid", gridCode)
-					   .setParameter("ddspyid", ddSpyId)
-					   .setParameter("viewtype", viewType)
-					   .setParameter("language", language != null ? language.toUpperCase() : "EN")
-					   .getResultList().toArray(new GridField[0]);
-
-			// Concat with custom fields
-			if (JPAGrids.USE_CUSTOM_FIELDS) {
-				gridFields = Stream.of(gridFields, gridCustomFieldHandler.getCustomFieldsAsGridFields(ddSpyId)).flatMap(Stream::of).toArray(GridField[]::new);
-			}
-			
-			result.setGridFields(gridFields);
-			result.setDataSpyId(ddSpyId);
-			return result;
-		} catch (Exception e) {
-			tools.log(Level.SEVERE,"Error");
-			throw tools.generateFault("Couldn't fetch the metadata for this grid.");
-		} finally {
-			em.clear();
-			em.close();
-		}
+		return jpaGrids.getDDspyFields(context, gridCode, viewType, ddSpyId, language);
 	}
-	
+
 	public GridDataspy getDefaultDataspy(InforContext context, String gridCode, String viewType) throws InforException {
 		tools.demandDatabaseConnection();
-		if (gridCode == null || gridCode.trim().equals("")) {
-			throw tools.generateFault("Grid code is a mandatory field.");
-		}
-		if (viewType == null || viewType.trim().equals("")) {
-			throw tools.generateFault("View Type is a mandatory field.");
-		}
-		// Fetch grid data
-		EntityManager em = tools.getEntityManager();
-		try {
-			// Check Grid Code
-			GridMetadataRequestResult result = em.find(GridMetadataRequestResult.class, gridCode);
-			if (result == null) {
-				// Just 'forward' the exception to the catch block. 
-				throw new Exception();
-			}
-			// Grid DataSpy
-			GridDataspy gridDataspy = em.createNamedQuery(GridDataspy.GETDEFAULTDATASPY, GridDataspy.class)
-											.setParameter("gridid", gridCode)
-											.setParameter("userid", context.getCredentials().getUsername())
-											.getSingleResult();
-			
-			return gridDataspy;
-		} catch (Exception e) {
-			tools.log(Level.SEVERE,"Error while fetching default dataspy for grid code " + gridCode + " and view type " + viewType);
-			throw tools.generateFault("Couldn't fetch the metadata for this grid.");
-		} finally {
-			em.clear();
-			em.close();
-		}
+		return jpaGrids.getDefaultDataspy(context, gridCode, viewType);
 	}
 	
 }

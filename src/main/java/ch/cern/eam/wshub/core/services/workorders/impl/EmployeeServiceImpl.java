@@ -45,11 +45,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 		if (context.getCredentials() != null) {
 			result = inforws.getEmployeeOp(request, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), applicationData.getTenant());
+					tools.createMessageConfig(), tools.getTenant(context));
 
 		} else {
 			result = inforws.getEmployeeOp(request, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
+					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
 		}
 
 		net.datastream.schemas.mp_entities.employee_001.Employee inforEmployee = result.getResultData().getEmployee();
@@ -115,10 +115,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 		if (context.getCredentials() != null) {
 			result = inforws.addEmployeeOp(request, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), applicationData.getTenant());
+					tools.createMessageConfig(), tools.getTenant(context));
 		} else {
 			result = inforws.addEmployeeOp(request, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
+					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
 		}
 
 		return result.getResultData().getEMPLOYEEID().getEMPLOYEECODE();
@@ -134,11 +134,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 		if (context.getCredentials() != null) {
 			readResult = inforws.getEmployeeOp(readRequest, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), applicationData.getTenant());
+					tools.createMessageConfig(), tools.getTenant(context));
 
 		} else {
 			readResult = inforws.getEmployeeOp(readRequest, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
+					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
 		}
 
 		net.datastream.schemas.mp_entities.employee_001.Employee inforEmployee = readResult.getResultData()
@@ -154,11 +154,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 		if (context.getCredentials() != null) {
 			syncResult = inforws.syncEmployeeOp(syncRequest, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), applicationData.getTenant());
+					tools.createMessageConfig(), tools.getTenant(context));
 
 		} else {
 			syncResult = inforws.syncEmployeeOp(syncRequest, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
+					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
 		}
 
 		return syncResult.getResultData().getEmployee().getEMPLOYEEID().getEMPLOYEECODE();
@@ -173,10 +173,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 		if (context.getCredentials() != null) {
 			inforws.deleteEmployeeOp(request, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), applicationData.getTenant());
+					tools.createMessageConfig(), tools.getTenant(context));
 		} else {
 			inforws.deleteEmployeeOp(request, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), applicationData.getTenant());
+					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
 		}
 
 		return employeeCode;
