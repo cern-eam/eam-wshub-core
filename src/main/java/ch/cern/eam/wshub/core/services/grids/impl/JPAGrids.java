@@ -249,7 +249,7 @@ public class JPAGrids implements Serializable {
 				}
 
 				//Load sort from user
-				if(gridRequest.getGridRequestSorts() != null && gridRequest.getGridRequestSorts().length > 1){
+				if(gridRequest.getGridRequestSorts() != null && gridRequest.getGridRequestSorts().length > 0){
 					dataspySortArr.addAll(new ArrayList<GridRequestSort>(Arrays.asList(gridRequest.getGridRequestSorts())));
 				} else { 
 					// if user did not provide any sort info then check if DataSpy has defined sort info
