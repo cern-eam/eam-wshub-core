@@ -171,7 +171,6 @@ public class Tools {
 	// TENANT
 	//
 	public String getTenant(InforContext inforContext) {
-		System.out.println("TENANT: " + inforContext.getTenant());
 		if (inforContext != null && inforContext.getTenant() != null) {
 
 			return inforContext.getTenant();
