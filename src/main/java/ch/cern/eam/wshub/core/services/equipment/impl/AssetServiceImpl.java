@@ -401,8 +401,6 @@ public class AssetServiceImpl implements AssetService {
 
         AssetEquipment assetEquipment = new AssetEquipment();
         //
-        //
-        //
         if (assetParam.getCustomFields() != null && assetParam.getCustomFields().length > 0) {
             if (assetParam.getClassCode() != null && !assetParam.getClassCode().trim().equals("")) {
                 assetEquipment.setUSERDEFINEDAREA(
@@ -412,15 +410,9 @@ public class AssetServiceImpl implements AssetService {
             }
         }
         //
-        //
-        //
         assetEquipment.setUserDefinedFields(new UserDefinedFields());
         //
-        //
-        //
         initializeAssetObject(assetEquipment, assetParam, context);
-        //
-        //
         //
         MP0301_AddAssetEquipment_001 addAsset = new MP0301_AddAssetEquipment_001();
         addAsset.setAssetEquipment(assetEquipment);
@@ -480,9 +472,6 @@ public class AssetServiceImpl implements AssetService {
         if (assetParam.getTypeCode() != null) {
             assetInfor.setTYPE(new TYPE_Type());
             assetInfor.getTYPE().setTYPECODE(assetParam.getTypeCode());
-        } else {
-            assetInfor.setTYPE(new TYPE_Type());
-            assetInfor.getTYPE().setTYPECODE("A");
         }
 
         if (assetParam.getClassCode() != null) {

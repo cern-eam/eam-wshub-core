@@ -41,8 +41,6 @@ public class PositionServiceImpl implements PositionService {
 
 		PositionEquipment positionEquipment = new PositionEquipment();
 		//
-		//
-		//
 		if (positionParam.getCustomFields() != null && positionParam.getCustomFields().length > 0) {
 			if (positionParam.getClassCode() != null && !positionParam.getClassCode().trim().equals("")) {
 				positionEquipment.setUSERDEFINEDAREA(
@@ -52,18 +50,9 @@ public class PositionServiceImpl implements PositionService {
 			}
 		}
 		//
-		//
-		//
 		positionEquipment.setUserDefinedFields(new net.datastream.schemas.mp_entities.positionequipment_001.UserDefinedFields());
 		//
-		//
-		//
 		initializePositionObject(context, positionEquipment, positionParam, true);
-
-		positionEquipment.setTYPE(new TYPE_Type());
-		positionEquipment.getTYPE().setTYPECODE("P");
-		//
-		//
 		//
 		MP0306_AddPositionEquipment_001 addPosition = new MP0306_AddPositionEquipment_001();
 		addPosition.setPositionEquipment(positionEquipment);

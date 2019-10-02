@@ -191,8 +191,6 @@ public class SystemServiceImpl implements SystemService {
 
 		systemEquipment = getAssetResult.getResultData().getSystemEquipment();
 		//
-		//
-		//
 		if (systemParam.getClassCode() != null && (systemEquipment.getCLASSID() == null
 				|| !systemParam.getClassCode().toUpperCase().equals(systemEquipment.getCLASSID().getCLASSCODE()))) {
 			systemEquipment.setUSERDEFINEDAREA(
@@ -220,8 +218,6 @@ public class SystemServiceImpl implements SystemService {
 
 		SystemEquipment systemEquipment = new SystemEquipment();
 		//
-		//
-		//
 		if (systemParam.getCustomFields() != null && systemParam.getCustomFields().length > 0) {
 			if (systemParam.getClassCode() != null && !systemParam.getClassCode().trim().equals("")) {
 				systemEquipment.setUSERDEFINEDAREA(
@@ -231,15 +227,9 @@ public class SystemServiceImpl implements SystemService {
 			}
 		}
 		//
-		//
-		//
 		systemEquipment.setUserDefinedFields(new UserDefinedFields());
 		//
-		//
-		//
 		initializeSystemObject(systemEquipment, systemParam, context);
-		//
-		//
 		//
 		MP0311_AddSystemEquipment_001 addPosition = new MP0311_AddSystemEquipment_001();
 		addPosition.setSystemEquipment(systemEquipment);
@@ -252,8 +242,6 @@ public class SystemServiceImpl implements SystemService {
 			result = inforws.addSystemEquipmentOp(addPosition, tools.getOrganizationCode(context), null, null,
 					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
 		}
-		//TODO Update CERN properties
-		//equipmentOther.updateEquipmentCERNProperties(systemParam);
 		return result.getResultData().getSYSTEMID().getEQUIPMENTCODE();
 	}
 
@@ -294,9 +282,6 @@ public class SystemServiceImpl implements SystemService {
 		if (systemParam.getTypeCode() != null) {
 			systemInfor.setTYPE(new TYPE_Type());
 			systemInfor.getTYPE().setTYPECODE(systemParam.getTypeCode());
-		} else {
-			systemInfor.setTYPE(new TYPE_Type());
-			systemInfor.getTYPE().setTYPECODE("S");
 		}
 
 		if (systemParam.getStatusCode() != null) {
