@@ -251,6 +251,7 @@ public class CustomFieldsTools {
     }
 
     public CustomField[] readInforCustomFields(USERDEFINEDAREA userdefinedarea) {
+        // Process USERDEFINEDAREA and return converted custom field array
         if (userdefinedarea != null && userdefinedarea.getCUSTOMFIELD() != null
                 && userdefinedarea.getCUSTOMFIELD().size() > 0) {
             Collections.sort(userdefinedarea.getCUSTOMFIELD(), new CustomFieldComparator());
@@ -260,7 +261,8 @@ public class CustomFieldsTools {
             }
             return customFields;
         }
-        return null;
+        // Return an empty array otherwise
+        return new CustomField[0];
     }
 
     public USERDEFINEDAREA getCustomFields(InforContext context, String entity, String inforClass)
