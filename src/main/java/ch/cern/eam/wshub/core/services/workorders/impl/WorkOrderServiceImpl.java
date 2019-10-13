@@ -397,9 +397,9 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		if (workorderParam.getCustomFields() != null && workorderParam.getCustomFields().length > 0) {
 			if (workorderParam.getClassCode() != null && !workorderParam.getClassCode().trim().equals("")) {
 				inforWorkOrder.setUSERDEFINEDAREA(
-						tools.getCustomFieldsTools().getCustomFields(context, "EVNT", workorderParam.getClassCode()));
+						tools.getCustomFieldsTools().getInforCustomFields(context, "EVNT", workorderParam.getClassCode()));
 			} else {
-				inforWorkOrder.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getCustomFields(context, "EVNT", "*"));
+				inforWorkOrder.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(context, "EVNT", "*"));
 			}
 		}
 		//
@@ -498,7 +498,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		if (workorderParam.getClassCode() != null && (inforWorkOrder.getCLASSID() == null
 				|| !workorderParam.getClassCode().toUpperCase().equals(inforWorkOrder.getCLASSID().getCLASSCODE()))) {
 			inforWorkOrder.setUSERDEFINEDAREA(
-					tools.getCustomFieldsTools().getCustomFields(context, "EVNT", workorderParam.getClassCode().toUpperCase()));
+					tools.getCustomFieldsTools().getInforCustomFields(context, "EVNT", workorderParam.getClassCode().toUpperCase()));
 		}
 		//
 		// SET ALL PROPERTIES

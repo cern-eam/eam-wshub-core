@@ -382,7 +382,7 @@ public class AssetServiceImpl implements AssetService {
         if (assetParam.getClassCode() != null && (assetEquipment.getCLASSID() == null
                 || !assetParam.getClassCode().toUpperCase().equals(assetEquipment.getCLASSID().getCLASSCODE()))) {
             assetEquipment.setUSERDEFINEDAREA(
-                    tools.getCustomFieldsTools().getCustomFields(context, "OBJ", assetParam.getClassCode().toUpperCase()));
+                    tools.getCustomFieldsTools().getInforCustomFields(context, "OBJ", assetParam.getClassCode().toUpperCase()));
         }
         //
         //
@@ -404,9 +404,9 @@ public class AssetServiceImpl implements AssetService {
         if (assetParam.getCustomFields() != null && assetParam.getCustomFields().length > 0) {
             if (assetParam.getClassCode() != null && !assetParam.getClassCode().trim().equals("")) {
                 assetEquipment.setUSERDEFINEDAREA(
-                        tools.getCustomFieldsTools().getCustomFields(context, "OBJ", assetParam.getClassCode()));
+                        tools.getCustomFieldsTools().getInforCustomFields(context, "OBJ", assetParam.getClassCode()));
             } else {
-                assetEquipment.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getCustomFields(context, "OBJ", "*"));
+                assetEquipment.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(context, "OBJ", "*"));
             }
         }
         //

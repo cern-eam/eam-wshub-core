@@ -14,10 +14,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
+import static java.util.Comparator.comparing;
 
 public class CustomFieldsTools {
 
@@ -251,21 +249,13 @@ public class CustomFieldsTools {
     }
 
     public CustomField[] readInforCustomFields(USERDEFINEDAREA userdefinedarea) {
-        // Process USERDEFINEDAREA and return converted custom field array
-        if (userdefinedarea != null && userdefinedarea.getCUSTOMFIELD() != null
-                && userdefinedarea.getCUSTOMFIELD().size() > 0) {
-            Collections.sort(userdefinedarea.getCUSTOMFIELD(), new CustomFieldComparator());
-            CustomField[] customFields = new CustomField[userdefinedarea.getCUSTOMFIELD().size()];
-            for (int i = 0; i < userdefinedarea.getCUSTOMFIELD().size(); i++) {
-                customFields[i] = decodeInforCustomField(userdefinedarea.getCUSTOMFIELD().get(i));
-            }
-            return customFields;
+        if (userdefinedarea == null || userdefinedarea.getCUSTOMFIELD() == null) {
+            return new CustomField[0];
         }
-        // Return an empty array otherwise
-        return new CustomField[0];
+        return userdefinedarea.getCUSTOMFIELD().stream().sorted(comparing(CUSTOMFIELD::getIndex)).map(cf -> decodeInforCustomField(cf)).toArray(CustomField[]::new);
     }
 
-    public USERDEFINEDAREA getCustomFields(InforContext context, String entity, String inforClass)
+    public USERDEFINEDAREA getInforCustomFields(InforContext context, String entity, String inforClass)
             throws InforException {
         CUSTOMFIELDREQ cfreq = new CUSTOMFIELDREQ();
         cfreq.setORGANIZATIONID(tools.getOrganization(context));
@@ -294,7 +284,7 @@ public class CustomFieldsTools {
 
     }
 
-    public CustomField[] getMTCustomFields(InforContext context, String entity, String inforClass)
+    public CustomField[] getWSHubCustomFields(InforContext context, String entity, String inforClass)
             throws InforException {
         CUSTOMFIELDREQ cfreq = new CUSTOMFIELDREQ();
         cfreq.setORGANIZATIONID(tools.getOrganization(context));
@@ -309,22 +299,7 @@ public class CustomFieldsTools {
             cfreq.setENTITYNAME(entity.toUpperCase());
         }
 
-        MP9501_GetCustomFields_001 getcustomfields = new MP9501_GetCustomFields_001();
-        getcustomfields.setCUSTOMFIELDREQ(cfreq);
-
-        MP9501_GetCustomFields_001_Result result;
-
-        if (context.getCredentials() != null) {
-            result = inforws.getCustomFieldsOp(getcustomfields, tools.getOrganizationCode(context),
-                    tools.createSecurityHeader(context), "TERMINATE", null, null,
-                    tools.getTenant(context));
-        } else {
-            result = inforws.getCustomFieldsOp(getcustomfields, tools.getOrganizationCode(context), null, null,
-                    new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-        }
-
-        return readInforCustomFields(result.getUSERDEFINEDAREA());
-
+        return readInforCustomFields(getInforCustomFields(context, entity, inforClass));
     }
 
     public String[][] getCFValues(String classCode, String propertyCode, String language) throws SQLException {

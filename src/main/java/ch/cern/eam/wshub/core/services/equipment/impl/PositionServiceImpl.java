@@ -44,9 +44,9 @@ public class PositionServiceImpl implements PositionService {
 		if (positionParam.getCustomFields() != null && positionParam.getCustomFields().length > 0) {
 			if (positionParam.getClassCode() != null && !positionParam.getClassCode().trim().equals("")) {
 				positionEquipment.setUSERDEFINEDAREA(
-						tools.getCustomFieldsTools().getCustomFields(context, "OBJ", positionParam.getClassCode()));
+						tools.getCustomFieldsTools().getInforCustomFields(context, "OBJ", positionParam.getClassCode()));
 			} else {
-				positionEquipment.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getCustomFields(context, "OBJ", "*"));
+				positionEquipment.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(context, "OBJ", "*"));
 			}
 		}
 		//
@@ -409,7 +409,7 @@ public class PositionServiceImpl implements PositionService {
 		if (positionParam.getClassCode() != null && (positionEquipment.getCLASSID() == null
 				|| !positionParam.getClassCode().toUpperCase().equals(positionEquipment.getCLASSID().getCLASSCODE()))) {
 			positionEquipment.setUSERDEFINEDAREA(
-					tools.getCustomFieldsTools().getCustomFields(context, "OBJ", positionParam.getClassCode().toUpperCase()));
+					tools.getCustomFieldsTools().getInforCustomFields(context, "OBJ", positionParam.getClassCode().toUpperCase()));
 		}
 		// Update 'positionEquipment' with supplied values
 		initializePositionObject(context, positionEquipment, positionParam, false);

@@ -136,9 +136,9 @@ public class PartServiceImpl implements PartService {
 		if (partParam.getCustomFields() != null && partParam.getCustomFields().length > 0) {
 			if (partParam.getClassCode() != null && !partParam.getClassCode().trim().equals("")) {
 				partInfor.setUSERDEFINEDAREA(
-						tools.getCustomFieldsTools().getCustomFields(context, "PART", partParam.getClassCode()));
+						tools.getCustomFieldsTools().getInforCustomFields(context, "PART", partParam.getClassCode()));
 			} else {
-				partInfor.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getCustomFields(context, "PART", "*"));
+				partInfor.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(context, "PART", "*"));
 			}
 		}
 		//
@@ -216,7 +216,7 @@ public class PartServiceImpl implements PartService {
 			if (partParam.getClassCode() != null && (partInfor.getCLASSID() == null
 					|| !partParam.getClassCode().toUpperCase().equals(partInfor.getCLASSID().getCLASSCODE()))) {
 				partInfor.setUSERDEFINEDAREA(
-						tools.getCustomFieldsTools().getCustomFields(context, "PART", partParam.getClassCode().toUpperCase()));
+						tools.getCustomFieldsTools().getInforCustomFields(context, "PART", partParam.getClassCode().toUpperCase()));
 			}
 
 			//

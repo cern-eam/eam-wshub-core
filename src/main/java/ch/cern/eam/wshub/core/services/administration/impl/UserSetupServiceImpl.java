@@ -151,9 +151,9 @@ public class UserSetupServiceImpl implements UserSetupService {
 		if (userParam.getCustomFields() != null && userParam.getCustomFields().length > 0) {
 			if (userParam.getClassCode() != null && !userParam.getClassCode().trim().equals("")) {
 				userInfor.setUSERDEFINEDAREA(
-						tools.getCustomFieldsTools().getCustomFields(context, "USER", userParam.getClassCode()));
+						tools.getCustomFieldsTools().getInforCustomFields(context, "USER", userParam.getClassCode()));
 			} else {
-				userInfor.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getCustomFields(context, "USER", "*"));
+				userInfor.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(context, "USER", "*"));
 			}
 		}
 
@@ -208,7 +208,7 @@ public class UserSetupServiceImpl implements UserSetupService {
 		if (userParam.getClassCode() != null && (userInfor.getCLASSID() == null
 				|| !userParam.getClassCode().toUpperCase().equals(userInfor.getCLASSID().getCLASSCODE()))) {
 			userInfor.setUSERDEFINEDAREA(
-					tools.getCustomFieldsTools().getCustomFields(context, "USER", userParam.getClassCode().toUpperCase()));
+					tools.getCustomFieldsTools().getInforCustomFields(context, "USER", userParam.getClassCode().toUpperCase()));
 		}
 		// Init object for update
 		initializeInforUserObject(userInfor, userParam, context);

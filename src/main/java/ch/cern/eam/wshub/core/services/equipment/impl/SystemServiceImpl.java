@@ -194,7 +194,7 @@ public class SystemServiceImpl implements SystemService {
 		if (systemParam.getClassCode() != null && (systemEquipment.getCLASSID() == null
 				|| !systemParam.getClassCode().toUpperCase().equals(systemEquipment.getCLASSID().getCLASSCODE()))) {
 			systemEquipment.setUSERDEFINEDAREA(
-					tools.getCustomFieldsTools().getCustomFields(context, "OBJ", systemParam.getClassCode().toUpperCase()));
+					tools.getCustomFieldsTools().getInforCustomFields(context, "OBJ", systemParam.getClassCode().toUpperCase()));
 		}
 
 		initializeSystemObject(systemEquipment, systemParam, context);
@@ -221,9 +221,9 @@ public class SystemServiceImpl implements SystemService {
 		if (systemParam.getCustomFields() != null && systemParam.getCustomFields().length > 0) {
 			if (systemParam.getClassCode() != null && !systemParam.getClassCode().trim().equals("")) {
 				systemEquipment.setUSERDEFINEDAREA(
-						tools.getCustomFieldsTools().getCustomFields(context, "OBJ", systemParam.getClassCode()));
+						tools.getCustomFieldsTools().getInforCustomFields(context, "OBJ", systemParam.getClassCode()));
 			} else {
-				systemEquipment.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getCustomFields(context, "OBJ", "*"));
+				systemEquipment.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(context, "OBJ", "*"));
 			}
 		}
 		//
