@@ -61,6 +61,7 @@ public class InforClient implements Serializable {
     private Tools tools;
     private InvocationHandler invocationHandler;
     private InforWebServicesPT inforWebServicesToolkitClient;
+    private BindingProvider bindingProvider;
 
     private CommentService commentService;
     private WorkOrderService workOrderService;
@@ -178,8 +179,11 @@ public class InforClient implements Serializable {
             if (this.soapHandlerResolver != null) {
                 service.setHandlerResolver(soapHandlerResolver);
             }
+
             InforWebServicesPT inforWebServicesToolkitClient = service.getPort(InforWebServicesPT.class);
-            ((BindingProvider) inforWebServicesToolkitClient).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, applicationData.getUrl());
+            inforClient.bindingProvider = (BindingProvider) inforWebServicesToolkitClient;
+            inforClient.bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, applicationData.getUrl());
+            inforClient.bindingProvider.getRequestContext().put("set-jaxb-validation-event-handler", false);
 
             if (this.executorService != null) {
                 // Init new Executor Service
@@ -370,4 +374,7 @@ public class InforClient implements Serializable {
     }
 
     public DataspyService getDataspyService() { return dataspyService; }
+
+    public BindingProvider getBindingProvider() { return bindingProvider; }
+
 }
