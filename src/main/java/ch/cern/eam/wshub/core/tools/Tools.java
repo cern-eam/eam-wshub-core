@@ -106,12 +106,14 @@ public class Tools {
 	// SECURITY AND SESSION
 	//
 	public Security createSecurityHeader(InforContext context) throws InforException {
-		Security security;
+		if (context == null || context.getCredentials() == null) {
+			throw generateFault("Credentials must be initialized.");
+		}
 
 		ObjectFactory of = new ObjectFactory();
-		security = of.createSecurity();
+		Security security = of.createSecurity();
 		Username un = of.createUsername();
-		un.setValue(context.getCredentials().getUsername().toUpperCase());
+		un.setValue(context.getCredentials().getUsername().toUpperCase() + "@" + getTenant(context));
 		Password pass = of.createPassword();
 		pass.setValue(context.getCredentials().getPassword());
 
@@ -172,8 +174,7 @@ public class Tools {
 	//
 	public String getTenant(InforContext inforContext) {
 		if (inforContext != null && inforContext.getTenant() != null) {
-
-			return inforContext.getTenant();
+			return inforContext.getTenant().toUpperCase();
 		} else {
 			return applicationData.getTenant();
 		}
