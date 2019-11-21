@@ -10,7 +10,9 @@ import java.util.*;
 public class GridRequest implements Serializable {
 	private static final long serialVersionUID = 6690766576660475229L;
 
-	public enum GRIDTYPE {LIST, LOV};
+	public enum GRIDTYPE {
+		LIST, LOV
+	}
 
 	private String gridID;
 	private String dataspyID;
