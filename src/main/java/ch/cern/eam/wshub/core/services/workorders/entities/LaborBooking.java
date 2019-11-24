@@ -5,6 +5,7 @@ import ch.cern.eam.wshub.core.adapters.DateAdapter;
 import javax.persistence.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.Date;
 
@@ -23,7 +24,7 @@ public class LaborBooking implements Serializable, Comparable<LaborBooking> {
 	@Column(name = "BOO_OCRTYPE")
 	private String typeOfHours;
 	@Column(name = "BOO_HOURS")
-	private String hoursWorked;
+	private BigDecimal hoursWorked;
 	@Column(name = "BOO_DATE")
 	private Date dateWorked;
 	@Column(name = "BOO_MRC")
@@ -47,11 +48,11 @@ public class LaborBooking implements Serializable, Comparable<LaborBooking> {
 		this.typeOfHours = typeOfHours;
 	}
 
-	public String getHoursWorked() {
+	public BigDecimal getHoursWorked() {
 		return hoursWorked;
 	}
 
-	public void setHoursWorked(String hoursWorked) {
+	public void setHoursWorked(BigDecimal hoursWorked) {
 		this.hoursWorked = hoursWorked;
 	}
 

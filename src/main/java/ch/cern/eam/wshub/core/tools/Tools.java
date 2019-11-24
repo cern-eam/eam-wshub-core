@@ -46,6 +46,7 @@ public class Tools {
 	private UserDefinedFieldsTools udfTools;
 	private FieldDescriptionTools fieldDescriptionsTools;
 	private GridTools gridTools;
+	private InforFieldTools inforFieldTools;
 
 	public Tools(ApplicationData applicationData,
 				 InforWebServicesPT inforWebServicesToolkitClient,
@@ -61,6 +62,7 @@ public class Tools {
 		this.entityManagerFactory = entityManagerFactory;
 		// Init specific tool classes
 		this.customFieldsTools = new CustomFieldsTools(this, applicationData, inforws);
+		this.inforFieldTools = new InforFieldTools(customFieldsTools, this);
 		this.dataTypeTools = new DataTypeTools(this);
 		this.udfTools = new UserDefinedFieldsTools(this);
 		this.fieldDescriptionsTools = new FieldDescriptionTools(this);
@@ -92,6 +94,8 @@ public class Tools {
 	public FieldDescriptionTools getFieldDescriptionsTools() {return fieldDescriptionsTools; }
 
 	public GridTools getGridTools() {return gridTools;}
+
+	public InforFieldTools getInforFieldTools() {return inforFieldTools;}
 
 	//
 	//
@@ -180,11 +184,11 @@ public class Tools {
 		}
 	}
 
-	public InforException generateFault(String reason) {
+	public static InforException generateFault(String reason) {
 		return new InforException(reason, null, null);
 	}
 
-	public InforException generateFault(String reason, ExceptionInfo[] errors) {
+	public static InforException generateFault(String reason, ExceptionInfo[] errors) {
 		return new InforException(reason, null, errors);
 	}
 
@@ -256,6 +260,13 @@ public class Tools {
 
 	public InforContext getInforContext(Credentials credentials) {
 		return new InforContext(credentials);
+	}
+
+	public InforContext getInforContext(String username, String password) {
+		Credentials credentials = new Credentials();
+		credentials.setUsername(username);
+		credentials.setPassword(password);
+		return getInforContext(credentials);
 	}
 
 	/**

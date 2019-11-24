@@ -23,6 +23,8 @@ import net.datastream.schemas.mp_results.mp3251_001.MP3251_GenerateEquipmentGene
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 import ch.cern.eam.wshub.core.services.equipment.entities.EquipmentGenerationEntity;
 import org.openapplications.oagis_segments.QUANTITY;
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.decodeQuantity;
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.encodeQuantity;
 
 import javax.xml.ws.Holder;
 import java.math.BigDecimal;
@@ -519,21 +521,12 @@ public class EquipmentGenerationServiceImpl implements EquipmentGenerationServic
         }
 
         if(equipmentGeneration.getRevisionNum() != null && equipmentGeneration.getEquipmentConfigurationCode() != null){
-            equipmentDetails.getEQUIPMENTCONFIGURATIONID().getREVISIONNUM().setUOM("default");
-            equipmentDetails.getEQUIPMENTCONFIGURATIONID().getREVISIONNUM().setSIGN("+");
-            equipmentDetails.getEQUIPMENTCONFIGURATIONID().getREVISIONNUM().setNUMOFDEC(new BigDecimal(0).toBigInteger());
-            equipmentDetails.getEQUIPMENTCONFIGURATIONID().getREVISIONNUM().setVALUE(new BigDecimal(equipmentGeneration.getRevisionNum()));
-            equipmentDetails.getEQUIPMENTCONFIGURATIONID().getREVISIONNUM().setQualifier("ACCEPTED");
+            equipmentDetails.getEQUIPMENTCONFIGURATIONID().setREVISIONNUM(encodeQuantity(equipmentGeneration.getRevisionNum(), "Revision Number"));
         }
 
 
         if(equipmentGeneration.getGenerateCount() != null){
-            equipmentDetails.setGENERATECOUNT(new QUANTITY());
-            equipmentDetails.getGENERATECOUNT().setUOM("default");
-            equipmentDetails.getGENERATECOUNT().setSIGN("+");
-            equipmentDetails.getGENERATECOUNT().setNUMOFDEC(new BigDecimal(0).toBigInteger());
-            equipmentDetails.getGENERATECOUNT().setVALUE(new BigDecimal(equipmentGeneration.getGenerateCount()));
-            equipmentDetails.getGENERATECOUNT().setQualifier("ACCEPTED");
+            equipmentDetails.setGENERATECOUNT(encodeQuantity(equipmentGeneration.getGenerateCount(), "Generate Count"));
         }
         if(equipmentGeneration.getEquipmentStatusCode() != null){
             equipmentDetails.setEQUIPMENTSTATUS(new STATUS_Type());

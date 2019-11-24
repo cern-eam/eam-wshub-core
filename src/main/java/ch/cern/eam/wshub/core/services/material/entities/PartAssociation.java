@@ -2,6 +2,7 @@ package ch.cern.eam.wshub.core.services.material.entities;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name="R5ENTITYPARTS")
@@ -16,7 +17,7 @@ public class PartAssociation implements Serializable {
 	private String partCode;
 	@Column(name="EPA_CODE")
 	private String equipmentCode;
-	@Transient private String quantity;
+	@Transient private BigDecimal quantity;
 	@Transient private String UOM;
 	@Transient private String associationEntity;
 	
@@ -26,10 +27,10 @@ public class PartAssociation implements Serializable {
 	public void setPartCode(String partCode) {
 		this.partCode = partCode;
 	}
-	public String getQuantity() {
+	public BigDecimal getQuantity() {
 		return quantity;
 	}
-	public void setQuantity(String quantity) {
+	public void setQuantity(BigDecimal quantity) {
 		this.quantity = quantity;
 	}
 	public String getUOM() {

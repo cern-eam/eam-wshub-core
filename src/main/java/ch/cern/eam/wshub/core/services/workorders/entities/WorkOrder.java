@@ -1,6 +1,7 @@
 package ch.cern.eam.wshub.core.services.workorders.entities;
 
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
+import ch.cern.eam.wshub.core.annotations.InforField;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 
@@ -11,135 +12,181 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.StringJoiner;
 
 @XmlAccessorType(XmlAccessType.PROPERTY)
-//@Dependent
 @Entity
 @Table(name = "R5EVENTS")
-@NamedQuery(name = WorkOrder.FETCH_VSCWO, query = "SELECT wo FROM WorkOrder wo WHERE wo.equipmentCode = 'V$-DAILY-MONITORING' AND wo.departmentCode = 'V01' AND wo.statusCode = 'R' AND wo.origWO IS NULL")
 public class WorkOrder implements Serializable {
-
-	public static final String FETCH_VSCWO = "WorkOrder.FETCH_VSCWO";
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -2035481937868647264L;
 	@Column(name = "EVT_CODE")
 	@Id
+	@InforField(xpath = "WORKORDERID/JOBNUM")
 	private String number;
 	@Column(name = "EVT_DESC")
+	@InforField(xpath = "WORKORDERID/DESCRIPTION")
 	private String description;
 	@Transient
+	@InforField(xpath = "CLASSID/CLASSCODE")
 	private String classCode;
 	@Transient
+	@InforField(xpath = "CLASSID/DESCRIPTION", readOnly = true)
 	private String classDesc;
 	@Transient
-	private String updateCount;
+	@InforField(xpath = "recordid")
+	private BigInteger updateCount;
 	@Transient
 	private String eventType;
 	//
 	@Column(name = "EVT_STATUS")
+	@InforField(xpath = "STATUS/STATUSCODE")
 	private String statusCode;
 	@Transient
+	@InforField(xpath = "STATUS/DESCRIPTION", readOnly = true)
 	private String statusDesc;
 	//
 	@Transient
+	@InforField(xpath = "TYPE/TYPECODE")
 	private String typeCode;
 	@Transient
+	@InforField(xpath = "TYPE/DESCRIPTION", readOnly = true)
 	private String typeDesc;
 	//
 	@Column(name = "EVT_MRC")
+	@InforField(xpath = "DEPARTMENTID/DEPARTMENTCODE")
 	private String departmentCode;
 	@Transient
+	@InforField(xpath = "DEPARTMENTID/DESCRIPTION", readOnly = true)
 	private String departmentDesc;
 	//
 	@Column(name = "EVT_OBJECT")
+	@InforField(xpath = "EQUIPMENTID/EQUIPMENTCODE")
 	private String equipmentCode;
 	@Transient
+	@InforField(xpath = "EQUIPMENTID/DESCRIPTION", readOnly = true)
 	private String equipmentDesc;
 	//
 	@Transient
+	@InforField(xpath = "PROJECTID/PROJECTCODE")
 	private String projectCode;
 	@Transient
+	@InforField(xpath = "PROJECTID/DESCRIPTION", readOnly = true)
 	private String projectDesc;
 	@Transient
+	@InforField(xpath = "PROJBUD")
 	private String projectBudget;
 	//
 	@Transient
+	@InforField(xpath = "LOCATIONID/LOCATIONCODE")
 	private String locationCode;
 	@Transient
+	@InforField(xpath = "LOCATIONID/DESCRIPTION", readOnly = true)
 	private String locationDesc;
 	//
 	@Transient
+	@InforField(xpath = "PRIORITY/PRIORITYCODE")
 	private String priorityCode;
 	@Transient
+	@InforField(xpath = "PRIORITY/DESCRIPTION", readOnly = true)
 	private String priorityDesc;
 	//
 	@Transient
+	@InforField(xpath = "USERDEFINEDAREA")
 	private CustomField[] customFields;
 	//
 	@Transient
+	@InforField(xpath = "REPORTED")
 	private Date reportedDate;
 	@Transient
+	@InforField(xpath = "REQUESTEDEND")
 	private Date requestedEndDate;
 	@Transient
+	@InforField(xpath = "REQUESTEDSTART")
 	private Date requestedStartDate;
 	@Transient
+	@InforField(xpath = "TARGETDATE")
 	private Date scheduledStartDate; // target date
 	@Transient
+	@InforField(xpath = "SCHEDEND")
 	private Date scheduledEndDate;
 	@Transient
+	@InforField(xpath = "STARTDATE")
 	private Date startDate;
 	@Transient
+	@InforField(xpath = "COMPLETEDDATE")
 	private Date completedDate;
 	@Transient
+	@InforField(xpath = "DUEDATE")
 	private Date dueDate;
 	@Transient
+	@InforField(xpath = "CREATEDDATE")
 	private Date createdDate;
 	@Column(name = "EVT_CREATEDBY")
 	private String createdBy;
 
 	@Transient
+	@InforField(xpath = "PROBLEMCODEID/PROBLEMCODE")
 	private String problemCode;
 	@Transient
+	@InforField(xpath = "FAILURECODEID/FAILURECODE")
 	private String failureCode;
 	@Transient
+	@InforField(xpath = "CAUSECODEID/CAUSECODE")
 	private String causeCode;
 	@Transient
+	@InforField(xpath = "ACTIONCODEID/ACTIONCODE")
 	private String actionCode;
 	@Transient
+	@InforField(xpath = "COSTCODEID/COSTCODE")
 	private String costCode;
 	@Transient
+	@InforField(xpath = "COSTCODEID/DESCRIPTION", readOnly = true)
 	private String costCodeDesc;
 
 	@Transient
+	@InforField(xpath = "SCHEDGROUP")
 	private String assignedBy; // schedgroup
 	@Transient
+	@InforField(xpath = "REQUESTEDBY/PERSONCODE")
 	private String reportedBy; // requested by
 	@Transient
+	@InforField(xpath = "REQUESTEDBY/DESCRIPTION", readOnly = true)
 	private String reportedByDesc;
 	@Transient
+	@InforField(xpath = "ASSIGNEDTO/PERSONCODE")
 	private String assignedTo;
 	@Transient
+	@InforField(xpath = "ASSIGNEDTO/DESCRIPTION", readOnly = true)
 	private String assignedToDesc;
 	@Transient
+	@InforField(xpath = "STANDARDWO/STDWOCODE")
 	private String standardWO;
 	@Transient
+	@InforField(xpath = "PARENTWO/JOBNUM")
 	private String parentWO;
 	@Transient
+	@InforField(xpath = "PARENTWO/DESCRIPTION", readOnly = true)
 	private String parentWODesc;
 	@Transient
+	@InforField(xpath = "ROUTE/ROUTECODE")
 	private String route;
 	@Transient
 	private String comment;
 	@Transient
-	private String targetValue;
+	@InforField(xpath = "TARGETVALUE")
+	private BigDecimal targetValue;
 	@Transient
-	private String downtimeHours;
+	@InforField(xpath = "DOWNTIMEHOURS")
+	private BigDecimal downtimeHours;
 	@Transient
+	@InforField(xpath = "UserDefinedFields")
 	private UserDefinedFields userDefinedFields;
 
 	@Column(name = "EVT_ORIGWO")
@@ -169,11 +216,11 @@ public class WorkOrder implements Serializable {
 		this.classDesc = classDesc;
 	}
 
-	public String getUpdateCount() {
+	public BigInteger getUpdateCount() {
 		return updateCount;
 	}
 
-	public void setUpdateCount(String updateCount) {
+	public void setUpdateCount(BigInteger updateCount) {
 		this.updateCount = updateCount;
 	}
 
@@ -559,13 +606,13 @@ public class WorkOrder implements Serializable {
 		this.parentWODesc = parentWODesc;
 	}
 
-	public String getTargetValue() { return targetValue; }
+	public BigDecimal getTargetValue() { return targetValue; }
 
-	public void setTargetValue(String targetValue) { this.targetValue = targetValue; }
+	public void setTargetValue(BigDecimal targetValue) { this.targetValue = targetValue; }
 
-	public String getDowntimeHours() { return downtimeHours; }
+	public BigDecimal getDowntimeHours() { return downtimeHours; }
 
-	public void setDowntimeHours(String downtimeHours) { this.downtimeHours = downtimeHours; }
+	public void setDowntimeHours(BigDecimal downtimeHours) { this.downtimeHours = downtimeHours; }
 
 	@Override
 	public String toString() {
@@ -617,6 +664,7 @@ public class WorkOrder implements Serializable {
 				+ (parentWODesc != null ? "parentWODesc=" + parentWODesc + ", " : "")
 				+ (route != null ? "route=" + route + ", " : "") + (comment != null ? "comment=" + comment + ", " : "")
 				+ (targetValue != null ? "targetValue=" + targetValue + ", " : "")
+				+ (downtimeHours != null ? "downtimeHours=" + downtimeHours + ", " : "")
 				+ (userDefinedFields != null ? "userDefinedFields=" + userDefinedFields + ", " : "")
 				+ (origWO != null ? "origWO=" + origWO : "") + "]";
 	}

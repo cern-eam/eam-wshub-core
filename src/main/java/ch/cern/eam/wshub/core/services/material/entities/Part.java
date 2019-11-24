@@ -1,5 +1,6 @@
 package ch.cern.eam.wshub.core.services.material.entities;
 
+import ch.cern.eam.wshub.core.annotations.InforField;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 
@@ -7,6 +8,7 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Arrays;
 
 @Entity
@@ -20,84 +22,93 @@ public class Part implements Serializable {
 
 	@Id
 	@Column(name = "PAR_CODE")
+	@InforField(xpath = "PARTID/PARTCODE")
 	private String code;
 
 	@Transient
 	private String newCode;
 
 	@Column(name = "PAR_DESC")
+	@InforField(xpath = "PARTID/DESCRIPTION")
 	private String description;
 
 	@Column(name = "PAR_UOM")
+	@InforField(xpath = "UOMID/UOMCODE")
 	private String UOM;
 	@Transient
+	@InforField(xpath = "UOMID/DESCRIPTION")
 	private String UOMDesc;
 
 	@Column(name = "PAR_CLASS")
+	@InforField(xpath = "CLASSID/CLASSCODE")
 	private String classCode;
 	@Transient
+	@InforField(xpath = "CLASSID/DESCRIPTION")
 	private String classDesc;
 
 	@Transient
+	@InforField(xpath = "CATEGORYID/CATEGORYCODE")
 	private String categoryCode;
 	@Transient
+	@InforField(xpath = "CATEGORYID/DESCRIPTION")
 	private String categoryDesc;
 	@Transient
+	@InforField(xpath = "PRIMARYCOMMODITY/COMMODITYCODE")
 	private String commodityCode;
 	@Transient
+	@InforField(xpath = "PRIMARYCOMMODITY/DESCRIPTION")
 	private String commodityDesc;
 	@Transient
+	@InforField(xpath = "TRACKMETHOD/TYPECODE")
 	private String trackingMethod;
 	@Transient
+	@InforField(xpath = "PRICETYPE/TYPECODE")
 	private String priceType;
 	@Transient
-	private String basePrice;
+	@InforField(xpath = "BASEPRICE")
+	private BigDecimal basePrice;
 	@Transient
-	private String averagePrice;
+	@InforField(xpath = "AVERAGEPRICE")
+	private BigDecimal averagePrice;
 	@Transient
-	private String standardPrice;
+	@InforField(xpath = "STANDARDPRICE")
+	private BigDecimal standardPrice;
 	@Transient
-	private String lastPrice;
-
+	@InforField(xpath = "LASTPRICE")
+	private BigDecimal lastPrice;
 	@Transient
-	private String trackByAsset;
+	@InforField(xpath = "BYASSET")
+	private Boolean trackByAsset;
 	@Transient
-	private String trackAsKit;
+	@InforField(xpath = "KIT")
+	private Boolean trackAsKit;
 	@Transient
-	private String trackCores;
+	@InforField(xpath = "REPAIRABLE")
+	private Boolean trackCores;
 	@Transient
-	private String outOfService;
+	@InforField(xpath = "OUTOFSERVICE")
+	private Boolean outOfService;
 	@Transient
-	private String trackByLot;
+	@InforField(xpath = "BYLOT")
+	private Boolean trackByLot;
 	@Transient
-	private String preventReorders;
-
-	public String getTrackByLot() {
-		return trackByLot;
-	}
-
-	public void setTrackByLot(String trackByLot) {
-		this.trackByLot = trackByLot;
-	}
-
-	public String getPreventReorders() {
-		return preventReorders;
-	}
-
-	public void setPreventReorders(String preventReorders) {
-		this.preventReorders = preventReorders;
-	}
-
+	@InforField(xpath = "PREVENTREORDERS")
+	private Boolean preventReorders;
 	@Transient
+	@InforField(xpath = "BUYER/USERCODE")
 	private String buyerCode;
 	@Transient
+	@InforField(xpath = "PREFERREDSUPPLIER/SUPPLIERCODE")
 	private String preferredSupplier;
 	@Transient
+	@InforField(xpath = "LONGDESCRIPTION")
 	private String longDescription;
 
 	@Transient
+	@InforField(xpath = "USERDEFINEDAREA")
 	private CustomField[] customFields;
 	@Transient
+	@InforField(xpath = "UserDefinedFields")
 	private UserDefinedFields userDefinedFields;
 
 	public String getCode() {
@@ -166,67 +177,67 @@ public class Part implements Serializable {
 		this.priceType = priceType;
 	}
 
-	public String getBasePrice() {
+	public BigDecimal getBasePrice() {
 		return basePrice;
 	}
 
-	public void setBasePrice(String basePrice) {
+	public void setBasePrice(BigDecimal basePrice) {
 		this.basePrice = basePrice;
 	}
 
-	public String getAveragePrice() {
+	public BigDecimal getAveragePrice() {
 		return averagePrice;
 	}
 
-	public void setAveragePrice(String averagePrice) {
+	public void setAveragePrice(BigDecimal averagePrice) {
 		this.averagePrice = averagePrice;
 	}
 
-	public String getStandardPrice() {
+	public BigDecimal getStandardPrice() {
 		return standardPrice;
 	}
 
-	public void setStandardPrice(String standardPrice) {
+	public void setStandardPrice(BigDecimal standardPrice) {
 		this.standardPrice = standardPrice;
 	}
 
-	public String getLastPrice() {
+	public BigDecimal getLastPrice() {
 		return lastPrice;
 	}
 
-	public void setLastPrice(String lastPrice) {
+	public void setLastPrice(BigDecimal lastPrice) {
 		this.lastPrice = lastPrice;
 	}
 
-	public String getTrackByAsset() {
+	public Boolean getTrackByAsset() {
 		return trackByAsset;
 	}
 
-	public void setTrackByAsset(String trackByAsset) {
+	public void setTrackByAsset(Boolean trackByAsset) {
 		this.trackByAsset = trackByAsset;
 	}
 
-	public String getTrackAsKit() {
+	public Boolean getTrackAsKit() {
 		return trackAsKit;
 	}
 
-	public void setTrackAsKit(String trackAsKit) {
+	public void setTrackAsKit(Boolean trackAsKit) {
 		this.trackAsKit = trackAsKit;
 	}
 
-	public String getTrackCores() {
+	public Boolean getTrackCores() {
 		return trackCores;
 	}
 
-	public void setTrackCores(String trackCores) {
+	public void setTrackCores(Boolean trackCores) {
 		this.trackCores = trackCores;
 	}
 
-	public String getOutOfService() {
+	public Boolean getOutOfService() {
 		return outOfService;
 	}
 
-	public void setOutOfService(String outOfService) {
+	public void setOutOfService(Boolean outOfService) {
 		this.outOfService = outOfService;
 	}
 
@@ -308,6 +319,22 @@ public class Part implements Serializable {
 
 	public void setLongDescription(String longDescription) {
 		this.longDescription = longDescription;
+	}
+
+	public Boolean getTrackByLot() {
+		return trackByLot;
+	}
+
+	public void setTrackByLot(Boolean trackByLot) {
+		this.trackByLot = trackByLot;
+	}
+
+	public Boolean getPreventReorders() {
+		return preventReorders;
+	}
+
+	public void setPreventReorders(Boolean preventReorders) {
+		this.preventReorders = preventReorders;
 	}
 
 	@Override

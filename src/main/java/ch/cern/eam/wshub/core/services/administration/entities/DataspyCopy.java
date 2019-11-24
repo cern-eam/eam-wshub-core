@@ -1,16 +1,18 @@
 package ch.cern.eam.wshub.core.services.administration.entities;
 
+import java.math.BigDecimal;
+
 public class DataspyCopy {
 
-    private String dataspyCode;
+    private BigDecimal dataspyCode;
     private String userCode;
-    private String defaultDataspy;
+    private Boolean defaultDataspy;
 
-    public String getDataspyCode() {
+    public BigDecimal getDataspyCode() {
         return dataspyCode;
     }
 
-    public void setDataspyCode(String dataspyCode) {
+    public void setDataspyCode(BigDecimal dataspyCode) {
         this.dataspyCode = dataspyCode;
     }
 
@@ -22,11 +24,11 @@ public class DataspyCopy {
         this.userCode = userCode;
     }
 
-    public String getDefaultDataspy() {
+    public Boolean getDefaultDataspy() {
         return defaultDataspy;
     }
 
-    public void setDefaultDataspy(String defaultDataspy) {
+    public void setDefaultDataspy(Boolean defaultDataspy) {
         this.defaultDataspy = defaultDataspy;
     }
 }

@@ -4,6 +4,7 @@ import ch.cern.eam.wshub.core.adapters.DateAdapter;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 public class MeterReading implements Serializable {
@@ -11,8 +12,8 @@ public class MeterReading implements Serializable {
 
     private String UOM;
     private String equipmentCode;
-    private String actualValue;
-    private String differenceValue;
+    private BigDecimal actualValue;
+    private BigDecimal differenceValue;
     private Date readingDate;
     private String woNumber;
 
@@ -32,19 +33,19 @@ public class MeterReading implements Serializable {
         this.equipmentCode = equipmentCode;
     }
 
-    public String getActualValue() {
+    public BigDecimal getActualValue() {
         return actualValue;
     }
 
-    public void setActualValue(String actualValue) {
+    public void setActualValue(BigDecimal actualValue) {
         this.actualValue = actualValue;
     }
 
-    public String getDifferenceValue() {
+    public BigDecimal getDifferenceValue() {
         return differenceValue;
     }
 
-    public void setDifferenceValue(String differenceValue) {
+    public void setDifferenceValue(BigDecimal differenceValue) {
         this.differenceValue = differenceValue;
     }
 

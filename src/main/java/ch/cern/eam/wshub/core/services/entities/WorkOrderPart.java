@@ -1,12 +1,14 @@
 package ch.cern.eam.wshub.core.services.entities;
 
+import java.math.BigDecimal;
+
 public class WorkOrderPart {
 
 	private String partCode;
 	private String partDesc;
-	private String plannedQty;
-	private String reservedQty;
-	private String allocatedQty;
+	private BigDecimal plannedQty;
+	private BigDecimal reservedQty;
+	private BigDecimal allocatedQty;
 	private String usedQty;
 	private String quantity;
 	private String activityCode;
@@ -25,16 +27,16 @@ public class WorkOrderPart {
 	public void setPartCode(String partCode) {
 		this.partCode = partCode;
 	}
-	public String getPlannedQty() {
+	public BigDecimal getPlannedQty() {
 		return plannedQty;
 	}
-	public void setPlannedQty(String plannedQty) {
+	public void setPlannedQty(BigDecimal plannedQty) {
 		this.plannedQty = plannedQty;
 	}
-	public String getReservedQty() {
+	public BigDecimal getReservedQty() {
 		return reservedQty;
 	}
-	public void setReservedQty(String reservedQty) {
+	public void setReservedQty(BigDecimal reservedQty) {
 		this.reservedQty = reservedQty;
 	}
 	public String getActivityCode() {
@@ -55,10 +57,10 @@ public class WorkOrderPart {
 	public void setStoreCode(String storeCode) {
 		this.storeCode = storeCode;
 	}
-	public String getAllocatedQty() {
+	public BigDecimal getAllocatedQty() {
 		return allocatedQty;
 	}
-	public void setAllocatedQty(String allocatedQty) {
+	public void setAllocatedQty(BigDecimal allocatedQty) {
 		this.allocatedQty = allocatedQty;
 	}
 	public String getPlannedSource() {

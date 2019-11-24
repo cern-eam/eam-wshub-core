@@ -1,11 +1,13 @@
 package ch.cern.eam.wshub.core.services.material.entities;
 
+import java.math.BigDecimal;
+
 public class MaterialList {
 
 	private String materialListCode;
 	private String partCode;
 	private String lineNumber;
-	private String quantity;
+	private BigDecimal quantity;
 	private String reserve;
 	private String equipmentCode;
 	
@@ -27,10 +29,10 @@ public class MaterialList {
 	public void setLineNumber(String lineNumber) {
 		this.lineNumber = lineNumber;
 	}
-	public String getQuantity() {
+	public BigDecimal getQuantity() {
 		return quantity;
 	}
-	public void setQuantity(String quantity) {
+	public void setQuantity(BigDecimal quantity) {
 		this.quantity = quantity;
 	}
 	public String getReserve() {

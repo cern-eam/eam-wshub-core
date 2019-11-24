@@ -1,6 +1,7 @@
 package ch.cern.eam.wshub.core.services.material.entities;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 public class IssueReturnPartTransactionLine implements Serializable {
 	private static final long serialVersionUID = 8532103426384418187L;
@@ -10,7 +11,7 @@ public class IssueReturnPartTransactionLine implements Serializable {
 	private String partOrg;
 	private String bin;
 	private String lot;
-	private String transactionQty = "1";
+	private BigDecimal transactionQty = BigDecimal.ONE;
 	private String assetIDCode;
 	private String assetIDDesc;
 	
@@ -35,10 +36,10 @@ public class IssueReturnPartTransactionLine implements Serializable {
 	public void setLot(String lot) {
 		this.lot = lot;
 	}
-	public String getTransactionQty() {
+	public BigDecimal getTransactionQty() {
 		return transactionQty;
 	}
-	public void setTransactionQty(String transactionQty) {
+	public void setTransactionQty(BigDecimal transactionQty) {
 		this.transactionQty = transactionQty;
 	}
 	public String getAssetIDCode() {

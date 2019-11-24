@@ -1,9 +1,9 @@
 package ch.cern.eam.wshub.core.services.equipment.impl;
 
+import ch.cern.eam.wshub.core.annotations.BooleanType;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.equipment.SystemService;
 import ch.cern.eam.wshub.core.services.equipment.entities.Equipment;
-import ch.cern.eam.wshub.core.tools.*;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
@@ -21,6 +21,8 @@ import net.datastream.schemas.mp_results.mp0312_001.MP0312_GetSystemEquipment_00
 import net.datastream.schemas.mp_results.mp0329_001.MP0329_GetSystemParentHierarchy_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 import javax.xml.ws.Holder;
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.encodeBoolean;
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.decodeBoolean;
 
 public class SystemServiceImpl implements SystemService {
 
@@ -35,83 +37,15 @@ public class SystemServiceImpl implements SystemService {
 	}
 
 	public Equipment readSystem(InforContext context, String systemCode) throws InforException {
-		MP0312_GetSystemEquipment_001 getSystem = new MP0312_GetSystemEquipment_001();
-		getSystem.setSYSTEMID(new EQUIPMENTID_Type());
-		getSystem.getSYSTEMID().setORGANIZATIONID(tools.getOrganization(context));
-		getSystem.getSYSTEMID().setEQUIPMENTCODE(systemCode);
-		MP0312_GetSystemEquipment_001_Result getAssetResult = new MP0312_GetSystemEquipment_001_Result();
 
-		if (context.getCredentials() != null)
-			getAssetResult = inforws.getSystemEquipmentOp(getSystem, "*",
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					null, tools.getTenant(context));
-		else {
-			getAssetResult = inforws.getSystemEquipmentOp(getSystem, "*", null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
+		SystemEquipment systemEquipment = readSystemInfor(context, systemCode);
 
-		SystemEquipment systemEquipment = getAssetResult.getResultData().getSystemEquipment();
-
-		Equipment system = new Equipment();
+		Equipment system = tools.getInforFieldTools().transformInforObject(new Equipment(), systemEquipment);
 
 		if (systemEquipment.getSYSTEMID() != null) {
 			system.setCode(systemEquipment.getSYSTEMID().getEQUIPMENTCODE());
 			system.setDescription(systemEquipment.getSYSTEMID().getDESCRIPTION());
 		}
-
-		if (systemEquipment.getEQUIPMENTALIAS() != null) {
-			system.setAlias(systemEquipment.getEQUIPMENTALIAS());
-		}
-
-		if (systemEquipment.getSTATUS() != null) {
-			system.setStatusCode(systemEquipment.getSTATUS().getSTATUSCODE());
-			system.setStatusDesc(systemEquipment.getSTATUS().getDESCRIPTION());
-		}
-
-		if (systemEquipment.getCLASSID() != null) {
-			system.setClassCode(systemEquipment.getCLASSID().getCLASSCODE());
-			system.setClassDesc(systemEquipment.getCLASSID().getDESCRIPTION());
-		}
-
-		if (systemEquipment.getCATEGORYID() != null) {
-			system.setCategoryCode(systemEquipment.getCATEGORYID().getCATEGORYCODE());
-			system.setCategoryDesc(systemEquipment.getCATEGORYID().getDESCRIPTION());
-		}
-
-		if (systemEquipment.getASSIGNEDTO() != null) {
-			system.setAssignedTo(systemEquipment.getASSIGNEDTO().getPERSONCODE());
-			system.setAssignedToDesc(tools.getFieldDescriptionsTools().readPersonDesc(system.getAssignedTo()));
-		}
-
-		if (systemEquipment.getTYPE() != null) {
-			system.setTypeCode(systemEquipment.getTYPE().getTYPECODE());
-			system.setTypeDesc(systemEquipment.getTYPE().getDESCRIPTION());
-		}
-
-		if (systemEquipment.getDEPARTMENTID() != null) {
-			system.setDepartmentCode(systemEquipment.getDEPARTMENTID().getDEPARTMENTCODE());
-			system.setDepartmentDesc(systemEquipment.getDEPARTMENTID().getDESCRIPTION());
-		}
-
-		if (systemEquipment.getCRITICALITYID() != null) {
-			system.setCriticality(systemEquipment.getCRITICALITYID().getCRITICALITY());
-		}
-
-		if (systemEquipment.getCOMMISSIONDATE() != null) {
-			system.setComissionDate(tools.getDataTypeTools().decodeInforDate(systemEquipment.getCOMMISSIONDATE()));
-		}
-
-		if (systemEquipment.getManufacturerInfo() != null) {
-			system.setManufacturerCode(systemEquipment.getManufacturerInfo().getMANUFACTURERCODE());
-			system.setSerialNumber(systemEquipment.getManufacturerInfo().getSERIALNUMBER());
-			system.setModel(systemEquipment.getManufacturerInfo().getMODEL());
-			system.setManufacturerDesc(tools.getFieldDescriptionsTools().readManufacturerDesc(system.getManufacturerCode()));
-		}
-
-		system.setCustomFields(tools.getCustomFieldsTools().readInforCustomFields(systemEquipment.getUSERDEFINEDAREA()));
-
-		// USER DEFINED FIELDS
-		system.setUserDefinedFields(tools.getUDFTools().readInforUserDefinedFields(systemEquipment.getUserDefinedFields()));
 
 		// HIERARCHY
 		MP0329_GetSystemParentHierarchy_001 getsystemh = new MP0329_GetSystemParentHierarchy_001();
@@ -141,9 +75,9 @@ public class SystemServiceImpl implements SystemService {
 					.getSYSTEMID().getEQUIPMENTCODE());
 			system.setHierarchyPrimarySystemDesc(systemEquipment.getSystemParentHierarchy().getDEPENDENTPRIMARYSYSTEM()
 					.getSYSTEMID().getDESCRIPTION());
-			system.setHierarchyPrimarySystemDependent("true");
-			system.setHierarchyPrimarySystemCostRollUp(
-					systemEquipment.getSystemParentHierarchy().getDEPENDENTPRIMARYSYSTEM().getCOSTROLLUP());
+			system.setHierarchyPrimarySystemDependent(true);
+			system.setHierarchyPrimarySystemCostRollUp(decodeBoolean(
+					systemEquipment.getSystemParentHierarchy().getDEPENDENTPRIMARYSYSTEM().getCOSTROLLUP()));
 		}
 		// Non Dependent primary system
 		else if (systemEquipment.getSystemParentHierarchy().getNONDEPENDENTPRIMARYSYSTEM() != null) {
@@ -151,33 +85,19 @@ public class SystemServiceImpl implements SystemService {
 					.getNONDEPENDENTPRIMARYSYSTEM().getSYSTEMID().getEQUIPMENTCODE());
 			system.setHierarchyPrimarySystemDesc(systemEquipment.getSystemParentHierarchy()
 					.getNONDEPENDENTPRIMARYSYSTEM().getSYSTEMID().getDESCRIPTION());
-			system.setHierarchyPrimarySystemDependent("false");
-			system.setHierarchyPrimarySystemCostRollUp(
-					systemEquipment.getSystemParentHierarchy().getNONDEPENDENTPRIMARYSYSTEM().getCOSTROLLUP());
+			system.setHierarchyPrimarySystemDependent(false);
+			system.setHierarchyPrimarySystemCostRollUp(decodeBoolean(
+					systemEquipment.getSystemParentHierarchy().getNONDEPENDENTPRIMARYSYSTEM().getCOSTROLLUP()));
 		}
-
-		if (systemEquipment.getVariables() != null) {
-			system.setVariable1(systemEquipment.getVariables().getVARIABLE1());
-			system.setVariable2(systemEquipment.getVariables().getVARIABLE2());
-			system.setVariable3(systemEquipment.getVariables().getVARIABLE3());
-			system.setVariable4(systemEquipment.getVariables().getVARIABLE4());
-			system.setVariable5(systemEquipment.getVariables().getVARIABLE5());
-			system.setVariable6(systemEquipment.getVariables().getVARIABLE6());
-		}
-
-		// IN PRODUCTION
-		system.setInProduction(systemEquipment.getINPRODUCTION());
 
 		return system;
 	}
 
-	public String updateSystem(InforContext context, Equipment systemParam) throws InforException {
-		SystemEquipment systemEquipment = null;
-
+	public SystemEquipment readSystemInfor(InforContext context, String systemCode) throws InforException {
 		MP0312_GetSystemEquipment_001 getSystem = new MP0312_GetSystemEquipment_001();
 		getSystem.setSYSTEMID(new EQUIPMENTID_Type());
 		getSystem.getSYSTEMID().setORGANIZATIONID(tools.getOrganization(context));
-		getSystem.getSYSTEMID().setEQUIPMENTCODE(systemParam.getCode());
+		getSystem.getSYSTEMID().setEQUIPMENTCODE(systemCode);
 		MP0312_GetSystemEquipment_001_Result getAssetResult = new MP0312_GetSystemEquipment_001_Result();
 
 		if (context.getCredentials() != null)
@@ -189,7 +109,12 @@ public class SystemServiceImpl implements SystemService {
 					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
 		}
 
-		systemEquipment = getAssetResult.getResultData().getSystemEquipment();
+		return getAssetResult.getResultData().getSystemEquipment();
+	}
+
+	public String updateSystem(InforContext context, Equipment systemParam) throws InforException {
+
+		SystemEquipment systemEquipment = readSystemInfor(context, systemParam.getCode());
 		//
 		if (systemParam.getClassCode() != null && (systemEquipment.getCLASSID() == null
 				|| !systemParam.getClassCode().toUpperCase().equals(systemEquipment.getCLASSID().getCLASSCODE()))) {
@@ -198,6 +123,7 @@ public class SystemServiceImpl implements SystemService {
 		}
 
 		initializeSystemObject(systemEquipment, systemParam, context);
+		tools.getInforFieldTools().transformWSHubObject(systemEquipment, systemParam, context);
 
 		MP0313_SyncSystemEquipment_001 syncPosition = new MP0313_SyncSystemEquipment_001();
 		syncPosition.setSystemEquipment(systemEquipment);
@@ -209,8 +135,7 @@ public class SystemServiceImpl implements SystemService {
 			inforws.syncSystemEquipmentOp(syncPosition, "*", null, null,
 					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
 		}
-		//TODO: Update CERN properties
-		//equipmentOther.updateEquipmentCERNProperties(systemParam);
+
 		return systemParam.getCode();
 	}
 
@@ -227,9 +152,8 @@ public class SystemServiceImpl implements SystemService {
 			}
 		}
 		//
-		systemEquipment.setUserDefinedFields(new UserDefinedFields());
-		//
 		initializeSystemObject(systemEquipment, systemParam, context);
+		tools.getInforFieldTools().transformWSHubObject(systemEquipment, systemParam, context);
 		//
 		MP0311_AddSystemEquipment_001 addPosition = new MP0311_AddSystemEquipment_001();
 		addPosition.setSystemEquipment(systemEquipment);
@@ -271,63 +195,8 @@ public class SystemServiceImpl implements SystemService {
 			systemInfor.getSYSTEMID().setEQUIPMENTCODE(systemParam.getCode());
 		}
 
-		if (systemParam.getAlias() != null) {
-			systemInfor.setEQUIPMENTALIAS(systemParam.getAlias());
-		}
-
 		if (systemParam.getDescription() != null) {
 			systemInfor.getSYSTEMID().setDESCRIPTION(systemParam.getDescription());
-		}
-
-		if (systemParam.getTypeCode() != null) {
-			systemInfor.setTYPE(new TYPE_Type());
-			systemInfor.getTYPE().setTYPECODE(systemParam.getTypeCode());
-		}
-
-		if (systemParam.getStatusCode() != null) {
-			systemInfor.setSTATUS(new STATUS_Type());
-			systemInfor.getSTATUS().setSTATUSCODE(systemParam.getStatusCode());
-		}
-
-		if (systemParam.getClassCode() != null) {
-			if (systemParam.getClassCode().trim().equals("")) {
-				systemInfor.setCLASSID(null);
-			} else {
-				systemInfor.setCLASSID(new CLASSID_Type());
-				systemInfor.getCLASSID().setORGANIZATIONID(tools.getOrganization(context));
-				systemInfor.getCLASSID().setCLASSCODE(systemParam.getClassCode());
-			}
-		}
-
-		if (systemParam.getCategoryCode() != null) {
-			systemInfor.setCATEGORYID(new CATEGORYID());
-			systemInfor.getCATEGORYID().setCATEGORYCODE(systemParam.getCategoryCode());
-		}
-
-		if (systemParam.getComissionDate() != null) {
-			systemInfor.setCOMMISSIONDATE(tools.getDataTypeTools().encodeInforDate(systemParam.getComissionDate(), "Commission Date"));
-		}
-
-		if (systemParam.getCostCode() != null) {
-			systemInfor.setCOSTCODEID(new COSTCODEID_Type());
-			systemInfor.getCOSTCODEID().setCOSTCODE(systemParam.getCostCode());
-		}
-
-		if (systemParam.getCriticality() != null) {
-			systemInfor.setCRITICALITYID(new CRITICALITYID_Type());
-			systemInfor.getCRITICALITYID().setCRITICALITY(systemParam.getCriticality());
-		}
-
-		if (systemParam.getDepartmentCode() != null) {
-			systemInfor.setDEPARTMENTID(new DEPARTMENTID_Type());
-			systemInfor.getDEPARTMENTID().setORGANIZATIONID(tools.getOrganization(context));
-			systemInfor.getDEPARTMENTID().setDEPARTMENTCODE(systemParam.getDepartmentCode());
-		}
-
-		if (systemParam.getProfileCode() != null) {
-			systemInfor.setPROFILEID(new OBJECT_Type());
-			systemInfor.getPROFILEID().setORGANIZATIONID(tools.getOrganization(context));
-			systemInfor.getPROFILEID().setOBJECTCODE(systemParam.getProfileCode());
 		}
 
 		if (systemParam.getManufacturerCode() != null || systemParam.getSerialNumber() != null
@@ -363,14 +232,6 @@ public class SystemServiceImpl implements SystemService {
 			}
 		}
 
-		if (systemParam.getUpdateCount() != null) {
-			systemInfor.setRecordid(Long.decode(systemParam.getUpdateCount()));
-		}
-
-		if (systemParam.getMeterUnit() != null) {
-			systemInfor.setMETERUNIT(systemParam.getMeterUnit());
-		}
-
 		// LINEAR REFERENCE
 		if (systemParam.getLinearRefGeographicalRef() != null || systemParam.getLinearRefEquipmentLength() != null
 				|| systemParam.getLinearRefEquipmentLengthUOM() != null || systemParam.getLinearRefPrecision() != null
@@ -383,30 +244,6 @@ public class SystemServiceImpl implements SystemService {
 			systemInfor.getLINEARREFERENCEDETAILS().setLINEARREFPRECISION(
 					tools.getDataTypeTools().encodeBigInteger(systemParam.getLinearRefPrecision(), "Linear Ref. Precision"));
 			systemInfor.getLINEARREFERENCEDETAILS().setLINEARREFUOM(systemParam.getLinearRefUOM());
-		}
-
-		//
-		if (systemParam.getAssignedTo() != null) {
-			if (systemParam.getAssignedTo().trim().equals("")) {
-				systemInfor.setASSIGNEDTO(null);
-			} else {
-				systemInfor.setASSIGNEDTO(new PERSONID_Type());
-				systemInfor.getASSIGNEDTO().setPERSONCODE(systemParam.getAssignedTo());
-			}
-		}
-
-		//
-		if (systemParam.getcGMP() != null) {
-			systemInfor.setCGMP(systemParam.getcGMP());
-		}
-
-		//
-		if (systemParam.getDormantStart() != null || systemParam.getDormantEnd() != null
-				|| systemParam.getDormantReusePeriod() != null) {
-			systemInfor.setDORMANT(new DORMANT());
-			systemInfor.getDORMANT().setDORMANTSTART(tools.getDataTypeTools().formatDate(systemParam.getDormantStart(), "Dormant Start"));
-			systemInfor.getDORMANT().setDORMANTEND(tools.getDataTypeTools().formatDate(systemParam.getDormantEnd(), "Dormant End"));
-			systemInfor.getDORMANT().setDORMANTREUSE(systemParam.getDormantReusePeriod());
 		}
 
 		//
@@ -428,16 +265,6 @@ public class SystemServiceImpl implements SystemService {
 		}
 		if (systemParam.getVariable6() != null) {
 			systemInfor.getVariables().setVARIABLE6(systemParam.getVariable6());
-		}
-
-		tools.getCustomFieldsTools().updateInforCustomFields(systemInfor.getUSERDEFINEDAREA(), systemParam.getCustomFields());
-
-		//
-		tools.getUDFTools().updateInforUserDefinedFields(systemInfor.getUserDefinedFields(), systemParam.getUserDefinedFields());
-
-		// OUT OF SERVICE
-		if (systemParam.getOutOfService() != null) {
-			systemInfor.setOUTOFSERVICE(systemParam.getOutOfService());
 		}
 
 		// FACILITY DETAILS
@@ -479,27 +306,6 @@ public class SystemServiceImpl implements SystemService {
 			populateSystemHierarchy(context, systemParam, systemInfor);
 		}
 
-		if (systemParam.getInProduction() != null) {
-			systemInfor.setINPRODUCTION(systemParam.getInProduction());
-		}
-
-		// ORIGINAL RECEIPT DATE
-		if (systemParam.getOriginalReceiptDate() != null) {
-			systemInfor.setORIGINALRECEIPTDATE(
-					tools.getDataTypeTools().formatDate(systemParam.getOriginalReceiptDate(), "Original Receipt Date"));
-		}
-
-		// SAFETY
-		if (systemParam.getSafety() != null) {
-			systemInfor.setSAFETY(systemParam.getSafety());
-		}
-
-		// ORIGINAL INSTALL DATE
-		if (systemParam.getOriginalInstallDate() != null) {
-			systemInfor.setORIGINALINSTALLDATE(
-					tools.getDataTypeTools().encodeInforDate(systemParam.getOriginalInstallDate(), "Original Install Date"));
-		}
-
 	}
 
 	private void populateSystemHierarchy(InforContext context, Equipment systemParam, SystemEquipment systemInfor) {
@@ -513,18 +319,19 @@ public class SystemServiceImpl implements SystemService {
 
 		// HIERARCHY - PRIMARY SYSTEM
 		if (tools.getDataTypeTools().isNotEmpty(systemParam.getHierarchyPrimarySystemCode())) {
-			if (tools.getDataTypeTools().isEmpty(systemParam.getHierarchyPrimarySystemDependent())) {
-				systemParam.setHierarchyAssetDependent("FALSE");
+
+			if (!systemParam.getHierarchyPrimarySystemDependent()) {
+				systemParam.setHierarchyAssetDependent(false);
 			}
 			// System
 			EQUIPMENTID_Type hierarchySystem = new EQUIPMENTID_Type();
 			hierarchySystem.setORGANIZATIONID(tools.getOrganization(context));
 			hierarchySystem.setEQUIPMENTCODE(systemParam.getHierarchyPrimarySystemCode());
 			// System dependent
-			if (tools.getDataTypeTools().isTrueValue(systemParam.getHierarchyPrimarySystemDependent())) {
+			if (systemParam.getHierarchyPrimarySystemDependent()) {
 				SYSTEMPARENT_Type systemType = new SYSTEMPARENT_Type();
 				systemType.setSYSTEMID(hierarchySystem);
-				systemType.setCOSTROLLUP(systemParam.getHierarchyPrimarySystemCostRollUp());
+				systemType.setCOSTROLLUP(encodeBoolean(systemParam.getHierarchyPrimarySystemCostRollUp(), BooleanType.TRUE_FALSE));
 				systemParentHierarchy.setDEPENDENTPRIMARYSYSTEM(systemType);
 
 				// Check for location
@@ -538,7 +345,7 @@ public class SystemServiceImpl implements SystemService {
 				// Non Dependent system
 				SYSTEMPARENT_Type systemType = new SYSTEMPARENT_Type();
 				systemType.setSYSTEMID(hierarchySystem);
-				systemType.setCOSTROLLUP(systemParam.getHierarchyPrimarySystemCostRollUp());
+				systemType.setCOSTROLLUP(encodeBoolean(systemParam.getHierarchyPrimarySystemCostRollUp(), BooleanType.TRUE_FALSE));
 				systemParentHierarchy.setNONDEPENDENTPRIMARYSYSTEM(systemType);
 
 				// Check for location

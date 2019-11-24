@@ -1,5 +1,7 @@
 package ch.cern.eam.wshub.core.services.workorders.entities;
 
+import java.math.BigDecimal;
+
 public class WorkOrderAdditionalCosts {
 
 	private String CostDescription;
@@ -7,7 +9,7 @@ public class WorkOrderAdditionalCosts {
 	private String TradeCode;
 	private String CostType;
 	private String Date;
-	private String Cost;
+	private BigDecimal Cost;
 	private String WorkOrderNumber;
 	public String getCostDescription() {
 		return CostDescription;
@@ -39,10 +41,10 @@ public class WorkOrderAdditionalCosts {
 	public void setWorkOrderNumber(String workOrderNumber) {
 		WorkOrderNumber = workOrderNumber;
 	}
-	public String getCost() {
+	public BigDecimal getCost() {
 		return Cost;
 	}
-	public void setCost(String cost) {
+	public void setCost(BigDecimal cost) {
 		Cost = cost;
 	}
 	public String getActivityCode() {

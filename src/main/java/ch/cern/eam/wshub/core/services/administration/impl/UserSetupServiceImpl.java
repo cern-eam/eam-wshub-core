@@ -24,6 +24,7 @@ import net.datastream.wsdls.inforws.InforWebServicesPT;
 import javax.persistence.EntityManager;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Holder;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
@@ -257,7 +258,7 @@ public class UserSetupServiceImpl implements UserSetupService {
 			// Language
 			userInfor.setLANGUAGE("EN");
 			// Success Msg. Timeout
-			userInfor.setMSGTIMEOUT(tools.getDataTypeTools().encodeAmount("20", "Success Msg. Timeout"));
+			userInfor.setMSGTIMEOUT(tools.getDataTypeTools().encodeAmount(BigDecimal.TEN, "Success Msg. Timeout"));
 		}
 
 		// Description

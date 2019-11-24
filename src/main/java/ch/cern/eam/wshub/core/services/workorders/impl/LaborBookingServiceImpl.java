@@ -28,6 +28,7 @@ import net.datastream.wsdls.inforws.InforWebServicesPT;
 
 import javax.persistence.EntityManager;
 import javax.xml.ws.Holder;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -98,7 +99,7 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 		}
 
 		//
-		laborBookingInfor.setTRADERATE(tools.getDataTypeTools().encodeAmount("0","Trade Rate"));
+		laborBookingInfor.setTRADERATE(tools.getDataTypeTools().encodeAmount(BigDecimal.ZERO,"Trade Rate"));
 
 		//
 		if (laborBookingParam.getTypeOfHours() != null) {

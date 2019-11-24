@@ -2,6 +2,7 @@ package ch.cern.eam.wshub.core.services.equipment.entities;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 @Entity
 @IdClass(EquipmentPMSchedulePK.class)
@@ -26,15 +27,15 @@ public class EquipmentPMSchedule implements Serializable {
 	@Transient private String dueDate;
 	@Transient private String Route;
 	@Transient private String scheduleType;
-	@Transient private String changed;
+	@Transient private Boolean changed;
 	@Transient private String supervisor;
 	@Transient private String costCode;
-	@Transient private String meter1Interval;
+	@Transient private BigDecimal meter1Interval;
 	@Transient private String meter1UOM;
-	@Transient private String meter1Due;
-	@Transient private String meter2Interval;
+	@Transient private BigDecimal meter1Due;
+	@Transient private BigDecimal meter2Interval;
 	@Transient private String meter2UOM;
-	@Transient private String meter2Due;
+	@Transient private BigDecimal meter2Due;
 	@Transient private String dateDeactivated;
 	@Transient private String location;
 	@Transient private String workOrder;
@@ -100,10 +101,10 @@ public class EquipmentPMSchedule implements Serializable {
 		this.scheduleType = scheduleType;
 	}
 	
-	public String getChanged() {
+	public Boolean getChanged() {
 		return changed;
 	}
-	public void setChanged(String changed) {
+	public void setChanged(Boolean changed) {
 		this.changed = changed;
 	}
 	public String getSupervisor() {
@@ -118,10 +119,10 @@ public class EquipmentPMSchedule implements Serializable {
 	public void setCostCode(String costCode) {
 		this.costCode = costCode;
 	}
-	public String getMeter1Interval() {
+	public BigDecimal getMeter1Interval() {
 		return meter1Interval;
 	}
-	public void setMeter1Interval(String meter1Interval) {
+	public void setMeter1Interval(BigDecimal meter1Interval) {
 		this.meter1Interval = meter1Interval;
 	}
 	public String getMeter1UOM() {
@@ -130,16 +131,16 @@ public class EquipmentPMSchedule implements Serializable {
 	public void setMeter1UOM(String meter1uom) {
 		meter1UOM = meter1uom;
 	}
-	public String getMeter1Due() {
+	public BigDecimal getMeter1Due() {
 		return meter1Due;
 	}
-	public void setMeter1Due(String meter1Due) {
+	public void setMeter1Due(BigDecimal meter1Due) {
 		this.meter1Due = meter1Due;
 	}
-	public String getMeter2Interval() {
+	public BigDecimal getMeter2Interval() {
 		return meter2Interval;
 	}
-	public void setMeter2Interval(String meter2Interval) {
+	public void setMeter2Interval(BigDecimal meter2Interval) {
 		this.meter2Interval = meter2Interval;
 	}
 	public String getMeter2UOM() {
@@ -148,10 +149,10 @@ public class EquipmentPMSchedule implements Serializable {
 	public void setMeter2UOM(String meter2uom) {
 		meter2UOM = meter2uom;
 	}
-	public String getMeter2Due() {
+	public BigDecimal getMeter2Due() {
 		return meter2Due;
 	}
-	public void setMeter2Due(String meter2Due) {
+	public void setMeter2Due(BigDecimal meter2Due) {
 		this.meter2Due = meter2Due;
 	}
 	public String getDateDeactivated() {

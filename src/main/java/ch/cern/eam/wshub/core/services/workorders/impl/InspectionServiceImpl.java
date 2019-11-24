@@ -21,6 +21,7 @@ import net.datastream.schemas.mp_functions.mp1031_001.MP1031_AddInspectionAspect
 import net.datastream.schemas.mp_functions.mp7177_001.MP7177_AddInspectionsForWorkOrder_001;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 import javax.xml.ws.Holder;
+import java.math.BigDecimal;
 
 public class InspectionServiceImpl implements InspectionService {
 
@@ -127,7 +128,7 @@ public class InspectionServiceImpl implements InspectionService {
 		}
 	}
 
-	private void addWOInspections(InforContext context, AspectPoint aspectPoint, String inspobject, String woNumber, String seqNumber) throws InforException {
+	private void addWOInspections(InforContext context, AspectPoint aspectPoint, String inspobject, String woNumber, BigDecimal seqNumber) throws InforException {
 		InspectionsForWorkOrder inspectionsForWO = new InspectionsForWorkOrder();
 		//
 		inspectionsForWO.setEVENTPOINTID(new EVENTPOINTID_Type());

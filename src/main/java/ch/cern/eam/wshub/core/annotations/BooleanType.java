@@ -1,7 +1,7 @@
 /**
  * 
  */
-package ch.cern.eam.wshub.core.tools;
+package ch.cern.eam.wshub.core.annotations;
 
 /**
  * To know the different type of booleans defined in infor

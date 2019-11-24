@@ -81,11 +81,11 @@ public class LinearReferenceServiceImpl implements LinearReferenceService {
 			linearReferenceInfor.setLRFDESC(linearReference.getDescription());
 		}
 
-		if (linearReference.getFromPoint() != null && !linearReference.getFromPoint().trim().equals("")) {
+		if (linearReference.getFromPoint() != null) {
 			linearReferenceInfor.setLRFFROMPOINT(tools.getDataTypeTools().encodeQuantity(linearReference.getFromPoint(), "From Point"));
 		}
 
-		if (linearReference.getToPoint() != null && !linearReference.getToPoint().trim().equals("")) {
+		if (linearReference.getToPoint() != null) {
 			linearReferenceInfor.setLRFTOPOINT(tools.getDataTypeTools().encodeQuantity(linearReference.getToPoint(), "To Point"));
 		}
 
@@ -169,11 +169,11 @@ public class LinearReferenceServiceImpl implements LinearReferenceService {
 			linearReferenceInfor.setLRFDESC(linearReference.getDescription());
 		}
 
-		if (linearReference.getFromPoint() != null && !linearReference.getFromPoint().trim().equals("")) {
+		if (linearReference.getFromPoint() != null) {
 			linearReferenceInfor.setLRFFROMPOINT(tools.getDataTypeTools().encodeQuantity(linearReference.getFromPoint(), "From Point"));
 		}
 
-		if (linearReference.getToPoint() != null && !linearReference.getToPoint().trim().equals("")) {
+		if (linearReference.getToPoint() != null) {
 			linearReferenceInfor.setLRFTOPOINT(tools.getDataTypeTools().encodeQuantity(linearReference.getToPoint(), "To Point"));
 		}
 

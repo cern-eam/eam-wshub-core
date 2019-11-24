@@ -7,7 +7,9 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface GridField {
-    String name();
-    String[] alternativeNames() default {};
+public @interface InforField {
+    String xpath();
+    boolean enforceValidXpath() default true;
+    boolean readOnly() default false;
+    BooleanType booleanType() default BooleanType.TRUE_FALSE;
 }

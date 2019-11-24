@@ -17,6 +17,8 @@ import java.sql.Statement;
 import java.util.*;
 import static java.util.Comparator.comparing;
 
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.*;
+
 public class CustomFieldsTools {
 
     private Tools tools;
@@ -75,7 +77,7 @@ public class CustomFieldsTools {
         //
         //
         else if (customFieldInfor.getType().toUpperCase().equals("NUM") && customFieldInfor.getNUMBERFIELD() != null) {
-            customField.setValue(tools.getDataTypeTools().decodeQuantity(customFieldInfor.getNUMBERFIELD()));
+            customField.setValue(decodeBigDecimal(tools.getDataTypeTools().decodeQuantity(customFieldInfor.getNUMBERFIELD())));
         }
         //
         //
@@ -141,7 +143,7 @@ public class CustomFieldsTools {
         //
         if (customFieldInfor.getType().toUpperCase().equals("NUM")) {
             if (customField.getValue() != null) {
-                customFieldInfor.setNUMBERFIELD(tools.getDataTypeTools().encodeQuantity(customField.getValue(),
+                customFieldInfor.setNUMBERFIELD(tools.getDataTypeTools().encodeQuantity(encodeBigDecimal(customField.getValue(), "Custom Field"),
                         "Custom field '" + customFieldInfor.getPROPERTYLABEL() + "'"));
             }
         }
@@ -209,7 +211,7 @@ public class CustomFieldsTools {
                 return isDifferentValue(null, customField.getValue());
             case "NUM":
                 // Decode the quantity
-                String quantity = tools.getDataTypeTools().decodeQuantity(customFieldInfor.getNUMBERFIELD());
+                String quantity = decodeBigDecimal(decodeQuantity(customFieldInfor.getNUMBERFIELD()));
                 // Compare
                 return isDifferentValue(quantity, customField.getValue());
 

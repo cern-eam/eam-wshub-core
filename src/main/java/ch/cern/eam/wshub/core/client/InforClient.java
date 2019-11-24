@@ -16,22 +16,8 @@ import ch.cern.eam.wshub.core.services.grids.GridsService;
 import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.services.material.*;
 import ch.cern.eam.wshub.core.services.material.impl.*;
-import ch.cern.eam.wshub.core.services.workorders.CaseService;
-import ch.cern.eam.wshub.core.services.workorders.CaseTaskService;
-import ch.cern.eam.wshub.core.services.workorders.ChecklistService;
-import ch.cern.eam.wshub.core.services.workorders.EmployeeService;
-import ch.cern.eam.wshub.core.services.workorders.InspectionService;
-import ch.cern.eam.wshub.core.services.workorders.LaborBookingService;
-import ch.cern.eam.wshub.core.services.workorders.WorkOrderMiscService;
-import ch.cern.eam.wshub.core.services.workorders.WorkOrderService;
-import ch.cern.eam.wshub.core.services.workorders.impl.CaseServiceImpl;
-import ch.cern.eam.wshub.core.services.workorders.impl.CaseTaskServiceImpl;
-import ch.cern.eam.wshub.core.services.workorders.impl.ChecklistServiceImpl;
-import ch.cern.eam.wshub.core.services.workorders.impl.EmployeeServiceImpl;
-import ch.cern.eam.wshub.core.services.workorders.impl.InspectionServiceImpl;
-import ch.cern.eam.wshub.core.services.workorders.impl.LaborBookingServiceImpl;
-import ch.cern.eam.wshub.core.services.workorders.impl.WorkOrderMiscServiceImpl;
-import ch.cern.eam.wshub.core.services.workorders.impl.WorkOrderServiceImpl;
+import ch.cern.eam.wshub.core.services.workorders.*;
+import ch.cern.eam.wshub.core.services.workorders.impl.*;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.Tools;
 
@@ -65,6 +51,7 @@ public class InforClient implements Serializable {
 
     private CommentService commentService;
     private WorkOrderService workOrderService;
+    private StandardWorkOrderService standardWorkOrderService;
     private CaseService caseService;
     private CaseTaskService caseTaskService;
     private LaborBookingService laborBookingService;
@@ -202,6 +189,7 @@ public class InforClient implements Serializable {
             // Init Service Classes
             //
             inforClient.workOrderService = proxy(WorkOrderService.class, new WorkOrderServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
+            inforClient.standardWorkOrderService = proxy(StandardWorkOrderService.class, new StandardWorkOrderServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.commentService = proxy(CommentService.class, new CommentServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.caseService = proxy(CaseService.class, new CaseServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.caseTaskService = proxy(CaseTaskService.class, new CaseTaskServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
@@ -251,6 +239,10 @@ public class InforClient implements Serializable {
 
     public WorkOrderService getWorkOrderService() {
         return workOrderService;
+    }
+
+    public StandardWorkOrderService getStandardWorkOrderService() {
+        return standardWorkOrderService;
     }
 
     public AssetService getAssetService() {

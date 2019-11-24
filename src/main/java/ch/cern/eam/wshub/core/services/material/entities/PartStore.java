@@ -1,6 +1,7 @@
 package ch.cern.eam.wshub.core.services.material.entities;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 public class PartStore implements Serializable {
 
@@ -8,9 +9,9 @@ public class PartStore implements Serializable {
 	private String preferredSupplier;
 	private String preferredStore;
 	private String abcClass;
-	private String reorderLevel;
-	private String orderQty;
-	private String minimumQty;
+	private BigDecimal reorderLevel;
+	private BigDecimal orderQty;
+	private BigDecimal minimumQty;
 	private String defaultBin;
 	private String defaultReturnBin;
 	private String partCode;
@@ -35,16 +36,16 @@ public class PartStore implements Serializable {
 	public void setAbcClass(String abcClass) {
 		this.abcClass = abcClass;
 	}
-	public String getReorderLevel() {
+	public BigDecimal getReorderLevel() {
 		return reorderLevel;
 	}
-	public void setReorderLevel(String reorderLevel) {
+	public void setReorderLevel(BigDecimal reorderLevel) {
 		this.reorderLevel = reorderLevel;
 	}
-	public String getOrderQty() {
+	public BigDecimal getOrderQty() {
 		return orderQty;
 	}
-	public void setOrderQty(String orderQty) {
+	public void setOrderQty(BigDecimal orderQty) {
 		this.orderQty = orderQty;
 	}
 	public String getDefaultBin() {
@@ -94,10 +95,10 @@ public class PartStore implements Serializable {
 	public void setPreferredStore(String preferredStore) {
 		this.preferredStore = preferredStore;
 	}
-	public String getMinimumQty() {
+	public BigDecimal getMinimumQty() {
 		return minimumQty;
 	}
-	public void setMinimumQty(String minimumQty) {
+	public void setMinimumQty(BigDecimal minimumQty) {
 		this.minimumQty = minimumQty;
 	}
 	public String getPreventIssueFromDefaultReturnBin() {

@@ -1,10 +1,12 @@
 package ch.cern.eam.wshub.core.services.entities;
 
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
+import ch.cern.eam.wshub.core.annotations.InforField;
 
 import javax.persistence.Embeddable;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.StringJoiner;
 
@@ -12,51 +14,96 @@ import java.util.StringJoiner;
 public class UserDefinedFields implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 8838910762758979180L;
-	
+
+	@InforField(xpath = "UDFCHAR01")
 	private String udfchar01;
+	@InforField(xpath = "UDFCHAR02")
 	private String udfchar02;
+	@InforField(xpath = "UDFCHAR03")
 	private String udfchar03;
+	@InforField(xpath = "UDFCHAR04")
 	private String udfchar04;
+	@InforField(xpath = "UDFCHAR05")
 	private String udfchar05;
+	@InforField(xpath = "UDFCHAR06")
 	private String udfchar06;
+	@InforField(xpath = "UDFCHAR07")
 	private String udfchar07;
+	@InforField(xpath = "UDFCHAR08")
 	private String udfchar08;
+	@InforField(xpath = "UDFCHAR09")
 	private String udfchar09;
+	@InforField(xpath = "UDFCHAR10")
 	private String udfchar10;
+	@InforField(xpath = "UDFCHAR11")
 	private String udfchar11;
+	@InforField(xpath = "UDFCHAR12")
 	private String udfchar12;
+	@InforField(xpath = "UDFCHAR13")
 	private String udfchar13;
+	@InforField(xpath = "UDFCHAR14")
 	private String udfchar14;
+	@InforField(xpath = "UDFCHAR15")
 	private String udfchar15;
+	@InforField(xpath = "UDFCHAR16")
 	private String udfchar16;
+	@InforField(xpath = "UDFCHAR17")
 	private String udfchar17;
+	@InforField(xpath = "UDFCHAR18")
 	private String udfchar18;
+	@InforField(xpath = "UDFCHAR19")
 	private String udfchar19;
+	@InforField(xpath = "UDFCHAR20")
 	private String udfchar20;
+	@InforField(xpath = "UDFCHAR21")
 	private String udfchar21;
+	@InforField(xpath = "UDFCHAR22")
 	private String udfchar22;
+	@InforField(xpath = "UDFCHAR23")
 	private String udfchar23;
+	@InforField(xpath = "UDFCHAR24")
 	private String udfchar24;
+	@InforField(xpath = "UDFCHAR25")
 	private String udfchar25;
+	@InforField(xpath = "UDFCHAR26")
 	private String udfchar26;
+	@InforField(xpath = "UDFCHAR27")
 	private String udfchar27;
+	@InforField(xpath = "UDFCHAR28")
 	private String udfchar28;
+	@InforField(xpath = "UDFCHAR29")
 	private String udfchar29;
+	@InforField(xpath = "UDFCHAR30")
 	private String udfchar30;
+	@InforField(xpath = "UDFCHAR31", enforceValidXpath = false)
 	private String udfchar31;
+	@InforField(xpath = "UDFCHAR32", enforceValidXpath = false)
 	private String udfchar32;
+	@InforField(xpath = "UDFCHAR33", enforceValidXpath = false)
 	private String udfchar33;
+	@InforField(xpath = "UDFCHAR34", enforceValidXpath = false)
 	private String udfchar34;
+	@InforField(xpath = "UDFCHAR35", enforceValidXpath = false)
 	private String udfchar35;
+	@InforField(xpath = "UDFCHAR36", enforceValidXpath = false)
 	private String udfchar36;
+	@InforField(xpath = "UDFCHAR37", enforceValidXpath = false)
 	private String udfchar37;
+	@InforField(xpath = "UDFCHAR38", enforceValidXpath = false)
 	private String udfchar38;
+	@InforField(xpath = "UDFCHAR39", enforceValidXpath = false)
 	private String udfchar39;
+	@InforField(xpath = "UDFCHAR40", enforceValidXpath = false)
 	private String udfchar40;
+	@InforField(xpath = "UDFCHAR41", enforceValidXpath = false)
 	private String udfchar41;
+	@InforField(xpath = "UDFCHAR42", enforceValidXpath = false)
 	private String udfchar42;
+	@InforField(xpath = "UDFCHAR43", enforceValidXpath = false)
 	private String udfchar43;
+	@InforField(xpath = "UDFCHAR44", enforceValidXpath = false)
 	private String udfchar44;
+	@InforField(xpath = "UDFCHAR45", enforceValidXpath = false)
 	private String udfchar45;
 
 	private String udfchar01Desc;
@@ -105,37 +152,67 @@ public class UserDefinedFields implements Serializable, Cloneable {
 	private String udfchar44Desc;
 	private String udfchar45Desc;
 
+	@InforField(xpath = "UDFCHKBOX01")
 	private String udfchkbox01;
+	@InforField(xpath = "UDFCHKBOX02")
 	private String udfchkbox02;
+	@InforField(xpath = "UDFCHKBOX03")
 	private String udfchkbox03;
+	@InforField(xpath = "UDFCHKBOX04")
 	private String udfchkbox04;
+	@InforField(xpath = "UDFCHKBOX05")
 	private String udfchkbox05;
+	@InforField(xpath = "UDFCHKBOX06", enforceValidXpath = false)
 	private String udfchkbox06;
+	@InforField(xpath = "UDFCHKBOX07", enforceValidXpath = false)
 	private String udfchkbox07;
+	@InforField(xpath = "UDFCHKBOX08", enforceValidXpath = false)
 	private String udfchkbox08;
+	@InforField(xpath = "UDFCHKBOX09", enforceValidXpath = false)
 	private String udfchkbox09;
+	@InforField(xpath = "UDFCHKBOX10", enforceValidXpath = false)
 	private String udfchkbox10;
 
-	private String udfnum01;
-	private String udfnum02;
-	private String udfnum03;
-	private String udfnum04;
-	private String udfnum05;
-	private String udfnum06;
-	private String udfnum07;
-	private String udfnum08;
-	private String udfnum09;
-	private String udfnum10;
+	@InforField(xpath = "UDFNUM01")
+	private BigDecimal udfnum01;
+	@InforField(xpath = "UDFNUM02")
+	private BigDecimal udfnum02;
+	@InforField(xpath = "UDFNUM03")
+	private BigDecimal udfnum03;
+	@InforField(xpath = "UDFNUM04")
+	private BigDecimal udfnum04;
+	@InforField(xpath = "UDFNUM05")
+	private BigDecimal udfnum05;
+	@InforField(xpath = "UDFNUM06", enforceValidXpath = false)
+	private BigDecimal udfnum06;
+	@InforField(xpath = "UDFNUM07", enforceValidXpath = false)
+	private BigDecimal udfnum07;
+	@InforField(xpath = "UDFNUM08", enforceValidXpath = false)
+	private BigDecimal udfnum08;
+	@InforField(xpath = "UDFNUM09", enforceValidXpath = false)
+	private BigDecimal udfnum09;
+	@InforField(xpath = "UDFNUM10", enforceValidXpath = false)
+	private BigDecimal udfnum10;
 
+	@InforField(xpath = "UDFDATE01")
 	private Date udfdate01;
+	@InforField(xpath = "UDFDATE02")
 	private Date udfdate02;
+	@InforField(xpath = "UDFDATE03")
 	private Date udfdate03;
+	@InforField(xpath = "UDFDATE04")
 	private Date udfdate04;
+	@InforField(xpath = "UDFDATE05")
 	private Date udfdate05;
+	@InforField(xpath = "UDFDATE06", enforceValidXpath = false)
 	private Date udfdate06;
+	@InforField(xpath = "UDFDATE07", enforceValidXpath = false)
 	private Date udfdate07;
+	@InforField(xpath = "UDFDATE08", enforceValidXpath = false)
 	private Date udfdate08;
+	@InforField(xpath = "UDFDATE09", enforceValidXpath = false)
 	private Date udfdate09;
+	@InforField(xpath = "UDFDATE10", enforceValidXpath = false)
 	private Date udfdate10;
 	
 	public UserDefinedFields copy() {
@@ -427,43 +504,43 @@ public class UserDefinedFields implements Serializable, Cloneable {
 		this.udfchkbox05 = udfchkbox05;
 	}
 
-	public String getUdfnum01() {
+	public BigDecimal getUdfnum01() {
 		return udfnum01;
 	}
 
-	public void setUdfnum01(String udfnum01) {
+	public void setUdfnum01(BigDecimal udfnum01) {
 		this.udfnum01 = udfnum01;
 	}
 
-	public String getUdfnum02() {
+	public BigDecimal getUdfnum02() {
 		return udfnum02;
 	}
 
-	public void setUdfnum02(String udfnum02) {
+	public void setUdfnum02(BigDecimal udfnum02) {
 		this.udfnum02 = udfnum02;
 	}
 
-	public String getUdfnum03() {
+	public BigDecimal getUdfnum03() {
 		return udfnum03;
 	}
 
-	public void setUdfnum03(String udfnum03) {
+	public void setUdfnum03(BigDecimal udfnum03) {
 		this.udfnum03 = udfnum03;
 	}
 
-	public String getUdfnum04() {
+	public BigDecimal getUdfnum04() {
 		return udfnum04;
 	}
 
-	public void setUdfnum04(String udfnum04) {
+	public void setUdfnum04(BigDecimal udfnum04) {
 		this.udfnum04 = udfnum04;
 	}
 
-	public String getUdfnum05() {
+	public BigDecimal getUdfnum05() {
 		return udfnum05;
 	}
 
-	public void setUdfnum05(String udfnum05) {
+	public void setUdfnum05(BigDecimal udfnum05) {
 		this.udfnum05 = udfnum05;
 	}
 
@@ -507,43 +584,43 @@ public class UserDefinedFields implements Serializable, Cloneable {
 		this.udfchkbox10 = udfchkbox10;
 	}
 
-	public String getUdfnum06() {
+	public BigDecimal getUdfnum06() {
 		return udfnum06;
 	}
 
-	public void setUdfnum06(String udfnum06) {
+	public void setUdfnum06(BigDecimal udfnum06) {
 		this.udfnum06 = udfnum06;
 	}
 
-	public String getUdfnum07() {
+	public BigDecimal getUdfnum07() {
 		return udfnum07;
 	}
 
-	public void setUdfnum07(String udfnum07) {
+	public void setUdfnum07(BigDecimal udfnum07) {
 		this.udfnum07 = udfnum07;
 	}
 
-	public String getUdfnum08() {
+	public BigDecimal getUdfnum08() {
 		return udfnum08;
 	}
 
-	public void setUdfnum08(String udfnum08) {
+	public void setUdfnum08(BigDecimal udfnum08) {
 		this.udfnum08 = udfnum08;
 	}
 
-	public String getUdfnum09() {
+	public BigDecimal getUdfnum09() {
 		return udfnum09;
 	}
 
-	public void setUdfnum09(String udfnum09) {
+	public void setUdfnum09(BigDecimal udfnum09) {
 		this.udfnum09 = udfnum09;
 	}
 
-	public String getUdfnum10() {
+	public BigDecimal getUdfnum10() {
 		return udfnum10;
 	}
 
-	public void setUdfnum10(String udfnum10) {
+	public void setUdfnum10(BigDecimal udfnum10) {
 		this.udfnum10 = udfnum10;
 	}
 

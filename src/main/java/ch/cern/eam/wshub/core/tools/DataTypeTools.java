@@ -1,10 +1,11 @@
 package ch.cern.eam.wshub.core.tools;
 
+import ch.cern.eam.wshub.core.annotations.BooleanType;
 import org.openapplications.oagis_segments.AMOUNT;
 import org.openapplications.oagis_segments.DATETIME;
 import org.openapplications.oagis_segments.DATETIMEqual;
 import org.openapplications.oagis_segments.QUANTITY;
-
+import static ch.cern.eam.wshub.core.tools.Tools.generateFault;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigDecimal;
@@ -18,7 +19,7 @@ import java.util.Locale;
 public class DataTypeTools {
 
     private Tools tools;
-    String[] formatStrings = { "dd-MMM-yyyy HH:mm", "dd-MMM-yyyy", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM-dd", "dd/MM/yyyy HH:mm:ss", "dd/MM/yyyy" };
+    private static String[] formatStrings = { "dd-MMM-yyyy HH:mm", "dd-MMM-yyyy", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM-dd", "dd/MM/yyyy HH:mm:ss", "dd/MM/yyyy" };
 
     public DataTypeTools(Tools tools) {
         this.tools = tools;
@@ -27,7 +28,7 @@ public class DataTypeTools {
     //
     // DATES
     //
-    public Calendar convertStringToCalendar(String date) {
+    public static Calendar convertStringToCalendar(String date) {
         if (date == null || date.trim().equals("")) {
             return null;
         }
@@ -49,7 +50,7 @@ public class DataTypeTools {
         return null;
     }
 
-    public Date convertStringToDate(String date) {
+    public static Date convertStringToDate(String date) {
         Calendar calendar = convertStringToCalendar(date);
         if (calendar != null) {
             return calendar.getTime();
@@ -58,8 +59,7 @@ public class DataTypeTools {
         }
     }
 
-
-    public DATETIME encodeInforDate(Date dateValue, String dateLabel) throws InforException {
+    public static DATETIME encodeInforDate(Date dateValue, String dateLabel) throws InforException {
         if (dateValue.getTime() == 0l) {
             return null;
         }
@@ -89,7 +89,7 @@ public class DataTypeTools {
         return inforDateTime;
     }
 
-    public DATETIME formatDate(String dateValue, String dateLabel) throws InforException {
+    public static DATETIME formatDate(String dateValue, String dateLabel) throws InforException {
         if (dateValue == null || dateValue.trim().equals("")) {
             return null;
         }
@@ -97,7 +97,7 @@ public class DataTypeTools {
         Calendar calendar = convertStringToCalendar(dateValue);
 
         if (calendar == null) {
-            throw tools.generateFault((dateLabel + " has invalid format. Please change it to dd-MMM-yyyy [HH:mm]"));
+            throw Tools.generateFault((dateLabel + " has invalid format. Please change it to dd-MMM-yyyy [HH:mm]"));
         }
 
         DATETIME inforDateTime = new DATETIME();
@@ -135,7 +135,7 @@ public class DataTypeTools {
         return retrieveDate(inforDateTime, "dd-MMM-yyyy HH:mm");
     }
 
-    public Date decodeInforDate(DATETIME inforDateTime) {
+    public static Date decodeInforDate(DATETIME inforDateTime) {
         if (inforDateTime == null) {
             return null;
         }
@@ -148,36 +148,26 @@ public class DataTypeTools {
     }
 
     //
-    // NUMBERS
+    // QUANTITY
     //
-    public QUANTITY encodeQuantity(String numberValue, String numberLabel) throws InforException {
-        if (numberValue == null || numberValue.trim().equals("")) {
+    public static QUANTITY encodeQuantity(BigDecimal numberValue, String numberLabel) throws InforException {
+        if (numberValue == null ) {
             return null;
         }
-        numberValue = numberValue.trim();
         QUANTITY quantity = new QUANTITY();
         try {
-            if (numberValue.startsWith("-")) {
-                quantity.setSIGN("-");
-                numberValue = numberValue.substring(1);
-            } else {
-                quantity.setSIGN("+");
-            }
-            numberValue = numberValue.replace(",", "");
-            int index = numberValue.indexOf(".");
-            numberValue = numberValue.replace(".", "");
-
-            quantity.setNUMOFDEC(BigInteger.valueOf(index < 0 ? 0 : numberValue.length() - index));
-            quantity.setVALUE(new BigDecimal(numberValue));
-            quantity.setUOM("default");
+            quantity.setSIGN(numberValue.signum() < 0 ? "-" : "+");
+            quantity.setNUMOFDEC(BigInteger.valueOf(Math.max(0, numberValue.stripTrailingZeros().scale())));
+            quantity.setVALUE(numberValue.movePointRight(numberValue.scale()));
             quantity.setQualifier("OTHER");
+            quantity.setUOM("default");
         } catch (NumberFormatException e) {
-            throw tools.generateFault(numberLabel + " couldn't be parsed");
+            throw generateFault(numberLabel + " couldn't be parsed");
         }
         return quantity;
     }
 
-    public String decodeQuantity(QUANTITY inforNumber) {
+    public static BigDecimal decodeQuantity(QUANTITY inforNumber) {
         if (inforNumber != null) {
             BigDecimal bc = inforNumber.getVALUE().divide(
                     new BigDecimal(Math.pow(10, inforNumber.getNUMOFDEC().intValue())), 6, RoundingMode.HALF_UP);
@@ -185,52 +175,49 @@ public class DataTypeTools {
             if (inforNumber.getSIGN() != null && inforNumber.getSIGN().equals("-")) {
                 bc = bc.negate();
             }
-            return bc.stripTrailingZeros().toPlainString();
+            return bc.stripTrailingZeros();
         } else {
             return null;
         }
     }
 
-    public AMOUNT encodeAmount(String numberValue, String numberLabel) throws InforException {
-        if (numberValue == null || numberValue.trim().equals("")) {
+    //
+    // AMOUNT
+    //
+    public static AMOUNT encodeAmount(BigDecimal numberValue, String numberLabel) throws InforException {
+        if (numberValue == null) {
             return null;
         }
         AMOUNT amount = new AMOUNT();
         try {
-            if (numberValue.startsWith("-")) {
-                amount.setSIGN("-");
-                numberValue = numberValue.substring(1);
-            } else {
-                amount.setSIGN("+");
-            }
-            numberValue = numberValue.replace(",", "");
-            int index = numberValue.indexOf(".");
-            numberValue = numberValue.replace(".", "");
-
-            amount.setNUMOFDEC(BigInteger.valueOf(index < 0 ? 0 : numberValue.length() - index));
-            amount.setVALUE(new BigDecimal(numberValue));
+            amount.setSIGN(numberValue.signum() < 0 ? "-" : "+");
+            amount.setNUMOFDEC(BigInteger.valueOf(Math.max(0, numberValue.stripTrailingZeros().scale())));
+            amount.setVALUE(numberValue.movePointRight(numberValue.scale()));
             amount.setCURRENCY("default");
             amount.setDRCR("C");
             amount.setQualifier("OTHER");
         } catch (NumberFormatException e) {
-            throw tools.generateFault(numberLabel + " couldn't be parsed.");
+            throw generateFault(numberLabel + " couldn't be parsed.");
         }
         return amount;
     }
 
-    public String decodeAmount(AMOUNT inforNumber) {
+    public static BigDecimal decodeAmount(AMOUNT inforNumber) {
         if (inforNumber != null) {
             BigDecimal bc = inforNumber.getVALUE().divide(
                     new BigDecimal(Math.pow(10, inforNumber.getNUMOFDEC().intValue())), 6, RoundingMode.HALF_UP);
             if (inforNumber.getSIGN() != null && inforNumber.getSIGN().equals("-")) {
                 bc = bc.negate();
             }
-            return bc.stripTrailingZeros().toPlainString();
+            return bc;
         } else {
             return null;
         }
     }
 
+    //
+    // LONG
+    //
     public long encodeLong(String longValue, String longLabel) throws InforException {
         long value;
         try {
@@ -251,17 +238,44 @@ public class DataTypeTools {
         return value;
     }
 
-    public BigInteger encodeBigInteger(String value, String valueLabel) throws InforException {
-        if (value == null || value.trim().equals("")) {
+    //
+    // BIG DECIMAL
+    //
+    public static BigDecimal encodeBigDecimal(String stringValue, String valueLabel) throws InforException {
+        if (stringValue == null || stringValue.trim().equals("")) {
+            return null;
+        }
+        BigDecimal bigDecimalValue = null;
+        try {
+            bigDecimalValue = new BigDecimal(stringValue);
+        } catch (NumberFormatException e) {
+            throw Tools.generateFault(valueLabel + " couldn't be parsed.");
+        }
+        return bigDecimalValue;
+    }
+
+    public static String decodeBigDecimal(BigDecimal bigDecimalValue) {
+        return String.valueOf(bigDecimalValue);
+    }
+
+    //
+    // BIG INTEGER
+    //
+    public static BigInteger encodeBigInteger(String stringValue, String valueLabel) throws InforException {
+        if (stringValue == null || stringValue.trim().equals("")) {
             return null;
         }
         BigInteger bigIntegerValue = null;
         try {
-            bigIntegerValue = new BigInteger(value);
+            bigIntegerValue = new BigInteger(stringValue);
         } catch (NumberFormatException e) {
-            throw tools.generateFault(valueLabel + " couldn't be parsed.");
+            throw Tools.generateFault(valueLabel + " couldn't be parsed.");
         }
         return bigIntegerValue;
+    }
+
+    public static String decodeBigInteger(BigInteger bigIntegerValue) {
+        return String.valueOf(bigIntegerValue);
     }
 
     /**
@@ -273,30 +287,25 @@ public class DataTypeTools {
      *            Type of return that should be used
      * @return String with the type of return received representing the boolean
      */
-    public String encodeBoolean(String value, BooleanType returnType) {
+    public static String encodeBoolean(Boolean value, BooleanType returnType) {
         // Return boolean
         String resultStr = null;
         // If value is null, return "false"
         if (value == null)
-            value = "-";
-        // Check the value
-        boolean result = value.equalsIgnoreCase("+")
-                        || value.equalsIgnoreCase("1")
-                        || value.equalsIgnoreCase("true")
-                        || value.equalsIgnoreCase("yes");
+            value = false;
         // Assign the result according to the type
         switch (returnType) {
             case TRUE_FALSE:
-                resultStr = result ? "true" : "false";
+                resultStr = value ? "true" : "false";
                 break;
             case YES_NO:
-                resultStr = result ? "yes" : "no";
+                resultStr = value ? "yes" : "no";
                 break;
             case ONE_ZERO:
-                resultStr = result ? "one" : "zero";
+                resultStr = value ? "one" : "zero";
                 break;
             case PLUS_MINUS:
-                resultStr = result ? "+" : "-";
+                resultStr = value ? "+" : "-";
                 break;
         }
         // Return the result
@@ -310,8 +319,12 @@ public class DataTypeTools {
      *            Value to be converted as a boolean
      * @return Will return the boolean in the string form
      */
-    public String decodeBoolean(String value) {
-        return encodeBoolean(value, BooleanType.TRUE_FALSE);
+    public static Boolean decodeBoolean(String value) {
+        return "true".equalsIgnoreCase(value) ||
+                "yes".equalsIgnoreCase(value) ||
+                "1".equalsIgnoreCase(value) ||
+                "+".equalsIgnoreCase(value) ||
+                "-1".equalsIgnoreCase(value);
     }
 
     public static boolean isTrueValue(String value) {

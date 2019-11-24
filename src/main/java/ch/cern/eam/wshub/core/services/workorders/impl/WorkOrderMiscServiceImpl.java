@@ -25,6 +25,7 @@ import net.datastream.schemas.mp_results.mp0044_001.MP0044_AddMeterReading_001_R
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
 import javax.xml.ws.Holder;
+import java.math.BigDecimal;
 
 public class WorkOrderMiscServiceImpl implements WorkOrderMiscService {
 
@@ -46,11 +47,10 @@ public class WorkOrderMiscServiceImpl implements WorkOrderMiscService {
 		meterreadinginfor.setUSAGEUOMID(new UOMID_Type());
 		meterreadinginfor.getUSAGEUOMID().setUOMCODE(meterReadingParam.getUOM());
 
-		if (meterReadingParam.getActualValue() != null && !meterReadingParam.getActualValue().trim().equals("")) {
+		if (meterReadingParam.getActualValue() != null) {
 			meterreadinginfor
 					.setACTUALREADING(tools.getDataTypeTools().encodeQuantity(meterReadingParam.getActualValue(), "Meter Reading Value"));
-		} else if (meterReadingParam.getDifferenceValue() != null
-				&& !meterReadingParam.getDifferenceValue().trim().equals("")) {
+		} else if (meterReadingParam.getDifferenceValue() != null) {
 			meterreadinginfor.setDIFFERENCEREADING(
 					tools.getDataTypeTools().encodeQuantity(meterReadingParam.getDifferenceValue(), "Meter Reading Value"));
 		} else {
@@ -118,7 +118,7 @@ public class WorkOrderMiscServiceImpl implements WorkOrderMiscService {
 		// UNIT PRICE
 		workOrderAddCosts.setUNITPRICE(tools.getDataTypeTools().encodeAmount(workOrderAddCostsParam.getCost(), "Cost Value"));
 
-		workOrderAddCosts.setWOADDITIONALCOSTQTY(tools.getDataTypeTools().encodeQuantity("1", "Additional Quantity"));
+		workOrderAddCosts.setWOADDITIONALCOSTQTY(tools.getDataTypeTools().encodeQuantity(BigDecimal.ONE, "Additional Quantity"));
 
 		MP7593_AddWorkOrderAdditionalCosts_001 addCost = new MP7593_AddWorkOrderAdditionalCosts_001();
 		addCost.setWorkOrderAdditionalCosts(workOrderAddCosts);
@@ -213,16 +213,16 @@ public class WorkOrderMiscServiceImpl implements WorkOrderMiscService {
 		wop.getWORKORDERPARTID().getACTIVITYID().getWORKORDERID().setJOBNUM(workOrderPart.getWorkOrderNumber());
 
 		// PLANNED QTY
-		if (workOrderPart.getPlannedQty() != null && !workOrderPart.getPlannedQty().trim().equals("")) {
+		if (workOrderPart.getPlannedQty() != null) {
 			wop.setPLANNEDPARTQUANTITY(tools.getDataTypeTools().encodeQuantity(workOrderPart.getPlannedQty(), "Planned Qty."));
 		}
 
 		// RESERVED QTY
-		if (workOrderPart.getReservedQty() != null && !workOrderPart.getReservedQty().trim().equals("")) {
+		if (workOrderPart.getReservedQty() != null) {
 			wop.setRESERVEDPARTQUANTITY(tools.getDataTypeTools().encodeQuantity(workOrderPart.getReservedQty(), "Reserved Qty."));
 		}
 		// ALLOCATED QTY
-		if (workOrderPart.getAllocatedQty() != null && !workOrderPart.getAllocatedQty().trim().equals("")) {
+		if (workOrderPart.getAllocatedQty() != null) {
 			wop.setALLOCATEDPARTQUANTITY(tools.getDataTypeTools().encodeQuantity(workOrderPart.getAllocatedQty(), "Allocated Qty."));
 		}
 		//
@@ -381,7 +381,7 @@ public class WorkOrderMiscServiceImpl implements WorkOrderMiscService {
 			}
 			// PEOPLE REQUIRED
 			if (taskPlan.getEstimatedHours() == null) {
-				inforTask.setHOURSREQUESTED(tools.getDataTypeTools().encodeQuantity("1", "Estimated Hours"));
+				inforTask.setHOURSREQUESTED(tools.getDataTypeTools().encodeQuantity(BigDecimal.ONE, "Estimated Hours"));
 			} else {
 				inforTask.setHOURSREQUESTED(tools.getDataTypeTools().encodeQuantity(taskPlan.getEstimatedHours(), "Estimated Hours"));
 			}

@@ -9,6 +9,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -134,7 +135,7 @@ public class InforCaseTask implements Serializable {
 	@Column(name = "TCM_CHKLST_TASK")
 	private String taskPlanForChecklist;
 	@Column(name = "TCM_ESTIMATEDCOST")
-	private String estimatedCosts;
+	private BigDecimal estimatedCosts;
 	@Transient
 	private String estimatedCurr;
 	@Column(name = "TCM_CALCULATEDCOST")
@@ -174,7 +175,7 @@ public class InforCaseTask implements Serializable {
 	@Column(name = "TCM_SCHD_ENDDATE")
 	private Date scheduledEndDate;
 	@Column(name = "TCM_PLANNEDDURATION")
-	private String plannedDuration;
+	private BigDecimal plannedDuration;
 	@Column(name = "TCM_DURATION_UNIT")
 	private String plannedDurationUnit;
 	@Column(name = "TCM_REQ_STARTDATE")
@@ -249,10 +250,10 @@ public class InforCaseTask implements Serializable {
 	public void setTaskPlanForChecklist(String taskPlanForChecklist) {
 		this.taskPlanForChecklist = taskPlanForChecklist;
 	}
-	public String getEstimatedCosts() {
+	public BigDecimal getEstimatedCosts() {
 		return estimatedCosts;
 	}
-	public void setEstimatedCosts(String estimatedCosts) {
+	public void setEstimatedCosts(BigDecimal estimatedCosts) {
 		this.estimatedCosts = estimatedCosts;
 	}
 	public String getEstimatedCurr() {
@@ -333,10 +334,10 @@ public class InforCaseTask implements Serializable {
 		this.scheduledEndDate = scheduledEndDate;
 	}
 	
-	public String getPlannedDuration() {
+	public BigDecimal getPlannedDuration() {
 		return plannedDuration;
 	}
-	public void setPlannedDuration(String plannedDuration) {
+	public void setPlannedDuration(BigDecimal plannedDuration) {
 		this.plannedDuration = plannedDuration;
 	}
 	public String getPlannedDurationUnit() {

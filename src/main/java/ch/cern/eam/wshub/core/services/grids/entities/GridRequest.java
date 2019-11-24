@@ -160,6 +160,17 @@ public class GridRequest implements Serializable {
 		this.gridRequestFilters = gridRequestFilters;
 	}
 
+	public void addFilter(String fieldName, String fieldValue, String operator) {
+		this.getGridRequestFilters().add(new GridRequestFilter(fieldName, fieldValue, operator));
+	}
+
+	public void addFilter(String fieldName, String fieldValue, String operator, GridRequestFilter.JOINER joiner) {
+		this.getGridRequestFilters().add(new GridRequestFilter(fieldName, fieldValue, operator, joiner));
+	}
+
+	public void addFilter(String fieldName, String fieldValue, String operator, GridRequestFilter.JOINER joiner, Boolean leftParenthesis, Boolean rightParenthesis) {
+		this.getGridRequestFilters().add(new GridRequestFilter(fieldName, fieldValue, operator, joiner, leftParenthesis, rightParenthesis));
+	}
 
 	public GRIDTYPE getGridType() {
 		return gridType;

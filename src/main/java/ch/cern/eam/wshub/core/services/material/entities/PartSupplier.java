@@ -1,14 +1,15 @@
 package ch.cern.eam.wshub.core.services.material.entities;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 public class PartSupplier implements Serializable {
 
 	private String supplierCode;
 	private String supplierPartDescription;
 	private String catalogReference;
-	private String grossPrice;
-	private String minimumOrderQty;
+	private BigDecimal grossPrice;
+	private BigDecimal minimumOrderQty;
 	private String partCode;
 	
 	public String getSupplierCode() {
@@ -29,16 +30,16 @@ public class PartSupplier implements Serializable {
 	public void setCatalogReference(String catalogReference) {
 		this.catalogReference = catalogReference;
 	}
-	public String getGrossPrice() {
+	public BigDecimal getGrossPrice() {
 		return grossPrice;
 	}
-	public void setGrossPrice(String grossPrice) {
+	public void setGrossPrice(BigDecimal grossPrice) {
 		this.grossPrice = grossPrice;
 	}
-	public String getMinimumOrderQty() {
+	public BigDecimal getMinimumOrderQty() {
 		return minimumOrderQty;
 	}
-	public void setMinimumOrderQty(String minimumOrderQty) {
+	public void setMinimumOrderQty(BigDecimal minimumOrderQty) {
 		this.minimumOrderQty = minimumOrderQty;
 	}
 	public String getPartCode() {

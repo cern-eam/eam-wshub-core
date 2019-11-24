@@ -25,6 +25,8 @@ import net.datastream.wsdls.inforws.InforWebServicesPT;
 
 import javax.persistence.EntityManager;
 import javax.xml.ws.Holder;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 
 public class EquipmentOtherServiceImpl implements EquipmentOtherService {
 
@@ -80,12 +82,12 @@ public class EquipmentOtherServiceImpl implements EquipmentOtherService {
 		Depreciation depreciation = new Depreciation();
 
 		// DEPRECIATION PK
-		depreciation.setDEPRECIATIONPK(tools.getDataTypeTools().encodeQuantity("0", "Depreciation PK"));
+		depreciation.setDEPRECIATIONPK(tools.getDataTypeTools().encodeQuantity(BigDecimal.ZERO, "Depreciation PK"));
 
 		// ORIGINAL VALUE
 		if (equipmentDepreciation.getOriginalValue() != null) {
 			depreciation.setORIGINALVALUE(
-					tools.getDataTypeTools().encodeAmount(equipmentDepreciation.getOriginalValue().trim(), "Original Value"));
+					tools.getDataTypeTools().encodeAmount(equipmentDepreciation.getOriginalValue(), "Original Value"));
 		} else {
 			depreciation.setORIGINALVALUE(depreciationDefault.getORIGINALVALUE());
 		}
@@ -93,7 +95,7 @@ public class EquipmentOtherServiceImpl implements EquipmentOtherService {
 		// RESIDUAL VALUE
 		if (equipmentDepreciation.getResidualValue() != null) {
 			depreciation.setRESIDUALVALUE(
-					tools.getDataTypeTools().encodeAmount(equipmentDepreciation.getResidualValue().trim(), "Residual Value"));
+					tools.getDataTypeTools().encodeAmount(equipmentDepreciation.getResidualValue(), "Residual Value"));
 		} else {
 			depreciation.setRESIDUALVALUE(depreciationDefault.getRESIDUALVALUE());
 		}
@@ -111,7 +113,7 @@ public class EquipmentOtherServiceImpl implements EquipmentOtherService {
 				depreciation.getRemainingUsefulLife().getUOMID().setUOMCODE("Y");
 			}
 			depreciation.getRemainingUsefulLife().setESTIMATEDLIFE(
-					tools.getDataTypeTools().encodeAmount(equipmentDepreciation.getEstimatedUsefulLife().trim(), "Estimated Useful Life"));
+					tools.getDataTypeTools().encodeAmount(equipmentDepreciation.getEstimatedUsefulLife(), "Estimated Useful Life"));
 		} else {
 			depreciation.setRemainingUsefulLife(new RemainingUsefulLife());
 			depreciation.getRemainingUsefulLife()
@@ -198,8 +200,7 @@ public class EquipmentOtherServiceImpl implements EquipmentOtherService {
 		//
 		// GET THE DEPRECIATION VALUE FIRST
 		//
-		if (equipmentDepreciation.getDepreciationPK() == null
-				|| equipmentDepreciation.getDepreciationPK().trim().equals("")) {
+		if (equipmentDepreciation.getDepreciationPK() == null) {
 
 			if (equipmentDepreciation.getEquipmentCode() == null) {
 				throw tools.generateFault("Equipment Code is mandatory field");
@@ -252,7 +253,7 @@ public class EquipmentOtherServiceImpl implements EquipmentOtherService {
 			depreciation.getRemainingUsefulLife().setUOMID(new UOMID_Type());
 			depreciation.getRemainingUsefulLife().getUOMID()
 					.setUOMCODE(equipmentDepreciation.getEstimatedUsefulLifeUOM().toUpperCase());
-			String amount = tools.getDataTypeTools().decodeAmount(depreciation.getRemainingUsefulLife().getESTIMATEDLIFE());
+			BigDecimal amount = tools.getDataTypeTools().decodeAmount(depreciation.getRemainingUsefulLife().getESTIMATEDLIFE());
 			depreciation.getRemainingUsefulLife().setESTIMATEDLIFE(tools.getDataTypeTools().encodeAmount(amount, "Estiamted Life Time"));
 		}
 

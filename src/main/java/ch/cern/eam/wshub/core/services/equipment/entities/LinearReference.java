@@ -1,6 +1,7 @@
 package ch.cern.eam.wshub.core.services.equipment.entities;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 public class LinearReference implements Serializable {
 
@@ -9,8 +10,8 @@ public class LinearReference implements Serializable {
 	private String equipmentCode;
 	private String relatedEquipmentCode;
 	private String description;
-	private String fromPoint;
-	private String toPoint;
+	private BigDecimal fromPoint;
+	private BigDecimal toPoint;
 	private String geographicalReference;
 	private String updateCount;
 	private String classCode;
@@ -37,16 +38,16 @@ public class LinearReference implements Serializable {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	public String getFromPoint() {
+	public BigDecimal getFromPoint() {
 		return fromPoint;
 	}
-	public void setFromPoint(String fromPoint) {
+	public void setFromPoint(BigDecimal fromPoint) {
 		this.fromPoint = fromPoint;
 	}
-	public String getToPoint() {
+	public BigDecimal getToPoint() {
 		return toPoint;
 	}
-	public void setToPoint(String toPoint) {
+	public void setToPoint(BigDecimal toPoint) {
 		this.toPoint = toPoint;
 	}
 	public String getGeographicalReference() {

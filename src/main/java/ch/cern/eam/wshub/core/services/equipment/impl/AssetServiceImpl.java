@@ -1,14 +1,13 @@
 package ch.cern.eam.wshub.core.services.equipment.impl;
 
-
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.equipment.AssetService;
 import ch.cern.eam.wshub.core.services.equipment.entities.Equipment;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
+import ch.cern.eam.wshub.core.annotations.BooleanType;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_entities.assetequipment_001.*;
-import net.datastream.schemas.mp_entities.assetequipment_001.AssetEquipment.DORMANT;
 import net.datastream.schemas.mp_fields.*;
 import net.datastream.schemas.mp_functions.SessionType;
 import net.datastream.schemas.mp_functions.mp0301_001.MP0301_AddAssetEquipment_001;
@@ -20,6 +19,7 @@ import net.datastream.schemas.mp_results.mp0301_001.MP0301_AddAssetEquipment_001
 import net.datastream.schemas.mp_results.mp0302_001.MP0302_GetAssetEquipment_001_Result;
 import net.datastream.schemas.mp_results.mp0327_001.MP0327_GetAssetParentHierarchy_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.*;
 
 import javax.xml.ws.Holder;
 
@@ -43,101 +43,7 @@ public class AssetServiceImpl implements AssetService {
     public Equipment readAsset(InforContext context, String assetCode) throws InforException {
         AssetEquipment assetEquipment = readInforAsset(context, assetCode);
         //
-        //
-        Equipment asset = new Equipment();
-        //
-        if (assetEquipment.getASSETID() != null) {
-            asset.setCode(assetEquipment.getASSETID().getEQUIPMENTCODE());
-            asset.setDescription(assetEquipment.getASSETID().getDESCRIPTION());
-        }
-
-        if (assetEquipment.getEQUIPMENTALIAS() != null) {
-            asset.setAlias(assetEquipment.getEQUIPMENTALIAS());
-        }
-
-        //
-        if (assetEquipment.getSTATUS() != null) {
-            asset.setStatusCode(assetEquipment.getSTATUS().getSTATUSCODE());
-            asset.setStatusDesc(assetEquipment.getSTATUS().getDESCRIPTION());
-        }
-
-        //
-        if (assetEquipment.getCLASSID() != null) {
-            asset.setClassCode(assetEquipment.getCLASSID().getCLASSCODE());
-            asset.setClassDesc(assetEquipment.getCLASSID().getDESCRIPTION());
-        }
-
-        //
-        if (assetEquipment.getCATEGORYID() != null) {
-            asset.setCategoryCode(assetEquipment.getCATEGORYID().getCATEGORYCODE());
-            asset.setCategoryDesc(assetEquipment.getCATEGORYID().getDESCRIPTION());
-        }
-
-        if (assetEquipment.getASSIGNEDTO() != null) {
-            asset.setAssignedTo(assetEquipment.getASSIGNEDTO().getPERSONCODE());
-            asset.setAssignedToDesc(tools.getFieldDescriptionsTools().readPersonDesc(asset.getAssignedTo()));
-        }
-
-        //
-        if (assetEquipment.getTYPE() != null) {
-            asset.setTypeCode(assetEquipment.getTYPE().getTYPECODE());
-            asset.setTypeDesc(assetEquipment.getTYPE().getDESCRIPTION());
-        }
-
-        //
-        if (assetEquipment.getDEPARTMENTID() != null) {
-            asset.setDepartmentCode(assetEquipment.getDEPARTMENTID().getDEPARTMENTCODE());
-            asset.setDepartmentDesc(assetEquipment.getDEPARTMENTID().getDESCRIPTION());
-        }
-
-        //
-        if (assetEquipment.getCRITICALITYID() != null) {
-            asset.setCriticality(assetEquipment.getCRITICALITYID().getCRITICALITY());
-        }
-
-        //
-        if (assetEquipment.getCOMMISSIONDATE() != null) {
-            asset.setComissionDate(tools.getDataTypeTools().decodeInforDate(assetEquipment.getCOMMISSIONDATE()));
-        }
-
-        // STATE
-        if (assetEquipment.getEQUIPMENTSTATEID() != null) {
-            asset.setStateCode(assetEquipment.getEQUIPMENTSTATEID().getSTATECODE());
-            asset.setStateDesc(assetEquipment.getEQUIPMENTSTATEID().getDESCRIPTION());
-        }
-
-        //
-        if (assetEquipment.getManufacturerInfo() != null) {
-            asset.setManufacturerCode(assetEquipment.getManufacturerInfo().getMANUFACTURERCODE());
-            asset.setManufacturerDesc(tools.getFieldDescriptionsTools().readManufacturerDesc(asset.getManufacturerCode()));
-            asset.setSerialNumber(assetEquipment.getManufacturerInfo().getSERIALNUMBER());
-            asset.setModel(assetEquipment.getManufacturerInfo().getMODEL());
-        }
-
-        //
-        if (assetEquipment.getPartAssociation() != null) {
-            if (assetEquipment.getPartAssociation().getPARTID() != null) {
-                asset.setPartCode(assetEquipment.getPartAssociation().getPARTID().getPARTCODE());
-                asset.setPartDesc(assetEquipment.getPartAssociation().getPARTID().getDESCRIPTION());
-            }
-            if (assetEquipment.getPartAssociation().getSTORELOCATION() != null) {
-                if (assetEquipment.getPartAssociation().getSTORELOCATION().getSTOREID() != null) {
-                    asset.setStoreCode(
-                            assetEquipment.getPartAssociation().getSTORELOCATION().getSTOREID().getSTORECODE());
-                    asset.setStoreDesc(
-                            assetEquipment.getPartAssociation().getSTORELOCATION().getSTOREID().getDESCRIPTION());
-                }
-                asset.setBin(assetEquipment.getPartAssociation().getSTORELOCATION().getBIN());
-                asset.setBinDesc(tools.getFieldDescriptionsTools().readBinDesc(asset.getStoreCode(), asset.getBin()));
-                asset.setLot(assetEquipment.getPartAssociation().getSTORELOCATION().getLOT());
-            }
-        }
-
-        // CUSTOM FIELDS
-        asset.setCustomFields(tools.getCustomFieldsTools().readInforCustomFields(assetEquipment.getUSERDEFINEDAREA()));
-
-        // USER DEFINED FIELDS
-        asset.setUserDefinedFields(tools.getUDFTools().readInforUserDefinedFields(assetEquipment.getUserDefinedFields()));
+        Equipment asset = tools.getInforFieldTools().transformInforObject(new Equipment(), assetEquipment);
 
         // HIERARCHY
         assetEquipment.setAssetParentHierarchy(readInforAssetHierarchy(context, assetCode));
@@ -154,16 +60,16 @@ public class AssetServiceImpl implements AssetService {
             // Dependent position
             asset.setHierarchyPositionCode(positionDep.getDEPENDENTPOSITION().getPOSITIONID().getEQUIPMENTCODE());
             asset.setHierarchyPositionDesc(positionDep.getDEPENDENTPOSITION().getPOSITIONID().getDESCRIPTION());
-            asset.setHierarchyPositionDependent("true");
-            asset.setHierarchyPositionCostRollUp(positionDep.getDEPENDENTPOSITION().getCOSTROLLUP());
+            asset.setHierarchyPositionDependent(true);
+            asset.setHierarchyPositionCostRollUp(decodeBoolean(positionDep.getDEPENDENTPOSITION().getCOSTROLLUP()));
 
             // Non dependent asset
             if (positionDep.getNONDEPENDENTASSET() != null) {
                 //
                 asset.setHierarchyAssetCode(positionDep.getNONDEPENDENTASSET().getASSETID().getEQUIPMENTCODE());
                 asset.setHierarchyAssetDesc(positionDep.getNONDEPENDENTASSET().getASSETID().getDESCRIPTION());
-                asset.setHierarchyAssetCostRollUp(positionDep.getNONDEPENDENTASSET().getCOSTROLLUP());
-                asset.setHierarchyAssetDependent("false");
+                asset.setHierarchyAssetCostRollUp(decodeBoolean(positionDep.getNONDEPENDENTASSET().getCOSTROLLUP()));
+                asset.setHierarchyAssetDependent(false);
             }
 
             // Non dependent system
@@ -173,8 +79,8 @@ public class AssetServiceImpl implements AssetService {
                         positionDep.getNONDEPENDENTPRIMARYSYSTEM().getSYSTEMID().getEQUIPMENTCODE());
                 asset.setHierarchyPrimarySystemDesc(
                         positionDep.getNONDEPENDENTPRIMARYSYSTEM().getSYSTEMID().getDESCRIPTION());
-                asset.setHierarchyPrimarySystemCostRollUp(positionDep.getNONDEPENDENTPRIMARYSYSTEM().getCOSTROLLUP());
-                asset.setHierarchyPrimarySystemDependent("false");
+                asset.setHierarchyPrimarySystemCostRollUp(decodeBoolean(positionDep.getNONDEPENDENTPRIMARYSYSTEM().getCOSTROLLUP()));
+                asset.setHierarchyPrimarySystemDependent(false);
             }
 
         } else if (assetEquipment.getAssetParentHierarchy().getAssetDependency() != null) {
@@ -183,15 +89,15 @@ public class AssetServiceImpl implements AssetService {
             // Dependent Asset
             asset.setHierarchyAssetCode(assetDep.getDEPENDENTASSET().getASSETID().getEQUIPMENTCODE());
             asset.setHierarchyAssetDesc(assetDep.getDEPENDENTASSET().getASSETID().getDESCRIPTION());
-            asset.setHierarchyAssetCostRollUp(assetDep.getDEPENDENTASSET().getCOSTROLLUP());
-            asset.setHierarchyAssetDependent("true");
+            asset.setHierarchyAssetCostRollUp(decodeBoolean(assetDep.getDEPENDENTASSET().getCOSTROLLUP()));
+            asset.setHierarchyAssetDependent(true);
 
             // Non dependent position
             if (assetDep.getNONDEPENDENTPOSITION() != null) {
                 asset.setHierarchyPositionCode(assetDep.getNONDEPENDENTPOSITION().getPOSITIONID().getEQUIPMENTCODE());
                 asset.setHierarchyPositionDesc(assetDep.getNONDEPENDENTPOSITION().getPOSITIONID().getDESCRIPTION());
-                asset.setHierarchyPositionDependent("false");
-                asset.setHierarchyPositionCostRollUp(assetDep.getNONDEPENDENTPOSITION().getCOSTROLLUP());
+                asset.setHierarchyPositionDependent(false);
+                asset.setHierarchyPositionCostRollUp(decodeBoolean(assetDep.getNONDEPENDENTPOSITION().getCOSTROLLUP()));
             }
 
             // Non dependent system
@@ -200,8 +106,8 @@ public class AssetServiceImpl implements AssetService {
                         assetDep.getNONDEPENDENTPRIMARYSYSTEM().getSYSTEMID().getEQUIPMENTCODE());
                 asset.setHierarchyPrimarySystemDesc(
                         assetDep.getNONDEPENDENTPRIMARYSYSTEM().getSYSTEMID().getDESCRIPTION());
-                asset.setHierarchyPrimarySystemCostRollUp(assetDep.getNONDEPENDENTPRIMARYSYSTEM().getCOSTROLLUP());
-                asset.setHierarchyPrimarySystemDependent("false");
+                asset.setHierarchyPrimarySystemCostRollUp(decodeBoolean(assetDep.getNONDEPENDENTPRIMARYSYSTEM().getCOSTROLLUP()));
+                asset.setHierarchyPrimarySystemDependent(false);
             }
 
         } else if (assetEquipment.getAssetParentHierarchy().getSystemDependency() != null) {
@@ -210,15 +116,15 @@ public class AssetServiceImpl implements AssetService {
             // Dependent System
             asset.setHierarchyPrimarySystemCode(systemDep.getDEPENDENTSYSTEM().getSYSTEMID().getEQUIPMENTCODE());
             asset.setHierarchyPrimarySystemDesc(systemDep.getDEPENDENTSYSTEM().getSYSTEMID().getDESCRIPTION());
-            asset.setHierarchyPrimarySystemCostRollUp(systemDep.getDEPENDENTSYSTEM().getCOSTROLLUP());
-            asset.setHierarchyPrimarySystemDependent("true");
+            asset.setHierarchyPrimarySystemCostRollUp(decodeBoolean(systemDep.getDEPENDENTSYSTEM().getCOSTROLLUP()));
+            asset.setHierarchyPrimarySystemDependent(true);
 
             // Non dependent position
             if (systemDep.getNONDEPENDENTPOSITION() != null) {
                 asset.setHierarchyPositionCode(systemDep.getNONDEPENDENTPOSITION().getPOSITIONID().getEQUIPMENTCODE());
                 asset.setHierarchyPositionDesc(systemDep.getNONDEPENDENTPOSITION().getPOSITIONID().getDESCRIPTION());
-                asset.setHierarchyPositionDependent("false");
-                asset.setHierarchyPositionCostRollUp(systemDep.getNONDEPENDENTPOSITION().getCOSTROLLUP());
+                asset.setHierarchyPositionDependent(false);
+                asset.setHierarchyPositionCostRollUp(decodeBoolean(systemDep.getNONDEPENDENTPOSITION().getCOSTROLLUP()));
             }
 
             // Non dependent asset
@@ -226,8 +132,8 @@ public class AssetServiceImpl implements AssetService {
                 //
                 asset.setHierarchyAssetCode(systemDep.getNONDEPENDENTASSET().getASSETID().getEQUIPMENTCODE());
                 asset.setHierarchyAssetDesc(systemDep.getNONDEPENDENTASSET().getASSETID().getDESCRIPTION());
-                asset.setHierarchyAssetCostRollUp(systemDep.getNONDEPENDENTASSET().getCOSTROLLUP());
-                asset.setHierarchyAssetDependent("false");
+                asset.setHierarchyAssetCostRollUp(decodeBoolean(systemDep.getNONDEPENDENTASSET().getCOSTROLLUP()));
+                asset.setHierarchyAssetDependent(false);
             }
 
         } else if (assetEquipment.getAssetParentHierarchy().getNonDependentParents() != null) {
@@ -237,8 +143,8 @@ public class AssetServiceImpl implements AssetService {
             if (nonDepParents.getNONDEPENDENTASSET() != null) {
                 asset.setHierarchyAssetCode(nonDepParents.getNONDEPENDENTASSET().getASSETID().getEQUIPMENTCODE());
                 asset.setHierarchyAssetDesc(nonDepParents.getNONDEPENDENTASSET().getASSETID().getDESCRIPTION());
-                asset.setHierarchyAssetCostRollUp(nonDepParents.getNONDEPENDENTASSET().getCOSTROLLUP());
-                asset.setHierarchyAssetDependent("false");
+                asset.setHierarchyAssetCostRollUp(decodeBoolean(nonDepParents.getNONDEPENDENTASSET().getCOSTROLLUP()));
+                asset.setHierarchyAssetDependent(false);
             }
 
             // Non dependent position
@@ -247,8 +153,8 @@ public class AssetServiceImpl implements AssetService {
                         nonDepParents.getNONDEPENDENTPOSITION().getPOSITIONID().getEQUIPMENTCODE());
                 asset.setHierarchyPositionDesc(
                         nonDepParents.getNONDEPENDENTPOSITION().getPOSITIONID().getDESCRIPTION());
-                asset.setHierarchyPositionDependent("false");
-                asset.setHierarchyPositionCostRollUp(nonDepParents.getNONDEPENDENTPOSITION().getCOSTROLLUP());
+                asset.setHierarchyPositionDependent(false);
+                asset.setHierarchyPositionCostRollUp(decodeBoolean(nonDepParents.getNONDEPENDENTPOSITION().getCOSTROLLUP()));
             }
 
             // Non dependent system
@@ -257,8 +163,8 @@ public class AssetServiceImpl implements AssetService {
                         nonDepParents.getNONDEPENDENTPRIMARYSYSTEM().getSYSTEMID().getEQUIPMENTCODE());
                 asset.setHierarchyPrimarySystemDesc(
                         nonDepParents.getNONDEPENDENTPRIMARYSYSTEM().getSYSTEMID().getDESCRIPTION());
-                asset.setHierarchyPrimarySystemCostRollUp(nonDepParents.getNONDEPENDENTPRIMARYSYSTEM().getCOSTROLLUP());
-                asset.setHierarchyPrimarySystemDependent("false");
+                asset.setHierarchyPrimarySystemCostRollUp(decodeBoolean(nonDepParents.getNONDEPENDENTPRIMARYSYSTEM().getCOSTROLLUP()));
+                asset.setHierarchyPrimarySystemDependent(false);
             }
 
         } else if (assetEquipment.getAssetParentHierarchy().getLocationDependency() != null) {
@@ -272,8 +178,8 @@ public class AssetServiceImpl implements AssetService {
             if (locationDep.getNONDEPENDENTASSET() != null) {
                 asset.setHierarchyAssetCode(locationDep.getNONDEPENDENTASSET().getASSETID().getEQUIPMENTCODE());
                 asset.setHierarchyAssetDesc(locationDep.getNONDEPENDENTASSET().getASSETID().getDESCRIPTION());
-                asset.setHierarchyAssetCostRollUp(locationDep.getNONDEPENDENTASSET().getCOSTROLLUP());
-                asset.setHierarchyAssetDependent("false");
+                asset.setHierarchyAssetCostRollUp(decodeBoolean(locationDep.getNONDEPENDENTASSET().getCOSTROLLUP()));
+                asset.setHierarchyAssetDependent(false);
             }
 
             // Non dependent position
@@ -281,8 +187,8 @@ public class AssetServiceImpl implements AssetService {
                 asset.setHierarchyPositionCode(
                         locationDep.getNONDEPENDENTPOSITION().getPOSITIONID().getEQUIPMENTCODE());
                 asset.setHierarchyPositionDesc(locationDep.getNONDEPENDENTPOSITION().getPOSITIONID().getDESCRIPTION());
-                asset.setHierarchyPositionDependent("false");
-                asset.setHierarchyPositionCostRollUp(locationDep.getNONDEPENDENTPOSITION().getCOSTROLLUP());
+                asset.setHierarchyPositionDependent(false);
+                asset.setHierarchyPositionCostRollUp(decodeBoolean(locationDep.getNONDEPENDENTPOSITION().getCOSTROLLUP()));
             }
 
             // Non dependent system
@@ -291,26 +197,11 @@ public class AssetServiceImpl implements AssetService {
                         locationDep.getNONDEPENDENTPRIMARYSYSTEM().getSYSTEMID().getEQUIPMENTCODE());
                 asset.setHierarchyPrimarySystemDesc(
                         locationDep.getNONDEPENDENTPRIMARYSYSTEM().getSYSTEMID().getDESCRIPTION());
-                asset.setHierarchyPrimarySystemCostRollUp(locationDep.getNONDEPENDENTPRIMARYSYSTEM().getCOSTROLLUP());
-                asset.setHierarchyPrimarySystemDependent("false");
+                asset.setHierarchyPrimarySystemCostRollUp(decodeBoolean(locationDep.getNONDEPENDENTPRIMARYSYSTEM().getCOSTROLLUP()));
+                asset.setHierarchyPrimarySystemDependent(false);
             }
         }
 
-        // VARIABLES
-        if (assetEquipment.getVariables() != null) {
-            asset.setVariable1(assetEquipment.getVariables().getVARIABLE1());
-            asset.setVariable2(assetEquipment.getVariables().getVARIABLE2());
-            asset.setVariable3(assetEquipment.getVariables().getVARIABLE3());
-            asset.setVariable4(assetEquipment.getVariables().getVARIABLE4());
-            asset.setVariable5(assetEquipment.getVariables().getVARIABLE5());
-            asset.setVariable6(assetEquipment.getVariables().getVARIABLE6());
-        }
-
-        // IN PRODUCTION
-        asset.setInProduction(assetEquipment.getINPRODUCTION());
-
-        // ASSET VALUE
-        asset.setEquipmentValue(tools.getDataTypeTools().decodeAmount(assetEquipment.getASSETVALUE()));
         return asset;
     }
 
@@ -357,7 +248,6 @@ public class AssetServiceImpl implements AssetService {
                     tools.getTenant(context));
         }
         return getAssetResult.getResultData().getAssetEquipment();
-
     }
 
     private void updateInforAsset(InforContext context, AssetEquipment assetEquipment)
@@ -376,24 +266,20 @@ public class AssetServiceImpl implements AssetService {
 
     public String updateAsset(InforContext context, Equipment assetParam) throws InforException {
         AssetEquipment assetEquipment = readInforAsset(context, assetParam.getCode());
+
         //
-        //
-        //
-        if (assetParam.getClassCode() != null && (assetEquipment.getCLASSID() == null
-                || !assetParam.getClassCode().toUpperCase().equals(assetEquipment.getCLASSID().getCLASSCODE()))) {
-            assetEquipment.setUSERDEFINEDAREA(
-                    tools.getCustomFieldsTools().getInforCustomFields(context, "OBJ", assetParam.getClassCode().toUpperCase()));
+        if (assetParam.getClassCode() != null &&
+                (assetEquipment.getCLASSID() == null || !assetParam.getClassCode().toUpperCase().equals(assetEquipment.getCLASSID().getCLASSCODE()))) {
+            assetEquipment.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(context, "OBJ", assetParam.getClassCode().toUpperCase()));
         }
-        //
-        //
-        //
+
         initializeAssetObject(assetEquipment, assetParam, context);
+        tools.getInforFieldTools().transformWSHubObject(assetEquipment, assetParam, context);
         //
         // UPDATE EQUIPMENT
         //
         this.updateInforAsset(context, assetEquipment);
-        //TODO Update CERN properties
-        //equipmentOther.updateEquipmentCERNProperties(assetParam);
+
         return assetParam.getCode();
     }
 
@@ -402,17 +288,16 @@ public class AssetServiceImpl implements AssetService {
         AssetEquipment assetEquipment = new AssetEquipment();
         //
         if (assetParam.getCustomFields() != null && assetParam.getCustomFields().length > 0) {
-            if (assetParam.getClassCode() != null && !assetParam.getClassCode().trim().equals("")) {
-                assetEquipment.setUSERDEFINEDAREA(
-                        tools.getCustomFieldsTools().getInforCustomFields(context, "OBJ", assetParam.getClassCode()));
+            if (isNotEmpty(assetParam.getClassCode())) {
+                assetEquipment.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(context, "OBJ", assetParam.getClassCode()));
             } else {
                 assetEquipment.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(context, "OBJ", "*"));
             }
         }
-        //
-        assetEquipment.setUserDefinedFields(new UserDefinedFields());
+
         //
         initializeAssetObject(assetEquipment, assetParam, context);
+        tools.getInforFieldTools().transformWSHubObject(assetEquipment, assetParam, context);
         //
         MP0301_AddAssetEquipment_001 addAsset = new MP0301_AddAssetEquipment_001();
         addAsset.setAssetEquipment(assetEquipment);
@@ -426,8 +311,7 @@ public class AssetServiceImpl implements AssetService {
             addAssetResult = inforws.addAssetEquipmentOp(addAsset, tools.getOrganizationCode(context), null, null,
                     new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
         }
-        //TODO Update CERN properties
-        //equipmentOther.updateEquipmentCERNProperties(assetParam);
+
         return addAssetResult.getResultData().getASSETID().getEQUIPMENTCODE();
     }
 
@@ -456,63 +340,8 @@ public class AssetServiceImpl implements AssetService {
             assetInfor.getASSETID().setEQUIPMENTCODE(assetParam.getCode().toUpperCase().trim());
         }
 
-        if (assetParam.getAlias() != null) {
-            assetInfor.setEQUIPMENTALIAS(assetParam.getAlias());
-        }
-
         if (assetParam.getDescription() != null) {
             assetInfor.getASSETID().setDESCRIPTION(assetParam.getDescription());
-        }
-
-        if (assetParam.getStatusCode() != null) {
-            assetInfor.setSTATUS(new STATUS_Type());
-            assetInfor.getSTATUS().setSTATUSCODE(assetParam.getStatusCode().toUpperCase().trim());
-        }
-
-        if (assetParam.getTypeCode() != null) {
-            assetInfor.setTYPE(new TYPE_Type());
-            assetInfor.getTYPE().setTYPECODE(assetParam.getTypeCode());
-        }
-
-        if (assetParam.getClassCode() != null) {
-            if (assetParam.getClassCode().trim().equals("")) {
-                assetInfor.setCLASSID(null);
-            } else {
-                assetInfor.setCLASSID(new CLASSID_Type());
-                assetInfor.getCLASSID().setORGANIZATIONID(tools.getOrganization(context));
-                assetInfor.getCLASSID().setCLASSCODE(assetParam.getClassCode().toUpperCase().trim());
-            }
-        }
-
-        if (assetParam.getCategoryCode() != null) {
-            assetInfor.setCATEGORYID(new CATEGORYID());
-            assetInfor.getCATEGORYID().setCATEGORYCODE(assetParam.getCategoryCode().toUpperCase().trim());
-        }
-
-        if (assetParam.getComissionDate() != null) {
-            assetInfor.setCOMMISSIONDATE(tools.getDataTypeTools().encodeInforDate(assetParam.getComissionDate(), "Comissioning Date"));
-        }
-
-        if (assetParam.getCostCode() != null) {
-            assetInfor.setCOSTCODEID(new COSTCODEID_Type());
-            assetInfor.getCOSTCODEID().setCOSTCODE(assetParam.getCostCode().toUpperCase().trim());
-        }
-
-        if (assetParam.getCriticality() != null) {
-            assetInfor.setCRITICALITYID(new CRITICALITYID_Type());
-            assetInfor.getCRITICALITYID().setCRITICALITY(assetParam.getCriticality().toUpperCase().trim());
-        }
-
-        if (assetParam.getDepartmentCode() != null) {
-            assetInfor.setDEPARTMENTID(new DEPARTMENTID_Type());
-            assetInfor.getDEPARTMENTID().setORGANIZATIONID(tools.getOrganization(context));
-            assetInfor.getDEPARTMENTID().setDEPARTMENTCODE(assetParam.getDepartmentCode().toUpperCase().trim());
-        }
-
-        if (assetParam.getProfileCode() != null) {
-            assetInfor.setPROFILEID(new OBJECT_Type());
-            assetInfor.getPROFILEID().setORGANIZATIONID(tools.getOrganization(context));
-            assetInfor.getPROFILEID().setOBJECTCODE(assetParam.getProfileCode());
         }
 
         if (assetParam.getManufacturerCode() != null || assetParam.getSerialNumber() != null
@@ -548,26 +377,6 @@ public class AssetServiceImpl implements AssetService {
                         .setZCOORDINATE(tools.getDataTypeTools().encodeQuantity(assetParam.getzCoordinate(), "Z-Coordiante"));
             }
         }
-
-        if (assetParam.getUpdateCount() != null) {
-            assetInfor.setRecordid(Long.decode(assetParam.getUpdateCount()));
-        }
-
-        if (assetParam.getMeterUnit() != null) {
-            assetInfor.setMETERUNIT(assetParam.getMeterUnit());
-        }
-
-        // STATE ID
-        if (assetParam.getStateCode() != null) {
-            assetInfor.setEQUIPMENTSTATEID(new EQUIPMENTSTATEID());
-            assetInfor.getEQUIPMENTSTATEID().setSTATECODE(assetParam.getStateCode());
-        }
-
-        //
-        tools.getCustomFieldsTools().updateInforCustomFields(assetInfor.getUSERDEFINEDAREA(), assetParam.getCustomFields());
-
-        // USER DEFINED AREA
-        tools.getUDFTools().updateInforUserDefinedFields(assetInfor.getUserDefinedFields(), assetParam.getUserDefinedFields());
 
         // PART ASSOCIATION
         if (assetParam.getPartCode() != null) {
@@ -618,30 +427,6 @@ public class AssetServiceImpl implements AssetService {
 
         }
 
-        //
-        if (assetParam.getAssignedTo() != null) {
-            if (assetParam.getAssignedTo().trim().equals("")) {
-                assetInfor.setASSIGNEDTO(null);
-            } else {
-                assetInfor.setASSIGNEDTO(new PERSONID_Type());
-                assetInfor.getASSIGNEDTO().setPERSONCODE(assetParam.getAssignedTo());
-            }
-        }
-
-        //
-        if (assetParam.getcGMP() != null) {
-            assetInfor.setCGMP(assetParam.getcGMP());
-        }
-
-        //
-        if (assetParam.getDormantStart() != null || assetParam.getDormantEnd() != null
-                || assetParam.getDormantReusePeriod() != null) {
-            assetInfor.setDORMANT(new DORMANT());
-            assetInfor.getDORMANT().setDORMANTSTART(tools.getDataTypeTools().formatDate(assetParam.getDormantStart(), "Dormant Start"));
-            assetInfor.getDORMANT().setDORMANTEND(tools.getDataTypeTools().formatDate(assetParam.getDormantEnd(), "Dormant End"));
-            assetInfor.getDORMANT().setDORMANTREUSE(assetParam.getDormantReusePeriod());
-        }
-
         // VARIABLES
         if (assetInfor.getVariables() == null) {
             assetInfor.setVariables(new Variables());
@@ -665,9 +450,6 @@ public class AssetServiceImpl implements AssetService {
         if (assetParam.getVariable6() != null) {
             assetInfor.getVariables().setVARIABLE6(assetParam.getVariable6());
         }
-
-        // USER DEFINED FIELDS
-        tools.getUDFTools().updateInforUserDefinedFields(assetInfor.getUserDefinedFields(), assetParam.getUserDefinedFields());
 
         // FACILITY DETAILS
         if (assetParam.getCostOfNeededRepairs() != null || assetParam.getReplacementValue() != null
@@ -712,55 +494,10 @@ public class AssetServiceImpl implements AssetService {
             // Setting to null won't touch the existing structure
             assetInfor.setAssetParentHierarchy(null);
         }
-
-        // OUT OF SERVICE
-        if (assetParam.getOutOfService() != null) {
-            assetInfor.setOUTOFSERVICE(assetParam.getOutOfService());
-        }
-
-        // IN PRODUCTION
-        if (assetParam.getInProduction() != null) {
-            assetInfor.setINPRODUCTION(assetParam.getInProduction());
-        }
-
-        // ORIGINAL RECEIPT DATE
-        if (assetParam.getOriginalReceiptDate() != null) {
-            assetInfor.setORIGINALRECEIPTDATE(
-                    tools.getDataTypeTools().formatDate(assetParam.getOriginalReceiptDate(), "Original Receipt Date"));
-        }
-
-        // SAFETY
-        if (assetParam.getSafety() != null) {
-            assetInfor.setSAFETY(assetParam.getSafety());
-        }
-
-        // ORIGINAL INSTALL DATE
-        if (assetParam.getOriginalInstallDate() != null) {
-            assetInfor.setORIGINALINSTALLDATE(
-                    tools.getDataTypeTools().encodeInforDate(assetParam.getOriginalInstallDate(), "Original Install Date"));
-        }
-
-        // ASSET VALUE
-        if (assetParam.getEquipmentValue() != null) {
-            assetInfor.setASSETVALUE(tools.getDataTypeTools().encodeAmount(assetParam.getEquipmentValue(), "Equipment Value"));
-        }
-
     }
 
     private void initializeAssetHierarchy(AssetEquipment assetInfor, Equipment assetParam, InforContext context) {
         AssetParentHierarchy assetParentHierarchy = new AssetParentHierarchy();
-
-        if (tools.getDataTypeTools().isEmpty(assetParam.getHierarchyAssetDependent())) {
-            assetParam.setHierarchyAssetDependent("FALSE");
-        }
-
-        if (tools.getDataTypeTools().isEmpty(assetParam.getHierarchyPositionDependent())) {
-            assetParam.setHierarchyPositionDependent("FALSE");
-        }
-
-        if (tools.getDataTypeTools().isEmpty(assetParam.getHierarchyPrimarySystemDependent())) {
-            assetParam.setHierarchyPrimarySystemDependent("FALSE");
-        }
 
         assetParentHierarchy.setASSETID(new EQUIPMENTID_Type());
         assetParentHierarchy.getASSETID().setORGANIZATIONID(tools.getOrganization(context));
@@ -781,7 +518,7 @@ public class AssetServiceImpl implements AssetService {
         hierarchySystem.setEQUIPMENTCODE(assetParam.getHierarchyPrimarySystemCode());
 
         // Asset dependent
-        if (tools.getDataTypeTools().isTrueValue(assetParam.getHierarchyAssetDependent()) && tools.getDataTypeTools().isNotEmpty(assetParam.getHierarchyAssetCode())) {
+        if (assetParam.getHierarchyAssetDependent() && tools.getDataTypeTools().isNotEmpty(assetParam.getHierarchyAssetCode())) {
 
             assetParentHierarchy.setAssetDependency(new AssetDependency());
             // Non dependent position
@@ -798,7 +535,7 @@ public class AssetServiceImpl implements AssetService {
             assetParentHierarchy.getAssetDependency().setDEPENDENTASSET(this.createHierarchyAsset(assetParam, hierarchyAsset));
         }
         // Position dependent
-        else if (tools.getDataTypeTools().isTrueValue(assetParam.getHierarchyPositionDependent()) && tools.getDataTypeTools().isNotEmpty(assetParam.getHierarchyPositionCode())) {
+        else if (assetParam.getHierarchyPositionDependent() && tools.getDataTypeTools().isNotEmpty(assetParam.getHierarchyPositionCode())) {
             assetParentHierarchy.setPositionDependency(new PositionDependency());
 
             // Non dependent asset
@@ -818,7 +555,7 @@ public class AssetServiceImpl implements AssetService {
                     .setDEPENDENTPOSITION(this.createHierarchyPosition(assetParam, hierarchyPosition));
         }
         // System dependent
-        else if (tools.getDataTypeTools().isTrueValue(assetParam.getHierarchyPrimarySystemDependent()) && tools.getDataTypeTools().isNotEmpty(assetParam.getHierarchyPrimarySystemCode())) {
+        else if (assetParam.getHierarchyPrimarySystemDependent() && tools.getDataTypeTools().isNotEmpty(assetParam.getHierarchyPrimarySystemCode())) {
 
             assetParentHierarchy.setPrimarySystemDependency(new PrimarySystemDependency());
             // Non dependent position
@@ -897,21 +634,21 @@ public class AssetServiceImpl implements AssetService {
     private ASSETPARENT_Type createHierarchyAsset(Equipment assetParam, EQUIPMENTID_Type hierarchyAsset) {
         ASSETPARENT_Type assetType = new ASSETPARENT_Type();
         assetType.setASSETID(hierarchyAsset);
-        assetType.setCOSTROLLUP(assetParam.getHierarchyAssetCostRollUp());
+        assetType.setCOSTROLLUP(encodeBoolean(assetParam.getHierarchyAssetCostRollUp(), BooleanType.TRUE_FALSE));
         return assetType;
     }
 
     private POSITIONPARENT_Type createHierarchyPosition(Equipment assetParam, EQUIPMENTID_Type hierarchyPosition) {
         POSITIONPARENT_Type positionType = new POSITIONPARENT_Type();
         positionType.setPOSITIONID(hierarchyPosition);
-        positionType.setCOSTROLLUP(assetParam.getHierarchyPositionCostRollUp());
+        positionType.setCOSTROLLUP(encodeBoolean(assetParam.getHierarchyPositionCostRollUp(), BooleanType.TRUE_FALSE));
         return positionType;
     }
 
     private SYSTEMPARENT_Type createHierarchyPrymarySystem(Equipment assetParam, EQUIPMENTID_Type hierarchySystem) {
         SYSTEMPARENT_Type systemType = new SYSTEMPARENT_Type();
         systemType.setSYSTEMID(hierarchySystem);
-        systemType.setCOSTROLLUP(assetParam.getHierarchyPrimarySystemCostRollUp());
+        systemType.setCOSTROLLUP(encodeBoolean(assetParam.getHierarchyPrimarySystemCostRollUp(), BooleanType.TRUE_FALSE));
         return systemType;
     }
 

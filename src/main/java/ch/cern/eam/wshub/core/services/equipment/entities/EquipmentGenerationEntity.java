@@ -7,6 +7,7 @@ import javax.persistence.Id;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
@@ -43,7 +44,7 @@ public class EquipmentGenerationEntity implements Serializable {
     @Transient
     private String equipmentAssignedToDesc;
     @Transient
-    private String revisionNum;
+    private BigDecimal revisionNum;
     @Transient
     private Date lastUpdatedDate;
     @Transient
@@ -65,7 +66,7 @@ public class EquipmentGenerationEntity implements Serializable {
     @Transient
     private String statusDesc;
     @Transient
-    private String generateCount;
+    private BigDecimal generateCount;
     @Transient
     private String processed;
     @Transient
@@ -245,11 +246,11 @@ public class EquipmentGenerationEntity implements Serializable {
         this.updatedBy = updatedBy;
     }
 
-    public String getRevisionNum() {
+    public BigDecimal getRevisionNum() {
         return revisionNum;
     }
 
-    public void setRevisionNum(String revisionNum) {
+    public void setRevisionNum(BigDecimal revisionNum) {
         this.revisionNum = revisionNum;
     }
 
@@ -281,11 +282,11 @@ public class EquipmentGenerationEntity implements Serializable {
         this.statusDesc = statusDesc;
     }
 
-    public String getGenerateCount() {
+    public BigDecimal getGenerateCount() {
         return generateCount;
     }
 
-    public void setGenerateCount(String generateCount) {
+    public void setGenerateCount(BigDecimal generateCount) {
         this.generateCount = generateCount;
     }
 

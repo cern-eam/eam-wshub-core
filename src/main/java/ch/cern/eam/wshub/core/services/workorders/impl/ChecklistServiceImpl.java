@@ -10,9 +10,10 @@ import ch.cern.eam.wshub.core.services.workorders.ChecklistService;
 import ch.cern.eam.wshub.core.services.workorders.entities.Activity;
 import ch.cern.eam.wshub.core.services.workorders.entities.Finding;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.tools.BooleanType;
+import ch.cern.eam.wshub.core.annotations.BooleanType;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.*;
 import ch.cern.eam.wshub.core.services.workorders.entities.TaskplanCheckList;
 import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrderActivityCheckList;
 import net.datastream.schemas.mp_entities.taskchecklist_001.TaskChecklist;
@@ -25,13 +26,12 @@ import net.datastream.schemas.mp_results.mp7914_001.MP7914_GetWorkOrderActivityC
 import net.datastream.schemas.mp_results.mp8000_001.MP8000_CreateFollowUpWorkOrder_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 import static ch.cern.eam.wshub.core.tools.GridTools.getCellContent;
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.decodeBoolean;
 
 import javax.persistence.EntityManager;
 import javax.xml.ws.Holder;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -105,12 +105,12 @@ public class ChecklistServiceImpl implements ChecklistService {
 			case "04":
 				// NUMERIC VALUE
 				workOrderActivityCheckListInfor
-						.setRESULTVALUE(tools.getDataTypeTools().encodeQuantity(workOrderActivityCheckList.getResult(), "Checklists Value"));
+						.setRESULTVALUE(tools.getDataTypeTools().encodeQuantity(encodeBigDecimal(workOrderActivityCheckList.getResult(), ""), "Checklists Value"));
 				break;
 			case "05":
 				// METER READING
 				workOrderActivityCheckListInfor
-						.setRESULTVALUE(tools.getDataTypeTools().encodeQuantity(workOrderActivityCheckList.getResult(), "Checklists Value"));
+						.setRESULTVALUE(tools.getDataTypeTools().encodeQuantity(encodeBigDecimal(workOrderActivityCheckList.getResult(), ""), "Checklists Value"));
 				break;
 			case "06":
 				// INSPECTION
@@ -121,7 +121,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 					workOrderActivityCheckListInfor.setFINDINGID(null);
 				}
 				workOrderActivityCheckListInfor
-						.setRESULTVALUE(tools.getDataTypeTools().encodeQuantity(workOrderActivityCheckList.getResult(), "Checklists Value"));
+						.setRESULTVALUE(tools.getDataTypeTools().encodeQuantity(encodeBigDecimal(workOrderActivityCheckList.getResult(), ""), "Checklists Value"));
 				break;
 			default:
 		}
@@ -284,12 +284,8 @@ public class ChecklistServiceImpl implements ChecklistService {
 			checklistTemp.setType(getCellContent("checklisttype", gridRequestRow));
 
 			// FOLLOW-UP
-			String followUp = getCellContent("followup", gridRequestRow);
-			if ("true".equals(followUp)) {
-				checklistTemp.setFollowUp("+");
-			} else {
-				checklistTemp.setFollowUp("-");
-			}
+				checklistTemp.setFollowUp(decodeBoolean(getCellContent("followup", gridRequestRow)));
+
 
 			// FOLLOW-UP WORK ORDER
 			String followUpWorkOrderActivity = getCellContent("followupwoactivity", gridRequestRow);

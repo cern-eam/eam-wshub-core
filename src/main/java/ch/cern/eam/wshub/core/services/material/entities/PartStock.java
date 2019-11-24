@@ -1,6 +1,7 @@
 package ch.cern.eam.wshub.core.services.material.entities;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 public class PartStock implements Serializable {
 
@@ -8,7 +9,7 @@ public class PartStock implements Serializable {
 	private String storeDesc;
 	private String bin;
 	private String lot;
-	private String qtyOnHand;
+	private BigDecimal qtyOnHand;
 	private String partCode;
 	private String repairQuantity;
 	private String assetCode;
@@ -34,10 +35,10 @@ public class PartStock implements Serializable {
 		this.lot = lot;
 	}
 
-	public String getQtyOnHand() {
+	public BigDecimal getQtyOnHand() {
 		return qtyOnHand;
 	}
-	public void setQtyOnHand(String qtyOnHand) {
+	public void setQtyOnHand(BigDecimal qtyOnHand) {
 		this.qtyOnHand = qtyOnHand;
 	}
 

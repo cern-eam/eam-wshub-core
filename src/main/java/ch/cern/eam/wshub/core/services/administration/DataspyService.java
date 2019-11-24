@@ -6,8 +6,10 @@ import ch.cern.eam.wshub.core.services.INFOR_OPERATION;
 import ch.cern.eam.wshub.core.services.administration.entities.DataspyCopy;
 import ch.cern.eam.wshub.core.tools.InforException;
 
+import java.math.BigDecimal;
+
 public interface DataspyService {
 
     @Operation(logOperation = INFOR_OPERATION.DATASPY_CP)
-    String copyDataspy(InforContext context, DataspyCopy dataspyCopy) throws InforException;
+    BigDecimal copyDataspy(InforContext context, DataspyCopy dataspyCopy) throws InforException;
 }

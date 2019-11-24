@@ -4,18 +4,17 @@ import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.administration.DataspyService;
 import ch.cern.eam.wshub.core.services.administration.entities.DataspyCopy;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.tools.BooleanType;
+import ch.cern.eam.wshub.core.annotations.BooleanType;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_fields.USERID_Type;
 import net.datastream.schemas.mp_functions.SessionType;
 import net.datastream.schemas.mp_functions.mp6516_001.MP6516_CopyScreenDataspy_001;
-import net.datastream.schemas.mp_functions.mp6517_001.MP6517_SyncScreenDataspy_001;
 import net.datastream.schemas.mp_results.mp6516_001.MP6516_CopyScreenDataspy_001_Result;
-import net.datastream.schemas.mp_results.mp6519_001.MP6519_GetScreenDataspy_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
 import javax.xml.ws.Holder;
+import java.math.BigDecimal;
 
 public class DataspyServiceImpl implements DataspyService {
 
@@ -29,7 +28,7 @@ public class DataspyServiceImpl implements DataspyService {
         this.inforws = inforWebServicesToolkitClient;
     }
 
-    public String copyDataspy(InforContext context, DataspyCopy dataspyCopy) throws InforException {
+    public BigDecimal copyDataspy(InforContext context, DataspyCopy dataspyCopy) throws InforException {
 
         MP6516_CopyScreenDataspy_001 copyScreenDataspy = new MP6516_CopyScreenDataspy_001();
 

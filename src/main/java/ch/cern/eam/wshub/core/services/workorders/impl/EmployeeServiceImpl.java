@@ -8,6 +8,7 @@ import ch.cern.eam.wshub.core.services.workorders.EmployeeService;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.encodeBigDecimal;
 import ch.cern.eam.wshub.core.services.workorders.entities.Employee;
 import net.datastream.schemas.mp_fields.CLASSID_Type;
 import net.datastream.schemas.mp_fields.Employee_Type;
@@ -98,7 +99,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 		UserDefinedFields userDefinedFields = tools.getUDFTools()
 				.readInforUserDefinedFields(inforEmployee.getStandardUserDefinedFields());
 
-		employee.setSupervisor(userDefinedFields.getUdfchar01());
+		employee.setSupervisor(encodeBigDecimal(userDefinedFields.getUdfchar01(), "Supervisor"));
 
 		return employee;
 	}

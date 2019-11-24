@@ -26,7 +26,7 @@ import net.datastream.schemas.mp_functions.mp2051_001.MP2051_AddSubstitutePart_0
 import net.datastream.schemas.mp_results.mp0220_001.MP0220_AddIssueReturnTransaction_001_Result;
 import net.datastream.schemas.mp_results.mp0612_001.MP0612_AddPartsAssociated_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
-
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.decodeBoolean;
 import javax.persistence.EntityManager;
 import javax.xml.ws.Holder;
 import java.sql.Connection;
@@ -446,18 +446,8 @@ public class PartMiscServiceImpl implements PartMiscService {
 				partManufacturer.setManufacturerDesc(v_result.getString("mfg_desc"));
 				partManufacturer.setManufacturerPartNumber(v_result.getString("mfp_manufactpart"));
 				partManufacturer.setDrawingNumber(v_result.getString("mfp_manufactdraw"));
-				partManufacturer.setPrimary(v_result.getString("mfp_primary"));
-				if (partManufacturer.getPrimary().equals("+")) {
-					partManufacturer.setPrimary("TRUE");
-				} else {
-					partManufacturer.setPrimary("FALSE");
-				}
-				partManufacturer.setOutOfService(v_result.getString("mfp_notused"));
-				if (partManufacturer.getOutOfService().equals("+")) {
-					partManufacturer.setOutOfService("TRUE");
-				} else {
-					partManufacturer.setOutOfService("FALSE");
-				}
+				partManufacturer.setPrimary(decodeBoolean(v_result.getString("mfp_primary")));
+				partManufacturer.setOutOfService(decodeBoolean(v_result.getString("mfp_notused")));
 				partManufacturers.addLast(partManufacturer);
 			}
 		} catch (Exception e) {

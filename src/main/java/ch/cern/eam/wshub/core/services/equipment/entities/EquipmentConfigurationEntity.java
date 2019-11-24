@@ -3,6 +3,7 @@ package ch.cern.eam.wshub.core.services.equipment.entities;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
@@ -25,7 +26,7 @@ public class EquipmentConfigurationEntity implements Serializable {
     @Transient
     private String configurationCategoryDesc;
     @Transient
-    private String revisionNum;
+    private BigDecimal revisionNum;
     @Transient
     private String equipmentPrefix;
     @Transient
@@ -265,11 +266,11 @@ public class EquipmentConfigurationEntity implements Serializable {
         this.organizationDesc = organizationDesc;
     }
 
-    public String getRevisionNum() {
+    public BigDecimal getRevisionNum() {
         return revisionNum;
     }
 
-    public void setRevisionNum(String revisionNum) {
+    public void setRevisionNum(BigDecimal revisionNum) {
         this.revisionNum = revisionNum;
     }
 

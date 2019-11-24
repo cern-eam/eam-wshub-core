@@ -4,7 +4,7 @@ import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.equipment.EquipmentStructureService;
 import ch.cern.eam.wshub.core.services.equipment.entities.EquipmentStructure;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.tools.BooleanType;
+import ch.cern.eam.wshub.core.annotations.BooleanType;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_fields.EQUIPMENTID_Type;
@@ -52,15 +52,9 @@ public class EquipmentStructureServiceImpl implements EquipmentStructureService 
 			strID.getPARENTEQUIPMENTID().setEQUIPMENTCODE(equipmentStructure.getNewParentCode().trim().toUpperCase());
 		}
 
-		if (equipmentStructure.getCostRollUp() != null && !equipmentStructure.getCostRollUp().trim().equals("")) {
-			addEqStr.getEquipmentStructure().setCOSTROLLUP(tools.getDataTypeTools().encodeBoolean(equipmentStructure.getCostRollUp(), BooleanType.TRUE_FALSE));
-		} else {
-			addEqStr.getEquipmentStructure().setCOSTROLLUP("false");
-		}
+		addEqStr.getEquipmentStructure().setCOSTROLLUP(tools.getDataTypeTools().encodeBoolean(equipmentStructure.getCostRollUp(), BooleanType.TRUE_FALSE));
 
-		if (equipmentStructure.getDependent() != null && !equipmentStructure.getDependent().trim().equals("")) {
-			addEqStr.getEquipmentStructure().setDEPENDENTON(tools.getDataTypeTools().encodeBoolean(equipmentStructure.getDependent(), BooleanType.TRUE_FALSE));
-		}
+		addEqStr.getEquipmentStructure().setDEPENDENTON(tools.getDataTypeTools().encodeBoolean(equipmentStructure.getDependent(), BooleanType.TRUE_FALSE));
 
 		if (equipmentStructure.getSequenceNumber() != null
 				&& !equipmentStructure.getSequenceNumber().trim().equals("")) {
@@ -175,17 +169,9 @@ public class EquipmentStructureServiceImpl implements EquipmentStructureService 
 						.setEQUIPMENTCODE(equipmentStructure.getParentCode().trim().toUpperCase());
 			}
 
-			if (equipmentStructure.getCostRollUp() != null && !equipmentStructure.getCostRollUp().trim().equals("")) {
-				synceqpstr.getEquipmentStructure().setCOSTROLLUP(tools.getDataTypeTools().encodeBoolean(equipmentStructure.getCostRollUp(), BooleanType.TRUE_FALSE));
-			} else {
-				synceqpstr.getEquipmentStructure().setCOSTROLLUP("false");
-			}
+			synceqpstr.getEquipmentStructure().setCOSTROLLUP(tools.getDataTypeTools().encodeBoolean(equipmentStructure.getCostRollUp(), BooleanType.TRUE_FALSE));
 
-			if (equipmentStructure.getDependent() != null && !equipmentStructure.getDependent().trim().equals("")) {
-				synceqpstr.getEquipmentStructure().setDEPENDENTON(tools.getDataTypeTools().encodeBoolean(equipmentStructure.getDependent(), BooleanType.TRUE_FALSE));
-			} else {
-				synceqpstr.getEquipmentStructure().setDEPENDENTON("false");
-			}
+			synceqpstr.getEquipmentStructure().setDEPENDENTON(tools.getDataTypeTools().encodeBoolean(equipmentStructure.getDependent(), BooleanType.TRUE_FALSE));
 
 			if (equipmentStructure.getNewParentCode() != null) {
 				synceqpstr.setNewParentEquipment(new NewParentEquipment());

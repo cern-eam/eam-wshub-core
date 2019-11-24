@@ -2,6 +2,7 @@ package ch.cern.eam.wshub.core.services.equipment.entities;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name="R5WARCOVERAGES")
@@ -21,13 +22,13 @@ public class EquipmentWarranty implements Serializable {
 	@Transient
 	private String duration;
 	@Transient
-	private String threshold;
+	private BigDecimal threshold;
 	@Transient
 	private String startDate;
 	@Transient
 	private String expirationDate;
 	@Transient
-	private String active;
+	private Boolean active;
 	
 	public String getWarrantyCode() {
 		return warrantyCode;
@@ -47,10 +48,10 @@ public class EquipmentWarranty implements Serializable {
 	public void setDuration(String duration) {
 		this.duration = duration;
 	}
-	public String getThreshold() {
+	public BigDecimal getThreshold() {
 		return threshold;
 	}
-	public void setThreshold(String threshold) {
+	public void setThreshold(BigDecimal threshold) {
 		this.threshold = threshold;
 	}
 	public String getStartDate() {
@@ -65,10 +66,10 @@ public class EquipmentWarranty implements Serializable {
 	public void setExpirationDate(String expirationDate) {
 		this.expirationDate = expirationDate;
 	}
-	public String getActive() {
+	public Boolean getActive() {
 		return active;
 	}
-	public void setActive(String active) {
+	public void setActive(Boolean active) {
 		this.active = active;
 	}
 	

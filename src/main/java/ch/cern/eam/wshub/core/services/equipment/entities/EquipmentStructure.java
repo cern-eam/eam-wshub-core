@@ -11,8 +11,8 @@ public class EquipmentStructure implements Serializable {
 	private String childCode;
 	private String parentCode;
 	private String newParentCode;
-	private String costRollUp;
-	private String dependent;
+	private Boolean costRollUp;
+	private Boolean dependent;
 	private String sequenceNumber;
 	
 	public String getChildCode() {
@@ -28,16 +28,16 @@ public class EquipmentStructure implements Serializable {
 	public void setParentCode(String parentCode) {
 		this.parentCode = parentCode;
 	}
-	public String getCostRollUp() {
+	public Boolean getCostRollUp() {
 		return costRollUp;
 	}
-	public void setCostRollUp(String costRollUp) {
+	public void setCostRollUp(Boolean costRollUp) {
 		this.costRollUp = costRollUp;
 	}
-	public String getDependent() {
+	public Boolean getDependent() {
 		return dependent;
 	}
-	public void setDependent(String dependent) {
+	public void setDependent(Boolean dependent) {
 		this.dependent = dependent;
 	}
 	public String getSequenceNumber() {

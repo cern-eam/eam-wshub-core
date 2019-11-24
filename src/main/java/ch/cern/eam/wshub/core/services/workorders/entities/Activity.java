@@ -5,6 +5,7 @@ import ch.cern.eam.wshub.core.adapters.DateAdapter;
 import javax.persistence.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -42,7 +43,7 @@ public class Activity implements Serializable {
 	@Column(name = "ACT_TRADE")
 	private String tradeCode;
 	@Column(name = "ACT_QTY")
-	private String taskQty;
+	private BigDecimal taskQty;
 
 	@Transient
 	private WorkOrderActivityCheckList[] checklists;
@@ -147,11 +148,11 @@ public class Activity implements Serializable {
 		this.checklists = checklists;
 	}
 
-	public String getTaskQty() {
+	public BigDecimal getTaskQty() {
 		return taskQty;
 	}
 
-	public void setTaskQty(String taskQty) {
+	public void setTaskQty(BigDecimal taskQty) {
 		this.taskQty = taskQty;
 	}
 

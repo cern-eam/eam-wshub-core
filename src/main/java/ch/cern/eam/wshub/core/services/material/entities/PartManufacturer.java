@@ -8,8 +8,8 @@ public class PartManufacturer implements Serializable {
 	private String manufacturerDesc;
 	private String partCode;
 	private String drawingNumber;
-	private String outOfService;
-	private String primary;
+	private Boolean outOfService;
+	private Boolean primary;
 	private String manufacturerPartNumber;
 	private String manufacturerPartNumberNew;
 	
@@ -31,10 +31,10 @@ public class PartManufacturer implements Serializable {
 	public void setDrawingNumber(String drawingNumber) {
 		this.drawingNumber = drawingNumber;
 	}
-	public String getOutOfService() {
+	public Boolean getOutOfService() {
 		return outOfService;
 	}
-	public void setOutOfService(String outOfService) {
+	public void setOutOfService(Boolean outOfService) {
 		this.outOfService = outOfService;
 	}
 	public String getManufacturerPartNumber() {
@@ -64,10 +64,10 @@ public class PartManufacturer implements Serializable {
 	public void setManufacturerPartNumberNew(String manufacturerPartNumberNew) {
 		this.manufacturerPartNumberNew = manufacturerPartNumberNew;
 	}
-	public String getPrimary() {
+	public Boolean getPrimary() {
 		return primary;
 	}
-	public void setPrimary(String primary) {
+	public void setPrimary(Boolean primary) {
 		this.primary = primary;
 	}
 	public String getManufacturerDesc() {

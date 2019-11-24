@@ -4,7 +4,7 @@ import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.equipment.PMScheduleService;
 import ch.cern.eam.wshub.core.services.equipment.entities.EquipmentPMSchedule;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.tools.BooleanType;
+import ch.cern.eam.wshub.core.annotations.BooleanType;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_entities.pmschedule_001.PMScheduleData;
@@ -375,4 +375,9 @@ public class PMScheduleServiceImpl implements PMScheduleService {
 
 		return syncresult.getResultData().getPMSCHEDULEEQUIPMENTID().getSEQUENCENUMBER() + "";
 	}
+
+    public String updateReleasedPMSchedule(InforContext context, String woNumber) throws InforException {
+		return null;
+	}
+
 }

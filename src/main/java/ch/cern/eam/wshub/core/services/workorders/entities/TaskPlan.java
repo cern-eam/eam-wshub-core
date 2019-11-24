@@ -1,12 +1,14 @@
 package ch.cern.eam.wshub.core.services.workorders.entities;
 
+import java.math.BigDecimal;
+
 public class TaskPlan {
 
 	private String code;
 	private String description;
 	private String tradeCode;
 	private String classCode;
-	private String estimatedHours;
+	private BigDecimal estimatedHours;
 	private String peopleRequired;
 	private String typeCode;
 	private String revisionStatus;
@@ -56,10 +58,10 @@ public class TaskPlan {
 	public void setClassCode(String classCode) {
 		this.classCode = classCode;
 	}
-	public String getEstimatedHours() {
+	public BigDecimal getEstimatedHours() {
 		return estimatedHours;
 	}
-	public void setEstimatedHours(String estimatedHours) {
+	public void setEstimatedHours(BigDecimal estimatedHours) {
 		this.estimatedHours = estimatedHours;
 	}
 	public String getPeopleRequired() {

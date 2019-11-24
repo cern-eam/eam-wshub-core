@@ -4,7 +4,7 @@ import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.material.PartManufacturerService;
 import ch.cern.eam.wshub.core.services.material.entities.PartManufacturer;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.tools.BooleanType;
+import ch.cern.eam.wshub.core.annotations.BooleanType;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_fields.MANUFACTURERID_Type;
@@ -57,10 +57,8 @@ public class PartManufacturerServiceImpl implements PartManufacturerService {
 			partManufacturerInfor.getMANUFACTURERID().setMANUFACTURERCODE(partManufacturerParam.getManufacturerCode().trim().toUpperCase());
 		}
 
-		//
-		if (partManufacturerParam.getOutOfService() != null) {
-			partManufacturerInfor.setOUTOFSERVICE(tools.getDataTypeTools().encodeBoolean(partManufacturerParam.getOutOfService(), BooleanType.TRUE_FALSE));
-		}
+
+		partManufacturerInfor.setOUTOFSERVICE(tools.getDataTypeTools().encodeBoolean(partManufacturerParam.getOutOfService(), BooleanType.TRUE_FALSE));
 
 		//
 		if (partManufacturerParam.getPrimary() != null) {

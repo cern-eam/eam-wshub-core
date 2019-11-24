@@ -13,6 +13,7 @@ import net.datastream.schemas.mp_results.mp3228_001.MP3228_GetEquipmentConfigura
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
 import javax.xml.ws.Holder;
+import java.math.BigDecimal;
 
 public class EquipmentConfigurationServiceImpl implements EquipmentConfigurationService {
 
@@ -36,7 +37,7 @@ public class EquipmentConfigurationServiceImpl implements EquipmentConfiguration
         return null;
     }
 
-    private EquipmentConfiguration readInforEquipmentConfiguration(InforContext context, String equipmentConfigurationCode, String revisionNum)
+    private EquipmentConfiguration readInforEquipmentConfiguration(InforContext context, String equipmentConfigurationCode, BigDecimal revisionNum)
             throws InforException {
 
         MP3228_GetEquipmentConfiguration_001 getEquipmentConfiguration = new MP3228_GetEquipmentConfiguration_001();
@@ -59,7 +60,7 @@ public class EquipmentConfigurationServiceImpl implements EquipmentConfiguration
     }
 
     @Override
-    public EquipmentConfigurationEntity readEquipmentConfiguration(InforContext context, String equipmentConfigurationCode, String revisionNum) throws InforException {
+    public EquipmentConfigurationEntity readEquipmentConfiguration(InforContext context, String equipmentConfigurationCode, BigDecimal revisionNum) throws InforException {
 
         EquipmentConfiguration inforEquipmentConfiguration = readInforEquipmentConfiguration(context, equipmentConfigurationCode, revisionNum);
         EquipmentConfigurationEntity equipmentConfiguration = new EquipmentConfigurationEntity();

@@ -1,8 +1,8 @@
 package ch.cern.eam.wshub.core.services.equipment.entities;
 
-
-
+import ch.cern.eam.wshub.core.adapters.BooleanAdapter;
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
+import ch.cern.eam.wshub.core.annotations.InforField;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 
@@ -11,6 +11,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -28,94 +30,135 @@ public class Equipment implements Serializable {
 	@Id
 	@Column(name = "OBJ_CODE")
 	private String code;
+
 	@Column(name = "OBJ_OBTYPE")
+	@InforField(xpath = "TYPE/TYPECODE")
 	private String typeCode;
-	@Transient
-	private String alias;
-	@Transient
+	@InforField(xpath = "TYPE/DESCRIPTION", readOnly = true)
 	private String typeDesc;
+
 	@Transient
+	@InforField(xpath = "EQUIPMENTALIAS")
+	private String alias;
+
+	@Transient
+	@InforField(xpath = "CLASSID/CLASSCODE")
 	private String classCode;
 	@Transient
+	@InforField(xpath = "CLASSID/DESCRIPTION", readOnly = true)
 	private String classDesc;
 	@Transient
+	@InforField(xpath = "CATEGORYID/CATEGORYCODE")
 	private String categoryCode;
 	@Transient
+	@InforField(xpath = "CATEGORYID/DESCRIPTION", readOnly = true)
 	private String categoryDesc;
 	@Transient
-	private String updateCount;
+	@InforField(xpath = "recordid")
+	private BigInteger updateCount;
 	@Transient
-	private String outOfService;
+	@InforField(xpath = "OUTOFSERVICE")
+	private Boolean outOfService;
 	@Transient
-	private String inProduction;
+	@InforField(xpath = "INPRODUCTION")
+	private Boolean inProduction;
 	@Transient
+	@InforField(xpath = "PROFILEID/OBJECTCODE")
 	private String profileCode;
 	//
 	@Transient
+	@InforField(xpath = "STATUS/STATUSCODE")
 	private String statusCode;
 	@Transient
+	@InforField(xpath = "STATUS/DESCRIPTION", readOnly = true)
 	private String statusDesc;
 	//
 	@Transient
+	@InforField(xpath = "COSTCODEID/COSTCODE")
 	private String costCode;
 
 	@Transient
+	@InforField(xpath = "DEPARTMENTID/DEPARTMENTCODE")
 	private String departmentCode;
 	@Transient
+	@InforField(xpath = "DEPARTMENTID/DESCRIPTION")
 	private String departmentDesc;
 	//
 	@Transient
+	@InforField(xpath = "USERDEFINEDAREA")
 	private CustomField[] customFields;
 
 	//
 	@Transient
+	@InforField(xpath = "COMMISSIONDATE")
 	private Date comissionDate;
 	@Transient
-	private String equipmentValue;
+	@InforField(xpath = "ASSETVALUE")
+	private BigDecimal equipmentValue;
 	@Transient
+	@InforField(xpath = "ASSIGNEDTO/PERSONCODE")
 	private String assignedTo;
 	@Transient
+	@InforField(xpath = "ASSIGNEDTO/DESCRIPTION", readOnly = true)
 	private String assignedToDesc;
 	@Transient
+	@InforField(xpath = "METERUNIT")
 	private String meterUnit;
 	@Transient
+	@InforField(xpath = "CRITICALITYID/CRITICALITY")
 	private String criticality;
 	@Transient
+	@InforField(xpath = "CGMP")
 	private String cGMP;
 	@Transient
-	private String originalReceiptDate;
+	@InforField(xpath = "ORIGINALRECEIPTDATE")
+	private Date originalReceiptDate;
 	@Transient
+	@InforField(xpath = "EQUIPMENTSTATEID/STATECODE")
 	private String stateCode;
 	@Transient
+	@InforField(xpath = "EQUIPMENTSTATEID/DESCRIPTION", readOnly = true)
 	private String stateDesc;
 
 	@Transient
+	@InforField(xpath = "ManufacturerInfo/MANUFACTURERCODE", readOnly = true)
 	private String manufacturerCode;
 	@Transient
 	private String manufacturerDesc;
 	@Transient
+	@InforField(xpath = "ManufacturerInfo/SERIALNUMBER", readOnly = true)
 	private String serialNumber;
 	@Transient
+	@InforField(xpath = "ManufacturerInfo/MODEL", readOnly = true)
 	private String model;
 	@Transient
+	@InforField(xpath = "ManufacturerInfo/MODELREVISION", readOnly = true)
 	private String revision;
 	@Transient
-	private String xCoordinate;
+	@InforField(xpath = "ManufacturerInfo/XCOORDINATE", readOnly = true)
+	private BigDecimal xCoordinate;
 	@Transient
-	private String yCoordinate;
+	@InforField(xpath = "ManufacturerInfo/YCOORDINATE", readOnly = true)
+	private BigDecimal yCoordinate;
 	@Transient
-	private String zCoordinate;
+	@InforField(xpath = "ManufacturerInfo/ZCOORDINATE", readOnly = true)
+	private BigDecimal zCoordinate;
 
 	@Transient
-	private String costOfNeededRepairs;
+	@InforField(xpath = "FacilityConditionIndex/COSTOFNEEDEDREPAIRS", readOnly = true)
+	private BigDecimal costOfNeededRepairs;
 	@Transient
-	private String replacementValue;
+	@InforField(xpath = "FacilityConditionIndex/REPLACEMENTVALUE", readOnly = true)
+	private BigDecimal replacementValue;
 	@Transient
-	private String facilityConditionIndex;
+	@InforField(xpath = "FacilityConditionIndex/FACILITYCONDITIONINDEX", readOnly = true)
+	private BigDecimal facilityConditionIndex;
 	@Transient
-	private String yearBuilt;
+	@InforField(xpath = "FacilityConditionIndex/YEARBUILT", readOnly = true)
+	private BigDecimal yearBuilt;
 	@Transient
-	private String serviceLifetime;
+	@InforField(xpath = "FacilityConditionIndex/SERVICELIFE", readOnly = true)
+	private BigDecimal serviceLifetime;
 
 	// Hierarchy
 	// Asset
@@ -124,86 +167,113 @@ public class Equipment implements Serializable {
 	@Transient
 	private String hierarchyAssetDesc;
 	@Transient
-	private String hierarchyAssetDependent;
+	private Boolean hierarchyAssetDependent;
 	@Transient
-	private String hierarchyAssetCostRollUp;
+	private Boolean hierarchyAssetCostRollUp;
 	// Position
 	@Transient
 	private String hierarchyPositionCode;
 	@Transient
 	private String hierarchyPositionDesc;
 	@Transient
-	private String hierarchyPositionDependent;
+	private Boolean hierarchyPositionDependent;
 	@Transient
-	private String hierarchyPositionCostRollUp;
+	private Boolean hierarchyPositionCostRollUp;
 	// System
 	@Transient
 	private String hierarchyPrimarySystemCode;
 	@Transient
 	private String hierarchyPrimarySystemDesc;
 	@Transient
-	private String hierarchyPrimarySystemDependent;
+	private Boolean hierarchyPrimarySystemDependent;
 	@Transient
-	private String hierarchyPrimarySystemCostRollUp;
+	private Boolean hierarchyPrimarySystemCostRollUp;
 	// Location
 	@Transient
 	private String hierarchyLocationCode;
 	@Transient
 	private String hierarchyLocationDesc;
+
 	// Part Association
 	@Transient
+	@InforField(xpath = "PartAssociation/PARTID/PARTCODE", readOnly = true)
 	private String partCode;
 	@Transient
+	@InforField(xpath = "PartAssociation/PARTID/DESCRIPTION", readOnly = true)
 	private String partDesc;
 	@Transient
+	@InforField(xpath = "PartAssociation/STORELOCATION/STOREID/STORECODE", readOnly = true)
 	private String storeCode;
 	@Transient
+	@InforField(xpath = "PartAssociation/STORELOCATION/STOREID/DESCRIPTION", readOnly = true)
 	private String storeDesc;
 	@Transient
+	@InforField(xpath = "PartAssociation/STORELOCATION/BIN", readOnly = true)
 	private String bin;
 	@Transient
 	private String binDesc;
 	@Transient
+	@InforField(xpath = "PartAssociation/STORELOCATION/LOT", readOnly = true)
 	private String lot;
+
 	// Linear Reference
 	@Transient
+	@InforField(xpath = "LINEARREFERENCEDETAILS/LINEARREFPRECISION", readOnly = true)
 	private String linearRefPrecision;
 	@Transient
+	@InforField(xpath = "LINEARREFERENCEDETAILS/LINEARREFUOM", readOnly = true)
 	private String linearRefUOM;
 	@Transient
-	private String linearRefEquipmentLength;
+	@InforField(xpath = "LINEARREFERENCEDETAILS/EQUIPMENTLENGTH", readOnly = true)
+	private BigDecimal linearRefEquipmentLength;
 	@Transient
+	@InforField(xpath = "LINEARREFERENCEDETAILS/EQUIPMENTLENGTHUOM", readOnly = true)
 	private String linearRefEquipmentLengthUOM;
 	@Transient
+	@InforField(xpath = "LINEARREFERENCEDETAILS/GEOGRAPHICALREFERENCE", readOnly = true)
 	private String linearRefGeographicalRef;
+
 	// Variables
 	@Transient
+	@InforField(xpath = "Variables/VARIABLE1", readOnly = true)
 	private String variable1;
 	@Transient
+	@InforField(xpath = "Variables/VARIABLE2", readOnly = true)
 	private String variable2;
 	@Transient
+	@InforField(xpath = "Variables/VARIABLE3", readOnly = true)
 	private String variable3;
 	@Transient
+	@InforField(xpath = "Variables/VARIABLE4", readOnly = true)
 	private String variable4;
 	@Transient
+	@InforField(xpath = "Variables/VARIABLE5", readOnly = true)
 	private String variable5;
 	@Transient
+	@InforField(xpath = "Variables/VARIABLE6", readOnly = true)
 	private String variable6;
+
 	// Dormant
 	@Transient
-	private String dormantStart;
+	@InforField(xpath = "DORMANT/DORMANTSTART")
+	private Date dormantStart;
 	@Transient
-	private String dormantEnd;
+	@InforField(xpath = "DORMANT/DORMANTEND")
+	private Date dormantEnd;
 	@Transient
+	@InforField(xpath = "DORMANT/DORMANTREUSE")
 	private String dormantReusePeriod;
 
 	@Transient
+	@InforField(xpath = "UserDefinedFields")
 	private UserDefinedFields userDefinedFields;
 
 	@Transient
+	@InforField(xpath = "SAFETY")
 	private String safety;
 
 	@Transient
+	@InforField(xpath = "ORIGINALINSTALLDATE")
 	private Date originalInstallDate;
 
 	@Transient
@@ -259,11 +329,11 @@ public class Equipment implements Serializable {
 		this.classDesc = classDesc;
 	}
 
-	public String getUpdateCount() {
+	public BigInteger getUpdateCount() {
 		return updateCount;
 	}
 
-	public void setUpdateCount(String updateCount) {
+	public void setUpdateCount(BigInteger updateCount) {
 		this.updateCount = updateCount;
 	}
 
@@ -334,7 +404,6 @@ public class Equipment implements Serializable {
 	}
 
 	@XmlJavaTypeAdapter(DateAdapter.class)
-
 	public Date getComissionDate() {
 		return comissionDate;
 	}
@@ -343,11 +412,11 @@ public class Equipment implements Serializable {
 		this.comissionDate = comissionDate;
 	}
 
-	public String getEquipmentValue() {
+	public BigDecimal getEquipmentValue() {
 		return equipmentValue;
 	}
 
-	public void setEquipmentValue(String equipmentValue) {
+	public void setEquipmentValue(BigDecimal equipmentValue) {
 		this.equipmentValue = equipmentValue;
 	}
 
@@ -407,27 +476,27 @@ public class Equipment implements Serializable {
 		this.revision = revision;
 	}
 
-	public String getxCoordinate() {
+	public BigDecimal getxCoordinate() {
 		return xCoordinate;
 	}
 
-	public void setxCoordinate(String xCoordinate) {
+	public void setxCoordinate(BigDecimal xCoordinate) {
 		this.xCoordinate = xCoordinate;
 	}
 
-	public String getyCoordinate() {
+	public BigDecimal getyCoordinate() {
 		return yCoordinate;
 	}
 
-	public void setyCoordinate(String yCoordinate) {
+	public void setyCoordinate(BigDecimal yCoordinate) {
 		this.yCoordinate = yCoordinate;
 	}
 
-	public String getzCoordinate() {
+	public BigDecimal getzCoordinate() {
 		return zCoordinate;
 	}
 
-	public void setzCoordinate(String zCoordinate) {
+	public void setzCoordinate(BigDecimal zCoordinate) {
 		this.zCoordinate = zCoordinate;
 	}
 
@@ -463,19 +532,21 @@ public class Equipment implements Serializable {
 		this.hierarchyAssetDesc = hierarchyAssetDesc;
 	}
 
-	public String getHierarchyAssetDependent() {
+	@XmlJavaTypeAdapter(BooleanAdapter.class)
+	public Boolean getHierarchyAssetDependent() {
 		return hierarchyAssetDependent;
 	}
 
-	public void setHierarchyAssetDependent(String hierarchyAssetDependent) {
+	public void setHierarchyAssetDependent(Boolean hierarchyAssetDependent) {
 		this.hierarchyAssetDependent = hierarchyAssetDependent;
 	}
 
-	public String getHierarchyAssetCostRollUp() {
+	@XmlJavaTypeAdapter(BooleanAdapter.class)
+	public Boolean getHierarchyAssetCostRollUp() {
 		return hierarchyAssetCostRollUp;
 	}
 
-	public void setHierarchyAssetCostRollUp(String hierarchyAssetCostRollUp) {
+	public void setHierarchyAssetCostRollUp(Boolean hierarchyAssetCostRollUp) {
 		this.hierarchyAssetCostRollUp = hierarchyAssetCostRollUp;
 	}
 
@@ -495,19 +566,21 @@ public class Equipment implements Serializable {
 		this.hierarchyPositionDesc = hierarchyPositionDesc;
 	}
 
-	public String getHierarchyPositionDependent() {
+	@XmlJavaTypeAdapter(BooleanAdapter.class)
+	public Boolean getHierarchyPositionDependent() {
 		return hierarchyPositionDependent;
 	}
 
-	public void setHierarchyPositionDependent(String hierarchyPositionDependent) {
+	public void setHierarchyPositionDependent(Boolean hierarchyPositionDependent) {
 		this.hierarchyPositionDependent = hierarchyPositionDependent;
 	}
 
-	public String getHierarchyPositionCostRollUp() {
+	@XmlJavaTypeAdapter(BooleanAdapter.class)
+	public Boolean getHierarchyPositionCostRollUp() {
 		return hierarchyPositionCostRollUp;
 	}
 
-	public void setHierarchyPositionCostRollUp(String hierarchyPositionCostRollUp) {
+	public void setHierarchyPositionCostRollUp(Boolean hierarchyPositionCostRollUp) {
 		this.hierarchyPositionCostRollUp = hierarchyPositionCostRollUp;
 	}
 
@@ -599,11 +672,11 @@ public class Equipment implements Serializable {
 		this.linearRefGeographicalRef = linearRefGeographicalRef;
 	}
 
-	public String getLinearRefEquipmentLength() {
+	public BigDecimal getLinearRefEquipmentLength() {
 		return linearRefEquipmentLength;
 	}
 
-	public void setLinearRefEquipmentLength(String linearRefEquipmentLength) {
+	public void setLinearRefEquipmentLength(BigDecimal linearRefEquipmentLength) {
 		this.linearRefEquipmentLength = linearRefEquipmentLength;
 	}
 
@@ -663,19 +736,21 @@ public class Equipment implements Serializable {
 		this.variable6 = variable6;
 	}
 
-	public String getDormantStart() {
+	@XmlJavaTypeAdapter(DateAdapter.class)
+	public Date getDormantStart() {
 		return dormantStart;
 	}
 
-	public void setDormantStart(String dormantStart) {
+	public void setDormantStart(Date dormantStart) {
 		this.dormantStart = dormantStart;
 	}
 
-	public String getDormantEnd() {
+	@XmlJavaTypeAdapter(DateAdapter.class)
+	public Date getDormantEnd() {
 		return dormantEnd;
 	}
 
-	public void setDormantEnd(String dormantEnd) {
+	public void setDormantEnd(Date dormantEnd) {
 		this.dormantEnd = dormantEnd;
 	}
 
@@ -695,67 +770,70 @@ public class Equipment implements Serializable {
 		this.cGMP = cGMP;
 	}
 
-	public String getOutOfService() {
+	@XmlJavaTypeAdapter(BooleanAdapter.class)
+	public Boolean getOutOfService() {
 		return outOfService;
 	}
 
-	public void setOutOfService(String outOfService) {
+	public void setOutOfService(Boolean outOfService) {
 		this.outOfService = outOfService;
 	}
 
-	public String getInProduction() {
+	@XmlJavaTypeAdapter(BooleanAdapter.class)
+	public Boolean getInProduction() {
 		return inProduction;
 	}
 
-	public void setInProduction(String inProduction) {
+	public void setInProduction(Boolean inProduction) {
 		this.inProduction = inProduction;
 	}
 
-	public String getCostOfNeededRepairs() {
+	public BigDecimal getCostOfNeededRepairs() {
 		return costOfNeededRepairs;
 	}
 
-	public void setCostOfNeededRepairs(String costOfNeededRepairs) {
+	public void setCostOfNeededRepairs(BigDecimal costOfNeededRepairs) {
 		this.costOfNeededRepairs = costOfNeededRepairs;
 	}
 
-	public String getReplacementValue() {
+	public BigDecimal getReplacementValue() {
 		return replacementValue;
 	}
 
-	public void setReplacementValue(String replacementValue) {
+	public void setReplacementValue(BigDecimal replacementValue) {
 		this.replacementValue = replacementValue;
 	}
 
-	public String getFacilityConditionIndex() {
+	public BigDecimal getFacilityConditionIndex() {
 		return facilityConditionIndex;
 	}
 
-	public void setFacilityConditionIndex(String facilityConditionIndex) {
+	public void setFacilityConditionIndex(BigDecimal facilityConditionIndex) {
 		this.facilityConditionIndex = facilityConditionIndex;
 	}
 
-	public String getYearBuilt() {
+	public BigDecimal getYearBuilt() {
 		return yearBuilt;
 	}
 
-	public void setYearBuilt(String yearBuilt) {
+	public void setYearBuilt(BigDecimal yearBuilt) {
 		this.yearBuilt = yearBuilt;
 	}
 
-	public String getServiceLifetime() {
+	public BigDecimal getServiceLifetime() {
 		return serviceLifetime;
 	}
 
-	public void setServiceLifetime(String serviceLifetime) {
+	public void setServiceLifetime(BigDecimal serviceLifetime) {
 		this.serviceLifetime = serviceLifetime;
 	}
 
-	public String getOriginalReceiptDate() {
+	@XmlJavaTypeAdapter(DateAdapter.class)
+	public Date getOriginalReceiptDate() {
 		return originalReceiptDate;
 	}
 
-	public void setOriginalReceiptDate(String originalReceiptDate) {
+	public void setOriginalReceiptDate(Date originalReceiptDate) {
 		this.originalReceiptDate = originalReceiptDate;
 	}
 
@@ -776,7 +854,6 @@ public class Equipment implements Serializable {
 	}
 
 	@XmlJavaTypeAdapter(DateAdapter.class)
-
 	public Date getOriginalInstallDate() {
 		return originalInstallDate;
 	}
@@ -968,19 +1045,21 @@ public class Equipment implements Serializable {
 		this.hierarchyPrimarySystemDesc = hierarchyPrimarySystemDesc;
 	}
 
-	public String getHierarchyPrimarySystemDependent() {
+	@XmlJavaTypeAdapter(BooleanAdapter.class)
+	public Boolean getHierarchyPrimarySystemDependent() {
 		return hierarchyPrimarySystemDependent;
 	}
 
-	public void setHierarchyPrimarySystemDependent(String hierarchyPrimarySystemDependent) {
+	public void setHierarchyPrimarySystemDependent(Boolean hierarchyPrimarySystemDependent) {
 		this.hierarchyPrimarySystemDependent = hierarchyPrimarySystemDependent;
 	}
 
-	public String getHierarchyPrimarySystemCostRollUp() {
+	@XmlJavaTypeAdapter(BooleanAdapter.class)
+	public Boolean getHierarchyPrimarySystemCostRollUp() {
 		return hierarchyPrimarySystemCostRollUp;
 	}
 
-	public void setHierarchyPrimarySystemCostRollUp(String hierarchyPrimarySystemCostRollUp) {
+	public void setHierarchyPrimarySystemCostRollUp(Boolean hierarchyPrimarySystemCostRollUp) {
 		this.hierarchyPrimarySystemCostRollUp = hierarchyPrimarySystemCostRollUp;
 	}
 

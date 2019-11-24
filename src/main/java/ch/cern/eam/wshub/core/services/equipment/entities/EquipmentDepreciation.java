@@ -4,6 +4,7 @@ import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name="R5OBJDEPTYPES")
@@ -13,17 +14,17 @@ public class EquipmentDepreciation implements Serializable {
 	public static final String GETDEPRECIATION = "GETDEPRECIATION";
 	@Id
 	@Column(name="OBD_PK")
-	private String depreciationPK;
+	private BigDecimal depreciationPK;
 	@Transient
 	private String depreciationMethod;
 	@Transient
 	private String depreciationType;
 	@Transient
-	private String originalValue;
+	private BigDecimal originalValue;
 	@Transient
-	private String estimatedUsefulLife;
+	private BigDecimal estimatedUsefulLife;
 	@Transient
-	private String residualValue;
+	private BigDecimal residualValue;
 	@Column(name="OBD_OBJECT")
 	private String equipmentCode;
 	@Transient
@@ -35,11 +36,11 @@ public class EquipmentDepreciation implements Serializable {
 	@Transient
 	private UserDefinedFields userDefinedFields;
 	@Transient
-	private String changeValue;
+	private BigDecimal changeValue;
 	@Transient
-	private String changeLife;
+	private BigDecimal changeLife;
 	@Transient
-	private String changeEstimatedLifetimeOutput;
+	private BigDecimal changeEstimatedLifetimeOutput;
 	
 	
 	public String getDepreciationMethod() {
@@ -48,22 +49,22 @@ public class EquipmentDepreciation implements Serializable {
 	public void setDepreciationMethod(String depreciationMethod) {
 		this.depreciationMethod = depreciationMethod;
 	}
-	public String getOriginalValue() {
+	public BigDecimal getOriginalValue() {
 		return originalValue;
 	}
-	public void setOriginalValue(String originalValue) {
+	public void setOriginalValue(BigDecimal originalValue) {
 		this.originalValue = originalValue;
 	}
-	public String getEstimatedUsefulLife() {
+	public BigDecimal getEstimatedUsefulLife() {
 		return estimatedUsefulLife;
 	}
-	public void setEstimatedUsefulLife(String estimatedUsefulLife) {
+	public void setEstimatedUsefulLife(BigDecimal estimatedUsefulLife) {
 		this.estimatedUsefulLife = estimatedUsefulLife;
 	}
-	public String getResidualValue() {
+	public BigDecimal getResidualValue() {
 		return residualValue;
 	}
-	public void setResidualValue(String residualValue) {
+	public void setResidualValue(BigDecimal residualValue) {
 		this.residualValue = residualValue;
 	}
 	public String getEquipmentCode() {
@@ -106,29 +107,29 @@ public class EquipmentDepreciation implements Serializable {
 	public void setDepreciationType(String depreciationType) {
 		this.depreciationType = depreciationType;
 	}
-	public String getDepreciationPK() {
+	public BigDecimal getDepreciationPK() {
 		return depreciationPK;
 	}
-	public void setDepreciationPK(String depreciationPK) {
+	public void setDepreciationPK(BigDecimal depreciationPK) {
 		this.depreciationPK = depreciationPK;
 	}
-	public String getChangeValue() {
+	public BigDecimal getChangeValue() {
 		return changeValue;
 	}
-	public void setChangeValue(String changeValue) {
+	public void setChangeValue(BigDecimal changeValue) {
 		this.changeValue = changeValue;
 	}
-	public String getChangeLife() {
+	public BigDecimal getChangeLife() {
 		return changeLife;
 	}
-	public void setChangeLife(String changeLife) {
+	public void setChangeLife(BigDecimal changeLife) {
 		this.changeLife = changeLife;
 	}
-	public String getChangeEstimatedLifetimeOutput() {
+	public BigDecimal getChangeEstimatedLifetimeOutput() {
 		return changeEstimatedLifetimeOutput;
 	}
 	public void setChangeEstimatedLifetimeOutput(
-			String changeEstimatedLifetimeOutput) {
+			BigDecimal changeEstimatedLifetimeOutput) {
 		this.changeEstimatedLifetimeOutput = changeEstimatedLifetimeOutput;
 	}
 	@Override

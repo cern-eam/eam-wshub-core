@@ -7,6 +7,7 @@ import java.util.*;
 import java.util.logging.Level;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toList;
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.convertStringToDate;
 
 public class GridTools {
 
@@ -80,7 +81,7 @@ public class GridTools {
      * @param <T>
      * @return
      */
-    public <T> List<T> converGridResultToObject(Class<T> clazz, Map<String, String> columns, GridRequestResult gridRequestResult) {
+    public static <T> List<T> converGridResultToObject(Class<T> clazz, Map<String, String> columns, GridRequestResult gridRequestResult) {
         List<T> result = new LinkedList<>();
         if (gridRequestResult == null || gridRequestResult.getRows() == null) {
             return result;
@@ -93,7 +94,7 @@ public class GridTools {
     }
 
 
-    private <T> T convertCellListToObject(Class<T> clazz, Map<String, String> columns, List<GridRequestCell> gridRequestCellList) {
+    private static <T> T convertCellListToObject(Class<T> clazz, Map<String, String> columns, List<GridRequestCell> gridRequestCellList) {
         if (columns == null) {
             return convertCellListToObjectAnnotation(clazz, gridRequestCellList);
         } else {
@@ -111,16 +112,16 @@ public class GridTools {
      * @param <T>
      * @return
      */
-    private <T> T convertCellListToObjectMap(Class<T> clazz, Map<String, String> columns, List<GridRequestCell> gridRequestCellList) {
+    private static <T> T convertCellListToObjectMap(Class<T> clazz, Map<String, String> columns, List<GridRequestCell> gridRequestCellList) {
         try {
             T object = clazz.newInstance();
             for (String column : columns.keySet()) {
                 Field field = object.getClass().getDeclaredField(columns.get(column));
-                setValue(object, field, column, gridRequestCellList);
+                setValue(object, field, column, new String[]{}, gridRequestCellList);
             }
             return object;
         } catch (Exception exception) {
-            tools.log(Level.SEVERE, exception.getMessage());
+            //tools.log(Level.SEVERE, exception.getMessage());
             return null;
         }
     }
@@ -133,19 +134,21 @@ public class GridTools {
      * @param <T>
      * @return
      */
-    private <T> T convertCellListToObjectAnnotation(Class<T> clazz, List<GridRequestCell> gridRequestCellList) {
+    private static <T> T convertCellListToObjectAnnotation(Class<T> clazz, List<GridRequestCell> gridRequestCellList) {
         try {
 
             T object = clazz.newInstance();
             for (Field field : object.getClass().getDeclaredFields()) {
                 GridField gridFieldAnnotation = field.getAnnotation(GridField.class);
                 if (gridFieldAnnotation != null) {
-                    setValue(object, field, gridFieldAnnotation.name(), gridRequestCellList);
+                    setValue(object, field, gridFieldAnnotation.name(), gridFieldAnnotation.alternativeNames(), gridRequestCellList);
                 }
             }
             return object;
         } catch (Exception exception) {
-            tools.log(Level.SEVERE, exception.getMessage());
+            //tools.log(Level.SEVERE, exception.getMessage());
+            exception.printStackTrace();
+            System.out.println("Error: " + exception.getMessage());
             return null;
         }
     }
@@ -160,20 +163,34 @@ public class GridTools {
      * @param <T>
      * @throws Exception
      */
-    private <T> void setValue(T object, Field field, String column, List<GridRequestCell> gridRequestCellList) throws Exception {
-
+    private static <T> void setValue(T object, Field field, String column, String[] alternativeColumns, List<GridRequestCell> gridRequestCellList) throws Exception {
+        // Extract the value from gridRequestCellList
         String value = gridRequestCellList.stream()
-                .filter(cell -> cell.getCol().equals(column) || cell.getTag().equals(column))
+                .filter(cell -> cell.getCol().equals(column) ||
+                        cell.getTag().equals(column) ||
+                        Arrays.stream(alternativeColumns).anyMatch(altColumn -> cell.getCol().equals(altColumn)) ||
+                        Arrays.stream(alternativeColumns).anyMatch(altColumn -> cell.getTag().equals(altColumn))
+                )
                 .filter(cell -> cell.getContent() != null)
-                .map(GridRequestCell::getContent).findFirst().orElse(null);
+                .map(GridRequestCell::getContent)
+                .findFirst().orElse(null);
+        // Don't continue when null
+        if (value == null) {
+            return;
+        }
         // Populate field with the value extracted above
         field.setAccessible(true);
         if (field.getType() == Date.class) {
-            field.set(object, tools.getDataTypeTools().convertStringToDate(value));
+            field.set(object, convertStringToDate(value));
         }
         // Consider 'Boolean' and primitive 'boolean'
         else if (field.getType().equals(Boolean.class) || field.getType().equals(Boolean.TYPE)) {
             field.set(object, "true".equals(value));
+        }
+        // Integers
+        else if (field.getType().equals(Integer.class) || field.getType().equals(Integer.TYPE)) {
+            // The numbers returned by grid WS might contain commas making Integer.parseInt mail
+            field.set(object, Integer.parseInt(value.replace(",","")));
         }
         else {
             field.set(object, value);

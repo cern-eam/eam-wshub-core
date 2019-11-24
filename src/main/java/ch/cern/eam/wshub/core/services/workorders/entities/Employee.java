@@ -1,6 +1,7 @@
 package ch.cern.eam.wshub.core.services.workorders.entities;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -42,7 +43,7 @@ public class Employee implements Serializable {
 	private String email;
 	
 	@Column(name = "PER_UDFNUM01")
-	private String supervisor;
+	private BigDecimal supervisor;
 
 	@Column(name = "PER_USER")
 	private String userCode;
@@ -125,11 +126,11 @@ public class Employee implements Serializable {
 		this.email = email;
 	}
 
-	public String getSupervisor() {
+	public BigDecimal getSupervisor() {
 		return supervisor;
 	}
 
-	public void setSupervisor(String supervisor) {
+	public void setSupervisor(BigDecimal supervisor) {
 		this.supervisor = supervisor;
 	}
 	
