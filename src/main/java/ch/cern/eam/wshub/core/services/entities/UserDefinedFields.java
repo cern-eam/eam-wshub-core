@@ -1,5 +1,6 @@
 package ch.cern.eam.wshub.core.services.entities;
 
+import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
 import ch.cern.eam.wshub.core.annotations.InforField;
 
@@ -504,6 +505,7 @@ public class UserDefinedFields implements Serializable, Cloneable {
 		this.udfchkbox05 = udfchkbox05;
 	}
 
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getUdfnum01() {
 		return udfnum01;
 	}
@@ -512,6 +514,7 @@ public class UserDefinedFields implements Serializable, Cloneable {
 		this.udfnum01 = udfnum01;
 	}
 
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getUdfnum02() {
 		return udfnum02;
 	}
@@ -520,6 +523,7 @@ public class UserDefinedFields implements Serializable, Cloneable {
 		this.udfnum02 = udfnum02;
 	}
 
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getUdfnum03() {
 		return udfnum03;
 	}
@@ -528,6 +532,7 @@ public class UserDefinedFields implements Serializable, Cloneable {
 		this.udfnum03 = udfnum03;
 	}
 
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getUdfnum04() {
 		return udfnum04;
 	}
@@ -536,6 +541,7 @@ public class UserDefinedFields implements Serializable, Cloneable {
 		this.udfnum04 = udfnum04;
 	}
 
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getUdfnum05() {
 		return udfnum05;
 	}
@@ -584,6 +590,7 @@ public class UserDefinedFields implements Serializable, Cloneable {
 		this.udfchkbox10 = udfchkbox10;
 	}
 
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getUdfnum06() {
 		return udfnum06;
 	}
@@ -592,6 +599,7 @@ public class UserDefinedFields implements Serializable, Cloneable {
 		this.udfnum06 = udfnum06;
 	}
 
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getUdfnum07() {
 		return udfnum07;
 	}
@@ -600,6 +608,7 @@ public class UserDefinedFields implements Serializable, Cloneable {
 		this.udfnum07 = udfnum07;
 	}
 
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getUdfnum08() {
 		return udfnum08;
 	}
@@ -608,6 +617,7 @@ public class UserDefinedFields implements Serializable, Cloneable {
 		this.udfnum08 = udfnum08;
 	}
 
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getUdfnum09() {
 		return udfnum09;
 	}
@@ -616,6 +626,7 @@ public class UserDefinedFields implements Serializable, Cloneable {
 		this.udfnum09 = udfnum09;
 	}
 
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getUdfnum10() {
 		return udfnum10;
 	}

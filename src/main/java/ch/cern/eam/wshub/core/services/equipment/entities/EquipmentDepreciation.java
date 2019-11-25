@@ -1,8 +1,10 @@
 package ch.cern.eam.wshub.core.services.equipment.entities;
 
+import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 
 import javax.persistence.*;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -49,24 +51,32 @@ public class EquipmentDepreciation implements Serializable {
 	public void setDepreciationMethod(String depreciationMethod) {
 		this.depreciationMethod = depreciationMethod;
 	}
+
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getOriginalValue() {
 		return originalValue;
 	}
 	public void setOriginalValue(BigDecimal originalValue) {
 		this.originalValue = originalValue;
 	}
+
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getEstimatedUsefulLife() {
 		return estimatedUsefulLife;
 	}
 	public void setEstimatedUsefulLife(BigDecimal estimatedUsefulLife) {
 		this.estimatedUsefulLife = estimatedUsefulLife;
 	}
+
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getResidualValue() {
 		return residualValue;
 	}
 	public void setResidualValue(BigDecimal residualValue) {
 		this.residualValue = residualValue;
 	}
+
+
 	public String getEquipmentCode() {
 		return equipmentCode;
 	}
@@ -107,24 +117,32 @@ public class EquipmentDepreciation implements Serializable {
 	public void setDepreciationType(String depreciationType) {
 		this.depreciationType = depreciationType;
 	}
+
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getDepreciationPK() {
 		return depreciationPK;
 	}
 	public void setDepreciationPK(BigDecimal depreciationPK) {
 		this.depreciationPK = depreciationPK;
 	}
+
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getChangeValue() {
 		return changeValue;
 	}
 	public void setChangeValue(BigDecimal changeValue) {
 		this.changeValue = changeValue;
 	}
+
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getChangeLife() {
 		return changeLife;
 	}
 	public void setChangeLife(BigDecimal changeLife) {
 		this.changeLife = changeLife;
 	}
+
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getChangeEstimatedLifetimeOutput() {
 		return changeEstimatedLifetimeOutput;
 	}

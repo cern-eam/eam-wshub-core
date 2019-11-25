@@ -1,5 +1,6 @@
 package ch.cern.eam.wshub.core.tools;
 
+import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
 import ch.cern.eam.wshub.core.annotations.InforField;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
@@ -262,14 +263,21 @@ public class InforFieldTools {
             } else if (wshubFieldValue.getClass().equals(BigDecimal.class)) {
                 // BIG DECIMAL -> AMOUNT / QUANTITY
                 BigDecimal bigDecimalValue = (BigDecimal) wshubFieldValue;
-                if (inforField.getType().equals(AMOUNT.class)) {
+                if (bigDecimalValue.equals(BigDecimal.valueOf(DataTypeTools.NULLIFY_VALUE))) {
+                    inforField.set(inforObject, null);
+                } else if (inforField.getType().equals(AMOUNT.class)) {
                     inforField.set(inforObject, encodeAmount(bigDecimalValue, inforFieldName));
                 } else if (inforField.getType().equals(QUANTITY.class)) {
                     inforField.set(inforObject, encodeQuantity(bigDecimalValue, inforFieldName));
                 }
             } else if (wshubFieldValue.getClass().equals(BigInteger.class)) {
+                // BIG INTEGER -> LONG
                 BigInteger bigIntegerValue = (BigInteger) wshubFieldValue;
-                inforField.set(inforObject, bigIntegerValue.longValue());
+                if (bigIntegerValue.equals(BigInteger.valueOf(DataTypeTools.NULLIFY_VALUE))) {
+                    inforField.set(inforObject, null);
+                } else {
+                    inforField.set(inforObject, bigIntegerValue.longValue());
+                }
             } else if (wshubFieldValue.getClass().equals(Boolean.class) || wshubFieldValue.getClass().equals(Boolean.TYPE)) {
                 // BOOLEAN -> STRING
                 Boolean booleanValue = (Boolean) wshubFieldValue;

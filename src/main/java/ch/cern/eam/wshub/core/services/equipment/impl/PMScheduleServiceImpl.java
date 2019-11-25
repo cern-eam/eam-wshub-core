@@ -3,21 +3,25 @@ package ch.cern.eam.wshub.core.services.equipment.impl;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.equipment.PMScheduleService;
 import ch.cern.eam.wshub.core.services.equipment.entities.EquipmentPMSchedule;
+import ch.cern.eam.wshub.core.services.equipment.entities.ReleasedPMSchedule;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.annotations.BooleanType;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_entities.pmschedule_001.PMScheduleData;
+import net.datastream.schemas.mp_entities.releasedpm_001.ReleasedPM;
 import net.datastream.schemas.mp_fields.*;
 import net.datastream.schemas.mp_functions.SessionType;
 import net.datastream.schemas.mp_functions.mp0364_001.MP0364_AddEquipmentPMSchedule_001;
 import net.datastream.schemas.mp_functions.mp0365_001.MP0365_SyncEquipmentPMSchedule_001;
 import net.datastream.schemas.mp_functions.mp3014_001.MP3014_GetEquipmentPMSchedule_001;
 import net.datastream.schemas.mp_functions.mp7006_001.MP7006_DeletePMScheduleEquipment_001;
+import net.datastream.schemas.mp_functions.mp7433_001.MP7433_SyncReleasedPM_001;
 import net.datastream.schemas.mp_results.mp0364_001.MP0364_AddEquipmentPMSchedule_001_Result;
 import net.datastream.schemas.mp_results.mp0365_001.MP0365_SyncEquipmentPMSchedule_001_Result;
 import net.datastream.schemas.mp_results.mp3014_001.MP3014_GetEquipmentPMSchedule_001_Result;
 import net.datastream.schemas.mp_results.mp7006_001.MP7006_DeletePMScheduleEquipment_001_Result;
+import net.datastream.schemas.mp_results.mp7433_001.MP7433_SyncReleasedPM_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
 import javax.persistence.EntityManager;
@@ -376,8 +380,23 @@ public class PMScheduleServiceImpl implements PMScheduleService {
 		return syncresult.getResultData().getPMSCHEDULEEQUIPMENTID().getSEQUENCENUMBER() + "";
 	}
 
-    public String updateReleasedPMSchedule(InforContext context, String woNumber) throws InforException {
-		return null;
+    public String updateReleasedPMSchedule(InforContext context, ReleasedPMSchedule releasedPMSchedule) throws InforException {
+
+		MP7433_SyncReleasedPM_001 syncReleasedPM = new MP7433_SyncReleasedPM_001();
+		syncReleasedPM.setReleasedPM(new ReleasedPM());
+		syncReleasedPM.setPRINTALLRELEASED("false");
+
+		tools.getInforFieldTools().transformWSHubObject(syncReleasedPM.getReleasedPM(), releasedPMSchedule, context);
+
+		MP7433_SyncReleasedPM_001_Result result = null;
+
+		if (context.getCredentials() != null) {
+			result = inforws.syncReleasedPMOp(syncReleasedPM, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
+		} else {
+			result = inforws.syncReleasedPMOp(syncReleasedPM, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
+		}
+
+		return "OK";
 	}
 
 }

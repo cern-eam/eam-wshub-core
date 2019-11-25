@@ -1,5 +1,6 @@
 package ch.cern.eam.wshub.core.services.equipment.entities;
 
+import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
 import ch.cern.eam.wshub.core.adapters.BooleanAdapter;
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
 import ch.cern.eam.wshub.core.annotations.InforField;
@@ -412,6 +413,7 @@ public class Equipment implements Serializable {
 		this.comissionDate = comissionDate;
 	}
 
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getEquipmentValue() {
 		return equipmentValue;
 	}
@@ -476,6 +478,7 @@ public class Equipment implements Serializable {
 		this.revision = revision;
 	}
 
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getxCoordinate() {
 		return xCoordinate;
 	}
@@ -484,6 +487,7 @@ public class Equipment implements Serializable {
 		this.xCoordinate = xCoordinate;
 	}
 
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getyCoordinate() {
 		return yCoordinate;
 	}
@@ -492,6 +496,7 @@ public class Equipment implements Serializable {
 		this.yCoordinate = yCoordinate;
 	}
 
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getzCoordinate() {
 		return zCoordinate;
 	}
@@ -672,6 +677,7 @@ public class Equipment implements Serializable {
 		this.linearRefGeographicalRef = linearRefGeographicalRef;
 	}
 
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getLinearRefEquipmentLength() {
 		return linearRefEquipmentLength;
 	}
@@ -788,6 +794,7 @@ public class Equipment implements Serializable {
 		this.inProduction = inProduction;
 	}
 
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getCostOfNeededRepairs() {
 		return costOfNeededRepairs;
 	}
@@ -796,6 +803,7 @@ public class Equipment implements Serializable {
 		this.costOfNeededRepairs = costOfNeededRepairs;
 	}
 
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getReplacementValue() {
 		return replacementValue;
 	}
@@ -804,6 +812,7 @@ public class Equipment implements Serializable {
 		this.replacementValue = replacementValue;
 	}
 
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getFacilityConditionIndex() {
 		return facilityConditionIndex;
 	}
@@ -812,6 +821,7 @@ public class Equipment implements Serializable {
 		this.facilityConditionIndex = facilityConditionIndex;
 	}
 
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getYearBuilt() {
 		return yearBuilt;
 	}
@@ -820,6 +830,7 @@ public class Equipment implements Serializable {
 		this.yearBuilt = yearBuilt;
 	}
 
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getServiceLifetime() {
 		return serviceLifetime;
 	}

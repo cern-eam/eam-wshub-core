@@ -1,5 +1,8 @@
 package ch.cern.eam.wshub.core.services.material.entities;
 
+import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
+
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -36,12 +39,15 @@ public class IssueReturnPartTransactionLine implements Serializable {
 	public void setLot(String lot) {
 		this.lot = lot;
 	}
+
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getTransactionQty() {
 		return transactionQty;
 	}
 	public void setTransactionQty(BigDecimal transactionQty) {
 		this.transactionQty = transactionQty;
 	}
+
 	public String getAssetIDCode() {
 		return assetIDCode;
 	}

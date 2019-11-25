@@ -1,6 +1,9 @@
 package ch.cern.eam.wshub.core.services.material.entities;
 
+import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
+
 import javax.persistence.*;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -27,12 +30,15 @@ public class PartAssociation implements Serializable {
 	public void setPartCode(String partCode) {
 		this.partCode = partCode;
 	}
+
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getQuantity() {
 		return quantity;
 	}
 	public void setQuantity(BigDecimal quantity) {
 		this.quantity = quantity;
 	}
+
 	public String getUOM() {
 		return UOM;
 	}

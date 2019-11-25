@@ -1,5 +1,8 @@
 package ch.cern.eam.wshub.core.services.workorders.entities;
 
+import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
+
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.math.BigDecimal;
 
 public class TaskPlan {
@@ -58,6 +61,8 @@ public class TaskPlan {
 	public void setClassCode(String classCode) {
 		this.classCode = classCode;
 	}
+
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getEstimatedHours() {
 		return estimatedHours;
 	}

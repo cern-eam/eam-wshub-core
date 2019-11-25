@@ -1,5 +1,7 @@
 package ch.cern.eam.wshub.core.services.workorders.entities;
 
+import ch.cern.eam.wshub.core.adapters.BigIntegerAdapter;
+import ch.cern.eam.wshub.core.adapters.BooleanAdapter;
 import ch.cern.eam.wshub.core.annotations.BooleanType;
 import ch.cern.eam.wshub.core.annotations.InforField;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
@@ -7,12 +9,14 @@ import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.math.BigInteger;
 
 public class StandardWorkOrder {
 
     @InforField(xpath = "STANDARDWO/STDWOCODE")
     private String code;
-    @InforField(xpath = "STANDARDWO/DESCRIPTION", readOnly = true)
+    @InforField(xpath = "STANDARDWO/DESCRIPTION")
     private String desc;
 
     @InforField(xpath = "TYPE/TYPECODE")
@@ -26,7 +30,7 @@ public class StandardWorkOrder {
     private String workOrderTypeDesc;
 
     @InforField(xpath = "DURATION")
-    private Integer duration;
+    private BigInteger duration;
 
     @InforField(xpath = "CLASSID/CLASSCODE")
     private String classCode;
@@ -53,7 +57,7 @@ public class StandardWorkOrder {
     @InforField(xpath = "PRIORITY/DESCRIPTION", readOnly = true)
     private String priorityDesc;
 
-    @InforField(xpath = "OUTOFSERVICE", booleanType = BooleanType.YES_NO)
+    @InforField(xpath = "OUTOFSERVICE", booleanType = BooleanType.TRUE_FALSE)
     private Boolean outOfService;
 
     @InforField(xpath = "USERDEFINEDAREA")
@@ -126,11 +130,12 @@ public class StandardWorkOrder {
         this.workOrderTypeDesc = workOrderTypeDesc;
     }
 
-    public Integer getDuration() {
+    @XmlJavaTypeAdapter(BigIntegerAdapter.class)
+    public BigInteger getDuration() {
         return duration;
     }
 
-    public void setDuration(Integer duration) {
+    public void setDuration(BigInteger duration) {
         this.duration = duration;
     }
 
@@ -198,6 +203,7 @@ public class StandardWorkOrder {
         this.priorityDesc = priorityDesc;
     }
 
+    @XmlJavaTypeAdapter(BooleanAdapter.class)
     public Boolean getOutOfService() {
         return outOfService;
     }

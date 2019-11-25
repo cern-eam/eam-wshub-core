@@ -1,6 +1,9 @@
 package ch.cern.eam.wshub.core.services.equipment.entities;
 
+import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
+
 import javax.persistence.*;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -119,6 +122,8 @@ public class EquipmentPMSchedule implements Serializable {
 	public void setCostCode(String costCode) {
 		this.costCode = costCode;
 	}
+
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getMeter1Interval() {
 		return meter1Interval;
 	}
@@ -131,12 +136,16 @@ public class EquipmentPMSchedule implements Serializable {
 	public void setMeter1UOM(String meter1uom) {
 		meter1UOM = meter1uom;
 	}
+
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getMeter1Due() {
 		return meter1Due;
 	}
 	public void setMeter1Due(BigDecimal meter1Due) {
 		this.meter1Due = meter1Due;
 	}
+
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getMeter2Interval() {
 		return meter2Interval;
 	}
@@ -149,6 +158,8 @@ public class EquipmentPMSchedule implements Serializable {
 	public void setMeter2UOM(String meter2uom) {
 		meter2UOM = meter2uom;
 	}
+
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getMeter2Due() {
 		return meter2Due;
 	}

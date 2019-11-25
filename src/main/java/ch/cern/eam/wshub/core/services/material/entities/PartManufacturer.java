@@ -1,5 +1,8 @@
 package ch.cern.eam.wshub.core.services.material.entities;
 
+import ch.cern.eam.wshub.core.adapters.BooleanAdapter;
+
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 
 public class PartManufacturer implements Serializable {
@@ -31,6 +34,8 @@ public class PartManufacturer implements Serializable {
 	public void setDrawingNumber(String drawingNumber) {
 		this.drawingNumber = drawingNumber;
 	}
+
+	@XmlJavaTypeAdapter(BooleanAdapter.class)
 	public Boolean getOutOfService() {
 		return outOfService;
 	}
@@ -64,6 +69,8 @@ public class PartManufacturer implements Serializable {
 	public void setManufacturerPartNumberNew(String manufacturerPartNumberNew) {
 		this.manufacturerPartNumberNew = manufacturerPartNumberNew;
 	}
+
+	@XmlJavaTypeAdapter(BooleanAdapter.class)
 	public Boolean getPrimary() {
 		return primary;
 	}

@@ -1,5 +1,9 @@
 package ch.cern.eam.wshub.core.services.equipment.entities;
 
+import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
+import ch.cern.eam.wshub.core.adapters.BooleanAdapter;
+
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 
 public class EquipmentStructure implements Serializable {
@@ -28,12 +32,16 @@ public class EquipmentStructure implements Serializable {
 	public void setParentCode(String parentCode) {
 		this.parentCode = parentCode;
 	}
+
+	@XmlJavaTypeAdapter(BooleanAdapter.class)
 	public Boolean getCostRollUp() {
 		return costRollUp;
 	}
 	public void setCostRollUp(Boolean costRollUp) {
 		this.costRollUp = costRollUp;
 	}
+
+	@XmlJavaTypeAdapter(BooleanAdapter.class)
 	public Boolean getDependent() {
 		return dependent;
 	}

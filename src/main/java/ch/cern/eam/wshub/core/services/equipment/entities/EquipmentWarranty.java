@@ -1,6 +1,10 @@
 package ch.cern.eam.wshub.core.services.equipment.entities;
 
+import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
+import ch.cern.eam.wshub.core.adapters.BooleanAdapter;
+
 import javax.persistence.*;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -48,6 +52,8 @@ public class EquipmentWarranty implements Serializable {
 	public void setDuration(String duration) {
 		this.duration = duration;
 	}
+
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getThreshold() {
 		return threshold;
 	}
@@ -66,6 +72,8 @@ public class EquipmentWarranty implements Serializable {
 	public void setExpirationDate(String expirationDate) {
 		this.expirationDate = expirationDate;
 	}
+
+	@XmlJavaTypeAdapter(BooleanAdapter.class)
 	public Boolean getActive() {
 		return active;
 	}

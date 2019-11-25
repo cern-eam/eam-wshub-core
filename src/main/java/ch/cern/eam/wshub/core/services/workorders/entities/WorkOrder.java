@@ -1,5 +1,6 @@
 package ch.cern.eam.wshub.core.services.workorders.entities;
 
+import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
 import ch.cern.eam.wshub.core.annotations.InforField;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
@@ -606,10 +607,12 @@ public class WorkOrder implements Serializable {
 		this.parentWODesc = parentWODesc;
 	}
 
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getTargetValue() { return targetValue; }
 
 	public void setTargetValue(BigDecimal targetValue) { this.targetValue = targetValue; }
 
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getDowntimeHours() { return downtimeHours; }
 
 	public void setDowntimeHours(BigDecimal downtimeHours) { this.downtimeHours = downtimeHours; }

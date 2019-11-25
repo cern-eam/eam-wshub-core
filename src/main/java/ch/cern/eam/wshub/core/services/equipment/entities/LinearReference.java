@@ -1,5 +1,8 @@
 package ch.cern.eam.wshub.core.services.equipment.entities;
 
+import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
+
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -38,18 +41,23 @@ public class LinearReference implements Serializable {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getFromPoint() {
 		return fromPoint;
 	}
 	public void setFromPoint(BigDecimal fromPoint) {
 		this.fromPoint = fromPoint;
 	}
+
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getToPoint() {
 		return toPoint;
 	}
 	public void setToPoint(BigDecimal toPoint) {
 		this.toPoint = toPoint;
 	}
+
 	public String getGeographicalReference() {
 		return geographicalReference;
 	}

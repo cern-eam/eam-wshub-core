@@ -1,5 +1,6 @@
 package ch.cern.eam.wshub.core.services.workorders.entities;
 
+import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -33,18 +34,18 @@ public class MeterReading implements Serializable {
         this.equipmentCode = equipmentCode;
     }
 
+    @XmlJavaTypeAdapter(BigDecimalAdapter.class)
     public BigDecimal getActualValue() {
         return actualValue;
     }
-
     public void setActualValue(BigDecimal actualValue) {
         this.actualValue = actualValue;
     }
 
+    @XmlJavaTypeAdapter(BigDecimalAdapter.class)
     public BigDecimal getDifferenceValue() {
         return differenceValue;
     }
-
     public void setDifferenceValue(BigDecimal differenceValue) {
         this.differenceValue = differenceValue;
     }

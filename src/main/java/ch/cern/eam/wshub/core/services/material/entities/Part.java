@@ -1,5 +1,7 @@
 package ch.cern.eam.wshub.core.services.material.entities;
 
+import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
+import ch.cern.eam.wshub.core.adapters.BooleanAdapter;
 import ch.cern.eam.wshub.core.annotations.InforField;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
@@ -7,6 +9,7 @@ import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -177,6 +180,7 @@ public class Part implements Serializable {
 		this.priceType = priceType;
 	}
 
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getBasePrice() {
 		return basePrice;
 	}
@@ -185,6 +189,7 @@ public class Part implements Serializable {
 		this.basePrice = basePrice;
 	}
 
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getAveragePrice() {
 		return averagePrice;
 	}
@@ -193,6 +198,7 @@ public class Part implements Serializable {
 		this.averagePrice = averagePrice;
 	}
 
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getStandardPrice() {
 		return standardPrice;
 	}
@@ -201,6 +207,7 @@ public class Part implements Serializable {
 		this.standardPrice = standardPrice;
 	}
 
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getLastPrice() {
 		return lastPrice;
 	}
@@ -209,6 +216,7 @@ public class Part implements Serializable {
 		this.lastPrice = lastPrice;
 	}
 
+	@XmlJavaTypeAdapter(BooleanAdapter.class)
 	public Boolean getTrackByAsset() {
 		return trackByAsset;
 	}
@@ -217,6 +225,7 @@ public class Part implements Serializable {
 		this.trackByAsset = trackByAsset;
 	}
 
+	@XmlJavaTypeAdapter(BooleanAdapter.class)
 	public Boolean getTrackAsKit() {
 		return trackAsKit;
 	}
@@ -225,6 +234,7 @@ public class Part implements Serializable {
 		this.trackAsKit = trackAsKit;
 	}
 
+	@XmlJavaTypeAdapter(BooleanAdapter.class)
 	public Boolean getTrackCores() {
 		return trackCores;
 	}
@@ -233,6 +243,7 @@ public class Part implements Serializable {
 		this.trackCores = trackCores;
 	}
 
+	@XmlJavaTypeAdapter(BooleanAdapter.class)
 	public Boolean getOutOfService() {
 		return outOfService;
 	}
