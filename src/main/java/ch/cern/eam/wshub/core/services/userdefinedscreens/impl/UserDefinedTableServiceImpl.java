@@ -1,11 +1,11 @@
 package ch.cern.eam.wshub.core.services.userdefinedscreens.impl;
 
 import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedTableQueries;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedTableService;
+import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedTableValidator;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.entities.UDTRow;
-import ch.cern.eam.wshub.core.services.workorders.entities.InforCase;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.tools.ExceptionInfo;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
@@ -14,7 +14,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.math.BigInteger;
 import java.util.*;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class UserDefinedTableServiceImpl implements UserDefinedTableService {
@@ -23,15 +22,13 @@ public class UserDefinedTableServiceImpl implements UserDefinedTableService {
         DATE, STRING, INTEGER, DECIMAL
     }
 
-    private static final List<String> RESERVED_FIELD_NAMES = Arrays.asList(
-            "CREATED", "CREATEDBY", "UPDATED", "UPDATEDBY", "UPDATECOUNT"
-    );
 
     private Tools tools;
     private InforWebServicesPT inforws;
     private ApplicationData applicationData;
 
-    public UserDefinedTableServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
+    public UserDefinedTableServiceImpl(ApplicationData applicationData, Tools tools,
+                                       InforWebServicesPT inforWebServicesToolkitClient) {
         this.applicationData = applicationData;
         this.tools = tools;
         this.inforws = inforWebServicesToolkitClient;
@@ -40,33 +37,62 @@ public class UserDefinedTableServiceImpl implements UserDefinedTableService {
     @Override
     public String createUserDefinedTableRows(InforContext context, String tableName, List<UDTRow> rows)
             throws InforException {
-        validateOperation(tableName, rows);
+        UserDefinedTableValidator.validateOperation(tableName, rows);
         EntityManager entityManager = tools.getEntityManager();
         for (UDTRow row: rows) {
-            Map<String, Object> parameters = getParameters(row, context.getCredentials().getUsername());
-            executeQuery(tableName.toUpperCase(), parameters, entityManager);
+            Map<String, Object> parameters = getParameters(row);
+            parameters.putAll(getDefaultInsertColumns(context.getCredentials().getUsername()));
+            UserDefinedTableQueries.executeInsertQuery(tableName.toUpperCase(), parameters, entityManager);
         }
         return null;
     }
 
-    private static Map<String, Object> getParameters(UDTRow row, String username) {
+    @Override
+    public String readUserDefinedTableRows(InforContext context, String tableName, UDTRow filters, List<String> fieldsToRead) throws InforException {
+        return null;
+    }
+
+    @Override
+    public int updateUserDefinedTableRows(InforContext context, String tableName, UDTRow fieldsToUpdate,
+                                             UDTRow filters) throws InforException {
+        UserDefinedTableValidator.validateOperation(tableName, fieldsToUpdate, filters);
+        Map<String, Object> updateMapMap = getParameters(fieldsToUpdate);
+        Map<String, Object> whereMap = getParameters(filters);
+        updateMapMap.putAll(getDefaultUpdateColumns(context.getCredentials().getUsername()));
+        return UserDefinedTableQueries.executeUpdateQuery(tableName, updateMapMap, whereMap, tools.getEntityManager());
+    }
+
+    @Override
+    public String deleteUserDefinedTableRows(InforContext context, String tableName, UDTRow filters) throws InforException {
+        return null;
+    }
+
+    // HELPERS
+
+    private static Map<String, Object> getParameters(UDTRow row) {
         //Use Map implementation that guarantees deterministic order on keySet
         Map<String, Object> mapa = new LinkedHashMap<>();
         mapa.putAll(upperMap(row.getDates()));
         mapa.putAll(upperMap(row.getStrings()));
         mapa.putAll(upperMap(row.getIntegers()));
         mapa.putAll(upperMap(row.getDecimals()));
-        mapa.putAll(getDefaultColumns(username));
         return mapa;
     }
 
-    private static Map<String, Object> getDefaultColumns(String username) {
+    private static Map<String, Object> getDefaultInsertColumns(String username) {
         Map<String, Object> mapa = new TreeMap<>();
         mapa.put("CREATEDBY", username);
         mapa.put("CREATED", new Date());
         mapa.put("UPDATEDBY", null);
         mapa.put("UPDATED", null);
         mapa.put("UPDATECOUNT", new BigInteger("0"));
+        return mapa;
+    }
+
+    private static Map<String, Object> getDefaultUpdateColumns(String username) {
+        Map<String, Object> mapa = new TreeMap<>();
+        mapa.put("UPDATEDBY", username);
+        mapa.put("UPDATED", new Date());
         return mapa;
     }
 
@@ -92,117 +118,5 @@ public class UserDefinedTableServiceImpl implements UserDefinedTableService {
 //			)
 //		);
         return map;
-    }
-
-    private <T> void executeQuery(String tableName, Map<String, T> map, EntityManager em) {
-        //Create list to guarantee ordering
-        String query = getQuery(tableName, map);
-        //em.joinTransaction();
-        Query nativeQuery = em.createNativeQuery(query);
-        map.keySet().stream().filter(s -> map.get(s) != null).forEach(column -> nativeQuery.setParameter(column, map.get(column)));
-        nativeQuery.executeUpdate();
-
-
-    }
-
-    private <T> String getQuery(String tableName, Map<String, T> map) {
-        String columnNames = map.keySet().stream()
-                .collect(
-                        StringBuilder::new,
-                        (builder, n) -> builder.append(", \"").append(n).append("\""),
-                        StringBuilder::append
-                )
-                .substring(2);
-
-        String sbArguments = map.keySet().stream()
-                .collect(
-                        StringBuilder::new,
-                        (builder, n) -> builder.append(", ").append(map.get(n) == null ? "NULL" : ":" + n),
-                        StringBuilder::append
-                )
-                .substring(2);
-
-        StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO ");
-        query.append(tableName);
-        query.append(" (").append(columnNames).append(")");
-        query.append(" VALUES (");
-        query.append(sbArguments);
-        query.append(")");
-        return query.toString();
-    }
-
-    //Validators
-
-    private static void validateOperation(String tableName, List<UDTRow> rows) throws InforException {
-        validateTableName(tableName);
-        for(UDTRow row: rows) {
-            validateKeyList(row.getAllKeys());
-        }
-    }
-
-    private static final String INSERT_QUERY = "INSERT INTO {tableName} ({columnNames}) VALUES ({columnValues})";
-
-    private static void validateKeyList(List<String> keyList) throws InforException {
-        for (String key: keyList) {
-            validateColumnName(key);
-            Set<String> hashSet = keyList.stream().map(String::toUpperCase).collect(Collectors.toSet());
-            // The same column name can appear twice in different maps, or different casings
-            if (keyList.size() != hashSet.size()){
-                String repeaters = keyList.stream()
-                        .map(String::toUpperCase)
-                        .filter(hashSet::contains)
-                        .collect(Collectors.joining(","))
-                        ;
-                throw generateInforException( "columnNames", "Repeated column names: " + repeaters);
-            }
-            //Reserved column names that shall not be manipulated by the user
-            if (hashSet.stream().anyMatch(RESERVED_FIELD_NAMES::contains)) {
-                throw generateInforException( "columnNames", "Reserved field names cannot be used: "
-                        + hashSet.stream().filter(RESERVED_FIELD_NAMES::contains)
-                        .collect(Collectors.joining(",")));
-            }
-            //TODO maybe check if the field name is part of the table?
-        }
-    }
-
-
-    private static InforException generateInforException(String field, String errorMessage) {
-        return new InforException(
-                errorMessage,
-                null,
-                Collections.singleton(new ExceptionInfo(field, errorMessage))
-                        .toArray(new ExceptionInfo[0])
-        );
-    }
-
-    private static void validateTableName(String name) throws InforException {
-        if (name == null) {
-            throw generateInforException("key", "Parameter name cannot be null");
-        }
-        // Valid u5 table names
-        if (!Pattern.matches("^U5[_A-Z0-9]+$", name)) {
-            String errorMessage = "Invalid Parameter name: \"" + name + '"';
-            throw generateInforException(name, errorMessage);
-        }
-    }
-
-    private static void validateColumnName(String name) throws InforException {
-        if (name == null) {
-            throw generateInforException("key", "Parameter name cannot be null");
-        }
-        // Valid u5 table names
-        if (!Pattern.matches("^[_A-Za-z0-9]+$", name)) {
-            String errorMessage = "Invalid Parameter name: \"" + name + '"';
-            throw generateInforException(name, errorMessage);
-        }
-    }
-
-    private static String replace(String var, String value) {
-        //TODO
-        return var != null ?
-               var.replace("{" + var + "}", value)
-                : null
-                ;
     }
 }

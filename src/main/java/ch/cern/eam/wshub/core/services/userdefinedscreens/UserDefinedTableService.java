@@ -14,4 +14,14 @@ public interface UserDefinedTableService {
 
     @Operation(logOperation = INFOR_OPERATION.USERDEFINEDTABLE_C, logDataReference1 = LogDataReferenceType.INPUT)
     String createUserDefinedTableRows(InforContext context, String tableName, List<UDTRow> rows) throws InforException;
+
+    @Operation(logOperation = INFOR_OPERATION.USERDEFINEDTABLE_R, logDataReference1 = LogDataReferenceType.INPUT)
+    String readUserDefinedTableRows(InforContext context, String tableName,  UDTRow filters, List<String> fieldsToRead) throws InforException;
+
+    @Operation(logOperation = INFOR_OPERATION.USERDEFINEDTABLE_U, logDataReference1 = LogDataReferenceType.INPUT)
+    int updateUserDefinedTableRows(InforContext context, String tableName, UDTRow fieldsToUpdate, UDTRow filters) throws InforException;
+
+    @Operation(logOperation = INFOR_OPERATION.USERDEFINEDTABLE_D, logDataReference1 = LogDataReferenceType.INPUT)
+    String deleteUserDefinedTableRows(InforContext context, String tableName,  UDTRow filters) throws InforException;
+
 }
