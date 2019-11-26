@@ -45,6 +45,11 @@ public class AssetServiceImpl implements AssetService {
         //
         Equipment asset = tools.getInforFieldTools().transformInforObject(new Equipment(), assetEquipment);
 
+        if (assetEquipment.getASSETID() != null) {
+            asset.setCode(assetEquipment.getASSETID().getEQUIPMENTCODE());
+            asset.setDescription(assetEquipment.getASSETID().getDESCRIPTION());
+        }
+
         // HIERARCHY
         assetEquipment.setAssetParentHierarchy(readInforAssetHierarchy(context, assetCode));
 
@@ -72,13 +77,10 @@ public class AssetServiceImpl implements AssetService {
                 asset.setHierarchyAssetDependent(false);
             }
 
-            // Non dependent system
+            // Non dependent primary system
             if (positionDep.getNONDEPENDENTPRIMARYSYSTEM() != null) {
-                //
-                asset.setHierarchyPrimarySystemCode(
-                        positionDep.getNONDEPENDENTPRIMARYSYSTEM().getSYSTEMID().getEQUIPMENTCODE());
-                asset.setHierarchyPrimarySystemDesc(
-                        positionDep.getNONDEPENDENTPRIMARYSYSTEM().getSYSTEMID().getDESCRIPTION());
+                asset.setHierarchyPrimarySystemCode(positionDep.getNONDEPENDENTPRIMARYSYSTEM().getSYSTEMID().getEQUIPMENTCODE());
+                asset.setHierarchyPrimarySystemDesc(positionDep.getNONDEPENDENTPRIMARYSYSTEM().getSYSTEMID().getDESCRIPTION());
                 asset.setHierarchyPrimarySystemCostRollUp(decodeBoolean(positionDep.getNONDEPENDENTPRIMARYSYSTEM().getCOSTROLLUP()));
                 asset.setHierarchyPrimarySystemDependent(false);
             }
@@ -100,12 +102,10 @@ public class AssetServiceImpl implements AssetService {
                 asset.setHierarchyPositionCostRollUp(decodeBoolean(assetDep.getNONDEPENDENTPOSITION().getCOSTROLLUP()));
             }
 
-            // Non dependent system
+            // Non dependent primary system
             if (assetDep.getNONDEPENDENTPRIMARYSYSTEM() != null) {
-                asset.setHierarchyPrimarySystemCode(
-                        assetDep.getNONDEPENDENTPRIMARYSYSTEM().getSYSTEMID().getEQUIPMENTCODE());
-                asset.setHierarchyPrimarySystemDesc(
-                        assetDep.getNONDEPENDENTPRIMARYSYSTEM().getSYSTEMID().getDESCRIPTION());
+                asset.setHierarchyPrimarySystemCode(assetDep.getNONDEPENDENTPRIMARYSYSTEM().getSYSTEMID().getEQUIPMENTCODE());
+                asset.setHierarchyPrimarySystemDesc(assetDep.getNONDEPENDENTPRIMARYSYSTEM().getSYSTEMID().getDESCRIPTION());
                 asset.setHierarchyPrimarySystemCostRollUp(decodeBoolean(assetDep.getNONDEPENDENTPRIMARYSYSTEM().getCOSTROLLUP()));
                 asset.setHierarchyPrimarySystemDependent(false);
             }
@@ -114,10 +114,10 @@ public class AssetServiceImpl implements AssetService {
             SystemDependency systemDep = assetEquipment.getAssetParentHierarchy().getSystemDependency();
 
             // Dependent System
-            asset.setHierarchyPrimarySystemCode(systemDep.getDEPENDENTSYSTEM().getSYSTEMID().getEQUIPMENTCODE());
-            asset.setHierarchyPrimarySystemDesc(systemDep.getDEPENDENTSYSTEM().getSYSTEMID().getDESCRIPTION());
-            asset.setHierarchyPrimarySystemCostRollUp(decodeBoolean(systemDep.getDEPENDENTSYSTEM().getCOSTROLLUP()));
-            asset.setHierarchyPrimarySystemDependent(true);
+            asset.setHierarchySystemCode(systemDep.getDEPENDENTSYSTEM().getSYSTEMID().getEQUIPMENTCODE());
+            asset.setHierarchySystemDesc(systemDep.getDEPENDENTSYSTEM().getSYSTEMID().getDESCRIPTION());
+            asset.setHierarchySystemCostRollUp(decodeBoolean(systemDep.getDEPENDENTSYSTEM().getCOSTROLLUP()));
+            asset.setHierarchySystemDependent(true);
 
             // Non dependent position
             if (systemDep.getNONDEPENDENTPOSITION() != null) {
@@ -129,10 +129,42 @@ public class AssetServiceImpl implements AssetService {
 
             // Non dependent asset
             if (systemDep.getNONDEPENDENTASSET() != null) {
-                //
                 asset.setHierarchyAssetCode(systemDep.getNONDEPENDENTASSET().getASSETID().getEQUIPMENTCODE());
                 asset.setHierarchyAssetDesc(systemDep.getNONDEPENDENTASSET().getASSETID().getDESCRIPTION());
                 asset.setHierarchyAssetCostRollUp(decodeBoolean(systemDep.getNONDEPENDENTASSET().getCOSTROLLUP()));
+                asset.setHierarchyAssetDependent(false);
+            }
+
+            // Non dependent primary system
+            if (systemDep.getNONDEPENDENTPRIMARYSYSTEM() != null) {
+                asset.setHierarchyPrimarySystemCode(systemDep.getNONDEPENDENTPRIMARYSYSTEM().getSYSTEMID().getEQUIPMENTCODE());
+                asset.setHierarchyPrimarySystemDesc(systemDep.getNONDEPENDENTPRIMARYSYSTEM().getSYSTEMID().getDESCRIPTION());
+                asset.setHierarchyPrimarySystemCostRollUp(decodeBoolean(systemDep.getNONDEPENDENTPRIMARYSYSTEM().getCOSTROLLUP()));
+                asset.setHierarchyPrimarySystemDependent(false);
+            }
+
+        } else if (assetEquipment.getAssetParentHierarchy().getPrimarySystemDependency() != null) {
+            PrimarySystemDependency primarySystemDependency = assetEquipment.getAssetParentHierarchy().getPrimarySystemDependency();
+
+            // Dependent Primary System
+            asset.setHierarchyPrimarySystemCode(primarySystemDependency.getDEPENDENTPRIMARYSYSTEM().getSYSTEMID().getEQUIPMENTCODE());
+            asset.setHierarchyPrimarySystemDesc(primarySystemDependency.getDEPENDENTPRIMARYSYSTEM().getSYSTEMID().getDESCRIPTION());
+            asset.setHierarchyPrimarySystemCostRollUp(decodeBoolean(primarySystemDependency.getDEPENDENTPRIMARYSYSTEM().getCOSTROLLUP()));
+            asset.setHierarchyPrimarySystemDependent(true);
+
+            // Non dependent position
+            if (primarySystemDependency.getNONDEPENDENTPOSITION() != null) {
+                asset.setHierarchyPositionCode(primarySystemDependency.getNONDEPENDENTPOSITION().getPOSITIONID().getEQUIPMENTCODE());
+                asset.setHierarchyPositionDesc(primarySystemDependency.getNONDEPENDENTPOSITION().getPOSITIONID().getDESCRIPTION());
+                asset.setHierarchyPositionDependent(false);
+                asset.setHierarchyPositionCostRollUp(decodeBoolean(primarySystemDependency.getNONDEPENDENTPOSITION().getCOSTROLLUP()));
+            }
+
+            // Non dependent asset
+            if (primarySystemDependency.getNONDEPENDENTASSET() != null) {
+                asset.setHierarchyAssetCode(primarySystemDependency.getNONDEPENDENTASSET().getASSETID().getEQUIPMENTCODE());
+                asset.setHierarchyAssetDesc(primarySystemDependency.getNONDEPENDENTASSET().getASSETID().getDESCRIPTION());
+                asset.setHierarchyAssetCostRollUp(decodeBoolean(primarySystemDependency.getNONDEPENDENTASSET().getCOSTROLLUP()));
                 asset.setHierarchyAssetDependent(false);
             }
 
@@ -149,20 +181,16 @@ public class AssetServiceImpl implements AssetService {
 
             // Non dependent position
             if (nonDepParents.getNONDEPENDENTPOSITION() != null) {
-                asset.setHierarchyPositionCode(
-                        nonDepParents.getNONDEPENDENTPOSITION().getPOSITIONID().getEQUIPMENTCODE());
-                asset.setHierarchyPositionDesc(
-                        nonDepParents.getNONDEPENDENTPOSITION().getPOSITIONID().getDESCRIPTION());
+                asset.setHierarchyPositionCode(nonDepParents.getNONDEPENDENTPOSITION().getPOSITIONID().getEQUIPMENTCODE());
+                asset.setHierarchyPositionDesc(nonDepParents.getNONDEPENDENTPOSITION().getPOSITIONID().getDESCRIPTION());
                 asset.setHierarchyPositionDependent(false);
                 asset.setHierarchyPositionCostRollUp(decodeBoolean(nonDepParents.getNONDEPENDENTPOSITION().getCOSTROLLUP()));
             }
 
-            // Non dependent system
+            // Non dependent primary system
             if (nonDepParents.getNONDEPENDENTPRIMARYSYSTEM() != null) {
-                asset.setHierarchyPrimarySystemCode(
-                        nonDepParents.getNONDEPENDENTPRIMARYSYSTEM().getSYSTEMID().getEQUIPMENTCODE());
-                asset.setHierarchyPrimarySystemDesc(
-                        nonDepParents.getNONDEPENDENTPRIMARYSYSTEM().getSYSTEMID().getDESCRIPTION());
+                asset.setHierarchyPrimarySystemCode(nonDepParents.getNONDEPENDENTPRIMARYSYSTEM().getSYSTEMID().getEQUIPMENTCODE());
+                asset.setHierarchyPrimarySystemDesc(nonDepParents.getNONDEPENDENTPRIMARYSYSTEM().getSYSTEMID().getDESCRIPTION());
                 asset.setHierarchyPrimarySystemCostRollUp(decodeBoolean(nonDepParents.getNONDEPENDENTPRIMARYSYSTEM().getCOSTROLLUP()));
                 asset.setHierarchyPrimarySystemDependent(false);
             }
@@ -184,19 +212,16 @@ public class AssetServiceImpl implements AssetService {
 
             // Non dependent position
             if (locationDep.getNONDEPENDENTPOSITION() != null) {
-                asset.setHierarchyPositionCode(
-                        locationDep.getNONDEPENDENTPOSITION().getPOSITIONID().getEQUIPMENTCODE());
+                asset.setHierarchyPositionCode(locationDep.getNONDEPENDENTPOSITION().getPOSITIONID().getEQUIPMENTCODE());
                 asset.setHierarchyPositionDesc(locationDep.getNONDEPENDENTPOSITION().getPOSITIONID().getDESCRIPTION());
                 asset.setHierarchyPositionDependent(false);
                 asset.setHierarchyPositionCostRollUp(decodeBoolean(locationDep.getNONDEPENDENTPOSITION().getCOSTROLLUP()));
             }
 
-            // Non dependent system
+            // Non dependent primary system
             if (locationDep.getNONDEPENDENTPRIMARYSYSTEM() != null) {
-                asset.setHierarchyPrimarySystemCode(
-                        locationDep.getNONDEPENDENTPRIMARYSYSTEM().getSYSTEMID().getEQUIPMENTCODE());
-                asset.setHierarchyPrimarySystemDesc(
-                        locationDep.getNONDEPENDENTPRIMARYSYSTEM().getSYSTEMID().getDESCRIPTION());
+                asset.setHierarchyPrimarySystemCode(locationDep.getNONDEPENDENTPRIMARYSYSTEM().getSYSTEMID().getEQUIPMENTCODE());
+                asset.setHierarchyPrimarySystemDesc(locationDep.getNONDEPENDENTPRIMARYSYSTEM().getSYSTEMID().getDESCRIPTION());
                 asset.setHierarchyPrimarySystemCostRollUp(decodeBoolean(locationDep.getNONDEPENDENTPRIMARYSYSTEM().getCOSTROLLUP()));
                 asset.setHierarchyPrimarySystemDependent(false);
             }
@@ -486,7 +511,8 @@ public class AssetServiceImpl implements AssetService {
         }
 
         // HIERARCHY
-        if (assetParam.getHierarchyAssetCode() != null || assetParam.getHierarchyPositionCode() != null
+        if (assetParam.getHierarchyAssetCode() != null
+                || assetParam.getHierarchyPositionCode() != null
                 || assetParam.getHierarchyPrimarySystemCode() != null
                 || assetParam.getHierarchyLocationCode() != null) {
             initializeAssetHierarchy(assetInfor, assetParam, context);

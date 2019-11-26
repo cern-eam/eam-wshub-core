@@ -58,7 +58,7 @@ public class StandardWorkOrder {
     private String priorityDesc;
 
     @InforField(xpath = "OUTOFSERVICE", booleanType = BooleanType.TRUE_FALSE)
-    private Boolean outOfService;
+    private Boolean outOfService = false;
 
     @InforField(xpath = "USERDEFINEDAREA")
     private CustomField[] customFields;

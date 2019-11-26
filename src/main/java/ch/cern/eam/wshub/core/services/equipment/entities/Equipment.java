@@ -59,10 +59,10 @@ public class Equipment implements Serializable {
 	private BigInteger updateCount;
 	@Transient
 	@InforField(xpath = "OUTOFSERVICE")
-	private Boolean outOfService;
+	private Boolean outOfService = false;
 	@Transient
 	@InforField(xpath = "INPRODUCTION")
-	private Boolean inProduction;
+	private Boolean inProduction = false;
 	@Transient
 	@InforField(xpath = "PROFILEID/OBJECTCODE")
 	private String profileCode;
@@ -168,27 +168,36 @@ public class Equipment implements Serializable {
 	@Transient
 	private String hierarchyAssetDesc;
 	@Transient
-	private Boolean hierarchyAssetDependent;
+	private Boolean hierarchyAssetDependent = false;
 	@Transient
-	private Boolean hierarchyAssetCostRollUp;
+	private Boolean hierarchyAssetCostRollUp = false;
 	// Position
 	@Transient
 	private String hierarchyPositionCode;
 	@Transient
 	private String hierarchyPositionDesc;
 	@Transient
-	private Boolean hierarchyPositionDependent;
+	private Boolean hierarchyPositionDependent = false;
 	@Transient
-	private Boolean hierarchyPositionCostRollUp;
-	// System
+	private Boolean hierarchyPositionCostRollUp = false;
+	// Primary System
 	@Transient
 	private String hierarchyPrimarySystemCode;
 	@Transient
 	private String hierarchyPrimarySystemDesc;
 	@Transient
-	private Boolean hierarchyPrimarySystemDependent;
+	private Boolean hierarchyPrimarySystemDependent = false;
 	@Transient
-	private Boolean hierarchyPrimarySystemCostRollUp;
+	private Boolean hierarchyPrimarySystemCostRollUp = false;
+	// System
+	@Transient
+	private String hierarchySystemCode;
+	@Transient
+	private String hierarchySystemDesc;
+	@Transient
+	private Boolean hierarchySystemDependent = false;
+	@Transient
+	private Boolean hierarchySystemCostRollUp = false;
 	// Location
 	@Transient
 	private String hierarchyLocationCode;
@@ -1093,6 +1102,38 @@ public class Equipment implements Serializable {
 	public String getProfileCode() { return profileCode; }
 
 	public void setProfileCode(String profileCode) { this.profileCode = profileCode; }
+
+	public String getHierarchySystemCode() {
+		return hierarchySystemCode;
+	}
+
+	public void setHierarchySystemCode(String hierarchySystemCode) {
+		this.hierarchySystemCode = hierarchySystemCode;
+	}
+
+	public String getHierarchySystemDesc() {
+		return hierarchySystemDesc;
+	}
+
+	public void setHierarchySystemDesc(String hierarchySystemDesc) {
+		this.hierarchySystemDesc = hierarchySystemDesc;
+	}
+
+	public Boolean getHierarchySystemDependent() {
+		return hierarchySystemDependent;
+	}
+
+	public void setHierarchySystemDependent(Boolean hierarchySystemDependent) {
+		this.hierarchySystemDependent = hierarchySystemDependent;
+	}
+
+	public Boolean getHierarchySystemCostRollUp() {
+		return hierarchySystemCostRollUp;
+	}
+
+	public void setHierarchySystemCostRollUp(Boolean hierarchySystemCostRollUp) {
+		this.hierarchySystemCostRollUp = hierarchySystemCostRollUp;
+	}
 
 	@Override
 	public String toString() {

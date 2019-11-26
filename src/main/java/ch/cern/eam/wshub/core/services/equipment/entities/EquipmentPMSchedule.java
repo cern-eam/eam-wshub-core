@@ -30,7 +30,7 @@ public class EquipmentPMSchedule implements Serializable {
 	@Transient private String dueDate;
 	@Transient private String Route;
 	@Transient private String scheduleType;
-	@Transient private Boolean changed;
+	@Transient private Boolean changed = false;
 	@Transient private String supervisor;
 	@Transient private String costCode;
 	@Transient private BigDecimal meter1Interval;

@@ -13,8 +13,8 @@ public class GridRequestFilter implements Serializable {
 	private String fieldValue;
 	private String operator;
 	private JOINER joiner;
-	private Boolean leftParenthesis;
-	private Boolean rightParenthesis;
+	private Boolean leftParenthesis = false;
+	private Boolean rightParenthesis = false;
 	private Boolean forceCaseInsensitive = false;
 	private Boolean upperCase = false;
 

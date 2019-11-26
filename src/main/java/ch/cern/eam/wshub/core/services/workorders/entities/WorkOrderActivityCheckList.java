@@ -29,9 +29,9 @@ public class WorkOrderActivityCheckList implements Serializable {
 	private String UOM;
 	private String equipmentCode;
 	private String equipmentDesc;
-	private Boolean followUp;
+	private Boolean followUp = false;
 	private String followUpWorkOrder;
-	private Boolean requiredToClose;
+	private Boolean requiredToClose = false;
 
 	private String newCheckListCode;
 	private String newWorkOrderCode;

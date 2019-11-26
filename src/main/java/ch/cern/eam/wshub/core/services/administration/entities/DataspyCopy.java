@@ -6,7 +6,7 @@ public class DataspyCopy {
 
     private BigDecimal dataspyCode;
     private String userCode;
-    private Boolean defaultDataspy;
+    private Boolean defaultDataspy = false;
 
     public BigDecimal getDataspyCode() {
         return dataspyCode;

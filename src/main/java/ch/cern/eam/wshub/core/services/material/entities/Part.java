@@ -81,22 +81,22 @@ public class Part implements Serializable {
 	private BigDecimal lastPrice;
 	@Transient
 	@InforField(xpath = "BYASSET")
-	private Boolean trackByAsset;
+	private Boolean trackByAsset = false;
 	@Transient
 	@InforField(xpath = "KIT")
-	private Boolean trackAsKit;
+	private Boolean trackAsKit = false;
 	@Transient
 	@InforField(xpath = "REPAIRABLE")
-	private Boolean trackCores;
+	private Boolean trackCores = false;
 	@Transient
 	@InforField(xpath = "OUTOFSERVICE")
-	private Boolean outOfService;
+	private Boolean outOfService = false;
 	@Transient
 	@InforField(xpath = "BYLOT")
-	private Boolean trackByLot;
+	private Boolean trackByLot = false;
 	@Transient
 	@InforField(xpath = "PREVENTREORDERS")
-	private Boolean preventReorders;
+	private Boolean preventReorders = false;
 	@Transient
 	@InforField(xpath = "BUYER/USERCODE")
 	private String buyerCode;

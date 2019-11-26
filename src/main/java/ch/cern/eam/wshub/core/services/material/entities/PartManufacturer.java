@@ -11,8 +11,8 @@ public class PartManufacturer implements Serializable {
 	private String manufacturerDesc;
 	private String partCode;
 	private String drawingNumber;
-	private Boolean outOfService;
-	private Boolean primary;
+	private Boolean outOfService = false;
+	private Boolean primary = false;
 	private String manufacturerPartNumber;
 	private String manufacturerPartNumberNew;
 	

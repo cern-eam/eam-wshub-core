@@ -32,7 +32,7 @@ public class EquipmentWarranty implements Serializable {
 	@Transient
 	private String expirationDate;
 	@Transient
-	private Boolean active;
+	private Boolean active = false;
 	
 	public String getWarrantyCode() {
 		return warrantyCode;

@@ -15,8 +15,8 @@ public class EquipmentStructure implements Serializable {
 	private String childCode;
 	private String parentCode;
 	private String newParentCode;
-	private Boolean costRollUp;
-	private Boolean dependent;
+	private Boolean costRollUp = false;
+	private Boolean dependent = false;
 	private String sequenceNumber;
 	
 	public String getChildCode() {
