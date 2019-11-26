@@ -5,6 +5,8 @@ import ch.cern.eam.wshub.core.tools.InforException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -63,16 +65,8 @@ public class UserDefinedTableQueries {
             throws InforException {
         //Create list to guarantee ordering
         String query = getUpdateQuery(tableName, updateColumns, whereFilters);
-        //em.joinTransaction();
         try {
-            Query nativeQuery = em.createNativeQuery(query);
-
-            updateColumns.keySet().stream().filter(s -> updateColumns.get(s) != null)
-                    .forEach(column -> nativeQuery.setParameter(getSetParameterName(column),
-                        updateColumns.get(column)));
-
-            whereFilters.keySet().stream().filter(s -> whereFilters.get(s) != null)
-                    .forEach(column -> nativeQuery.setParameter(getFilterParameterName(column), whereFilters.get(column)));
+            Query nativeQuery = createQuery(query, updateColumns, whereFilters, em);
             return nativeQuery.executeUpdate();
         } catch (PersistenceException e) {
             //String msg, Throwable cause, ExceptionInfo[] details
@@ -92,10 +86,7 @@ public class UserDefinedTableQueries {
                 .substring(2)
                 ;
 
-        String filters = whereFilters.keySet().stream()
-                .map(getParameter(whereFilters, UserDefinedTableQueries::getFilterParameter))
-                .collect(Collectors.joining())
-                ;
+        String filters = getWhereFilters(whereFilters);
 
         StringBuilder query = new StringBuilder();
         query.append("UPDATE ");
@@ -104,6 +95,50 @@ public class UserDefinedTableQueries {
         query.append(update);
         query.append(" WHERE ( 1=1").append(filters).append(")");
         return query.toString();
+    }
+
+    public static <T> int executeDeleteQuery(String tableName, Map<String, T> whereFilters, EntityManager em)
+            throws InforException {
+        //Create list to guarantee ordering
+        String query = getDeleteQuery(tableName, whereFilters);
+        //em.joinTransaction();
+        try {
+            Query nativeQuery = createQuery(query, new HashMap<>(), whereFilters, em);
+            return nativeQuery.executeUpdate();
+        } catch (PersistenceException e) {
+            //String msg, Throwable cause, ExceptionInfo[] details
+            throw UserDefinedTableValidator.generateInforException("", e.getMessage());
+        }
+    }
+
+    public static <T> Query createQuery(String query, Map<String, T> updateParameters, Map<String, T> filterParameters,
+                                        EntityManager em) {
+        Query nativeQuery = em.createNativeQuery(query);
+        updateParameters.keySet().stream().filter(s -> updateParameters.get(s) != null)
+                .forEach(column -> nativeQuery.setParameter(getSetParameterName(column),
+                        updateParameters.get(column)));
+        filterParameters.keySet().stream().filter(s -> filterParameters.get(s) != null)
+                .forEach(column -> nativeQuery.setParameter(getFilterParameterName(column),
+                        filterParameters.get(column)));
+        return nativeQuery;
+
+    }
+
+    private static <T> String getDeleteQuery(String tableName, Map<String, T> whereFilters) {
+        String whereString = getWhereFilters(whereFilters);
+        StringBuilder query = new StringBuilder();
+        query.append("DELETE FROM ");
+        query.append(tableName);
+        query.append(" WHERE ( 1=1").append(whereString).append(")");
+        return query.toString();
+    }
+
+    private static <T> String getWhereFilters(Map<String, T> whereFilters) {
+        return whereFilters.keySet().stream()
+                .map(getParameter(whereFilters,
+                        UserDefinedTableQueries::getFilterParameter))
+                .collect(Collectors.joining())
+        ;
     }
 
     private static <T, R extends String> String getFilterParameter(R columnName, T value) {

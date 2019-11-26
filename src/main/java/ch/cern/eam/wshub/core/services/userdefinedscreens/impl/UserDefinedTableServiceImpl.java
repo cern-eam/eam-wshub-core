@@ -11,10 +11,8 @@ import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import java.math.BigInteger;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class UserDefinedTableServiceImpl implements UserDefinedTableService {
 
@@ -55,16 +53,23 @@ public class UserDefinedTableServiceImpl implements UserDefinedTableService {
     @Override
     public int updateUserDefinedTableRows(InforContext context, String tableName, UDTRow fieldsToUpdate,
                                              UDTRow filters) throws InforException {
-        UserDefinedTableValidator.validateOperation(tableName, fieldsToUpdate, filters);
-        Map<String, Object> updateMapMap = getParameters(fieldsToUpdate);
-        Map<String, Object> whereMap = getParameters(filters);
-        updateMapMap.putAll(getDefaultUpdateColumns(context.getCredentials().getUsername()));
-        return UserDefinedTableQueries.executeUpdateQuery(tableName, updateMapMap, whereMap, tools.getEntityManager());
+        try {
+            UserDefinedTableValidator.validateOperation(tableName, fieldsToUpdate, filters);
+            Map<String, Object> updateMapMap = getParameters(fieldsToUpdate);
+            Map<String, Object> whereMap = getParameters(filters);
+            updateMapMap.putAll(getDefaultUpdateColumns(context.getCredentials().getUsername()));
+            return UserDefinedTableQueries.executeUpdateQuery(tableName, updateMapMap, whereMap, tools.getEntityManager());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw e;
+        }
     }
 
     @Override
-    public String deleteUserDefinedTableRows(InforContext context, String tableName, UDTRow filters) throws InforException {
-        return null;
+    public int deleteUserDefinedTableRows(InforContext context, String tableName, UDTRow filters) throws InforException {
+        UserDefinedTableValidator.validateOperation(tableName, null, filters);
+        Map<String, Object> filterMap = getParameters(filters);
+        return UserDefinedTableQueries.executeDeleteQuery(tableName, filterMap, tools.getEntityManager());
     }
 
     // HELPERS

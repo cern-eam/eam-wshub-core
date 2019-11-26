@@ -16,7 +16,8 @@ public class UserDefinedTableValidator {
 
     public static void validateOperation(String tableName, UDTRow rowsToInsert,
                                          UDTRow rowsToFilter) throws InforException {
-        validateOperation(tableName, Collections.singletonList(rowsToInsert), rowsToFilter);
+        validateOperation(tableName, rowsToInsert == null ? new ArrayList<>()
+                : Collections.singletonList(rowsToInsert), rowsToFilter);
     }
 
     public static void validateOperation(String tableName, List<UDTRow> rowsToInsert) throws InforException {
@@ -26,8 +27,10 @@ public class UserDefinedTableValidator {
     private static void validateOperation(String tableName, List<UDTRow> rowsToInsert
             , UDTRow rowsToFilter) throws InforException {
         validateTableName(tableName);
-        for(UDTRow row: rowsToInsert) {
-            validateKeyList(row.getAllKeys(), true);
+        if (rowsToInsert != null) {
+            for(UDTRow row: rowsToInsert) {
+                validateKeyList(row.getAllKeys(), true);
+            }
         }
         if (rowsToFilter != null) {
             validateKeyList(rowsToFilter.getAllKeys(), false);

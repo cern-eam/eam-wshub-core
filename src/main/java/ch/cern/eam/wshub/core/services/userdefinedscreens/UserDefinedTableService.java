@@ -22,6 +22,6 @@ public interface UserDefinedTableService {
     int updateUserDefinedTableRows(InforContext context, String tableName, UDTRow fieldsToUpdate, UDTRow filters) throws InforException;
 
     @Operation(logOperation = INFOR_OPERATION.USERDEFINEDTABLE_D, logDataReference1 = LogDataReferenceType.INPUT)
-    String deleteUserDefinedTableRows(InforContext context, String tableName,  UDTRow filters) throws InforException;
+    int deleteUserDefinedTableRows(InforContext context, String tableName,  UDTRow filters) throws InforException;
 
 }
