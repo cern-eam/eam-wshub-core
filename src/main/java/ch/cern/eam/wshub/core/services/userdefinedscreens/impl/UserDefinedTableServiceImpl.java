@@ -46,8 +46,20 @@ public class UserDefinedTableServiceImpl implements UserDefinedTableService {
     }
 
     @Override
-    public String readUserDefinedTableRows(InforContext context, String tableName, UDTRow filters, List<String> fieldsToRead) throws InforException {
-        return null;
+    public List<Map<String, Object>> readUserDefinedTableRows(InforContext context,
+                        String tableName, UDTRow filters, List<String> fieldsToRead) throws InforException {
+        UserDefinedTableValidator.validateOperation(tableName, null, filters);
+        UserDefinedTableValidator.validateKeyList(fieldsToRead, false);
+        EntityManager entityManager = tools.getEntityManager();
+        Map<String, Object> parameters = getParameters(filters);
+        Map<String, ?> columnTypes =
+                UserDefinedTableQueries.getColumnTypes(tableName.toUpperCase(), parameters, entityManager);
+        if (fieldsToRead.size() == 0) {
+            fieldsToRead = new ArrayList<>(columnTypes.keySet());
+        }
+        List<Map<String, Object>> maps = UserDefinedTableQueries.executeReadQuery(tableName.toUpperCase(),
+                parameters, fieldsToRead, entityManager);
+        return maps;
     }
 
     @Override
@@ -58,7 +70,8 @@ public class UserDefinedTableServiceImpl implements UserDefinedTableService {
             Map<String, Object> updateMapMap = getParameters(fieldsToUpdate);
             Map<String, Object> whereMap = getParameters(filters);
             updateMapMap.putAll(getDefaultUpdateColumns(context.getCredentials().getUsername()));
-            return UserDefinedTableQueries.executeUpdateQuery(tableName, updateMapMap, whereMap, tools.getEntityManager());
+            return UserDefinedTableQueries.executeUpdateQuery(tableName, updateMapMap, whereMap,
+                    tools.getEntityManager());
         } catch (Exception e) {
             System.out.println(e.getMessage());
             throw e;

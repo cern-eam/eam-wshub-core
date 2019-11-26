@@ -37,7 +37,7 @@ public class UserDefinedTableValidator {
         }
     }
 
-    private static void validateKeyList(List<String> keyList, boolean insert) throws InforException {
+    public static void validateKeyList(List<String> keyList, boolean insert) throws InforException {
         for (String key: keyList) {
             validateColumnName(key);
             Set<String> hashSet = keyList.stream().map(String::toUpperCase).collect(Collectors.toSet());
@@ -71,22 +71,22 @@ public class UserDefinedTableValidator {
 
     private static void validateTableName(String name) throws InforException {
         if (name == null) {
-            throw generateInforException("key", "Parameter name cannot be null");
+            throw generateInforException("key", "Table name cannot be null");
         }
         // Valid u5 table names
-        if (!Pattern.matches("^U5[_A-Z0-9]+$", name)) {
-            String errorMessage = "Invalid Parameter name: \"" + name + '"';
+        if (!Pattern.matches("^[Uu]5[_A-Za-z0-9]+$", name)) {
+            String errorMessage = "Invalid Table name: \"" + name + '"';
             throw generateInforException(name, errorMessage);
         }
     }
 
     private static void validateColumnName(String name) throws InforException {
         if (name == null) {
-            throw generateInforException("key", "Parameter name cannot be null");
+            throw generateInforException("key", "Column name cannot be null");
         }
         // Valid column names
         if (!Pattern.matches("^[_A-Za-z0-9]+$", name)) {
-            String errorMessage = "Invalid Parameter name: \"" + name + '"';
+            String errorMessage = "Invalid Column name: \"" + name + '"';
             throw generateInforException(name, errorMessage);
         }
     }

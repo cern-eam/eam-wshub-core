@@ -9,6 +9,7 @@ import ch.cern.eam.wshub.core.services.workorders.entities.InforCase;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 import java.util.List;
+import java.util.Map;
 
 public interface UserDefinedTableService {
 
@@ -16,7 +17,7 @@ public interface UserDefinedTableService {
     String createUserDefinedTableRows(InforContext context, String tableName, List<UDTRow> rows) throws InforException;
 
     @Operation(logOperation = INFOR_OPERATION.USERDEFINEDTABLE_R, logDataReference1 = LogDataReferenceType.INPUT)
-    String readUserDefinedTableRows(InforContext context, String tableName,  UDTRow filters, List<String> fieldsToRead) throws InforException;
+    List<Map<String, Object>> readUserDefinedTableRows(InforContext context, String tableName, UDTRow filters, List<String> fieldsToRead) throws InforException;
 
     @Operation(logOperation = INFOR_OPERATION.USERDEFINEDTABLE_U, logDataReference1 = LogDataReferenceType.INPUT)
     int updateUserDefinedTableRows(InforContext context, String tableName, UDTRow fieldsToUpdate, UDTRow filters) throws InforException;
