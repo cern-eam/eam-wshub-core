@@ -115,7 +115,7 @@ public class Equipment implements Serializable {
 	@InforField(xpath = "ORIGINALRECEIPTDATE")
 	private Date originalReceiptDate;
 	@Transient
-	@InforField(xpath = "EQUIPMENTSTATEID/STATECODE")
+	@InforField(xpath = "EQUIPMENTSTATEID/STATECODE", enforceValidXpath = false)
 	private String stateCode;
 	@Transient
 	@InforField(xpath = "EQUIPMENTSTATEID/DESCRIPTION", readOnly = true)

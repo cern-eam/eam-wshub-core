@@ -21,8 +21,8 @@ import net.datastream.schemas.mp_results.mp0312_001.MP0312_GetSystemEquipment_00
 import net.datastream.schemas.mp_results.mp0329_001.MP0329_GetSystemParentHierarchy_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 import javax.xml.ws.Holder;
-import static ch.cern.eam.wshub.core.tools.DataTypeTools.encodeBoolean;
-import static ch.cern.eam.wshub.core.tools.DataTypeTools.decodeBoolean;
+
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.*;
 
 public class SystemServiceImpl implements SystemService {
 
@@ -114,29 +114,30 @@ public class SystemServiceImpl implements SystemService {
 
 	public String updateSystem(InforContext context, Equipment systemParam) throws InforException {
 
-		SystemEquipment systemEquipment = readSystemInfor(context, systemParam.getCode());
-		//
-		if (systemParam.getClassCode() != null && (systemEquipment.getCLASSID() == null
-				|| !systemParam.getClassCode().toUpperCase().equals(systemEquipment.getCLASSID().getCLASSCODE()))) {
-			systemEquipment.setUSERDEFINEDAREA(
-					tools.getCustomFieldsTools().getInforCustomFields(context, "OBJ", systemParam.getClassCode().toUpperCase()));
-		}
+			SystemEquipment systemEquipment = readSystemInfor(context, systemParam.getCode());
+			//
+			if (systemParam.getClassCode() != null && (systemEquipment.getCLASSID() == null
+					|| !systemParam.getClassCode().toUpperCase().equals(systemEquipment.getCLASSID().getCLASSCODE()))) {
+				systemEquipment.setUSERDEFINEDAREA(
+						tools.getCustomFieldsTools().getInforCustomFields(context, "OBJ", systemParam.getClassCode().toUpperCase()));
+			}
 
-		initializeSystemObject(systemEquipment, systemParam, context);
-		tools.getInforFieldTools().transformWSHubObject(systemEquipment, systemParam, context);
+			initializeSystemObject(systemEquipment, systemParam, context);
+			tools.getInforFieldTools().transformWSHubObject(systemEquipment, systemParam, context);
 
-		MP0313_SyncSystemEquipment_001 syncPosition = new MP0313_SyncSystemEquipment_001();
-		syncPosition.setSystemEquipment(systemEquipment);
-		if (context.getCredentials() != null) {
-			inforws.syncSystemEquipmentOp(syncPosition, "*",
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					null, tools.getTenant(context));
-		} else {
-			inforws.syncSystemEquipmentOp(syncPosition, "*", null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
+			MP0313_SyncSystemEquipment_001 syncPosition = new MP0313_SyncSystemEquipment_001();
+			syncPosition.setSystemEquipment(systemEquipment);
+			if (context.getCredentials() != null) {
+				inforws.syncSystemEquipmentOp(syncPosition, "*",
+						tools.createSecurityHeader(context), "TERMINATE", null,
+						tools.createMessageConfig(), tools.getTenant(context));
+			} else {
+				inforws.syncSystemEquipmentOp(syncPosition, "*", null, null,
+						new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
+			}
 
-		return systemParam.getCode();
+			return systemParam.getCode();
+
 	}
 
 	public String createSystem(InforContext context, Equipment systemParam) throws InforException {
@@ -161,12 +162,13 @@ public class SystemServiceImpl implements SystemService {
 		if (context.getCredentials() != null) {
 			result = inforws.addSystemEquipmentOp(addPosition, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,
-					null, tools.getTenant(context));
+					tools.createMessageConfig(), tools.getTenant(context));
 		} else {
 			result = inforws.addSystemEquipmentOp(addPosition, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
+					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
 		}
 		return result.getResultData().getSYSTEMID().getEQUIPMENTCODE();
+
 	}
 
 	public String deleteSystem(InforContext context, String systemCode) throws InforException {
@@ -302,7 +304,7 @@ public class SystemServiceImpl implements SystemService {
 		}
 
 		// HIERARCHY
-		if (systemInfor.getTYPE().getTYPECODE().equals("S")) {
+		if (isNotEmpty(systemParam.getHierarchyLocationCode()) || isNotEmpty(systemParam.getHierarchyPrimarySystemCode())) {
 			populateSystemHierarchy(context, systemParam, systemInfor);
 		}
 

@@ -331,10 +331,10 @@ public class AssetServiceImpl implements AssetService {
         if (context.getCredentials() != null) {
             addAssetResult = inforws.addAssetEquipmentOp(addAsset, tools.getOrganizationCode(context),
                     tools.createSecurityHeader(context), "TERMINATE", null,
-                    null, tools.getTenant(context));
+                    tools.createMessageConfig(), tools.getTenant(context));
         } else {
             addAssetResult = inforws.addAssetEquipmentOp(addAsset, tools.getOrganizationCode(context), null, null,
-                    new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
+                    new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
         }
 
         return addAssetResult.getResultData().getASSETID().getEQUIPMENTCODE();
