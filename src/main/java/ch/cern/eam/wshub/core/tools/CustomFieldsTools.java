@@ -67,8 +67,7 @@ public class CustomFieldsTools {
         //
         //
         //
-        else if (customFieldInfor.getType().toUpperCase().equals("RENT")
-                && customFieldInfor.getENTITYCODEFIELD() != null) {
+        else if (customFieldInfor.getType().toUpperCase().equals("RENT") && customFieldInfor.getENTITYCODEFIELD() != null) {
             customField.setValue(customFieldInfor.getENTITYCODEFIELD().getCODEVALUE());
             customField.setRentCodeValue(customFieldInfor.getENTITYCODEFIELD().getEntity());
             customField.setValueDesc(tools.getFieldDescriptionsTools().readCustomFieldDesc(customFieldInfor.getENTITYCODEFIELD().getEntity(), customFieldInfor.getENTITYCODEFIELD().getCODEVALUE()));
@@ -82,8 +81,7 @@ public class CustomFieldsTools {
         //
         //
         //
-        else if (customFieldInfor.getType().toUpperCase().equals("CODE")
-                && customFieldInfor.getCODEDESCFIELD() != null) {
+        else if (customFieldInfor.getType().toUpperCase().equals("CODE") && customFieldInfor.getCODEDESCFIELD() != null) {
             customField.setValue(customFieldInfor.getCODEDESCFIELD().getCODEVALUE());
             try {
                 String[][] cf = getCFValues(customFieldInfor.getCLASSID().getCLASSCODE(),
@@ -96,7 +94,7 @@ public class CustomFieldsTools {
         //
         //
         //
-        else {
+        else if (customFieldInfor.getType().toUpperCase().equals("CHAR") && customFieldInfor.getTEXTFIELD() != null){
             customField.setValue(customFieldInfor.getTEXTFIELD());
         }
         //

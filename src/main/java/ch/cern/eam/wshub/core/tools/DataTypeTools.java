@@ -156,10 +156,13 @@ public class DataTypeTools {
         if (numberValue == null ) {
             return null;
         }
+
+        numberValue = numberValue.stripTrailingZeros();
+
         QUANTITY quantity = new QUANTITY();
         try {
             quantity.setSIGN(numberValue.signum() < 0 ? "-" : "+");
-            quantity.setNUMOFDEC(BigInteger.valueOf(Math.max(0, numberValue.stripTrailingZeros().scale())));
+            quantity.setNUMOFDEC(BigInteger.valueOf(Math.max(0, numberValue.scale())));
             quantity.setVALUE(numberValue.movePointRight(numberValue.scale()));
             quantity.setQualifier("OTHER");
             quantity.setUOM("default");
@@ -190,10 +193,13 @@ public class DataTypeTools {
         if (numberValue == null) {
             return null;
         }
+
+        numberValue = numberValue.stripTrailingZeros();
+
         AMOUNT amount = new AMOUNT();
         try {
             amount.setSIGN(numberValue.signum() < 0 ? "-" : "+");
-            amount.setNUMOFDEC(BigInteger.valueOf(Math.max(0, numberValue.stripTrailingZeros().scale())));
+            amount.setNUMOFDEC(BigInteger.valueOf(Math.max(0, numberValue.scale())));
             amount.setVALUE(numberValue.movePointRight(numberValue.scale()));
             amount.setCURRENCY("default");
             amount.setDRCR("C");
