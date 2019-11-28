@@ -62,7 +62,7 @@ public class DataTypeTools {
     }
 
     public static DATETIME encodeInforDate(Date dateValue, String dateLabel) throws InforException {
-        if (dateValue.getTime() == 0l) {
+        if (dateValue.getTime() == 0L) {
             return null;
         }
 
