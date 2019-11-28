@@ -252,7 +252,7 @@ public class InforFieldTools {
             Field inforField = inforObject.getClass().getDeclaredField(inforFieldName);
             inforField.setAccessible(true);
 
-            if (wshubFieldValue.getClass().equals(Date.class)) {
+            if (wshubFieldValue instanceof Date) {
                 // DATE -> DATETIME
                 Date dateValue = (Date) wshubFieldValue;
                 if (dateValue.getTime() == 0) {
