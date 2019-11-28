@@ -322,8 +322,9 @@ public class PositionServiceImpl implements PositionService {
 			positionEquipment.setUSERDEFINEDAREA(
 					tools.getCustomFieldsTools().getInforCustomFields(context, "OBJ", positionParam.getClassCode().toUpperCase()));
 		}
-		// Update 'positionEquipment' with supplied values
+
 		initializePositionObject(context, positionEquipment, positionParam, false);
+		tools.getInforFieldTools().transformWSHubObject(positionEquipment, positionParam, context);
 		// Update it
 		MP0308_SyncPositionEquipment_001 syncPosition = new MP0308_SyncPositionEquipment_001();
 		syncPosition.setPositionEquipment(positionEquipment);
