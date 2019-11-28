@@ -1,5 +1,8 @@
 package ch.cern.eam.wshub.core.services.workorders.entities;
 
+import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
+
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.math.BigDecimal;
 
 public class WorkOrderAdditionalCosts {
@@ -41,6 +44,8 @@ public class WorkOrderAdditionalCosts {
 	public void setWorkOrderNumber(String workOrderNumber) {
 		WorkOrderNumber = workOrderNumber;
 	}
+
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getCost() {
 		return Cost;
 	}

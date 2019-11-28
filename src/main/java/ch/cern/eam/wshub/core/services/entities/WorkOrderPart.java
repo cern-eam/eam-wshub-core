@@ -1,5 +1,8 @@
 package ch.cern.eam.wshub.core.services.entities;
 
+import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
+
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.math.BigDecimal;
 
 public class WorkOrderPart {
@@ -9,8 +12,8 @@ public class WorkOrderPart {
 	private BigDecimal plannedQty;
 	private BigDecimal reservedQty;
 	private BigDecimal allocatedQty;
-	private String usedQty;
-	private String quantity;
+	private BigDecimal usedQty;
+	private BigDecimal quantity;
 	private String activityCode;
 	private String activityDesc;
 	private String tradeCode;
@@ -27,12 +30,16 @@ public class WorkOrderPart {
 	public void setPartCode(String partCode) {
 		this.partCode = partCode;
 	}
+
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getPlannedQty() {
 		return plannedQty;
 	}
 	public void setPlannedQty(BigDecimal plannedQty) {
 		this.plannedQty = plannedQty;
 	}
+
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getReservedQty() {
 		return reservedQty;
 	}
@@ -57,6 +64,8 @@ public class WorkOrderPart {
 	public void setStoreCode(String storeCode) {
 		this.storeCode = storeCode;
 	}
+
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getAllocatedQty() {
 		return allocatedQty;
 	}
@@ -88,13 +97,15 @@ public class WorkOrderPart {
 	public String getActivityDesc() { return activityDesc; }
 	public void setActivityDesc(String activityDesc) { this.activityDesc = activityDesc; }
 
-	public String getUsedQty() { return usedQty; }
-	public void setUsedQty(String usedQty) { this.usedQty = usedQty; }
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
+	public BigDecimal getUsedQty() { return usedQty; }
+	public void setUsedQty(BigDecimal usedQty) { this.usedQty = usedQty; }
 
 	public String getTransType() { return transType; }
 	public void setTransType(String transType) { this.transType = transType; }
 
-	public String getQuantity() { return quantity; }
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
+	public BigDecimal getQuantity() { return quantity; }
 
-	public void setQuantity(String quantity) { this.quantity = quantity; }
+	public void setQuantity(BigDecimal quantity) { this.quantity = quantity; }
 }

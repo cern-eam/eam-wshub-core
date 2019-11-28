@@ -1,6 +1,7 @@
 package ch.cern.eam.wshub.core.services.entities;
 
 import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
+import ch.cern.eam.wshub.core.adapters.BooleanAdapter;
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
 import ch.cern.eam.wshub.core.annotations.InforField;
 
@@ -154,25 +155,25 @@ public class UserDefinedFields implements Serializable, Cloneable {
 	private String udfchar45Desc;
 
 	@InforField(xpath = "UDFCHKBOX01")
-	private String udfchkbox01;
+	private Boolean udfchkbox01;
 	@InforField(xpath = "UDFCHKBOX02")
-	private String udfchkbox02;
+	private Boolean udfchkbox02;
 	@InforField(xpath = "UDFCHKBOX03")
-	private String udfchkbox03;
+	private Boolean udfchkbox03;
 	@InforField(xpath = "UDFCHKBOX04")
-	private String udfchkbox04;
+	private Boolean udfchkbox04;
 	@InforField(xpath = "UDFCHKBOX05")
-	private String udfchkbox05;
+	private Boolean udfchkbox05;
 	@InforField(xpath = "UDFCHKBOX06", enforceValidXpath = false)
-	private String udfchkbox06;
+	private Boolean udfchkbox06;
 	@InforField(xpath = "UDFCHKBOX07", enforceValidXpath = false)
-	private String udfchkbox07;
+	private Boolean udfchkbox07;
 	@InforField(xpath = "UDFCHKBOX08", enforceValidXpath = false)
-	private String udfchkbox08;
+	private Boolean udfchkbox08;
 	@InforField(xpath = "UDFCHKBOX09", enforceValidXpath = false)
-	private String udfchkbox09;
+	private Boolean udfchkbox09;
 	@InforField(xpath = "UDFCHKBOX10", enforceValidXpath = false)
-	private String udfchkbox10;
+	private Boolean udfchkbox10;
 
 	@InforField(xpath = "UDFNUM01")
 	private BigDecimal udfnum01;
@@ -465,43 +466,48 @@ public class UserDefinedFields implements Serializable, Cloneable {
 		this.udfchar30 = udfchar30;
 	}
 
-	public String getUdfchkbox01() {
+	@XmlJavaTypeAdapter(BooleanAdapter.class)
+	public Boolean getUdfchkbox01() {
 		return udfchkbox01;
 	}
 
-	public void setUdfchkbox01(String udfchkbox01) {
+	public void setUdfchkbox01(Boolean udfchkbox01) {
 		this.udfchkbox01 = udfchkbox01;
 	}
 
-	public String getUdfchkbox02() {
+	@XmlJavaTypeAdapter(BooleanAdapter.class)
+	public Boolean getUdfchkbox02() {
 		return udfchkbox02;
 	}
 
-	public void setUdfchkbox02(String udfchkbox02) {
+	public void setUdfchkbox02(Boolean udfchkbox02) {
 		this.udfchkbox02 = udfchkbox02;
 	}
 
-	public String getUdfchkbox03() {
+	@XmlJavaTypeAdapter(BooleanAdapter.class)
+	public Boolean getUdfchkbox03() {
 		return udfchkbox03;
 	}
 
-	public void setUdfchkbox03(String udfchkbox03) {
+	public void setUdfchkbox03(Boolean udfchkbox03) {
 		this.udfchkbox03 = udfchkbox03;
 	}
 
-	public String getUdfchkbox04() {
+	@XmlJavaTypeAdapter(BooleanAdapter.class)
+	public Boolean getUdfchkbox04() {
 		return udfchkbox04;
 	}
 
-	public void setUdfchkbox04(String udfchkbox04) {
+	public void setUdfchkbox04(Boolean udfchkbox04) {
 		this.udfchkbox04 = udfchkbox04;
 	}
 
-	public String getUdfchkbox05() {
+	@XmlJavaTypeAdapter(BooleanAdapter.class)
+	public Boolean getUdfchkbox05() {
 		return udfchkbox05;
 	}
 
-	public void setUdfchkbox05(String udfchkbox05) {
+	public void setUdfchkbox05(Boolean udfchkbox05) {
 		this.udfchkbox05 = udfchkbox05;
 	}
 
@@ -550,43 +556,48 @@ public class UserDefinedFields implements Serializable, Cloneable {
 		this.udfnum05 = udfnum05;
 	}
 
-	public String getUdfchkbox06() {
+	@XmlJavaTypeAdapter(BooleanAdapter.class)
+	public Boolean getUdfchkbox06() {
 		return udfchkbox06;
 	}
 
-	public void setUdfchkbox06(String udfchkbox06) {
+	public void setUdfchkbox06(Boolean udfchkbox06) {
 		this.udfchkbox06 = udfchkbox06;
 	}
 
-	public String getUdfchkbox07() {
+	@XmlJavaTypeAdapter(BooleanAdapter.class)
+	public Boolean getUdfchkbox07() {
 		return udfchkbox07;
 	}
 
-	public void setUdfchkbox07(String udfchkbox07) {
+	public void setUdfchkbox07(Boolean udfchkbox07) {
 		this.udfchkbox07 = udfchkbox07;
 	}
 
-	public String getUdfchkbox08() {
+	@XmlJavaTypeAdapter(BooleanAdapter.class)
+	public Boolean getUdfchkbox08() {
 		return udfchkbox08;
 	}
 
-	public void setUdfchkbox08(String udfchkbox08) {
+	public void setUdfchkbox08(Boolean udfchkbox08) {
 		this.udfchkbox08 = udfchkbox08;
 	}
 
-	public String getUdfchkbox09() {
+	@XmlJavaTypeAdapter(BooleanAdapter.class)
+	public Boolean getUdfchkbox09() {
 		return udfchkbox09;
 	}
 
-	public void setUdfchkbox09(String udfchkbox09) {
+	public void setUdfchkbox09(Boolean udfchkbox09) {
 		this.udfchkbox09 = udfchkbox09;
 	}
 
-	public String getUdfchkbox10() {
+	@XmlJavaTypeAdapter(BooleanAdapter.class)
+	public Boolean getUdfchkbox10() {
 		return udfchkbox10;
 	}
 
-	public void setUdfchkbox10(String udfchkbox10) {
+	public void setUdfchkbox10(Boolean udfchkbox10) {
 		this.udfchkbox10 = udfchkbox10;
 	}
 

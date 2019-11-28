@@ -1,5 +1,6 @@
 package ch.cern.eam.wshub.core.services.workorders.entities;
 
+import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
 
 import javax.persistence.*;
@@ -148,6 +149,7 @@ public class Activity implements Serializable {
 		this.checklists = checklists;
 	}
 
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getTaskQty() {
 		return taskQty;
 	}

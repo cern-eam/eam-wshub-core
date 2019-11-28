@@ -1,5 +1,6 @@
 package ch.cern.eam.wshub.core.services.equipment.entities;
 
+import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
 
 import javax.persistence.Entity;
@@ -246,6 +247,7 @@ public class EquipmentGenerationEntity implements Serializable {
         this.updatedBy = updatedBy;
     }
 
+    @XmlJavaTypeAdapter(BigDecimalAdapter.class)
     public BigDecimal getRevisionNum() {
         return revisionNum;
     }
@@ -282,6 +284,7 @@ public class EquipmentGenerationEntity implements Serializable {
         this.statusDesc = statusDesc;
     }
 
+    @XmlJavaTypeAdapter(BigDecimalAdapter.class)
     public BigDecimal getGenerateCount() {
         return generateCount;
     }

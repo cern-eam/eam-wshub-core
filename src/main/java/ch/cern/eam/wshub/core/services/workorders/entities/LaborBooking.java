@@ -1,5 +1,6 @@
 package ch.cern.eam.wshub.core.services.workorders.entities;
 
+import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
 
 import javax.persistence.*;
@@ -48,6 +49,7 @@ public class LaborBooking implements Serializable, Comparable<LaborBooking> {
 		this.typeOfHours = typeOfHours;
 	}
 
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getHoursWorked() {
 		return hoursWorked;
 	}

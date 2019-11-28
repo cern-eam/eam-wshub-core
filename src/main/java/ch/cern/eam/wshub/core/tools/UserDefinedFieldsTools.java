@@ -1,7 +1,10 @@
 package ch.cern.eam.wshub.core.tools;
 
+import ch.cern.eam.wshub.core.annotations.BooleanType;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import net.datastream.schemas.mp_fields.StandardUserDefinedFields;
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.encodeBoolean;
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.decodeBoolean;
 
 public class UserDefinedFieldsTools {
 
@@ -193,23 +196,23 @@ public class UserDefinedFieldsTools {
 		//
 
 		if (userDefinedFields.getUdfchkbox01() != null) {
-			inforUserDefinedFields.setUDFCHKBOX01(userDefinedFields.getUdfchkbox01());
+			inforUserDefinedFields.setUDFCHKBOX01(encodeBoolean(userDefinedFields.getUdfchkbox01(), BooleanType.TRUE_FALSE));
 		}
 
 		if (userDefinedFields.getUdfchkbox02() != null) {
-			inforUserDefinedFields.setUDFCHKBOX02(userDefinedFields.getUdfchkbox02());
+			inforUserDefinedFields.setUDFCHKBOX02(encodeBoolean(userDefinedFields.getUdfchkbox02(), BooleanType.TRUE_FALSE));
 		}
 
 		if (userDefinedFields.getUdfchkbox03() != null) {
-			inforUserDefinedFields.setUDFCHKBOX03(userDefinedFields.getUdfchkbox03());
+			inforUserDefinedFields.setUDFCHKBOX03(encodeBoolean(userDefinedFields.getUdfchkbox03(), BooleanType.TRUE_FALSE));
 		}
 
 		if (userDefinedFields.getUdfchkbox04() != null) {
-			inforUserDefinedFields.setUDFCHKBOX04(userDefinedFields.getUdfchkbox04());
+			inforUserDefinedFields.setUDFCHKBOX04(encodeBoolean(userDefinedFields.getUdfchkbox04(), BooleanType.TRUE_FALSE));
 		}
 
 		if (userDefinedFields.getUdfchkbox05() != null) {
-			inforUserDefinedFields.setUDFCHKBOX05(userDefinedFields.getUdfchkbox05());
+			inforUserDefinedFields.setUDFCHKBOX05(encodeBoolean(userDefinedFields.getUdfchkbox05(), BooleanType.TRUE_FALSE));
 		}
 
 	}
@@ -252,11 +255,11 @@ public class UserDefinedFieldsTools {
 		udfs.setUdfchar29(inforUserDefinedFields.getUDFCHAR29());
 		udfs.setUdfchar30(inforUserDefinedFields.getUDFCHAR30());
 
-		udfs.setUdfchkbox01(inforUserDefinedFields.getUDFCHKBOX01());
-		udfs.setUdfchkbox02(inforUserDefinedFields.getUDFCHKBOX02());
-		udfs.setUdfchkbox03(inforUserDefinedFields.getUDFCHKBOX03());
-		udfs.setUdfchkbox04(inforUserDefinedFields.getUDFCHKBOX04());
-		udfs.setUdfchkbox05(inforUserDefinedFields.getUDFCHKBOX05());
+		udfs.setUdfchkbox01(decodeBoolean(inforUserDefinedFields.getUDFCHKBOX01()));
+		udfs.setUdfchkbox02(decodeBoolean(inforUserDefinedFields.getUDFCHKBOX02()));
+		udfs.setUdfchkbox03(decodeBoolean(inforUserDefinedFields.getUDFCHKBOX03()));
+		udfs.setUdfchkbox04(decodeBoolean(inforUserDefinedFields.getUDFCHKBOX04()));
+		udfs.setUdfchkbox05(decodeBoolean(inforUserDefinedFields.getUDFCHKBOX05()));
 
 		udfs.setUdfnum01(tools.getDataTypeTools().decodeQuantity(inforUserDefinedFields.getUDFNUM01()));
 		udfs.setUdfnum02(tools.getDataTypeTools().decodeQuantity(inforUserDefinedFields.getUDFNUM02()));
@@ -311,11 +314,11 @@ public class UserDefinedFieldsTools {
 		udfs.setUdfchar29(inforUserDefinedFields.getUDFCHAR29());
 		udfs.setUdfchar30(inforUserDefinedFields.getUDFCHAR30());
 
-		udfs.setUdfchkbox01(inforUserDefinedFields.getUDFCHKBOX01());
-		udfs.setUdfchkbox02(inforUserDefinedFields.getUDFCHKBOX02());
-		udfs.setUdfchkbox03(inforUserDefinedFields.getUDFCHKBOX03());
-		udfs.setUdfchkbox04(inforUserDefinedFields.getUDFCHKBOX04());
-		udfs.setUdfchkbox05(inforUserDefinedFields.getUDFCHKBOX05());
+		udfs.setUdfchkbox01(decodeBoolean(inforUserDefinedFields.getUDFCHKBOX01()));
+		udfs.setUdfchkbox02(decodeBoolean(inforUserDefinedFields.getUDFCHKBOX02()));
+		udfs.setUdfchkbox03(decodeBoolean(inforUserDefinedFields.getUDFCHKBOX03()));
+		udfs.setUdfchkbox04(decodeBoolean(inforUserDefinedFields.getUDFCHKBOX04()));
+		udfs.setUdfchkbox05(decodeBoolean(inforUserDefinedFields.getUDFCHKBOX05()));
 
 		udfs.setUdfnum01(tools.getDataTypeTools().decodeQuantity(inforUserDefinedFields.getUDFNUM01()));
 		udfs.setUdfnum02(tools.getDataTypeTools().decodeQuantity(inforUserDefinedFields.getUDFNUM02()));

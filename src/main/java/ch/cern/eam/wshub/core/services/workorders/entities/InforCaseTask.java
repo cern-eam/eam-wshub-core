@@ -1,5 +1,6 @@
 package ch.cern.eam.wshub.core.services.workorders.entities;
 
+import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
@@ -250,6 +251,8 @@ public class InforCaseTask implements Serializable {
 	public void setTaskPlanForChecklist(String taskPlanForChecklist) {
 		this.taskPlanForChecklist = taskPlanForChecklist;
 	}
+
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getEstimatedCosts() {
 		return estimatedCosts;
 	}
@@ -333,7 +336,8 @@ public class InforCaseTask implements Serializable {
 	public void setScheduledEndDate(Date scheduledEndDate) {
 		this.scheduledEndDate = scheduledEndDate;
 	}
-	
+
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getPlannedDuration() {
 		return plannedDuration;
 	}

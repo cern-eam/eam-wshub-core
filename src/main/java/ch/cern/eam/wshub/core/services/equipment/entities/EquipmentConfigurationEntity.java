@@ -1,7 +1,10 @@
 package ch.cern.eam.wshub.core.services.equipment.entities;
 
+import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
+
 import javax.persistence.Entity;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -266,6 +269,7 @@ public class EquipmentConfigurationEntity implements Serializable {
         this.organizationDesc = organizationDesc;
     }
 
+    @XmlJavaTypeAdapter(BigDecimalAdapter.class)
     public BigDecimal getRevisionNum() {
         return revisionNum;
     }
