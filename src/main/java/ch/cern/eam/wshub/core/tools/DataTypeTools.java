@@ -163,7 +163,7 @@ public class DataTypeTools {
         try {
             quantity.setSIGN(numberValue.signum() < 0 ? "-" : "+");
             quantity.setNUMOFDEC(BigInteger.valueOf(Math.max(0, numberValue.scale())));
-            quantity.setVALUE(numberValue.movePointRight(numberValue.scale()));
+            quantity.setVALUE(numberValue.movePointRight(numberValue.scale()).abs());
             quantity.setQualifier("OTHER");
             quantity.setUOM("default");
         } catch (NumberFormatException e) {
@@ -200,7 +200,7 @@ public class DataTypeTools {
         try {
             amount.setSIGN(numberValue.signum() < 0 ? "-" : "+");
             amount.setNUMOFDEC(BigInteger.valueOf(Math.max(0, numberValue.scale())));
-            amount.setVALUE(numberValue.movePointRight(numberValue.scale()));
+            amount.setVALUE(numberValue.movePointRight(numberValue.scale()).abs());
             amount.setCURRENCY("default");
             amount.setDRCR("C");
             amount.setQualifier("OTHER");
