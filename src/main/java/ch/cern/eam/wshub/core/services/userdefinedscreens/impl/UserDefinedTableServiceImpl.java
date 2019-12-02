@@ -111,6 +111,7 @@ public class UserDefinedTableServiceImpl implements UserDefinedTableService {
         Map<String, Object> mapa = new TreeMap<>();
         mapa.put("UPDATEDBY", username);
         mapa.put("UPDATED", new Date());
+        //UPDATEDCOUNT is incremented through a trigger
         return mapa;
     }
 
@@ -119,6 +120,7 @@ public class UserDefinedTableServiceImpl implements UserDefinedTableService {
             return new HashMap<>();
         }
 
+        // TreeMap to keep natural order (alphabetical)
         Map<String, T> map = new TreeMap<>();
         for(Map.Entry<String, T> entry: mapa.entrySet()) {
             T value = null;
@@ -127,14 +129,6 @@ public class UserDefinedTableServiceImpl implements UserDefinedTableService {
             } catch (Throwable t) {}
             map.put(entry.getKey().toUpperCase(), value);
         }
-//		// Keep keySet ordered
-//		AbstractMap<String, T> collect = mapa.entrySet().stream().collect(Collectors.toMap(
-//				e -> e.getKey().toUpperCase(),
-//				Map.Entry::getValue, // Value cannot be null...
-//				(a, b) -> a, //TODO throw exception?
-//				TreeMap::new
-//			)
-//		);
         return map;
     }
 }

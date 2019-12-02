@@ -31,16 +31,13 @@ public class UserDefinedTableQueries {
     public static <T> void executeInsertQuery(String tableName, Map<String, T> map, EntityManager em) throws InforException {
         //Create list to guarantee ordering
         String query = getInsertQuery(tableName, map);
-        //em.joinTransaction();
         try {
-            //TODO batch
             Query nativeQuery = em.createNativeQuery(query);
             map.keySet().stream().filter(s -> map.get(s) != null).forEach(
                     column -> nativeQuery.setParameter(column, map.get(column))
             );
             nativeQuery.executeUpdate();
         } catch (PersistenceException e) {
-            //String msg, Throwable cause, ExceptionInfo[] details
             throw UserDefinedTableValidator.generateInforException("", e.getMessage());
         }
     }

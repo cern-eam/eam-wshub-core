@@ -56,7 +56,7 @@ public class UserDefinedTableValidator {
                         + hashSet.stream().filter(RESERVED_FIELD_NAMES::contains)
                         .collect(Collectors.joining(",")));
             }
-            //TODO maybe check if the field name is part of the table?
+            //TODO Check if the field name is described on the table?
         }
     }
 
@@ -73,7 +73,7 @@ public class UserDefinedTableValidator {
         if (name == null) {
             throw generateInforException("key", "Table name cannot be null");
         }
-        // Valid u5 table names
+        // Valid U5 (User Defined Screen) table names
         if (!Pattern.matches("^[Uu]5[_A-Za-z0-9]+$", name)) {
             String errorMessage = "Invalid Table name: \"" + name + '"';
             throw generateInforException(name, errorMessage);
@@ -89,13 +89,5 @@ public class UserDefinedTableValidator {
             String errorMessage = "Invalid Column name: \"" + name + '"';
             throw generateInforException(name, errorMessage);
         }
-    }
-
-    private static String replace(String var, String value) {
-        //TODO
-        return var != null ?
-                var.replace("{" + var + "}", value)
-                : null
-                ;
     }
 }
