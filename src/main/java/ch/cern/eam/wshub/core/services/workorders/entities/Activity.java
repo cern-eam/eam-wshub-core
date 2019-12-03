@@ -2,11 +2,13 @@ package ch.cern.eam.wshub.core.services.workorders.entities;
 
 import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
+import ch.cern.eam.wshub.core.annotations.GridField;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -20,30 +22,54 @@ public class Activity implements Serializable {
 
 	@Id
 	@Column(name = "ACT_ACT")
+	@GridField(name="activity")
 	private String activityCode;
+
 	@Column(name = "ACT_NOTE")
+	@GridField(name="activitynote")
 	private String activityNote;
+
 	@Column(name = "ACT_EVENT")
+	@GridField(name="workordernum")
 	private String workOrderNumber;
+
 	@Column(name = "ACT_PERSONS")
-	private String peopleRequired;
+	@GridField(name="personsreq")
+	private BigInteger peopleRequired;
+
 	@Column(name = "ACT_EST")
-	private String estimatedHours;
+	@GridField(name="esthrs")
+	private BigDecimal estimatedHours;
+
 	@Column(name = "ACT_REM")
-	private String hoursRemaining;
+	@GridField(name="hrsremain")
+	private BigDecimal hoursRemaining;
+
 	@Column(name = "ACT_START")
+	@GridField(name="actstartdate")
 	private Date startDate;
+
 	@Transient
+	@GridField(name="actenddate")
 	private Date endDate;
+
 	@Column(name = "ACT_MATLIST")
+	@GridField(name="matlcode")
 	private String materialList;
+
 	@Column(name = "ACT_TASK")
+	@GridField(name="task")
 	private String taskCode;
+
 	@Column(name = "TSK_DESC")
 	private String taskDesc;
+
 	@Column(name = "ACT_TRADE")
+	@GridField(name="trade")
 	private String tradeCode;
+
 	@Column(name = "ACT_QTY")
+	@GridField(name="taskqty")
 	private BigDecimal taskQty;
 
 	@Transient
@@ -57,19 +83,19 @@ public class Activity implements Serializable {
 		this.workOrderNumber = workOrderNumber;
 	}
 
-	public String getPeopleRequired() {
+	public BigInteger getPeopleRequired() {
 		return peopleRequired;
 	}
 
-	public void setPeopleRequired(String peopleRequired) {
+	public void setPeopleRequired(BigInteger peopleRequired) {
 		this.peopleRequired = peopleRequired;
 	}
 
-	public String getEstimatedHours() {
+	public BigDecimal getEstimatedHours() {
 		return estimatedHours;
 	}
 
-	public void setEstimatedHours(String estimatedHours) {
+	public void setEstimatedHours(BigDecimal estimatedHours) {
 		this.estimatedHours = estimatedHours;
 	}
 
@@ -117,11 +143,11 @@ public class Activity implements Serializable {
 		this.tradeCode = tradeCode;
 	}
 
-	public String getHoursRemaining() {
+	public BigDecimal getHoursRemaining() {
 		return hoursRemaining;
 	}
 
-	public void setHoursRemaining(String hoursRemaining) {
+	public void setHoursRemaining(BigDecimal hoursRemaining) {
 		this.hoursRemaining = hoursRemaining;
 	}
 

@@ -3,11 +3,15 @@ package ch.cern.eam.wshub.core.tools;
 import ch.cern.eam.wshub.core.annotations.GridField;
 import ch.cern.eam.wshub.core.services.grids.entities.*;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.*;
 import java.util.logging.Level;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toList;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.convertStringToDate;
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.encodeBigDecimal;
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.encodeBigInteger;
 
 public class GridTools {
 
@@ -187,10 +191,15 @@ public class GridTools {
         else if (field.getType().equals(Boolean.class) || field.getType().equals(Boolean.TYPE)) {
             field.set(object, "true".equals(value));
         }
-        // Integers
-        else if (field.getType().equals(Integer.class) || field.getType().equals(Integer.TYPE)) {
+        // Big Integer
+        else if (field.getType().equals(BigInteger.class)) {
             // The numbers returned by grid WS might contain commas making Integer.parseInt mail
-            field.set(object, Integer.parseInt(value.replace(",","")));
+            field.set(object,  encodeBigInteger(value, column));
+        }
+        // Big Decimal
+        else if (field.getType().equals(BigDecimal.class)) {
+            // The numbers returned by grid WS might contain commas making Integer.parseInt mail
+            field.set(object, encodeBigDecimal(value, column));
         }
         else {
             field.set(object, value);

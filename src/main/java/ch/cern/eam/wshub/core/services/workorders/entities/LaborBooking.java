@@ -2,6 +2,7 @@ package ch.cern.eam.wshub.core.services.workorders.entities;
 
 import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
+import ch.cern.eam.wshub.core.annotations.GridField;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -22,23 +23,41 @@ public class LaborBooking implements Serializable, Comparable<LaborBooking> {
 	@Id
 	@Column(name = "BOO_CODE")
 	private String code;
+
 	@Column(name = "BOO_OCRTYPE")
+	@GridField(name="octype")
 	private String typeOfHours;
+
 	@Column(name = "BOO_HOURS")
+	@GridField(name="hours")
 	private BigDecimal hoursWorked;
+
 	@Column(name = "BOO_DATE")
+	@GridField(name="boodate")
 	private Date dateWorked;
+
 	@Column(name = "BOO_MRC")
+	@GridField(name="department")
 	private String departmentCode;
+
 	@Column(name = "BOO_PERSON")
+	@GridField(name="employee")
 	private String employeeCode;
+
 	@Column(name = "PER_DESC")
+	@GridField(name="employeedesc")
 	private String employeeDesc;
+
 	@Column(name = "BOO_ACT")
+	@GridField(name="booactivity")
 	private String activityCode;
+
 	@Column(name = "BOO_TRADE")
+	@GridField(name="emptrade")
 	private String tradeCode;
+
 	@Column(name = "BOO_EVENT")
+	@GridField(name="event")
 	private String workOrderNumber;
 
 	public String getTypeOfHours() {

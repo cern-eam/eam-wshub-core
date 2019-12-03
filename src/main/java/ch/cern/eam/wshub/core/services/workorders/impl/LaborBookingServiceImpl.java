@@ -59,17 +59,7 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 		gridRequest.getParams().put("param.headeractivity", "0");
 		gridRequest.getParams().put("param.headerjob", "0");
 
-		Map map = new HashMap();
-		map.put("octype", "typeOfHours");
-		map.put("hours", "hoursWorked");
-		map.put("boodate", "dateWorked");
-		map.put("department", "departmentCode");
-		map.put("employee", "employeeCode");
-		map.put("employeedesc", "employeeDesc");
-		map.put("booactivity", "activityCode");
-		map.put("emptrade", "tradeCode");
-
-		return tools.getGridTools().converGridResultToObject(LaborBooking.class, map, gridsService.executeQuery(context, gridRequest));
+		return tools.getGridTools().converGridResultToObject(LaborBooking.class, null, gridsService.executeQuery(context, gridRequest));
 	}
 
 	public String createLaborBooking(InforContext context, LaborBooking laborBookingParam) throws InforException {
@@ -149,21 +139,7 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 			gridRequest.setUserFunctionName("WSJOBS");
 			gridRequest.getParams().put("param.jobnum", workOrderNumber);
 
-			Map map = new HashMap<>();
-			map.put("activity", "activityCode");
-			map.put("activitynote", "activityNote");
-			map.put("workordernum", "workOrderNumber");
-			map.put("personsreq", "peopleRequired");
-			map.put("esthrs", "estimatedHours");
-			map.put("hrsremain", "hoursRemaining");
-			map.put("actstartdate", "startDate");
-			map.put("actenddate", "endDate");
-			map.put("matlcode", "materialList");
-			map.put("task", "taskCode");
-			map.put("trade", "tradeCode");
-			map.put("taskqty", "taskQty");
-
-			List<Activity> activities = tools.getGridTools().converGridResultToObject(Activity.class, map, gridsService.executeQuery(context, gridRequest));
+			List<Activity> activities = tools.getGridTools().converGridResultToObject(Activity.class, null, gridsService.executeQuery(context, gridRequest));
 
 			if (includeChecklists) {
 				// Read checklists for all activities in parallel
@@ -209,11 +185,11 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 		}
 		//
 		if (activityParam.getPeopleRequired() != null) {
-			activityInfor.setPERSONS(tools.getDataTypeTools().encodeLong(activityParam.getPeopleRequired(), "People Required"));
+			activityInfor.setPERSONS(activityParam.getPeopleRequired().longValue());
 		}
 		//
 		if (activityParam.getEstimatedHours() != null) {
-			activityInfor.setESTIMATEDHOURS(Double.parseDouble(activityParam.getEstimatedHours()));
+			activityInfor.setESTIMATEDHOURS(activityParam.getEstimatedHours().doubleValue());
 		}
 		//
 		if (activityParam.getStartDate() != null) {
@@ -227,7 +203,7 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 
 		//
 		if (activityParam.getHoursRemaining() != null) {
-			activityInfor.setHOURSREMAINING(Double.parseDouble(activityParam.getHoursRemaining()));
+			activityInfor.setHOURSREMAINING(activityParam.getHoursRemaining().doubleValue());
 		}
 		//
 		if (activityParam.getTaskCode() != null && !activityParam.getTaskCode().trim().equals("")) {
@@ -244,13 +220,10 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 			activityInfor.getMATLIST().setMTLCODE(activityParam.getMaterialList());
 		}
 
-
-
 		// NOTE
 		if (tools.getDataTypeTools().isNotEmpty(activityParam.getActivityNote())) {
 			activityInfor.getACTIVITYID().setACTIVITYNOTE(activityParam.getActivityNote());
 		}
-
 
 		// CALL THE WS
 		//
@@ -312,11 +285,11 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 
 		//
 		if (activityParam.getPeopleRequired() != null) {
-			activityInfor.setPERSONS(tools.getDataTypeTools().encodeLong(activityParam.getPeopleRequired(), "People Required"));
+			activityInfor.setPERSONS(activityParam.getPeopleRequired().longValue());
 		}
 		//
 		if (activityParam.getEstimatedHours() != null) {
-			activityInfor.setESTIMATEDHOURS(Double.parseDouble(activityParam.getEstimatedHours()));
+			activityInfor.setESTIMATEDHOURS(activityParam.getEstimatedHours().doubleValue());
 		}
 		//
 		if (activityParam.getStartDate() != null) {
@@ -330,7 +303,7 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 
 		//
 		if (activityParam.getHoursRemaining() != null) {
-			activityInfor.setHOURSREMAINING(Double.parseDouble(activityParam.getHoursRemaining()));
+			activityInfor.setHOURSREMAINING(activityParam.getHoursRemaining().doubleValue());
 		}
 
 		//
