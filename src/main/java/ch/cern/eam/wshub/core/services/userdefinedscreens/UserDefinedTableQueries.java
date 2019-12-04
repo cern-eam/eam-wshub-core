@@ -65,10 +65,10 @@ public class UserDefinedTableQueries {
     }
 
     public static <T> List<Map<String, Object>> executeReadQuery(String tableName, Map<String, T> whereFiltersMap,
-                                             List<String> fieldsToRead, EntityManager em)
+                                             List<String> fieldsToRead, Long maxRows, EntityManager em)
             throws InforException {
         //Create list to guarantee ordering
-        String query = getReadQuery(tableName, whereFiltersMap, fieldsToRead);
+        String query = getReadQuery(tableName, whereFiltersMap, fieldsToRead, maxRows);
         try {
             Query nativeQuery = createQuery(query, new HashMap<>(), whereFiltersMap, em);
             List<Object[]> resultList = nativeQuery.getResultList();
@@ -81,7 +81,7 @@ public class UserDefinedTableQueries {
                     }
                 )
                 .collect(Collectors.toList());
-            Map<String, Class<?>> columnTypes = getColumnTypes(tableName, collect.get(0), em);
+            Map<String, Class<?>> columnTypes = getColumnTypes(tableName, em);
             List<Map<String, Object>> lista = new ArrayList<>();
             for (Map<String, Object> s: collect) {
                 Map<String, Object> stringObjectMap = castObjects(s, columnTypes);
@@ -126,7 +126,7 @@ public class UserDefinedTableQueries {
             "WHERE table_name = UPPER(:tableName)"
             ;
 
-    public static Map<String, Class<?>> getColumnTypes(String tableName, Map<String, Object> map, EntityManager em)
+    public static Map<String, Class<?>> getColumnTypes(String tableName, EntityManager em)
             throws InforException {
         try {
             Query nativeQuery = em.createNativeQuery(GET_TABLE_TYPES);
@@ -155,7 +155,8 @@ public class UserDefinedTableQueries {
         return collect;
     }
 
-    private static <T> String getReadQuery(String tableName, Map<String, T> whereFilters, List<String> fieldsToRead) {
+    private static <T> String getReadQuery(String tableName, Map<String, T> whereFilters, List<String> fieldsToRead,
+                                           Long maxRows) {
         String filters = getWhereFilters(whereFilters);
 
         StringBuilder query = new StringBuilder();
@@ -164,6 +165,9 @@ public class UserDefinedTableQueries {
         query.append(" FROM ");
         query.append(tableName);
         query.append(" WHERE ( 1=1").append(filters).append(" )");
+        if (maxRows != null) {
+            query.append(" AND ROWNUM < " + maxRows);
+        }
         return query.toString();
     }
 
