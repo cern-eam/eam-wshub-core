@@ -10,11 +10,12 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class DataTypeTools {
 
@@ -158,12 +159,15 @@ public class DataTypeTools {
         }
 
         numberValue = numberValue.stripTrailingZeros();
+        int numberOfDec = Math.max(0, numberValue.scale());
+        numberValue = numberValue.scaleByPowerOfTen(numberOfDec);
+        numberValue = numberValue.setScale(0);
 
         QUANTITY quantity = new QUANTITY();
         try {
             quantity.setSIGN(numberValue.signum() < 0 ? "-" : "+");
-            quantity.setNUMOFDEC(BigInteger.valueOf(Math.max(0, numberValue.scale())));
-            quantity.setVALUE(numberValue.movePointRight(numberValue.scale()).abs());
+            quantity.setNUMOFDEC(BigInteger.valueOf(numberOfDec));
+            quantity.setVALUE(numberValue.abs());
             quantity.setQualifier("OTHER");
             quantity.setUOM("default");
         } catch (NumberFormatException e) {
@@ -195,12 +199,15 @@ public class DataTypeTools {
         }
 
         numberValue = numberValue.stripTrailingZeros();
+        int numberOfDec = Math.max(0, numberValue.scale());
+        numberValue = numberValue.scaleByPowerOfTen(numberOfDec);
+        numberValue = numberValue.setScale(0);
 
         AMOUNT amount = new AMOUNT();
         try {
             amount.setSIGN(numberValue.signum() < 0 ? "-" : "+");
             amount.setNUMOFDEC(BigInteger.valueOf(Math.max(0, numberValue.scale())));
-            amount.setVALUE(numberValue.movePointRight(numberValue.scale()).abs());
+            amount.setVALUE(numberValue.abs());
             amount.setCURRENCY("default");
             amount.setDRCR("C");
             amount.setQualifier("OTHER");
@@ -263,7 +270,7 @@ public class DataTypeTools {
     }
 
     public static String decodeBigDecimal(BigDecimal bigDecimalValue) {
-        return String.valueOf(bigDecimalValue);
+        return bigDecimalValue == null ? null : bigDecimalValue.toPlainString();
     }
 
     //
