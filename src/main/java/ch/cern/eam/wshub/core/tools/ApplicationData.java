@@ -54,4 +54,8 @@ public class ApplicationData {
 		return "MM/dd/yyyy HH:mm";
 	}
 
+	public Long getQueryMaxNumberOfRows() {
+		return 1000L;
+	}
+
 }

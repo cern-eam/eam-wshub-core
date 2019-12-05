@@ -18,6 +18,24 @@ import ch.cern.eam.wshub.core.services.material.*;
 import ch.cern.eam.wshub.core.services.material.impl.*;
 import ch.cern.eam.wshub.core.services.workorders.*;
 import ch.cern.eam.wshub.core.services.workorders.impl.*;
+import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedTableService;
+import ch.cern.eam.wshub.core.services.userdefinedscreens.impl.UserDefinedTableServiceImpl;
+import ch.cern.eam.wshub.core.services.workorders.CaseService;
+import ch.cern.eam.wshub.core.services.workorders.CaseTaskService;
+import ch.cern.eam.wshub.core.services.workorders.ChecklistService;
+import ch.cern.eam.wshub.core.services.workorders.EmployeeService;
+import ch.cern.eam.wshub.core.services.workorders.InspectionService;
+import ch.cern.eam.wshub.core.services.workorders.LaborBookingService;
+import ch.cern.eam.wshub.core.services.workorders.WorkOrderMiscService;
+import ch.cern.eam.wshub.core.services.workorders.WorkOrderService;
+import ch.cern.eam.wshub.core.services.workorders.impl.CaseServiceImpl;
+import ch.cern.eam.wshub.core.services.workorders.impl.CaseTaskServiceImpl;
+import ch.cern.eam.wshub.core.services.workorders.impl.ChecklistServiceImpl;
+import ch.cern.eam.wshub.core.services.workorders.impl.EmployeeServiceImpl;
+import ch.cern.eam.wshub.core.services.workorders.impl.InspectionServiceImpl;
+import ch.cern.eam.wshub.core.services.workorders.impl.LaborBookingServiceImpl;
+import ch.cern.eam.wshub.core.services.workorders.impl.WorkOrderMiscServiceImpl;
+import ch.cern.eam.wshub.core.services.workorders.impl.WorkOrderServiceImpl;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.Tools;
 
@@ -89,6 +107,8 @@ public class InforClient implements Serializable {
 
     private EquipmentGenerationService equipmentGenerationService;
     private EquipmentConfigurationService equipmentConfigurationService;
+
+    private UserDefinedTableService userDefinedTableServices;
 
     // Prevent initializing the class without the builder
     private InforClient() {}
@@ -223,6 +243,7 @@ public class InforClient implements Serializable {
             inforClient.equipmentGenerationService = proxy(EquipmentGenerationService.class, new EquipmentGenerationServiceImpl(applicationData, tools, inforWebServicesToolkitClient),inforInterceptor, tools);
             inforClient.equipmentConfigurationService = proxy(EquipmentConfigurationService.class, new EquipmentConfigurationServiceImpl(applicationData, tools, inforWebServicesToolkitClient),inforInterceptor, tools);
             inforClient.dataspyService = proxy(DataspyService.class, new DataspyServiceImpl(applicationData, tools, inforWebServicesToolkitClient),inforInterceptor, tools);
+            inforClient.userDefinedTableServices = proxy(UserDefinedTableService.class, new UserDefinedTableServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
 
             inforClient.inforWebServicesToolkitClient = inforWebServicesToolkitClient;
             return inforClient;
@@ -350,6 +371,10 @@ public class InforClient implements Serializable {
     public DocumentsService getDocumentsService() {return documentsService; }
 
     public PickTicketService getPickTicketService() {return pickTicketService; }
+
+    public UserDefinedTableService getUserDefinedTableServices() {
+        return userDefinedTableServices;
+    }
 
     public InforWebServicesPT getInforWebServicesToolkitClient() {return inforWebServicesToolkitClient; }
 
