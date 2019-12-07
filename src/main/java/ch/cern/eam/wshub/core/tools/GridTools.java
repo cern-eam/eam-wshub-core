@@ -194,7 +194,7 @@ public class GridTools {
         // Big Integer
         else if (field.getType().equals(BigInteger.class)) {
             // The numbers returned by grid WS might contain commas making Integer.parseInt mail
-            field.set(object,  encodeBigInteger(value, column));
+            field.set(object, encodeBigInteger(value, column));
         }
         // Big Decimal
         else if (field.getType().equals(BigDecimal.class)) {

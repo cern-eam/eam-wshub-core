@@ -1,6 +1,7 @@
 package ch.cern.eam.wshub.core.services.material.entities;
 
 import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
+import ch.cern.eam.wshub.core.annotations.GridField;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
@@ -8,13 +9,22 @@ import java.math.BigDecimal;
 
 public class PartStock implements Serializable {
 
+
+	@GridField(name="bisstore")
 	private String storeCode;
+	@GridField(name="storedesc")
 	private String storeDesc;
+	@GridField(name="bisbin")
 	private String bin;
+	@GridField(name="bislot")
 	private String lot;
+	@GridField(name="bisqty")
 	private BigDecimal qtyOnHand;
+	@GridField(name="conditionpartcode")
 	private String partCode;
+	@GridField(name="repairquantity")
 	private String repairQuantity;
+	@GridField(name="bisassetid")
 	private String assetCode;
 	
 	public String getStoreCode() {
