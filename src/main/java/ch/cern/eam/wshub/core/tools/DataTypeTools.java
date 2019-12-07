@@ -260,6 +260,8 @@ public class DataTypeTools {
         if (stringValue == null || stringValue.trim().equals("")) {
             return null;
         }
+        // Remove commas used as the thousands separator
+        stringValue = stringValue.replace(",", "");
         BigDecimal bigDecimalValue = null;
         try {
             bigDecimalValue = new BigDecimal(stringValue);
@@ -280,6 +282,8 @@ public class DataTypeTools {
         if (stringValue == null || stringValue.trim().equals("")) {
             return null;
         }
+        // Remove commas used as the thousands separator
+        stringValue = stringValue.replace(",", "");
         BigInteger bigIntegerValue = null;
         try {
             bigIntegerValue = new BigInteger(stringValue);
