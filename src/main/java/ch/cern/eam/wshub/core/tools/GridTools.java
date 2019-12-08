@@ -32,7 +32,7 @@ public class GridTools {
                 .map(gridRequestRow ->
                     Arrays.stream(gridRequestRow.getCell()).filter(cell -> columns.contains(cell.getCol()) || columns.contains(cell.getTag()))
                                                            .filter(cell -> cell.getContent() != null)
-                                                           .collect(toMap(GridRequestCell::getCol, GridRequestCell::getContent))
+                                                           .collect(toMap(GridRequestCell::getTag, GridRequestCell::getContent))
                 ).collect(toList());
     }
 
