@@ -158,11 +158,11 @@ public class GridRequest implements Serializable {
 		return gridRequestFilters;
 	}
 
-	public void sortyBy(String sortBy) {
-		sortyBy(sortBy, "ASC");
+	public void sortBy(String sortBy) {
+		sortBy(sortBy, "ASC");
 	}
 
-	public void sortyBy(String sortBy, String order) {
+	public void sortBy(String sortBy, String order) {
 		gridRequestSorts = new GridRequestSort[1];
 		gridRequestSorts[0] = new GridRequestSort();
 		gridRequestSorts[0].setSortBy(sortBy);

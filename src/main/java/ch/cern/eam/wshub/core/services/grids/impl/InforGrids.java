@@ -35,7 +35,7 @@ public class InforGrids implements Serializable {
 	private ApplicationData applicationData;
 	private Tools tools;
 	private InforWebServicesPT inforws;
-	private static Map<String, Map<BigInteger, GridField>> gridFieldCache = new ConcurrentHashMap<>();
+	public static final Map<String, Map<BigInteger, GridField>> gridFieldCache = new ConcurrentHashMap<>();
 
 	public InforGrids(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
 		this.applicationData = applicationData;
