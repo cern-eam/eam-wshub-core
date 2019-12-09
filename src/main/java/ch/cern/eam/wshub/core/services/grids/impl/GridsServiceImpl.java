@@ -46,7 +46,7 @@ public class GridsServiceImpl implements GridsService {
 		}
 	}
 
-	public GridMetadataRequestResult getGridMetadataInfor(InforContext context, String gridName)  {
+	public GridMetadataRequestResult getGridMetadataInfor(InforContext context, String gridName) {
 		try {
 			if (gridIdCache.containsKey(gridName)) {
 				return gridIdCache.get(gridName);
