@@ -32,12 +32,15 @@ public class UserDefinedTableServiceImpl implements UserDefinedTableService {
         this.applicationData = applicationData;
         this.tools = tools;
         this.inforws = inforWebServicesToolkitClient;
-        this.entityManager = tools.getEntityManager();
+        if (tools.isDatabaseConnectionConfigured()) {
+            this.entityManager = tools.getEntityManager();
+        }
     }
 
     @Override
     public String createUserDefinedTableRows(InforContext context, String tableName, List<UDTRow> rows)
             throws InforException {
+        tools.demandDatabaseConnection();
         UserDefinedTableValidator.validateOperation(tableName, rows);
         for (UDTRow row: rows) {
             Map<String, Object> parameters = getUDTRowAsMap(row);
@@ -50,42 +53,37 @@ public class UserDefinedTableServiceImpl implements UserDefinedTableService {
     @Override
     public List<Map<String, Object>> readUserDefinedTableRows(InforContext context,
                         String tableName, UDTRow filters, List<String> fieldsToRead) throws InforException {
-        try {
-            UserDefinedTableValidator.validateOperation(tableName, null, filters);
-            UserDefinedTableValidator.validateKeyList(fieldsToRead, false);
-            Map<String, Object> parameters = getUDTRowAsMap(filters);
-            Map<String, ?> columnTypes =
-                    UserDefinedTableQueries.getColumnTypes(tableName.toUpperCase(), entityManager);
-            if (fieldsToRead.size() == 0) {
-                fieldsToRead = new ArrayList<>(columnTypes.keySet());
-            }
-            Long maxRows = applicationData.getQueryMaxNumberOfRows();
-            List<Map<String, Object>> maps = UserDefinedTableQueries.executeReadQuery(tableName.toUpperCase(),
-                    parameters, fieldsToRead, maxRows, entityManager);
-            return maps;
-        } catch (Exception e) {
-            throw e;
+        tools.demandDatabaseConnection();
+        UserDefinedTableValidator.validateOperation(tableName, null, filters);
+        UserDefinedTableValidator.validateKeyList(fieldsToRead, false);
+        Map<String, Object> parameters = getUDTRowAsMap(filters);
+        Map<String, ?> columnTypes =
+                UserDefinedTableQueries.getColumnTypes(tableName.toUpperCase(), entityManager);
+        if (fieldsToRead.size() == 0) {
+            fieldsToRead = new ArrayList<>(columnTypes.keySet());
         }
-
+        Long maxRows = applicationData.getQueryMaxNumberOfRows();
+        List<Map<String, Object>> maps = UserDefinedTableQueries.executeReadQuery(tableName.toUpperCase(),
+                parameters, fieldsToRead, maxRows, entityManager);
+        return maps;
     }
 
     @Override
     public int updateUserDefinedTableRows(InforContext context, String tableName, UDTRow fieldsToUpdate,
                                              UDTRow filters) throws InforException {
-        try {
-            UserDefinedTableValidator.validateOperation(tableName, fieldsToUpdate, filters);
-            Map<String, Object> updateMapMap = getUDTRowAsMap(fieldsToUpdate);
-            Map<String, Object> whereMap = getUDTRowAsMap(filters);
-            updateMapMap.putAll(getDefaultUpdateColumns(context.getCredentials().getUsername()));
-            return UserDefinedTableQueries.executeUpdateQuery(tableName, updateMapMap, whereMap,
-                    entityManager);
-        } catch (Exception e) {
-            throw e;
-        }
+        tools.demandDatabaseConnection();
+        UserDefinedTableValidator.validateOperation(tableName, fieldsToUpdate, filters);
+        Map<String, Object> updateMapMap = getUDTRowAsMap(fieldsToUpdate);
+        Map<String, Object> whereMap = getUDTRowAsMap(filters);
+        updateMapMap.putAll(getDefaultUpdateColumns(context.getCredentials().getUsername()));
+        return UserDefinedTableQueries.executeUpdateQuery(tableName, updateMapMap, whereMap,
+                entityManager);
+
     }
 
     @Override
     public int deleteUserDefinedTableRows(InforContext context, String tableName, UDTRow filters) throws InforException {
+        tools.demandDatabaseConnection();
         UserDefinedTableValidator.validateOperation(tableName, null, filters);
         Map<String, Object> filterMap = getUDTRowAsMap(filters);
         return UserDefinedTableQueries.executeDeleteQuery(tableName, filterMap, entityManager);
