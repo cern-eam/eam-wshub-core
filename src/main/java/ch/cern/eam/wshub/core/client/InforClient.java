@@ -37,6 +37,7 @@ import ch.cern.eam.wshub.core.services.workorders.impl.LaborBookingServiceImpl;
 import ch.cern.eam.wshub.core.services.workorders.impl.WorkOrderMiscServiceImpl;
 import ch.cern.eam.wshub.core.services.workorders.impl.WorkOrderServiceImpl;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
+import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 
 import net.datastream.wsdls.inforws.InforWebServicesPT;
@@ -52,6 +53,7 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.concurrent.ExecutorService;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
@@ -244,8 +246,10 @@ public class InforClient implements Serializable {
             inforClient.equipmentConfigurationService = proxy(EquipmentConfigurationService.class, new EquipmentConfigurationServiceImpl(applicationData, tools, inforWebServicesToolkitClient),inforInterceptor, tools);
             inforClient.dataspyService = proxy(DataspyService.class, new DataspyServiceImpl(applicationData, tools, inforWebServicesToolkitClient),inforInterceptor, tools);
             inforClient.userDefinedTableServices = proxy(UserDefinedTableService.class, new UserDefinedTableServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
-
             inforClient.inforWebServicesToolkitClient = inforWebServicesToolkitClient;
+            if (!tools.isDatabaseConnectionConfigured()) {
+                logger.log(Level.WARNING, "Some of the services might require a database connection.");
+            }
             return inforClient;
         }
 

@@ -616,72 +616,67 @@ public class JPAGrids implements Serializable {
 	 */
 	private String createFilterSQLStatement(List<GridRequestFilter> filters, Map<String, DataField> tagNames,
 			Map<String, Object> params, String filterType) throws Exception  {
-		String filterString = "";
+		StringBuilder filterString = new StringBuilder();
 		int count = 0;
 		int filtersLengthMinusOne = filters.size() - 1;
 		for (GridRequestFilter filter : filters) {
 			//skip custom fields
 			if(tagNames.get(filter.getFieldName()) != null){
 				
-				if ("true".equals(filter.getLeftParenthesis()))
-					filterString += "(";
+				if (filter.getLeftParenthesis()) filterString.append("(");
 
-				String p = "";
+				String value = filter.getFieldValue();
+
 				// Replace parameter name with global or local
-				if(filter.getFieldValue()!=null && filter.getFieldValue().startsWith(":")){
-					p = filter.getFieldValue();
-					p = p.substring(1,p.length()); //remove colon
-				}
-				else{
-					p = filter.getFieldName() + filterType + count;
-				}
-				
+				String p = (value != null && value.startsWith(":")) ?
+						filter.getFieldValue().substring(1)
+						: filter.getFieldName() + filterType + count
+						;
+
 				Operator op = Operator.fromString(filter.getOperator().toUpperCase());
 				
 				DataType fieldDataType = tagNames.get(filter.getFieldName()).getDatatype();
 				
 				switch(fieldDataType){
-				case DATE:
-				case DATETIME:
-					filterString += buildSQLStatementForDateTypeOfValue(op, filter, tagNames, p, params);
-					break;
-				case DECIMAL:
-				case NUMBER:
-					filterString += buildSQLStatementForDecimalTypeOfValue(op, filter, tagNames, p, params);
-					break;
-				case CHKBOOLEAN:
-					String sourcename = tagNames.get(filter.getFieldName()).getSourcename();
-					filterString += sourcename + " = :" + p;					
-					switch(op) {
-						case SELECTED:
-							params.put(p, "+");
-							break;
-						case NOT_SELECTED:
-							params.put(p, "-");
-							break;
-						default:
-							params.put(p, "false".equals(filter.getFieldValue())?"-":"+");
-					}					
-					break;
-				default:
-					String sourcename1 = ( isCaseInsensitive(tagNames, filter) ) 
-										 ? "UPPER(" + tagNames.get(filter.getFieldName()).getSourcename() + ")"
-										   : tagNames.get(filter.getFieldName()).getSourcename();
-					filterString += buildSQLStatementForOtherTypeOfValue(op, filter, tagNames, p, params, sourcename1);
-					break;
+					case DATE:
+					case DATETIME:
+						filterString.append(buildSQLStatementForDateTypeOfValue(op, filter, tagNames, p, params));
+						break;
+					case DECIMAL:
+					case NUMBER:
+						filterString.append(buildSQLStatementForDecimalTypeOfValue(op, filter, tagNames, p, params));
+						break;
+					case CHKBOOLEAN:
+						String sourcename = tagNames.get(filter.getFieldName()).getSourcename();
+						filterString.append(sourcename).append(" = :").append(p);
+						switch(op) {
+							case SELECTED:
+								params.put(p, "+");
+								break;
+							case NOT_SELECTED:
+								params.put(p, "-");
+								break;
+							default:
+								params.put(p, "false".equals(filter.getFieldValue()) ? "-" : "+");
+						}
+						break;
+					default:
+						String sourcename1 = ( isCaseInsensitive(tagNames, filter) )
+											 ? "UPPER(" + tagNames.get(filter.getFieldName()).getSourcename() + ")"
+											   : tagNames.get(filter.getFieldName()).getSourcename();
+						filterString.append(buildSQLStatementForOtherTypeOfValue(op, filter, tagNames, p, params, sourcename1));
+						break;
 				}
 	
-				if ("true".equals(filter.getRightParenthesis()))
-					filterString += ")";
+				if (filter.getRightParenthesis()) filterString.append(")");
 	
 				// JOINER
 				if (filter.getJoiner() ==  GridRequestFilter.JOINER.AND) {
-					filterString += " AND ";
+					filterString.append(" AND ");
+				} else if (filter.getJoiner() == GridRequestFilter.JOINER.OR) {
+					filterString.append(" OR ");
 				}
-				if (filter.getJoiner() == GridRequestFilter.JOINER.OR) {
-					filterString += " OR ";
-				}
-				
+
 				//Check missing joiner
 				if(filter.getJoiner() == null && count < filtersLengthMinusOne ){
 					throw new MissingJoinerGridFilterException();
@@ -697,13 +692,13 @@ public class JPAGrids implements Serializable {
 		}
 		// Remove last AND or OR operator that is useless
 		if(filterString.length() >= 5 && filterString.subSequence((filterString.length() - 5), (filterString.length() )).equals(" AND ")){
-			filterString = filterString.subSequence(0, (filterString.length() - 5)).toString();
+			filterString = new StringBuilder(filterString.subSequence(0, (filterString.length() - 5)).toString());
 		}
 		else if(filterString.length() >= 4 && filterString.subSequence((filterString.length() - 4), (filterString.length() )).equals(" OR ")){
-			filterString = filterString.subSequence(0, (filterString.length() - 4)).toString();
+			filterString = new StringBuilder(filterString.subSequence(0, (filterString.length() - 4)).toString());
 		}
 		
-		return filterString;
+		return filterString.toString();
 	}
 	
 	/**
@@ -714,14 +709,11 @@ public class JPAGrids implements Serializable {
 	private boolean isParenthesisSyntacticallyCorrect(List<GridRequestFilter> filters){
 		int parenthesisCounter = 0;
 		for (GridRequestFilter filter : filters){
-			if(filter.getLeftParenthesis() != null && filter.getLeftParenthesis().equals("true"))
-				++parenthesisCounter;
-			if(filter.getRightParenthesis() != null && filter.getRightParenthesis().equals("true"))
-				--parenthesisCounter;
-			
+			if (filter.getLeftParenthesis() != null && filter.getLeftParenthesis()) ++parenthesisCounter;
+			if(filter.getRightParenthesis() != null && filter.getRightParenthesis()) --parenthesisCounter;
 			if(parenthesisCounter < 0) return false;
 		}
-		return (parenthesisCounter == 0) ? true : false;
+		return parenthesisCounter == 0;
 	}
 	
 	private String buildSQLStatementForDateTypeOfValue(Operator op, GridRequestFilter filter,
