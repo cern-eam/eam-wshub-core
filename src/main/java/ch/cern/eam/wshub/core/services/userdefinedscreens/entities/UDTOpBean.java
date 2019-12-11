@@ -32,11 +32,11 @@ public class UDTOpBean implements Serializable {
         this.whereFilters = whereFilters;
     }
 
-    public UDTRow getRows() {
+    public UDTRow getRow() {
         return row;
     }
 
-    public void setRows(UDTRow rows) {
+    public void setRow(UDTRow row) {
         this.row = row;
     }
 
