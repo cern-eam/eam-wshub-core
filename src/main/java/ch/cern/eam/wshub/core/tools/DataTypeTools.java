@@ -206,7 +206,7 @@ public class DataTypeTools {
         AMOUNT amount = new AMOUNT();
         try {
             amount.setSIGN(numberValue.signum() < 0 ? "-" : "+");
-            amount.setNUMOFDEC(BigInteger.valueOf(Math.max(0, numberValue.scale())));
+            amount.setNUMOFDEC(BigInteger.valueOf(numberOfDec));
             amount.setVALUE(numberValue.abs());
             amount.setCURRENCY("default");
             amount.setDRCR("C");
