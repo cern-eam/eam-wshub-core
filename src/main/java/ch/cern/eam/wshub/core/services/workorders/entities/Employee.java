@@ -45,6 +45,9 @@ public class Employee implements Serializable {
 	@Column(name = "PER_UDFNUM01")
 	private BigDecimal supervisor;
 
+	@Column(name = "PER_UDFNUM02")
+	private BigDecimal personID;
+
 	@Column(name = "PER_USER")
 	private String userCode;
 	
@@ -133,7 +136,15 @@ public class Employee implements Serializable {
 	public void setSupervisor(BigDecimal supervisor) {
 		this.supervisor = supervisor;
 	}
-	
+
+	public BigDecimal getPersonID() {
+		return personID;
+	}
+
+	public void setPersonID(BigDecimal personID) {
+		this.personID = personID;
+	}
+
 	public String getUserCode() {
 		return this.userCode;
 	}

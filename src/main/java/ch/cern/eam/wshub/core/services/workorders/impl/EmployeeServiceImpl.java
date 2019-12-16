@@ -100,6 +100,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 				.readInforUserDefinedFields(inforEmployee.getStandardUserDefinedFields());
 
 		employee.setSupervisor(encodeBigDecimal(userDefinedFields.getUdfchar01(), "Supervisor"));
+		employee.setPersonID(encodeBigDecimal(userDefinedFields.getUdfchar02(), "PersonId"));
 
 		return employee;
 	}
@@ -243,6 +244,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 		if (employee.getSupervisor() != null) {
 			inforEmployee.getStandardUserDefinedFields()
 					.setUDFNUM01(tools.getDataTypeTools().encodeQuantity(employee.getSupervisor(), "Supervisor"));
+		}
+
+		if (employee.getPersonID() != null) {
+			inforEmployee.getStandardUserDefinedFields()
+					.setUDFNUM02(tools.getDataTypeTools().encodeQuantity(employee.getPersonID(), "PersonID"));
 		}
 
 		if (employee.getDepartment() != null) {
