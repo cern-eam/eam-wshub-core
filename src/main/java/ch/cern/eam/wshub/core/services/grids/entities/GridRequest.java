@@ -41,7 +41,7 @@ public class GridRequest implements Serializable {
 	 */
 	private String departmentSecurityGridColumn = null;
 	
-	private Map<String, Object> params = new HashMap<>();
+	private Map<String, Object> params;
 	
 	private List<GridRequestFilter> gridRequestFilters;
 	private GridRequestSort[] gridRequestSorts;
@@ -73,6 +73,13 @@ public class GridRequest implements Serializable {
 		this.gridID = gridID;
 		this.dataspyID = dataspyID;
 		this.gridName = gridName;
+	}
+
+	public GridRequest(String gridName, GRIDTYPE gridType, Integer rowCount) {
+		this();
+		this.gridName = gridName;
+		this.gridType = gridType;
+		this.rowCount = rowCount;
 	}
 
 	public GridRequest(GridRequest o) {
@@ -158,31 +165,10 @@ public class GridRequest implements Serializable {
 		return gridRequestFilters;
 	}
 
-	public void sortBy(String sortBy) {
-		sortBy(sortBy, "ASC");
-	}
 
-	public void sortBy(String sortBy, String order) {
-		gridRequestSorts = new GridRequestSort[1];
-		gridRequestSorts[0] = new GridRequestSort();
-		gridRequestSorts[0].setSortBy(sortBy);
-		gridRequestSorts[0].setSortType(order);
-	}
 
 	public void setGridRequestFilters(List<GridRequestFilter> gridRequestFilters) {
 		this.gridRequestFilters = gridRequestFilters;
-	}
-
-	public void addFilter(String fieldName, String fieldValue, String operator) {
-		this.getGridRequestFilters().add(new GridRequestFilter(fieldName, fieldValue, operator));
-	}
-
-	public void addFilter(String fieldName, String fieldValue, String operator, GridRequestFilter.JOINER joiner) {
-		this.getGridRequestFilters().add(new GridRequestFilter(fieldName, fieldValue, operator, joiner));
-	}
-
-	public void addFilter(String fieldName, String fieldValue, String operator, GridRequestFilter.JOINER joiner, Boolean leftParenthesis, Boolean rightParenthesis) {
-		this.getGridRequestFilters().add(new GridRequestFilter(fieldName, fieldValue, operator, joiner, leftParenthesis, rightParenthesis));
 	}
 
 	public GRIDTYPE getGridType() {
@@ -210,8 +196,13 @@ public class GridRequest implements Serializable {
 	public void setIncludeMetadata(Boolean includeMetadata) {this.includeMetadata = includeMetadata; }
 
 	public Map<String, Object> getParams() {
+		if (params == null) {
+			params = new HashMap<>();
+		}
 		return params;
 	}
+
+
 	public void setParams(Map<String, Object> params) {
 		this.params = params;
 	}
@@ -255,6 +246,41 @@ public class GridRequest implements Serializable {
 	public void setUserFunctionName(String userFunctionName) {
 		this.userFunctionName = userFunctionName;
 	}
+
+	//
+	// HELPER METHODS
+	//
+
+	// SORTS
+	public void sortBy(String sortBy) {
+		sortBy(sortBy, "ASC");
+	}
+
+	public void sortBy(String sortBy, String order) {
+		gridRequestSorts = new GridRequestSort[1];
+		gridRequestSorts[0] = new GridRequestSort();
+		gridRequestSorts[0].setSortBy(sortBy);
+		gridRequestSorts[0].setSortType(order);
+	}
+
+	// FILTERS
+	public void addFilter(String fieldName, String fieldValue, String operator) {
+		this.getGridRequestFilters().add(new GridRequestFilter(fieldName, fieldValue, operator));
+	}
+
+	public void addFilter(String fieldName, String fieldValue, String operator, GridRequestFilter.JOINER joiner) {
+		this.getGridRequestFilters().add(new GridRequestFilter(fieldName, fieldValue, operator, joiner));
+	}
+
+	public void addFilter(String fieldName, String fieldValue, String operator, GridRequestFilter.JOINER joiner, Boolean leftParenthesis, Boolean rightParenthesis) {
+		this.getGridRequestFilters().add(new GridRequestFilter(fieldName, fieldValue, operator, joiner, leftParenthesis, rightParenthesis));
+	}
+
+	// PARAMS
+	public void addParam(String key, Object value) {
+		this.getParams().put(key, value);
+	}
+
 
 	@Override
 	public String toString() {

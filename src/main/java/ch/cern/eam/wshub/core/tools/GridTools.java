@@ -85,7 +85,7 @@ public class GridTools {
      * @param <T>
      * @return
      */
-    public static <T> List<T> converGridResultToObject(Class<T> clazz, Map<String, String> columns, GridRequestResult gridRequestResult) {
+    public static <T> List<T> convertGridResultToObject(Class<T> clazz, Map<String, String> columns, GridRequestResult gridRequestResult) {
         List<T> result = new LinkedList<>();
         if (gridRequestResult == null || gridRequestResult.getRows() == null) {
             return result;

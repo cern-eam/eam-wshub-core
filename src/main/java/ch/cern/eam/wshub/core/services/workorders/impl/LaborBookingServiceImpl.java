@@ -59,7 +59,7 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 		gridRequest.getParams().put("param.headeractivity", "0");
 		gridRequest.getParams().put("param.headerjob", "0");
 
-		return tools.getGridTools().converGridResultToObject(LaborBooking.class, null, gridsService.executeQuery(context, gridRequest));
+		return tools.getGridTools().convertGridResultToObject(LaborBooking.class, null, gridsService.executeQuery(context, gridRequest));
 	}
 
 	public String createLaborBooking(InforContext context, LaborBooking laborBookingParam) throws InforException {
@@ -139,7 +139,7 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 			gridRequest.setUserFunctionName("WSJOBS");
 			gridRequest.getParams().put("param.jobnum", workOrderNumber);
 
-			List<Activity> activities = tools.getGridTools().converGridResultToObject(Activity.class, null, gridsService.executeQuery(context, gridRequest));
+			List<Activity> activities = tools.getGridTools().convertGridResultToObject(Activity.class, null, gridsService.executeQuery(context, gridRequest));
 
 			if (includeChecklists) {
 				// Read checklists for all activities in parallel

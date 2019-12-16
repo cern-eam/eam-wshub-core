@@ -178,7 +178,7 @@ public class Tools {
 	//
 	public String getTenant(InforContext inforContext) {
 		if (inforContext != null && inforContext.getTenant() != null) {
-			return inforContext.getTenant().toUpperCase();
+			return inforContext.getTenant();
 		} else {
 			return applicationData.getTenant();
 		}

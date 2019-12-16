@@ -21,7 +21,7 @@ public class GridsServiceImpl implements GridsService {
 
 	private InforGrids inforGrids;
 	private JPAGrids jpaGrids;
-	private static Map<String, GridMetadataRequestResult> gridIdCache = new ConcurrentHashMap<>();
+	public static final Map<String, GridMetadataRequestResult> gridIdCache = new ConcurrentHashMap<>();
 
 	public GridsServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
 		this.tools = tools;

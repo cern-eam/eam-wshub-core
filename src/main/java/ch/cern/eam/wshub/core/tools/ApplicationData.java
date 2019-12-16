@@ -15,11 +15,7 @@ public class ApplicationData {
 	}
 
 	public String getTenant() {
-		if (tenant != null) {
-			return tenant.toUpperCase();
-		} else {
-			return null;
-		}
+		return tenant;
 	}
 
 	public void setTenant(String tenant) {
