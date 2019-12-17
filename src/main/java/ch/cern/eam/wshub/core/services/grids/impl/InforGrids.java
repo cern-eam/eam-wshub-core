@@ -124,10 +124,15 @@ public class InforGrids implements Serializable {
 
 				//
 				List<GridRequestCell> cells = inforRow.getD().stream().map(inforCell -> {
-					return new GridRequestCell(inforCell.getN().toString(),
-							decodeCellContent(gridFieldCache.get(gridRequest.getRequestKey()).get(inforCell.getN()), inforCell.getContent()),
-							Integer.parseInt(gridFieldCache.get(gridRequest.getRequestKey()).get(inforCell.getN()).getOrder()),
-							gridFieldCache.get(gridRequest.getRequestKey()).get(inforCell.getN()).getName());
+					GridField gridField = gridFieldCache.get(gridRequest.getRequestKey()).get(inforCell.getN());
+					if (gridField != null) {
+						return new GridRequestCell(inforCell.getN().toString(),
+								decodeCellContent(gridField, inforCell.getContent()),
+								Integer.parseInt(gridField.getOrder()),
+								gridField.getName());
+					} else {
+						return new GridRequestCell(inforCell.getN().toString(), inforCell.getContent(), -99999, "UNKNOWN_TAGNAME");
+					}
 				}).collect(Collectors.toList());
 
 				// SET ORDER AND TAG NAME
