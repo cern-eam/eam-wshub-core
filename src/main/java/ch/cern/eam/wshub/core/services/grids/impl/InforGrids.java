@@ -124,15 +124,17 @@ public class InforGrids implements Serializable {
 
 				//
 				List<GridRequestCell> cells = inforRow.getD().stream().map(inforCell -> {
-					GridField gridField = gridFieldCache.get(gridRequest.getRequestKey()).get(inforCell.getN());
-					if (gridField != null) {
-						return new GridRequestCell(inforCell.getN().toString(),
-								decodeCellContent(gridField, inforCell.getContent()),
-								Integer.parseInt(gridField.getOrder()),
-								gridField.getName());
-					} else {
+					// If current column is not in the grid cache (or there is no grid cache :-) ) extract only the ID and content from Infor grid cell
+					if (gridFieldCache.get(gridRequest.getRequestKey()) == null || gridFieldCache.get(gridRequest.getRequestKey()).get(inforCell.getN()) == null) {
 						return new GridRequestCell(inforCell.getN().toString(), inforCell.getContent(), -99999, "UNKNOWN_TAGNAME");
 					}
+					// Extract the ID, content, order and the tag name from the grid cell
+					GridField gridField = gridFieldCache.get(gridRequest.getRequestKey()).get(inforCell.getN());
+					return new GridRequestCell(inforCell.getN().toString(),
+							decodeCellContent(gridField, inforCell.getContent()),
+							Integer.parseInt(gridField.getOrder()),
+							gridField.getName());
+
 				}).collect(Collectors.toList());
 
 				// SET ORDER AND TAG NAME
