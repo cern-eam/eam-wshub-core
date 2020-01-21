@@ -5,6 +5,7 @@ import ch.cern.eam.wshub.core.services.comments.CommentService;
 import ch.cern.eam.wshub.core.services.comments.impl.CommentServiceImpl;
 import ch.cern.eam.wshub.core.services.entities.BatchResponse;
 import ch.cern.eam.wshub.core.services.comments.entities.Comment;
+import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import ch.cern.eam.wshub.core.services.workorders.WorkOrderService;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
@@ -178,7 +179,11 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			inforWorkOrder.setUSERDEFINEDAREA(standardWO.getUSERDEFINEDAREA());
 			inforWorkOrder.setCLASSID(standardWO.getWORKORDERCLASSID());
 			inforWorkOrder.setTYPE(standardWO.getWORKORDERTYPE());
-			workorderParam.setUserDefinedFields(tools.getUDFTools().readInforUserDefinedFields(standardWO.getUserDefinedFields()));
+
+			// Create temporary workorder to make use of the transformWSHubObject method to populate udfs
+			WorkOrder wo = new WorkOrder();
+			wo.setUserDefinedFields(tools.getUDFTools().readInforUserDefinedFields(standardWO.getUserDefinedFields()));
+			tools.getInforFieldTools().transformWSHubObject(inforWorkOrder, wo, context);
 		}
 
 		// CUSTOM FIELDS
