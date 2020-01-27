@@ -9,15 +9,23 @@ public class BigDecimalAdapter extends XmlAdapter<String, BigDecimal> {
 
     @Override
     public String marshal(BigDecimal value) throws Exception {
-		if (value == null) {
-			return null;
-		} else {
-			return value.toPlainString();
-		}
+		return bigDecimalToString(value);
     }
 
     @Override
     public BigDecimal unmarshal(String value) throws Exception {
+        return stringToBigDecimal(value);
+    }
+
+    public static String bigDecimalToString(BigDecimal value) {
+        if (value == null) {
+            return null;
+        } else {
+            return value.toPlainString();
+        }
+    }
+
+    public static BigDecimal stringToBigDecimal(String value) {
         if (value == null) {
             return null;
         } else if (value.equals("") || value.equals("*NULL*")) {
@@ -26,5 +34,4 @@ public class BigDecimalAdapter extends XmlAdapter<String, BigDecimal> {
             return new BigDecimal(value);
         }
     }
-
 }
