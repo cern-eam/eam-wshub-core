@@ -2,6 +2,7 @@ package ch.cern.eam.wshub.core.services.material.entities;
 
 import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
 import ch.cern.eam.wshub.core.adapters.BooleanAdapter;
+import ch.cern.eam.wshub.core.annotations.BooleanType;
 import ch.cern.eam.wshub.core.annotations.InforField;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
@@ -80,7 +81,7 @@ public class Part implements Serializable {
 	@InforField(xpath = "LASTPRICE")
 	private BigDecimal lastPrice;
 	@Transient
-	@InforField(xpath = "BYASSET")
+	@InforField(xpath = "BYASSET", booleanType = BooleanType.PLUS_MINUS)
 	private Boolean trackByAsset = false;
 	@Transient
 	@InforField(xpath = "KIT")
@@ -92,7 +93,7 @@ public class Part implements Serializable {
 	@InforField(xpath = "OUTOFSERVICE")
 	private Boolean outOfService = false;
 	@Transient
-	@InforField(xpath = "BYLOT")
+	@InforField(xpath = "BYLOT", booleanType = BooleanType.PLUS_MINUS)
 	private Boolean trackByLot = false;
 	@Transient
 	@InforField(xpath = "PREVENTREORDERS")
