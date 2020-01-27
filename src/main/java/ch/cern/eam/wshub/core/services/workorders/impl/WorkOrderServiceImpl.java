@@ -196,13 +196,15 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			}
 		}
 
+		// REQUIRED
+		inforWorkOrder.setWORKORDERID(new WOID_Type());
+		inforWorkOrder.getWORKORDERID().setORGANIZATIONID(tools.getOrganization(context));
+		inforWorkOrder.getWORKORDERID().setJOBNUM("0");
+		inforWorkOrder.setFIXED("V");
+
 		// POPULATE ALL OTHER FIELDS
 		tools.getInforFieldTools().transformWSHubObject(inforWorkOrder, workorderParam, context);
 
-		// REQUIRED
-		inforWorkOrder.getWORKORDERID().setJOBNUM("0");
-		inforWorkOrder.setFIXED("V");
-		//
 		MP0023_AddWorkOrder_001 addWO = new MP0023_AddWorkOrder_001();
 		addWO.setWorkOrder(inforWorkOrder);
 		MP0023_AddWorkOrder_001_Result result;
