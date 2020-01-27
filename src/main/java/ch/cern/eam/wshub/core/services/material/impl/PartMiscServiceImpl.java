@@ -1,6 +1,7 @@
 package ch.cern.eam.wshub.core.services.material.impl;
 
 import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import ch.cern.eam.wshub.core.services.material.entities.IssueReturnPartTransaction;
 import ch.cern.eam.wshub.core.services.material.entities.IssueReturnPartTransactionLine;
 import ch.cern.eam.wshub.core.services.material.PartMiscService;
@@ -8,6 +9,8 @@ import ch.cern.eam.wshub.core.services.material.entities.*;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
+import ch.cern.eam.wshub.core.tools.UserDefinedFieldsTools;
+import com.sun.xml.bind.api.impl.NameConverter;
 import net.datastream.schemas.mp_entities.catalogue_001.Catalogue;
 import net.datastream.schemas.mp_entities.issuereturntransaction_001.IssueReturnTransaction;
 import net.datastream.schemas.mp_entities.issuereturntransactionline_001.IssueReturnTransactionLine;
@@ -27,7 +30,10 @@ import net.datastream.schemas.mp_results.mp0220_001.MP0220_AddIssueReturnTransac
 import net.datastream.schemas.mp_results.mp0612_001.MP0612_AddPartsAssociated_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.decodeBoolean;
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.encodeQuantity;
+
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.xml.ws.Holder;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -41,11 +47,13 @@ public class PartMiscServiceImpl implements PartMiscService {
 	private Tools tools;
 	private InforWebServicesPT inforws;
 	private ApplicationData applicationData;
+	private UserDefinedFieldsTools userDefinedFieldsTools;
 
 	public PartMiscServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
 		this.applicationData = applicationData;
 		this.tools = tools;
 		this.inforws = inforWebServicesToolkitClient;
+		this.userDefinedFieldsTools = new UserDefinedFieldsTools(tools);
 	}
 
 	public String addPartSupplier(InforContext context, PartSupplier partSupplierParam) throws InforException {
@@ -184,6 +192,13 @@ public class PartMiscServiceImpl implements PartMiscService {
 
 		}
 
+		// PICK TICKET
+		if (issueReturnPartTransaction.getPickTicketCode() != null
+				&& !issueReturnPartTransaction.getPickTicketCode().trim().equals("")) {
+			issueReturnTransactionInfor.setPICKLISTID(new PICKLIST_Type());
+			issueReturnTransactionInfor.getPICKLISTID().setPICKLIST(issueReturnPartTransaction.getPickTicketCode());
+		}
+
 		// DEPARTMENT
 		if (issueReturnPartTransaction.getDepartmentCode() != null) {
 			issueReturnTransactionInfor.setDEPARTMENTID(new DEPARTMENTID_Type());
@@ -212,6 +227,16 @@ public class PartMiscServiceImpl implements PartMiscService {
 		issueReturnTransactionInfor.setIssueReturnTransactionLines(new IssueReturnTransactionLines());
 		for (IssueReturnPartTransactionLine line : issueReturnPartTransaction.getTransactionlines()) {
 			IssueReturnTransactionLine issueReturnTransactionLine = new IssueReturnTransactionLine();
+
+			//USER DEFINED FIELDS
+			if (issueReturnPartTransaction.getUserDefinedFields() != null) {
+				UserDefinedFields udfs = line.getUserDefinedFields();
+				StandardUserDefinedFields sudfs = new StandardUserDefinedFields();
+				userDefinedFieldsTools.updateInforUserDefinedFields(sudfs, udfs);
+				issueReturnTransactionLine.setStandardUserDefinedFields(sudfs);
+			}
+
+
 			// PART
 			if (line.getPartCode() != null) {
 				issueReturnTransactionLine.setPARTID(new PARTID_Type());
@@ -265,7 +290,12 @@ public class PartMiscServiceImpl implements PartMiscService {
 			result = inforws.addIssueReturnTransactionOp(addIssueReturnTransaction, tools.getOrganizationCode(context),  null, null, new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
 		}
 
-		return result.getResultData().getIssueReturnTransaction().getTRANSACTIONID().getTRANSACTIONCODE();
+		String transactId = result.getResultData().getIssueReturnTransaction().getTRANSACTIONID().getTRANSACTIONCODE();
+
+		// Manually update the Transaction UserDefined fields here through the db connection since Infor WS does not
+		//support it - this was removed because it is not possible to do it on the interface
+
+		return transactId;
 	}
 
 	public String createPartAssociation(InforContext context, PartAssociation partAssociation) throws InforException {

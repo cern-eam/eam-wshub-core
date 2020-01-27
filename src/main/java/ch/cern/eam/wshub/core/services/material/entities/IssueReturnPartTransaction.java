@@ -1,5 +1,7 @@
 package ch.cern.eam.wshub.core.services.material.entities;
 
+import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
+
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
@@ -33,6 +35,10 @@ public class IssueReturnPartTransaction implements Serializable {
 	private String date;
 	
 	private String transactionType;
+
+	private String pickTicketCode;
+
+	private UserDefinedFields userDefinedFields;
 	
 
 	public String getTransactionInfo() {
@@ -192,5 +198,20 @@ public class IssueReturnPartTransaction implements Serializable {
 	public void setEmployeeDesc(String employeeDesc) {
 		this.employeeDesc = employeeDesc;
 	}
-	
+
+	public String getPickTicketCode() {
+		return pickTicketCode;
+	}
+
+	public void setPickTicketCode(String pickTicketCode) {
+		this.pickTicketCode = pickTicketCode;
+	}
+
+	public UserDefinedFields getUserDefinedFields() {
+		return userDefinedFields;
+	}
+
+	public void setUserDefinedFields(UserDefinedFields userDefinedFields) {
+		this.userDefinedFields = userDefinedFields;
+	}
 }

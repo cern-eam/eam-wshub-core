@@ -1,6 +1,7 @@
 package ch.cern.eam.wshub.core.services.material.entities;
 
 import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
+import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
@@ -17,6 +18,8 @@ public class IssueReturnPartTransactionLine implements Serializable {
 	private BigDecimal transactionQty = BigDecimal.ONE;
 	private String assetIDCode;
 	private String assetIDDesc;
+
+	private UserDefinedFields userDefinedFields;
 	
 	public IssueReturnPartTransactionLine() {
 	}
@@ -131,5 +134,12 @@ public class IssueReturnPartTransactionLine implements Serializable {
 			return false;
 		return true;
 	}
-	
+
+	public UserDefinedFields getUserDefinedFields() {
+		return userDefinedFields;
+	}
+
+	public void setUserDefinedFields(UserDefinedFields userDefinedFields) {
+		this.userDefinedFields = userDefinedFields;
+	}
 }
