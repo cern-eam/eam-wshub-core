@@ -168,6 +168,12 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 	public String createWorkOrder(InforContext context, WorkOrder workorderParam) throws InforException {
 		net.datastream.schemas.mp_entities.workorder_001.WorkOrder inforWorkOrder = new net.datastream.schemas.mp_entities.workorder_001.WorkOrder();
 
+		// REQUIRED
+		inforWorkOrder.setWORKORDERID(new WOID_Type());
+		inforWorkOrder.getWORKORDERID().setORGANIZATIONID(tools.getOrganization(context));
+		inforWorkOrder.getWORKORDERID().setJOBNUM("0");
+		inforWorkOrder.setFIXED("V");
+
 		// STANDARD WORK ORDER
 		if (workorderParam.getStandardWO() != null && !workorderParam.getStandardWO().trim().equals("")) {
 			StandardWorkOrder standardWO = standardWorkOrderServiceImpl.readStandardWorkOrderInfor(context, workorderParam.getStandardWO());
@@ -179,6 +185,8 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			inforWorkOrder.setUSERDEFINEDAREA(standardWO.getUSERDEFINEDAREA());
 			inforWorkOrder.setCLASSID(standardWO.getWORKORDERCLASSID());
 			inforWorkOrder.setTYPE(standardWO.getWORKORDERTYPE());
+			inforWorkOrder.getWORKORDERID().setORGANIZATIONID(standardWO.getSTANDARDWO().getORGANIZATIONID());
+			inforWorkOrder.getWORKORDERID().setDESCRIPTION(standardWO.getSTANDARDWO().getDESCRIPTION());
 
 			// Create temporary workorder to make use of the transformWSHubObject method to populate udfs
 			WorkOrder wo = new WorkOrder();
@@ -195,12 +203,6 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 				inforWorkOrder.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(context, "EVNT", "*"));
 			}
 		}
-
-		// REQUIRED
-		inforWorkOrder.setWORKORDERID(new WOID_Type());
-		inforWorkOrder.getWORKORDERID().setORGANIZATIONID(tools.getOrganization(context));
-		inforWorkOrder.getWORKORDERID().setJOBNUM("0");
-		inforWorkOrder.setFIXED("V");
 
 		// POPULATE ALL OTHER FIELDS
 		tools.getInforFieldTools().transformWSHubObject(inforWorkOrder, workorderParam, context);
