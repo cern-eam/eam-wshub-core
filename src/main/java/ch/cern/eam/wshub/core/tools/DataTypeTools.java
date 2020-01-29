@@ -339,7 +339,7 @@ public class DataTypeTools {
      * @return Will return the boolean in the string form
      */
     public static Boolean decodeBoolean(String value) {
-        return "true".equalsIgnoreCase(value) ||
+        return value == null ? null : "true".equalsIgnoreCase(value) ||
                 "yes".equalsIgnoreCase(value) ||
                 "1".equalsIgnoreCase(value) ||
                 "+".equalsIgnoreCase(value) ||
