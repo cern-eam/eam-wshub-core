@@ -5,6 +5,7 @@ import ch.cern.eam.wshub.core.services.comments.CommentService;
 import ch.cern.eam.wshub.core.services.comments.impl.CommentServiceImpl;
 import ch.cern.eam.wshub.core.services.entities.BatchResponse;
 import ch.cern.eam.wshub.core.services.comments.entities.Comment;
+import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import ch.cern.eam.wshub.core.services.workorders.WorkOrderService;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
@@ -26,9 +27,11 @@ import net.datastream.schemas.mp_results.mp0026_001.MP0026_GetWorkOrderDefault_0
 import net.datastream.schemas.mp_results.mp0026_001.ResultData;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 import javax.xml.ws.Holder;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 public class WorkOrderServiceImpl implements WorkOrderService {
@@ -168,6 +171,8 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 	public String createWorkOrder(InforContext context, WorkOrder workorderParam) throws InforException {
 		net.datastream.schemas.mp_entities.workorder_001.WorkOrder inforWorkOrder = new net.datastream.schemas.mp_entities.workorder_001.WorkOrder();
 
+		String woClass = "*";
+
 		// REQUIRED
 		inforWorkOrder.setWORKORDERID(new WOID_Type());
 		inforWorkOrder.getWORKORDERID().setORGANIZATIONID(tools.getOrganization(context));
@@ -182,8 +187,29 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			inforWorkOrder.setPROBLEMCODEID(standardWO.getPROBLEMCODEID());
 			inforWorkOrder.setSAFETYREVIEWEDBY(standardWO.getSAFETYREVIEWEDBY());
 			inforWorkOrder.setSTANDARDWO(standardWO.getSTANDARDWO());
-			inforWorkOrder.setUSERDEFINEDAREA(standardWO.getUSERDEFINEDAREA());
 			inforWorkOrder.setCLASSID(standardWO.getWORKORDERCLASSID());
+
+			CustomField[] swoCFs = tools.getCustomFieldsTools().readInforCustomFields(standardWO.getUSERDEFINEDAREA());
+			CustomField[] paramCFs = workorderParam.getCustomFields();
+
+			//inforWorkOrder.setUSERDEFINEDAREA(standardWO.getUSERDEFINEDAREA());
+			if (standardWO.getWORKORDERCLASSID() != null
+					&& standardWO.getWORKORDERCLASSID().getCLASSCODE() != null){
+				woClass = standardWO.getWORKORDERCLASSID().getCLASSCODE();
+			}
+
+			CustomField[] customFields = Stream.concat(
+					Arrays.stream(swoCFs)
+					.filter(
+							swo -> Arrays.stream(paramCFs).noneMatch(
+									cf -> swo.getCode().equals(cf.getCode())
+							)
+					),
+					Arrays.stream(paramCFs)
+				)
+				.toArray(CustomField[]::new);
+			workorderParam.setCustomFields(customFields);
+
 			inforWorkOrder.setTYPE(standardWO.getWORKORDERTYPE());
 			inforWorkOrder.getWORKORDERID().setORGANIZATIONID(standardWO.getSTANDARDWO().getORGANIZATIONID());
 			inforWorkOrder.getWORKORDERID().setDESCRIPTION(standardWO.getSTANDARDWO().getDESCRIPTION());
@@ -195,14 +221,11 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		}
 
 		// CUSTOM FIELDS
-		if (workorderParam.getCustomFields() != null && workorderParam.getCustomFields().length > 0) {
-			if (workorderParam.getClassCode() != null && !workorderParam.getClassCode().trim().equals("")) {
-				inforWorkOrder.setUSERDEFINEDAREA(
-						tools.getCustomFieldsTools().getInforCustomFields(context, "EVNT", workorderParam.getClassCode()));
-			} else {
-				inforWorkOrder.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(context, "EVNT", "*"));
-			}
+		if (workorderParam.getClassCode() != null && !workorderParam.getClassCode().trim().equals("")) {
+			woClass = workorderParam.getClassCode();
 		}
+		USERDEFINEDAREA cfs = tools.getCustomFieldsTools().getInforCustomFields(context, "EVNT", woClass);
+		inforWorkOrder.setUSERDEFINEDAREA(cfs);
 
 		// POPULATE ALL OTHER FIELDS
 		tools.getInforFieldTools().transformWSHubObject(inforWorkOrder, workorderParam, context);
