@@ -263,6 +263,14 @@ public class EmployeeServiceImpl implements EmployeeService {
 			inforEmployee.getStandardUserDefinedFields().setUDFCHAR04(employee.getSection());
 		}
 
+		if (employee.getPreferredLanguage() != null) {
+			inforEmployee.getStandardUserDefinedFields().setUDFCHAR05(employee.getPreferredLanguage());
+		}
+
+		if (employee.getAccountBlocked() != null) {
+			inforEmployee.getStandardUserDefinedFields().setUDFCHKBOX01(employee.getAccountBlocked());
+		}
+
 		if(employee.getOutOfService() != null) {
 			inforEmployee.setOUTOFSERVICE(employee.getOutOfService());
 		}

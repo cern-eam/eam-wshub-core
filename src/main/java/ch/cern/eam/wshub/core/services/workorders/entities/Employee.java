@@ -48,6 +48,7 @@ public class Employee implements Serializable {
 	@Column(name = "PER_UDFNUM02")
 	private BigDecimal personID;
 
+
 	@Column(name = "PER_USER")
 	private String userCode;
 	
@@ -62,6 +63,12 @@ public class Employee implements Serializable {
 	
 	@Column(name = "PER_UDFCHAR04")
 	private String section;
+
+	@Column(name = "PER_UDFCHAR05")
+	private String preferredLanguage;
+
+	@Column(name = "PER_UDFCHKBOX01")
+	private String accountBlocked;
 
 	private String outOfService;
 
@@ -183,6 +190,22 @@ public class Employee implements Serializable {
 
 	public void setSection(String section) {
 		this.section = section;
+	}
+
+	public String getPreferredLanguage() {
+		return preferredLanguage;
+	}
+
+	public void setPreferredLanguage(String preferredLanguage) {
+		this.preferredLanguage = preferredLanguage;
+	}
+
+	public String getAccountBlocked() {
+		return accountBlocked;
+	}
+
+	public void setAccountBlocked(String accountBlocked) {
+		this.accountBlocked = accountBlocked;
 	}
 
 	public String getOutOfService() {
