@@ -32,8 +32,11 @@ import javax.persistence.EntityManager;
 import javax.xml.ws.Holder;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.logging.Level;
 
 public class ChecklistServiceImpl implements ChecklistService {
@@ -92,6 +95,9 @@ public class ChecklistServiceImpl implements ChecklistService {
 			workOrderActivityCheckListInfor.setFOLLOWUP(tools.getDataTypeTools().encodeBoolean(workOrderActivityCheckList.getFollowUp(), BooleanType.PLUS_MINUS));
 		}
 
+		Function<String, String> getStringBool =
+			key -> String.valueOf(key.equals(workOrderActivityCheckList.getResult()));
+
 		switch (workOrderActivityCheckList.getType()) {
 			case CheckListType.CHECKLIST_ITEM:
 				if ("COMPLETED".equalsIgnoreCase(workOrderActivityCheckList.getResult())) {
@@ -101,9 +107,8 @@ public class ChecklistServiceImpl implements ChecklistService {
 				}
 				break;
 			case CheckListType.QUESTION_YES_NO:
-				workOrderActivityCheckListInfor
-						.setYES(String.valueOf("YES".equals(workOrderActivityCheckList.getResult())));
-				workOrderActivityCheckListInfor.setNO(String.valueOf("NO".equals(workOrderActivityCheckList.getResult())));
+				workOrderActivityCheckListInfor.setYES(getStringBool.apply("YES"));
+				workOrderActivityCheckListInfor.setNO(getStringBool.apply("NO"));
 				break;
 			case CheckListType.QUALITATIVE:
 				if (workOrderActivityCheckList.getFinding() != null) {
@@ -127,6 +132,34 @@ public class ChecklistServiceImpl implements ChecklistService {
 				}
 				workOrderActivityCheckListInfor
 						.setRESULTVALUE(tools.getDataTypeTools().encodeQuantity(encodeBigDecimal(workOrderActivityCheckList.getResult(), ""), "Checklists Value"));
+				break;
+			case CheckListType.OK_REPAIR_NEEDED:
+				workOrderActivityCheckListInfor.setOKFLAG(getStringBool.apply("OK"));
+				workOrderActivityCheckListInfor.setREPAIRSNEEDED(getStringBool.apply("REPAIRSNEEDED"));
+				workOrderActivityCheckListInfor.setRESOLUTIONID(new USERDEFINEDCODEID_Type());
+				workOrderActivityCheckListInfor.getRESOLUTIONID().setUSERDEFINEDCODE(workOrderActivityCheckList.getFinding());
+				break;
+			case CheckListType.GOOD_POOR:
+				workOrderActivityCheckListInfor.setGOOD(getStringBool.apply("GOOD"));
+				workOrderActivityCheckListInfor.setPOOR(getStringBool.apply("POOR"));
+				break;
+			case CheckListType.OK_ADJUSTED_MEASUREMENT:
+				workOrderActivityCheckListInfor
+					.setRESULTVALUE(tools.getDataTypeTools().encodeQuantity(workOrderActivityCheckList.getNumericValue(), "Checklists Value"));
+				// no break here, OK_ADJUSTED_MEASUREMENT is the same as OK_ADJUSTED,
+				// but with a numeric value, so we will set the result to OK/ADJUSTED below
+			case CheckListType.OK_ADJUSTED:
+				workOrderActivityCheckListInfor.setOKFLAG(getStringBool.apply("OK"));
+				workOrderActivityCheckListInfor.setADJUSTED(getStringBool.apply("ADJUSTED"));
+				break;
+			case CheckListType.NONCONFORMITY_MEASUREMENT:
+				workOrderActivityCheckListInfor
+					.setRESULTVALUE(tools.getDataTypeTools().encodeQuantity(workOrderActivityCheckList.getNumericValue(), "Checklists Value"));
+				// no break here, NONCONFORMITY_MEASUREMENT is the same as NONCONFORMITY_CHECK,
+				// but with a numberic value, so we will set the result to OK/NONCONFORMITY below
+			case CheckListType.NONCONFORMITY_CHECK:
+				workOrderActivityCheckListInfor.setOKFLAG(getStringBool.apply("OK"));
+				workOrderActivityCheckListInfor.setNONCONFORMITYFLAG(getStringBool.apply("NONCONFIRMITY"));
 				break;
 		}
 
