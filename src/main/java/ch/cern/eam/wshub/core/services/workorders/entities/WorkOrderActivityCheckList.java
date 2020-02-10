@@ -8,6 +8,33 @@ import java.util.Arrays;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class WorkOrderActivityCheckList implements Serializable {
+	public static final class CheckListType {
+		public static final String CHECKLIST_ITEM = "01";
+		public static final String QUESTION_YES_NO = "02";
+		public static final String QUALITATIVE = "03";
+		public static final String QUANTITATIVE = "04";
+		public static final String METER_READING = "05";
+		public static final String INSPECTION = "06";
+		public static final String OK_REPAIR_NEEDED = "07";
+		public static final String GOOD_POOR = "08";
+		public static final String OK_ADJUSTED = "09";
+		public static final String OK_ADJUSTED_MEASUREMENT = "10";
+		public static final String NONCONFORMITY_CHECK = "11";
+		public static final String NONCONFORMITY_MEASUREMENT = "12";
+	}
+
+	public static final class ReturnType {
+		public static final String NULL = null;
+		public static final String YES = "YES";
+		public static final String NO = "NO";
+		public static final String OK = "OK";
+		public static final String COMPLETED = "COMPLETED";
+		public static final String GOOD = "GOOD";
+		public static final String POOR = "POOR";
+		public static final String NONCONFORMITY = "NONCONFORMITY";
+		public static final String ADJUSTED = "ADJUSTED";
+		public static final String REPAIRSNEEDED = "REPAIRSNEEDED";
+	}
 
 	/**
 	 * 

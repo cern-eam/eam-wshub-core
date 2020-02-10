@@ -27,34 +27,18 @@ import net.datastream.schemas.mp_results.mp8000_001.MP8000_CreateFollowUpWorkOrd
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 import static ch.cern.eam.wshub.core.tools.GridTools.getCellContent;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.decodeBoolean;
+import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrderActivityCheckList.*;
 
 import javax.persistence.EntityManager;
 import javax.xml.ws.Holder;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 import java.util.logging.Level;
 
 public class ChecklistServiceImpl implements ChecklistService {
-	private static final class CheckListType {
-		public static final String CHECKLIST_ITEM = "01";
-		public static final String QUESTION_YES_NO = "02";
-		public static final String QUALITATIVE = "03";
-		public static final String QUANTITATIVE = "04";
-		public static final String METER_READING = "05";
-		public static final String INSPECTION = "06";
-		public static final String OK_REPAIR_NEEDED = "07";
-		public static final String GOOD_POOR = "08";
-		public static final String OK_ADJUSTED = "09";
-		public static final String OK_ADJUSTED_MEASUREMENT = "10";
-		public static final String NONCONFORMITY_CHECK = "11";
-		public static final String NONCONFORMITY_MEASUREMENT = "12";
-	}
-
 	private Tools tools;
 	private InforWebServicesPT inforws;
 	private ApplicationData applicationData;
@@ -100,15 +84,15 @@ public class ChecklistServiceImpl implements ChecklistService {
 
 		switch (workOrderActivityCheckList.getType()) {
 			case CheckListType.CHECKLIST_ITEM:
-				if ("COMPLETED".equalsIgnoreCase(workOrderActivityCheckList.getResult())) {
+				if (ReturnType.COMPLETED.equalsIgnoreCase(workOrderActivityCheckList.getResult())) {
 					workOrderActivityCheckListInfor.setCOMPLETED("true");
 				} else {
 					workOrderActivityCheckListInfor.setCOMPLETED("false");
 				}
 				break;
 			case CheckListType.QUESTION_YES_NO:
-				workOrderActivityCheckListInfor.setYES(getStringBool.apply("YES"));
-				workOrderActivityCheckListInfor.setNO(getStringBool.apply("NO"));
+				workOrderActivityCheckListInfor.setYES(getStringBool.apply(ReturnType.YES));
+				workOrderActivityCheckListInfor.setNO(getStringBool.apply(ReturnType.NO));
 				break;
 			case CheckListType.QUALITATIVE:
 				if (workOrderActivityCheckList.getFinding() != null) {
@@ -118,11 +102,6 @@ public class ChecklistServiceImpl implements ChecklistService {
 					workOrderActivityCheckListInfor.setFINDINGID(null);
 				}
 				break;
-			case CheckListType.QUANTITATIVE:
-			case CheckListType.METER_READING:
-				workOrderActivityCheckListInfor
-						.setRESULTVALUE(tools.getDataTypeTools().encodeQuantity(encodeBigDecimal(workOrderActivityCheckList.getResult(), ""), "Checklists Value"));
-				break;
 			case CheckListType.INSPECTION:
 				if (workOrderActivityCheckList.getFinding() != null) {
 					workOrderActivityCheckListInfor.setFINDINGID(new FINDINGID_Type());
@@ -130,18 +109,22 @@ public class ChecklistServiceImpl implements ChecklistService {
 				} else {
 					workOrderActivityCheckListInfor.setFINDINGID(null);
 				}
+				// no break here, INSPECTION is the same as QUANTITATIVE/METER_READING,
+				// but with findings and possible findings, so we will set the numeric value below
+			case CheckListType.QUANTITATIVE:
+			case CheckListType.METER_READING:
 				workOrderActivityCheckListInfor
 						.setRESULTVALUE(tools.getDataTypeTools().encodeQuantity(encodeBigDecimal(workOrderActivityCheckList.getResult(), ""), "Checklists Value"));
 				break;
 			case CheckListType.OK_REPAIR_NEEDED:
-				workOrderActivityCheckListInfor.setOKFLAG(getStringBool.apply("OK"));
-				workOrderActivityCheckListInfor.setREPAIRSNEEDED(getStringBool.apply("REPAIRSNEEDED"));
+				workOrderActivityCheckListInfor.setOKFLAG(getStringBool.apply(ReturnType.OK));
+				workOrderActivityCheckListInfor.setREPAIRSNEEDED(getStringBool.apply(ReturnType.REPAIRSNEEDED));
 				workOrderActivityCheckListInfor.setRESOLUTIONID(new USERDEFINEDCODEID_Type());
 				workOrderActivityCheckListInfor.getRESOLUTIONID().setUSERDEFINEDCODE(workOrderActivityCheckList.getFinding());
 				break;
 			case CheckListType.GOOD_POOR:
-				workOrderActivityCheckListInfor.setGOOD(getStringBool.apply("GOOD"));
-				workOrderActivityCheckListInfor.setPOOR(getStringBool.apply("POOR"));
+				workOrderActivityCheckListInfor.setGOOD(getStringBool.apply(ReturnType.GOOD));
+				workOrderActivityCheckListInfor.setPOOR(getStringBool.apply(ReturnType.POOR));
 				break;
 			case CheckListType.OK_ADJUSTED_MEASUREMENT:
 				workOrderActivityCheckListInfor
@@ -149,8 +132,8 @@ public class ChecklistServiceImpl implements ChecklistService {
 				// no break here, OK_ADJUSTED_MEASUREMENT is the same as OK_ADJUSTED,
 				// but with a numeric value, so we will set the result to OK/ADJUSTED below
 			case CheckListType.OK_ADJUSTED:
-				workOrderActivityCheckListInfor.setOKFLAG(getStringBool.apply("OK"));
-				workOrderActivityCheckListInfor.setADJUSTED(getStringBool.apply("ADJUSTED"));
+				workOrderActivityCheckListInfor.setOKFLAG(getStringBool.apply(ReturnType.OK));
+				workOrderActivityCheckListInfor.setADJUSTED(getStringBool.apply(ReturnType.ADJUSTED));
 				break;
 			case CheckListType.NONCONFORMITY_MEASUREMENT:
 				workOrderActivityCheckListInfor
@@ -158,8 +141,8 @@ public class ChecklistServiceImpl implements ChecklistService {
 				// no break here, NONCONFORMITY_MEASUREMENT is the same as NONCONFORMITY_CHECK,
 				// but with a numberic value, so we will set the result to OK/NONCONFORMITY below
 			case CheckListType.NONCONFORMITY_CHECK:
-				workOrderActivityCheckListInfor.setOKFLAG(getStringBool.apply("OK"));
-				workOrderActivityCheckListInfor.setNONCONFORMITYFLAG(getStringBool.apply("NONCONFIRMITY"));
+				workOrderActivityCheckListInfor.setOKFLAG(getStringBool.apply(ReturnType.OK));
+				workOrderActivityCheckListInfor.setNONCONFORMITYFLAG(getStringBool.apply(ReturnType.NONCONFORMITY));
 				break;
 		}
 
@@ -359,16 +342,16 @@ public class ChecklistServiceImpl implements ChecklistService {
 		switch(checklist.getType()) {
 			case CheckListType.CHECKLIST_ITEM:
 				if (cellEquals(row, "completed", "true")) {
-					checklist.setResult("COMPLETED");
+					checklist.setResult(ReturnType.COMPLETED);
 				} else {
-					checklist.setResult(null);
+					checklist.setResult(ReturnType.NULL);
 				}
 				break;
 			case CheckListType.QUESTION_YES_NO:
 				if (cellEquals(row, "yes", "true")) {
-					checklist.setResult("YES");
+					checklist.setResult(ReturnType.YES);
 				} else if (cellEquals(row, "no", "true")) {
-					checklist.setResult("NO");
+					checklist.setResult(ReturnType.NO);
 				} else {
 					checklist.setResult(null);
 				}
@@ -393,11 +376,11 @@ public class ChecklistServiceImpl implements ChecklistService {
 				break;
 			case CheckListType.GOOD_POOR:
 				if (cellEquals(row, "good", "true")) {
-					checklist.setResult("GOOD");
+					checklist.setResult(ReturnType.GOOD);
 				} else if (cellEquals(row, "poor", "true")) {
-					checklist.setResult("POOR");
+					checklist.setResult(ReturnType.POOR);
 				} else {
-					checklist.setResult(null);
+					checklist.setResult(ReturnType.NULL);
 				}
 				break;
 			case CheckListType.NONCONFORMITY_MEASUREMENT:
@@ -407,11 +390,11 @@ public class ChecklistServiceImpl implements ChecklistService {
 				// but with a numberic value and UOM, so we will set the result to OK/NONCONFORMITY below
 			case CheckListType.NONCONFORMITY_CHECK:
 				if (cellEquals(row, "ok", "true")) {
-					checklist.setResult("OK");
+					checklist.setResult(ReturnType.OK);
 				} else if (cellEquals(row, "nonconformityfound", "true")) {
-					checklist.setResult("NONCONFORMITY");
+					checklist.setResult(ReturnType.NONCONFORMITY);
 				} else {
-					checklist.setResult(null);
+					checklist.setResult(ReturnType.NULL);
 				}
 				break;
 			case CheckListType.OK_ADJUSTED_MEASUREMENT:
@@ -421,21 +404,21 @@ public class ChecklistServiceImpl implements ChecklistService {
 				// but with a numeric value and UOM, so we will set the result to OK/ADJUSTED below
 			case CheckListType.OK_ADJUSTED:
 				if (cellEquals(row, "ok", "true")) {
-					checklist.setResult("OK");
+					checklist.setResult(ReturnType.OK);
 				} else if(cellEquals(row,"adjusted", "true")) {
-					checklist.setResult("ADJUSTED");
+					checklist.setResult(ReturnType.ADJUSTED);
 				} else {
-					checklist.setResult(null);
+					checklist.setResult(ReturnType.NULL);
 				}
 				break;
 			case CheckListType.OK_REPAIR_NEEDED:
 				checklist.setFinding(getCellContent("resolution", row));
 				if (cellEquals(row, "ok", "true")) {
-					checklist.setResult("OK");
+					checklist.setResult(ReturnType.OK);
 				} else if(cellEquals(row,"repairsneeded", "true")) {
-					checklist.setResult("REPAIRSNEEDED");
+					checklist.setResult(ReturnType.REPAIRSNEEDED);
 				} else {
-					checklist.setResult(null);
+					checklist.setResult(ReturnType.NULL);
 				}
 				break;
 		}
