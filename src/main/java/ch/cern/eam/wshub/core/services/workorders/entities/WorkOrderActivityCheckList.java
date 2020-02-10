@@ -3,6 +3,7 @@ package ch.cern.eam.wshub.core.services.workorders.entities;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Arrays;
 
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -24,6 +25,7 @@ public class WorkOrderActivityCheckList implements Serializable {
 	private String updateCount;
 	private String type;
 	private String result;
+	private BigDecimal numericValue;
 	private String finding;
 	private String notes;
 	private String UOM;
@@ -141,6 +143,14 @@ public class WorkOrderActivityCheckList implements Serializable {
 		this.result = result;
 	}
 
+	public BigDecimal getNumericValue() {
+		return numericValue;
+	}
+
+	public void setNumericValue(BigDecimal numericValue) {
+		this.numericValue = numericValue;
+	}
+
 	public Boolean getFollowUp() {
 		return followUp;
 	}
@@ -216,19 +226,6 @@ public class WorkOrderActivityCheckList implements Serializable {
 		}
 	}
 
-
-	public Double getNumberResult() {
-		if (result != null) {
-			return new Double(result);
-		} else {
-			return null;
-		}
-	}
-
-	public void setNumberResult(Double doubleResult) {
-		result = doubleResult.toString();
-	}
-
 	public boolean isCompleted() {
 		return "COMPLETED".equalsIgnoreCase(result);
 	}
@@ -286,6 +283,7 @@ public class WorkOrderActivityCheckList implements Serializable {
 				", updateCount='" + updateCount + '\'' +
 				", type='" + type + '\'' +
 				", result='" + result + '\'' +
+				", numericValue=" + numericValue +
 				", finding='" + finding + '\'' +
 				", notes='" + notes + '\'' +
 				", UOM='" + UOM + '\'' +
