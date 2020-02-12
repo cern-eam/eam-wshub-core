@@ -11,6 +11,7 @@ import ch.cern.eam.wshub.core.services.workorders.entities.Activity;
 import ch.cern.eam.wshub.core.services.workorders.entities.Finding;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.annotations.BooleanType;
+import ch.cern.eam.wshub.core.tools.DataTypeTools;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.*;
@@ -28,9 +29,11 @@ import net.datastream.wsdls.inforws.InforWebServicesPT;
 import static ch.cern.eam.wshub.core.tools.GridTools.getCellContent;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.decodeBoolean;
 import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrderActivityCheckList.*;
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.isEmpty;
 
 import javax.persistence.EntityManager;
 import javax.xml.ws.Holder;
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
@@ -113,14 +116,30 @@ public class ChecklistServiceImpl implements ChecklistService {
 				// but with findings and possible findings, so we will set the numeric value below
 			case CheckListType.QUANTITATIVE:
 			case CheckListType.METER_READING:
+				BigDecimal numericValue = workOrderActivityCheckList.getNumericValue();
+
+				// this logic is used while applications are not yet using the numeric value field
+				// using the result field in the way below is deprecated
+				if(numericValue == null) {
+					BigDecimal possibleNumericValue =
+						encodeBigDecimal(workOrderActivityCheckList.getResult(), "");
+
+					if(possibleNumericValue != null) numericValue = possibleNumericValue;
+				}
+
 				workOrderActivityCheckListInfor
-						.setRESULTVALUE(tools.getDataTypeTools().encodeQuantity(encodeBigDecimal(workOrderActivityCheckList.getResult(), ""), "Checklists Value"));
+						.setRESULTVALUE(tools.getDataTypeTools().encodeQuantity(numericValue, "Checklists Value"));
 				break;
 			case CheckListType.OK_REPAIR_NEEDED:
 				workOrderActivityCheckListInfor.setOKFLAG(getStringBool.apply(ReturnType.OK));
 				workOrderActivityCheckListInfor.setREPAIRSNEEDED(getStringBool.apply(ReturnType.REPAIRSNEEDED));
-				workOrderActivityCheckListInfor.setRESOLUTIONID(new USERDEFINEDCODEID_Type());
-				workOrderActivityCheckListInfor.getRESOLUTIONID().setUSERDEFINEDCODE(workOrderActivityCheckList.getFinding());
+
+				if(isEmpty(workOrderActivityCheckList.getFinding())) {
+					workOrderActivityCheckListInfor.setRESOLUTIONID(null);
+				} else {
+					workOrderActivityCheckListInfor.setRESOLUTIONID(new USERDEFINEDCODEID_Type());
+					workOrderActivityCheckListInfor.getRESOLUTIONID().setUSERDEFINEDCODE(workOrderActivityCheckList.getFinding());
+				}
 				break;
 			case CheckListType.GOOD_POOR:
 				workOrderActivityCheckListInfor.setGOOD(getStringBool.apply(ReturnType.GOOD));
