@@ -275,6 +275,9 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		MP0025_SyncWorkOrder_001 syncWO = new MP0025_SyncWorkOrder_001();
 		syncWO.setWorkOrder(inforWorkOrder);
 
+		if(workorderParam.isConfirmedIncompleteChecklist())
+			syncWO.setConfirmincompletechecklist("confirmed");
+
 		if (context.getCredentials() != null) {
 			inforws.syncWorkOrderOp(syncWO, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), "TERMINATE", null,

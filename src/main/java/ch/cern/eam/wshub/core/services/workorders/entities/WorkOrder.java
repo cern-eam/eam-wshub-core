@@ -190,6 +190,9 @@ public class WorkOrder implements Serializable {
 	@InforField(xpath = "UserDefinedFields")
 	private UserDefinedFields userDefinedFields;
 
+	@Transient
+	private boolean confirmedIncompleteChecklist;
+
 	@Column(name = "EVT_ORIGWO")
 	private String origWO;
 
@@ -616,6 +619,14 @@ public class WorkOrder implements Serializable {
 	public BigDecimal getDowntimeHours() { return downtimeHours; }
 
 	public void setDowntimeHours(BigDecimal downtimeHours) { this.downtimeHours = downtimeHours; }
+
+	public boolean isConfirmedIncompleteChecklist() {
+		return confirmedIncompleteChecklist;
+	}
+
+	public void setConfirmedIncompleteChecklist(boolean confirmedIncompleteChecklist) {
+		this.confirmedIncompleteChecklist = confirmedIncompleteChecklist;
+	}
 
 	@Override
 	public String toString() {
