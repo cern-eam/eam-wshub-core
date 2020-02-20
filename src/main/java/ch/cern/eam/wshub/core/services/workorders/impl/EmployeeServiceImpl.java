@@ -3,8 +3,10 @@ package ch.cern.eam.wshub.core.services.workorders.impl;
 import javax.xml.ws.Holder;
 
 import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.services.entities.BatchResponse;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import ch.cern.eam.wshub.core.services.workorders.EmployeeService;
+import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrder;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
@@ -23,6 +25,10 @@ import net.datastream.schemas.mp_results.mp7038_001.MP7038_AddEmployee_001_Resul
 import net.datastream.schemas.mp_results.mp7039_001.MP7039_SyncEmployee_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
+
 
 public class EmployeeServiceImpl implements EmployeeService {
 
@@ -35,6 +41,24 @@ public class EmployeeServiceImpl implements EmployeeService {
 		this.tools = tools;
 		this.inforws = inforWebServicesToolkitClient;
 	}
+
+	public BatchResponse<String> createEmployeeBatch(InforContext context, List<Employee> workOrderParam)
+			throws InforException {
+		List<Callable<String>> callableList = workOrderParam.stream()
+				.<Callable<String>>map(wo -> () -> createEmployee(context, wo))
+				.collect(Collectors.toList());
+
+		return tools.processCallables(callableList);
+	}
+
+	public BatchResponse<String> updateEmployeeBatch(InforContext context, List<Employee> workOrders)
+			throws InforException {
+		List<Callable<String>> callableList = workOrders.stream()
+				.<Callable<String>>map(workOrder -> () -> updateEmployee(context, workOrder))
+				.collect(Collectors.toList());
+		return tools.processCallables(callableList);
+	}
+
 
 	public Employee readEmployee(InforContext context, String employeeCode) throws InforException {
 		MP7037_GetEmployee_001_Result result = null;
