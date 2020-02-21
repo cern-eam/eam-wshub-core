@@ -155,8 +155,6 @@ public class EquipmentFacadeServiceImpl implements EquipmentFacadeService {
             case "R": // Route
             case "S": // System
                 return systemService.readSystem(inforContext, equipmentCode);
-            case "L":
-                return locationService.readLocation(inforContext, equipmentCode);
             default:
                 throw tools.generateFault("Equipment type not recognized.");
         }
@@ -180,8 +178,6 @@ public class EquipmentFacadeServiceImpl implements EquipmentFacadeService {
             case "R": // Route
             case "S": // System
                 return systemService.deleteSystem(inforContext, equipmentCode);
-            case "L":
-                throw tools.generateFault("Deletion of locations is not supported.");
             default:
                 throw tools.generateFault("Equipment type not recognized.");
         }
@@ -199,7 +195,6 @@ public class EquipmentFacadeServiceImpl implements EquipmentFacadeService {
         types.put("Lot", "B");
         types.put("Route", "R");
         types.put("Material", "M");
-        types.put("Location", "L");
         types.put("Localisation", "L");
         //
         GridRequest gridRequest = new GridRequest("LVREPCOGALLEQUIPMENT", GridRequest.GRIDTYPE.LOV);
