@@ -61,6 +61,7 @@ public class WorkOrderActivityCheckList implements Serializable {
 	private Boolean followUp = false;
 	private String followUpWorkOrder;
 	private Boolean requiredToClose = false;
+	private Boolean hideFollowUp;
 
 	private String newCheckListCode;
 	private String newWorkOrderCode;
@@ -200,6 +201,14 @@ public class WorkOrderActivityCheckList implements Serializable {
 
 	public void setRequiredToClose(Boolean requiredToClose) {
 		this.requiredToClose = requiredToClose;
+	}
+
+	public Boolean getHideFollowUp() {
+		return hideFollowUp;
+	}
+
+	public void setHideFollowUp(Boolean hideFollowUp) {
+		this.hideFollowUp = hideFollowUp;
 	}
 
 	//
