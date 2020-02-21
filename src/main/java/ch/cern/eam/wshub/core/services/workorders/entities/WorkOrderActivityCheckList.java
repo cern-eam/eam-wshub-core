@@ -3,10 +3,38 @@ package ch.cern.eam.wshub.core.services.workorders.entities;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Arrays;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class WorkOrderActivityCheckList implements Serializable {
+	public static final class CheckListType {
+		public static final String CHECKLIST_ITEM = "01";
+		public static final String QUESTION_YES_NO = "02";
+		public static final String QUALITATIVE = "03";
+		public static final String QUANTITATIVE = "04";
+		public static final String METER_READING = "05";
+		public static final String INSPECTION = "06";
+		public static final String OK_REPAIR_NEEDED = "07";
+		public static final String GOOD_POOR = "08";
+		public static final String OK_ADJUSTED = "09";
+		public static final String OK_ADJUSTED_MEASUREMENT = "10";
+		public static final String NONCONFORMITY_CHECK = "11";
+		public static final String NONCONFORMITY_MEASUREMENT = "12";
+	}
+
+	public static final class ReturnType {
+		public static final String NULL = null;
+		public static final String YES = "YES";
+		public static final String NO = "NO";
+		public static final String OK = "OK";
+		public static final String COMPLETED = "COMPLETED";
+		public static final String GOOD = "GOOD";
+		public static final String POOR = "POOR";
+		public static final String NONCONFORMITY = "NONCONFORMITY";
+		public static final String ADJUSTED = "ADJUSTED";
+		public static final String REPAIRSNEEDED = "REPAIRSNEEDED";
+	}
 
 	/**
 	 * 
@@ -24,6 +52,7 @@ public class WorkOrderActivityCheckList implements Serializable {
 	private String updateCount;
 	private String type;
 	private String result;
+	private BigDecimal numericValue;
 	private String finding;
 	private String notes;
 	private String UOM;
@@ -141,6 +170,14 @@ public class WorkOrderActivityCheckList implements Serializable {
 		this.result = result;
 	}
 
+	public BigDecimal getNumericValue() {
+		return numericValue;
+	}
+
+	public void setNumericValue(BigDecimal numericValue) {
+		this.numericValue = numericValue;
+	}
+
 	public Boolean getFollowUp() {
 		return followUp;
 	}
@@ -216,19 +253,6 @@ public class WorkOrderActivityCheckList implements Serializable {
 		}
 	}
 
-
-	public Double getNumberResult() {
-		if (result != null) {
-			return new Double(result);
-		} else {
-			return null;
-		}
-	}
-
-	public void setNumberResult(Double doubleResult) {
-		result = doubleResult.toString();
-	}
-
 	public boolean isCompleted() {
 		return "COMPLETED".equalsIgnoreCase(result);
 	}
@@ -286,6 +310,7 @@ public class WorkOrderActivityCheckList implements Serializable {
 				", updateCount='" + updateCount + '\'' +
 				", type='" + type + '\'' +
 				", result='" + result + '\'' +
+				", numericValue=" + numericValue +
 				", finding='" + finding + '\'' +
 				", notes='" + notes + '\'' +
 				", UOM='" + UOM + '\'' +

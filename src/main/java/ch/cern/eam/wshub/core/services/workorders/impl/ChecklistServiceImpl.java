@@ -11,6 +11,7 @@ import ch.cern.eam.wshub.core.services.workorders.entities.Activity;
 import ch.cern.eam.wshub.core.services.workorders.entities.Finding;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.annotations.BooleanType;
+import ch.cern.eam.wshub.core.tools.DataTypeTools;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.*;
@@ -27,17 +28,20 @@ import net.datastream.schemas.mp_results.mp8000_001.MP8000_CreateFollowUpWorkOrd
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 import static ch.cern.eam.wshub.core.tools.GridTools.getCellContent;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.decodeBoolean;
+import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrderActivityCheckList.*;
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.isEmpty;
 
 import javax.persistence.EntityManager;
 import javax.xml.ws.Holder;
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.logging.Level;
 
 public class ChecklistServiceImpl implements ChecklistService {
-
 	private Tools tools;
 	private InforWebServicesPT inforws;
 	private ApplicationData applicationData;
@@ -78,23 +82,22 @@ public class ChecklistServiceImpl implements ChecklistService {
 			workOrderActivityCheckListInfor.setFOLLOWUP(tools.getDataTypeTools().encodeBoolean(workOrderActivityCheckList.getFollowUp(), BooleanType.PLUS_MINUS));
 		}
 
+		Function<String, String> getStringBool =
+			key -> String.valueOf(key.equals(workOrderActivityCheckList.getResult()));
+
 		switch (workOrderActivityCheckList.getType()) {
-			case "01":
-				// CHECK
-				if ("COMPLETED".equalsIgnoreCase(workOrderActivityCheckList.getResult())) {
+			case CheckListType.CHECKLIST_ITEM:
+				if (ReturnType.COMPLETED.equalsIgnoreCase(workOrderActivityCheckList.getResult())) {
 					workOrderActivityCheckListInfor.setCOMPLETED("true");
 				} else {
 					workOrderActivityCheckListInfor.setCOMPLETED("false");
 				}
 				break;
-			case "02":
-				// YES, NO
-				workOrderActivityCheckListInfor
-						.setYES(String.valueOf("YES".equals(workOrderActivityCheckList.getResult())));
-				workOrderActivityCheckListInfor.setNO(String.valueOf("NO".equals(workOrderActivityCheckList.getResult())));
+			case CheckListType.QUESTION_YES_NO:
+				workOrderActivityCheckListInfor.setYES(getStringBool.apply(ReturnType.YES));
+				workOrderActivityCheckListInfor.setNO(getStringBool.apply(ReturnType.NO));
 				break;
-			case "03":
-				// FINDING
+			case CheckListType.QUALITATIVE:
 				if (workOrderActivityCheckList.getFinding() != null) {
 					workOrderActivityCheckListInfor.setFINDINGID(new FINDINGID_Type());
 					workOrderActivityCheckListInfor.getFINDINGID().setFINDINGCODE(workOrderActivityCheckList.getFinding());
@@ -102,28 +105,64 @@ public class ChecklistServiceImpl implements ChecklistService {
 					workOrderActivityCheckListInfor.setFINDINGID(null);
 				}
 				break;
-			case "04":
-				// NUMERIC VALUE
-				workOrderActivityCheckListInfor
-						.setRESULTVALUE(tools.getDataTypeTools().encodeQuantity(encodeBigDecimal(workOrderActivityCheckList.getResult(), ""), "Checklists Value"));
-				break;
-			case "05":
-				// METER READING
-				workOrderActivityCheckListInfor
-						.setRESULTVALUE(tools.getDataTypeTools().encodeQuantity(encodeBigDecimal(workOrderActivityCheckList.getResult(), ""), "Checklists Value"));
-				break;
-			case "06":
-				// INSPECTION
+			case CheckListType.INSPECTION:
 				if (workOrderActivityCheckList.getFinding() != null) {
 					workOrderActivityCheckListInfor.setFINDINGID(new FINDINGID_Type());
 					workOrderActivityCheckListInfor.getFINDINGID().setFINDINGCODE(workOrderActivityCheckList.getFinding());
 				} else {
 					workOrderActivityCheckListInfor.setFINDINGID(null);
 				}
+				// no break here, INSPECTION is the same as QUANTITATIVE/METER_READING,
+				// but with findings and possible findings, so we will set the numeric value below
+			case CheckListType.QUANTITATIVE:
+			case CheckListType.METER_READING:
+				BigDecimal numericValue = workOrderActivityCheckList.getNumericValue();
+
+				// this logic is used while applications are not yet using the numeric value field
+				// using the result field in the way below is deprecated
+				if(numericValue == null) {
+					BigDecimal possibleNumericValue =
+						encodeBigDecimal(workOrderActivityCheckList.getResult(), "");
+
+					if(possibleNumericValue != null) numericValue = possibleNumericValue;
+				}
+
 				workOrderActivityCheckListInfor
-						.setRESULTVALUE(tools.getDataTypeTools().encodeQuantity(encodeBigDecimal(workOrderActivityCheckList.getResult(), ""), "Checklists Value"));
+						.setRESULTVALUE(tools.getDataTypeTools().encodeQuantity(numericValue, "Checklists Value"));
 				break;
-			default:
+			case CheckListType.OK_REPAIR_NEEDED:
+				workOrderActivityCheckListInfor.setOKFLAG(getStringBool.apply(ReturnType.OK));
+				workOrderActivityCheckListInfor.setREPAIRSNEEDED(getStringBool.apply(ReturnType.REPAIRSNEEDED));
+
+				if(isEmpty(workOrderActivityCheckList.getFinding())) {
+					workOrderActivityCheckListInfor.setRESOLUTIONID(null);
+				} else {
+					workOrderActivityCheckListInfor.setRESOLUTIONID(new USERDEFINEDCODEID_Type());
+					workOrderActivityCheckListInfor.getRESOLUTIONID().setUSERDEFINEDCODE(workOrderActivityCheckList.getFinding());
+				}
+				break;
+			case CheckListType.GOOD_POOR:
+				workOrderActivityCheckListInfor.setGOOD(getStringBool.apply(ReturnType.GOOD));
+				workOrderActivityCheckListInfor.setPOOR(getStringBool.apply(ReturnType.POOR));
+				break;
+			case CheckListType.OK_ADJUSTED_MEASUREMENT:
+				workOrderActivityCheckListInfor
+					.setRESULTVALUE(tools.getDataTypeTools().encodeQuantity(workOrderActivityCheckList.getNumericValue(), "Checklists Value"));
+				// no break here, OK_ADJUSTED_MEASUREMENT is the same as OK_ADJUSTED,
+				// but with a numeric value, so we will set the result to OK/ADJUSTED below
+			case CheckListType.OK_ADJUSTED:
+				workOrderActivityCheckListInfor.setOKFLAG(getStringBool.apply(ReturnType.OK));
+				workOrderActivityCheckListInfor.setADJUSTED(getStringBool.apply(ReturnType.ADJUSTED));
+				break;
+			case CheckListType.NONCONFORMITY_MEASUREMENT:
+				workOrderActivityCheckListInfor
+					.setRESULTVALUE(tools.getDataTypeTools().encodeQuantity(workOrderActivityCheckList.getNumericValue(), "Checklists Value"));
+				// no break here, NONCONFORMITY_MEASUREMENT is the same as NONCONFORMITY_CHECK,
+				// but with a numberic value, so we will set the result to OK/NONCONFORMITY below
+			case CheckListType.NONCONFORMITY_CHECK:
+				workOrderActivityCheckListInfor.setOKFLAG(getStringBool.apply(ReturnType.OK));
+				workOrderActivityCheckListInfor.setNONCONFORMITYFLAG(getStringBool.apply(ReturnType.NONCONFORMITY));
+				break;
 		}
 
 		if (workOrderActivityCheckList.getNotes() != null) {
@@ -261,7 +300,6 @@ public class ChecklistServiceImpl implements ChecklistService {
 	}
 
 	public WorkOrderActivityCheckList[] readWorkOrderChecklists(InforContext context, Activity activity) throws InforException {
-		LinkedList<WorkOrderActivityCheckList> checklists = new LinkedList<WorkOrderActivityCheckList>();
 		// Fetch the data
 		GridRequest gridRequest = new GridRequest("3315", "WSJOBS_ACK", "3369");
 		gridRequest.setRowCount(1000);
@@ -271,119 +309,165 @@ public class ChecklistServiceImpl implements ChecklistService {
 		gridRequest.getParams().put("param.jobseq", "0");
 		GridRequestResult gridRequestResult = gridsService.executeQuery(context, gridRequest);
 
-		for (GridRequestRow gridRequestRow : gridRequestResult.getRows()) {
-
-			WorkOrderActivityCheckList checklistTemp = new WorkOrderActivityCheckList();
-			checklistTemp.setWorkOrderCode(activity.getWorkOrderNumber());
-			checklistTemp.setActivityCode(activity.getActivityCode());
-			checklistTemp.setCheckListCode(getCellContent("checklistcode", gridRequestRow));
-			//checklistTemp.setOccurrence(v_result.getString("ack_occurrence"));
-			checklistTemp.setSequence(getCellContent("checklistsequence", gridRequestRow));
-			checklistTemp.setEquipmentCode(getCellContent("equipment", gridRequestRow));
-			checklistTemp.setEquipmentDesc(getCellContent("equipmentdesc", gridRequestRow));
-			checklistTemp.setType(getCellContent("checklisttype", gridRequestRow));
-
-			// FOLLOW-UP
-				checklistTemp.setFollowUp(decodeBoolean(getCellContent("followup", gridRequestRow)));
-
-
-			// FOLLOW-UP WORK ORDER
-			String followUpWorkOrderActivity = getCellContent("followupwoactivity", gridRequestRow);
-			if (tools.getDataTypeTools().isNotEmpty(followUpWorkOrderActivity)) {
-				// Remove the activity after the Work Order Number
-				checklistTemp.setFollowUpWorkOrder(followUpWorkOrderActivity.split("-")[0]);
-			}
-
-			// REQUIRED
-			String required = getCellContent("requiredtoclosedocument", gridRequestRow);
-			if ("Yes".equals(required)) {
-				checklistTemp.setRequiredToClose(true);
-			} else {
-				checklistTemp.setRequiredToClose(false);
-			}
-
-			// NOTES
-			checklistTemp.setNotes(getCellContent("notes", gridRequestRow));
-
-			//checklistTemp.setFinalOccurrence(v_result.getString("ack_finaloccurrence"));
-			checklistTemp.setDesc(getCellContent("checklistdescription", gridRequestRow));
-
-			//
-			// VALUES FOR DIFFERENT CHECKLIST TYPES
-			//
-			if (checklistTemp.getType().equals("01")) {
-				// CHECKLIST ITEM
-				if ("true".equals(getCellContent("completed", gridRequestRow))) {
-					checklistTemp.setResult("COMPLETED");
-				} else {
-					checklistTemp.setResult(null);
-				}
-			}
-			if (checklistTemp.getType().equals("02")) {
-				// QUESTION
-				if (getCellContent("yes", gridRequestRow) != null && getCellContent("yes", gridRequestRow).equals("true")) {
-					checklistTemp.setResult("YES");
-				}
-				if (getCellContent("no", gridRequestRow) != null && getCellContent("no", gridRequestRow).equals("true")) {
-					checklistTemp.setResult("NO");
-				}
-			}
-			if (checklistTemp.getType().equals("03")) {
-				// QUALITATIVE
-				checklistTemp.setFinding(getCellContent("finding", gridRequestRow));
-				String[] possibleFindings = getCellContent("possiblefindings", gridRequestRow).split(",");
-				List<Finding> findings = new LinkedList<Finding>();
-
-				for (String findingCode : possibleFindings) {
-					EntityManager em = tools.getEntityManager();
-					try {
-						Finding findingTemp = em.find(Finding.class, findingCode);
-						findings.add(findingTemp);
-					} catch (Exception e) {
-						tools.log(Level.SEVERE,"Error in readWOActivityChecklists");
-					} finally {
-						em.close();
-					}
-				}
-				checklistTemp.setPossibleFindings(findings.toArray(new Finding[findings.size()]));
-
-			}
-			if (checklistTemp.getType().equals("04")) {
-				// QUANTITATIVE
-				checklistTemp.setResult(getCellContent("value", gridRequestRow));
-				checklistTemp.setUOM(getCellContent("uom", gridRequestRow));
-			}
-			if (checklistTemp.getType().equals("05")) {
-				// METER READING
-				checklistTemp.setResult(getCellContent("value", gridRequestRow));
-				checklistTemp.setUOM(getCellContent("uom", gridRequestRow));
-			}
-			if (checklistTemp.getType().equals("06")) {
-				// INSPECTION
-				checklistTemp.setResult(getCellContent("value", gridRequestRow));
-				checklistTemp.setUOM(getCellContent("uom", gridRequestRow));
-				checklistTemp.setFinding(getCellContent("finding", gridRequestRow));
-				String[] possibleFindings = getCellContent("possiblefindings", gridRequestRow).split(",");
-				List<Finding> findings = new LinkedList<Finding>();
-
-				for (String findingCode : possibleFindings) {
-					EntityManager em = tools.getEntityManager();
-					try {
-						Finding findingTemp = em.find(Finding.class, findingCode);
-						findings.add(findingTemp);
-					} catch (Exception e) {
-						tools.log(Level.SEVERE,"Error in readWOActivityChecklists");
-					} finally {
-						em.close();
-					}
-				}
-				checklistTemp.setPossibleFindings(findings.toArray(new Finding[findings.size()]));
-			}
-			checklists.add(checklistTemp);
+		LinkedList<WorkOrderActivityCheckList> checklists = new LinkedList<>();
+		for(GridRequestRow row : gridRequestResult.getRows()) {
+			checklists.add(getCheckList(row, activity));
 		}
 
+		return checklists.toArray(new WorkOrderActivityCheckList[]{});
+	}
 
-		return checklists.toArray(new WorkOrderActivityCheckList[] {});
+
+	private WorkOrderActivityCheckList getCheckList(GridRequestRow row, Activity activity) throws InforException {
+		WorkOrderActivityCheckList checklist = new WorkOrderActivityCheckList();
+		checklist.setWorkOrderCode(activity.getWorkOrderNumber());
+		checklist.setActivityCode(activity.getActivityCode());
+		checklist.setCheckListCode(getCellContent("checklistcode", row));
+		//checklistTemp.setOccurrence(v_result.getString("ack_occurrence"));
+		checklist.setSequence(getCellContent("checklistsequence", row));
+		checklist.setEquipmentCode(getCellContent("equipment", row));
+		checklist.setEquipmentDesc(getCellContent("equipmentdesc", row));
+		checklist.setType(getCellContent("checklisttype", row));
+
+		// FOLLOW-UP
+		checklist.setFollowUp(decodeBoolean(getCellContent("followup", row)));
+
+
+		// FOLLOW-UP WORK ORDER
+		String followUpWorkOrderActivity = getCellContent("followupwoactivity", row);
+		if (tools.getDataTypeTools().isNotEmpty(followUpWorkOrderActivity)) {
+			// Remove the activity after the Work Order Number
+			checklist.setFollowUpWorkOrder(followUpWorkOrderActivity.split("-")[0]);
+		}
+
+		// REQUIRED
+		String required = getCellContent("requiredtoclosedocument", row);
+		if ("Yes".equals(required)) {
+			checklist.setRequiredToClose(true);
+		} else {
+			checklist.setRequiredToClose(false);
+		}
+
+		// NOTES
+		checklist.setNotes(getCellContent("notes", row));
+
+		//checklistTemp.setFinalOccurrence(v_result.getString("ack_finaloccurrence"));
+		checklist.setDesc(getCellContent("checklistdescription", row));
+
+		//
+		// VALUES FOR DIFFERENT CHECKLIST TYPES
+		//
+
+		switch(checklist.getType()) {
+			case CheckListType.CHECKLIST_ITEM:
+				if (cellEquals(row, "completed", "true")) {
+					checklist.setResult(ReturnType.COMPLETED);
+				} else {
+					checklist.setResult(ReturnType.NULL);
+				}
+				break;
+			case CheckListType.QUESTION_YES_NO:
+				if (cellEquals(row, "yes", "true")) {
+					checklist.setResult(ReturnType.YES);
+				} else if (cellEquals(row, "no", "true")) {
+					checklist.setResult(ReturnType.NO);
+				} else {
+					checklist.setResult(null);
+				}
+				break;
+			case CheckListType.QUALITATIVE:
+				checklist.setFinding(getCellContent("finding", row));
+				checklist.setPossibleFindings(getPossibleFindings(row));
+				break;
+			case CheckListType.INSPECTION:
+				checklist.setFinding(getCellContent("finding", row));
+				checklist.setPossibleFindings(getPossibleFindings(row));
+				// no break here, INSPECTION is the same as QUANTITATIVE/METER_READING,
+				// but with findings and possible findings, so we will set the numeric value and UOM below
+			case CheckListType.QUANTITATIVE:
+			case CheckListType.METER_READING:
+				checklist.setNumericValue(encodeBigDecimal(getCellContent("value", row), ""));
+				checklist.setUOM(getCellContent("uom", row));
+
+				// this is set for backward compatibility reasons, deprecated, do not use in new applications
+				// TODO: update all applications to use the numeric value and remove this
+				checklist.setResult(getCellContent("value", row));
+				break;
+			case CheckListType.GOOD_POOR:
+				if (cellEquals(row, "good", "true")) {
+					checklist.setResult(ReturnType.GOOD);
+				} else if (cellEquals(row, "poor", "true")) {
+					checklist.setResult(ReturnType.POOR);
+				} else {
+					checklist.setResult(ReturnType.NULL);
+				}
+				break;
+			case CheckListType.NONCONFORMITY_MEASUREMENT:
+				checklist.setNumericValue(encodeBigDecimal(getCellContent("value", row), ""));
+				checklist.setUOM(getCellContent("uom", row));
+				// no break here, NONCONFORMITY_MEASUREMENT is the same as NONCONFORMITY_CHECK,
+				// but with a numberic value and UOM, so we will set the result to OK/NONCONFORMITY below
+			case CheckListType.NONCONFORMITY_CHECK:
+				if (cellEquals(row, "ok", "true")) {
+					checklist.setResult(ReturnType.OK);
+				} else if (cellEquals(row, "nonconformityfound", "true")) {
+					checklist.setResult(ReturnType.NONCONFORMITY);
+				} else {
+					checklist.setResult(ReturnType.NULL);
+				}
+				break;
+			case CheckListType.OK_ADJUSTED_MEASUREMENT:
+				checklist.setNumericValue(encodeBigDecimal(getCellContent("value", row), ""));
+				checklist.setUOM(getCellContent("uom", row));
+				// no break here, OK_ADJUSTED_MEASUREMENT is the same as OK_ADJUSTED,
+				// but with a numeric value and UOM, so we will set the result to OK/ADJUSTED below
+			case CheckListType.OK_ADJUSTED:
+				if (cellEquals(row, "ok", "true")) {
+					checklist.setResult(ReturnType.OK);
+				} else if(cellEquals(row,"adjusted", "true")) {
+					checklist.setResult(ReturnType.ADJUSTED);
+				} else {
+					checklist.setResult(ReturnType.NULL);
+				}
+				break;
+			case CheckListType.OK_REPAIR_NEEDED:
+				checklist.setFinding(getCellContent("resolution", row));
+				if (cellEquals(row, "ok", "true")) {
+					checklist.setResult(ReturnType.OK);
+				} else if(cellEquals(row,"repairsneeded", "true")) {
+					checklist.setResult(ReturnType.REPAIRSNEEDED);
+				} else {
+					checklist.setResult(ReturnType.NULL);
+				}
+				break;
+		}
+
+		return checklist;
+	}
+
+	private Finding[] getPossibleFindings(GridRequestRow row) {
+		String[] possibleFindings = getCellContent("possiblefindings", row).split(",");
+		List<Finding> findings = new LinkedList<>();
+
+		if (tools.isDatabaseConnectionConfigured()) {
+			for (String findingCode : possibleFindings) {
+				EntityManager em = tools.getEntityManager();
+				try {
+					Finding findingTemp = em.find(Finding.class, findingCode);
+					findings.add(findingTemp);
+				} catch (Exception e) {
+					tools.log(Level.SEVERE, "Error in readWOActivityChecklists");
+				} finally {
+					em.close();
+				}
+			}
+		}
+
+		return findings.toArray(new Finding[findings.size()]);
+	}
+
+	private boolean cellEquals(GridRequestRow row, String key, String value) {
+		return getCellContent(key, row) != null && getCellContent(key, row).equals(value);
 	}
 
 	private String getValue(ResultSet v_result) throws SQLException {
