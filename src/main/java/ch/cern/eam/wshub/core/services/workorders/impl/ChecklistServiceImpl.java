@@ -353,7 +353,8 @@ public class ChecklistServiceImpl implements ChecklistService {
 
 		//checklistTemp.setFinalOccurrence(v_result.getString("ack_finaloccurrence"));
 		checklist.setDesc(getCellContent("checklistdescription", row));
-
+		
+		checklist.setHideFollowUp(cellEquals(row, "hidefollowup", "true"));
 		//
 		// VALUES FOR DIFFERENT CHECKLIST TYPES
 		//
