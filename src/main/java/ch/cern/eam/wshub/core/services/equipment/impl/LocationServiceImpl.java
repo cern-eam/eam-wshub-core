@@ -4,19 +4,23 @@ import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.entities.BatchResponse;
 import ch.cern.eam.wshub.core.services.equipment.LocationService;
 import ch.cern.eam.wshub.core.services.equipment.entities.Location;
-import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrder;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
+import net.datastream.schemas.mp_entities.location_001.LocationParentHierarchy;
+import net.datastream.schemas.mp_entities.location_001.ParentLocation;
+import net.datastream.schemas.mp_fields.DEPARTMENTID_Type;
 import net.datastream.schemas.mp_fields.LOCATIONID_Type;
-import net.datastream.schemas.mp_fields.WOID_Type;
+import net.datastream.schemas.mp_fields.TYPE_Type;
 import net.datastream.schemas.mp_functions.SessionType;
 import net.datastream.schemas.mp_functions.mp0317_001.MP0317_AddLocation_001;
 import net.datastream.schemas.mp_functions.mp0318_001.MP0318_GetLocation_001;
 import net.datastream.schemas.mp_functions.mp0319_001.MP0319_SyncLocation_001;
 import net.datastream.schemas.mp_functions.mp0320_001.MP0320_DeleteLocation_001;
+import net.datastream.schemas.mp_functions.mp0361_001.MP0361_GetLocationParentHierarchy_001;
 import net.datastream.schemas.mp_results.mp0317_001.MP0317_AddLocation_001_Result;
 import net.datastream.schemas.mp_results.mp0318_001.MP0318_GetLocation_001_Result;
+import net.datastream.schemas.mp_results.mp0361_001.MP0361_GetLocationParentHierarchy_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 import javax.xml.ws.Holder;
 import java.util.List;
@@ -88,7 +92,13 @@ public class LocationServiceImpl implements LocationService {
 
 		net.datastream.schemas.mp_entities.location_001.Location locationInfor = getLocationResult.getResultData().getLocation();
 
-		return tools.getInforFieldTools().transformInforObject(new Location(), locationInfor);
+		Location location = tools.getInforFieldTools().transformInforObject(new Location(), locationInfor);
+
+		if(locationInfor.getParentLocationID() != null) {
+			location.setHierarchyLocationCode(locationInfor.getParentLocationID().getLOCATIONCODE());
+		}
+
+		return location;
 	}
 
 	public String createLocation(InforContext context, Location locationParam) throws InforException {
@@ -103,10 +113,12 @@ public class LocationServiceImpl implements LocationService {
 		if (locationParam.getClassCode() != null && (locationInfor.getCLASSID() == null
 				|| !locationParam.getClassCode().toUpperCase().equals(locationInfor.getCLASSID().getCLASSCODE()))) {
 			locationInfor.setUSERDEFINEDAREA(
-					tools.getCustomFieldsTools().getInforCustomFields(context, "EVNT", locationParam.getClassCode().toUpperCase()));
+					tools.getCustomFieldsTools().getInforCustomFields(context, "LOC", locationParam.getClassCode().toUpperCase()));
 		}
 
 		tools.getInforFieldTools().transformWSHubObject(locationInfor, locationParam, context);
+
+		locationInfor.setLocationParentHierarchy(getLocationParentHierarchy(context, locationParam));
 
 		MP0317_AddLocation_001 addLocation = new MP0317_AddLocation_001();
 		addLocation.setLocation(locationInfor);
@@ -149,7 +161,10 @@ public class LocationServiceImpl implements LocationService {
 					tools.getCustomFieldsTools().getInforCustomFields(context, "LOC", locationParam.getClassCode().toUpperCase()));
 		}
 
+		locationInfor.setLocationParentHierarchy(getLocationParentHierarchy(context, locationParam));
+
 		tools.getInforFieldTools().transformWSHubObject(locationInfor, locationParam, context);
+
 
 		// call infor web service
 		MP0319_SyncLocation_001 syncLocation = new MP0319_SyncLocation_001();
@@ -184,5 +199,53 @@ public class LocationServiceImpl implements LocationService {
 		}
 
 		return locationCode;
+	}
+
+	private LocationParentHierarchy getLocationParentHierarchy(InforContext context, String locationCode) throws InforException {
+		MP0361_GetLocationParentHierarchy_001 getLocationParentHierarchy = new MP0361_GetLocationParentHierarchy_001();
+		getLocationParentHierarchy.setLOCATIONID(new LOCATIONID_Type());
+		getLocationParentHierarchy.getLOCATIONID().setLOCATIONCODE(locationCode);
+		getLocationParentHierarchy.getLOCATIONID().setORGANIZATIONID(tools.getOrganization(context));
+		MP0361_GetLocationParentHierarchy_001_Result getLocationParentHierarchyResult = new MP0361_GetLocationParentHierarchy_001_Result();
+
+		if (context.getCredentials() != null) {
+			getLocationParentHierarchyResult = inforws.getLocationParentHierarchyOp(getLocationParentHierarchy, "*", tools.createSecurityHeader(context), "TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
+		} else {
+			getLocationParentHierarchyResult = inforws.getLocationParentHierarchyOp(getLocationParentHierarchy, "*", null, null, new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
+		}
+
+		return getLocationParentHierarchyResult.getResultData().getLocationParentHierarchy();
+	}
+
+	private LocationParentHierarchy getLocationParentHierarchy(InforContext context, Location location) {
+		if(location.getHierarchyLocationCode() == null)
+			return null;
+
+		LocationParentHierarchy locationParentHierarchy = new LocationParentHierarchy();
+
+		TYPE_Type lType = new TYPE_Type();
+		lType.setTYPECODE("L");
+		lType.setDESCRIPTION("Localisation");
+
+		locationParentHierarchy.setLOCATIONID(new LOCATIONID_Type());
+		locationParentHierarchy.getLOCATIONID().setLOCATIONCODE(location.getCode());
+		locationParentHierarchy.getLOCATIONID().setORGANIZATIONID(tools.getOrganization(context));
+
+		locationParentHierarchy.setTYPE(lType);
+
+		ParentLocation parentLocation = new ParentLocation();
+		parentLocation.setTYPE(lType);
+
+		parentLocation.setLOCATIONID(new LOCATIONID_Type());
+		parentLocation.getLOCATIONID().setLOCATIONCODE(location.getHierarchyLocationCode());
+		parentLocation.getLOCATIONID().setORGANIZATIONID(tools.getOrganization(context));
+
+		parentLocation.setDEPARTMENTID(new DEPARTMENTID_Type());
+		parentLocation.getDEPARTMENTID().setDEPARTMENTCODE("*");
+		parentLocation.getDEPARTMENTID().setORGANIZATIONID(tools.getOrganization(context));
+
+		locationParentHierarchy.setParentLocation(parentLocation);
+
+		return locationParentHierarchy;
 	}
 }

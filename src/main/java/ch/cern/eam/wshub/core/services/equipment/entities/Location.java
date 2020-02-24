@@ -10,7 +10,6 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.Arrays;
 
 public class Location implements Serializable {
@@ -59,7 +58,10 @@ public class Location implements Serializable {
 	@Transient
 	@InforField(xpath = "UserDefinedFields")
 	private UserDefinedFields userDefinedFields;
-	
+
+	@Transient
+	private String hierarchyLocationCode;
+
 	public String getCode() {
 		return code;
 	}
@@ -127,6 +129,14 @@ public class Location implements Serializable {
 	}
 	public void setUserDefinedFields(UserDefinedFields userDefinedFields) {
 		this.userDefinedFields = userDefinedFields;
+	}
+
+	public String getHierarchyLocationCode() {
+		return hierarchyLocationCode;
+	}
+
+	public void setHierarchyLocationCode(String hierarchyLocationCode) {
+		this.hierarchyLocationCode = hierarchyLocationCode;
 	}
 
 	@Override
