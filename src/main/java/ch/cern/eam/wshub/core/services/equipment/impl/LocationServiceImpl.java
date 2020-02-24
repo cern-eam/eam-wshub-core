@@ -146,7 +146,7 @@ public class LocationServiceImpl implements LocationService {
 		if (locationParam.getClassCode() != null && (locationInfor.getCLASSID() == null
 				|| !locationParam.getClassCode().toUpperCase().equals(locationInfor.getCLASSID().getCLASSCODE()))) {
 			locationInfor.setUSERDEFINEDAREA(
-					tools.getCustomFieldsTools().getInforCustomFields(context, "EVNT", locationParam.getClassCode().toUpperCase()));
+					tools.getCustomFieldsTools().getInforCustomFields(context, "LOC", locationParam.getClassCode().toUpperCase()));
 		}
 
 		tools.getInforFieldTools().transformWSHubObject(locationInfor, locationParam, context);
