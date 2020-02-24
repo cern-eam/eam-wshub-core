@@ -2,6 +2,7 @@ package ch.cern.eam.wshub.core.services.administration.impl;
 
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.administration.UserSetupService;
+import ch.cern.eam.wshub.core.services.entities.BatchResponse;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.entities.EAMUser;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
@@ -27,6 +28,8 @@ import javax.xml.ws.Holder;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class UserSetupServiceImpl implements UserSetupService {
@@ -230,6 +233,14 @@ public class UserSetupServiceImpl implements UserSetupService {
 		}
 		// Return the result of the update
 		return result.getUSERID().getUSERCODE();
+	}
+
+	public BatchResponse<String> updateUserSetupBatch(InforContext context, List<EAMUser> eamUsers)
+			throws InforException {
+		List<Callable<String>> callableList = eamUsers.stream()
+				.<Callable<String>>map(eamUser -> () -> updateUserSetup(context, eamUser))
+				.collect(Collectors.toList());
+		return tools.processCallables(callableList);
 	}
 
 	public String deleteUserSetup(InforContext context, String userCode) throws InforException {
