@@ -4,6 +4,7 @@ import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import ch.cern.eam.wshub.core.services.equipment.entities.Location;
 import ch.cern.eam.wshub.core.tools.InforException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Calendar;
@@ -13,8 +14,16 @@ import static org.junit.jupiter.api.Assertions.*;
 import static ch.cern.eam.wshub.core.GlobalContext.*;
 
 public class TestLocation {
-    private static LocationService locationService = inforClient.getLocationService();
-    Location createLocation() throws Exception {
+    private LocationService locationService = inforClient.getLocationService();
+
+    private Location parentLocation;
+
+    @BeforeEach
+    void setup() throws Exception {
+        parentLocation = createLocation(false);
+    }
+
+    Location createLocation(boolean filled) throws Exception {
         String code = getCode("L");
 
         // create the location
@@ -23,13 +32,69 @@ public class TestLocation {
         location.setCode(code);
         location.setDescription("location test");
         location.setDepartmentCode("HXMF");
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        Date date = calendar.getTime();
+
+        if(filled) {
+            location.setClassCode("DES");
+            location.setSafety(true);
+            location.setOutOfService(true);
+            location.setCostCode("H#96231");
+            location.setHierarchyLocationCode(parentLocation.getCode());
+
+            UserDefinedFields udf = new UserDefinedFields();
+            udf.setUdfchar01("test");
+            udf.setUdfchkbox01(true);
+
+            udf.setUdfdate01(date);
+
+            location.setUserDefinedFields(udf);
+
+            CustomField[] customFields = new CustomField[1];
+            customFields[0] = new CustomField();
+            customFields[0].setCode("HMLPR019");
+            customFields[0].setValue("5");
+
+            location.setCustomFields(customFields);
+        }
+
         locationService.createLocation(context, location);
+
+        // confirm it has been created with the correct mandatory fields
+        location = locationService.readLocation(context, code);
+        assertEquals(code, location.getCode());
+        assertEquals("location test", location.getDescription());
+        assertEquals("HXMF", location.getDepartmentCode());
+
+        if(filled) {
+            assertEquals("location test", location.getDescription());
+            assertEquals("HXMF", location.getDepartmentCode());
+
+            assertEquals("DES", location.getClassCode());
+            assertEquals(true, location.getSafety());
+            assertEquals(true, location.getOutOfService());
+            assertEquals("H#96231", location.getCostCode());
+            assertEquals(parentLocation.getCode(), location.getHierarchyLocationCode());
+            assertEquals("test", location.getUserDefinedFields().getUdfchar01());
+            assertEquals(true, location.getUserDefinedFields().getUdfchkbox01());
+            assertEquals(date, location.getUserDefinedFields().getUdfdate01());
+            assertEquals(1, location.getCustomFields().length);
+            assertEquals("HMLPR019", location.getCustomFields()[0].getCode());
+            assertEquals("5", location.getCustomFields()[0].getValue());
+        }
+
         return location;
     }
 
     @Test
-    void testCreateUpdate() throws Exception {
-        Location location = createLocation();
+    void testCreateNullUpdateFill() throws Exception {
+        Location location = createLocation(false);
         String code = location.getCode();
 
         // confirm it has been created with the correct fields
@@ -43,6 +108,7 @@ public class TestLocation {
         assertEquals(false, location.getSafety());
         assertEquals(false, location.getOutOfService());
         assertEquals(null, location.getCostCode());
+        assertEquals(null, location.getHierarchyLocationCode());
         assertEquals(null, location.getUserDefinedFields().getUdfchar01());
         assertEquals(false, location.getUserDefinedFields().getUdfchkbox01());
         assertEquals(null, location.getUserDefinedFields().getUdfdate01());
@@ -57,6 +123,7 @@ public class TestLocation {
         location.setSafety(true);
         location.setOutOfService(true);
         location.setCostCode("H#96231");
+        location.setHierarchyLocationCode(parentLocation.getCode());
 
         UserDefinedFields udf = location.getUserDefinedFields();
         udf.setUdfchar01("test");
@@ -92,20 +159,28 @@ public class TestLocation {
         assertEquals(true, location.getSafety());
         assertEquals(true, location.getOutOfService());
         assertEquals("H#96231", location.getCostCode());
+        assertEquals(parentLocation.getCode(), location.getHierarchyLocationCode());
         assertEquals("test", location.getUserDefinedFields().getUdfchar01());
         assertEquals(true, location.getUserDefinedFields().getUdfchkbox01());
         assertEquals(date, location.getUserDefinedFields().getUdfdate01());
         assertEquals(1, location.getCustomFields().length);
         assertEquals("HMLPR019", location.getCustomFields()[0].getCode());
         assertEquals("5", location.getCustomFields()[0].getValue());
+    }
+
+    @Test
+    void testCreateFillUpdateNull() throws Exception {
+        Location location = createLocation(true);
+        String code = location.getCode();
 
         // null all values
         location.setClassCode("");
         location.setSafety(false);
         location.setOutOfService(false);
         location.setCostCode("");
+        location.setHierarchyLocationCode(null);
 
-        udf = location.getUserDefinedFields();
+        UserDefinedFields udf = location.getUserDefinedFields();
         udf.setUdfchar01("");
         udf.setUdfchkbox01(false);
         udf.setUdfdate01(new Date(0));
@@ -119,6 +194,7 @@ public class TestLocation {
         assertEquals(false, location.getSafety());
         assertEquals(false, location.getOutOfService());
         assertEquals(null, location.getCostCode());
+        assertEquals(null, location.getHierarchyLocationCode());
         assertEquals(null, location.getUserDefinedFields().getUdfchar01());
         assertEquals(false, location.getUserDefinedFields().getUdfchkbox01());
         assertEquals(null, location.getUserDefinedFields().getUdfdate01());
@@ -127,7 +203,7 @@ public class TestLocation {
 
     @Test
     void testDelete() throws Exception {
-        Location location = createLocation();
+        Location location = createLocation(false);
         String code = location.getCode();
 
         locationService.deleteLocation(context, code);
