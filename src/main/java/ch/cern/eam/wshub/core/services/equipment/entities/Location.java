@@ -1,5 +1,6 @@
 package ch.cern.eam.wshub.core.services.equipment.entities;
 
+import ch.cern.eam.wshub.core.annotations.BooleanType;
 import ch.cern.eam.wshub.core.annotations.InforField;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
@@ -44,12 +45,12 @@ public class Location implements Serializable {
 	private String classDesc;
 
 	@Transient
-	@InforField(xpath = "SAFETY")
+	@InforField(xpath = "SAFETY", booleanType = BooleanType.TRUE_FALSE)
 	private Boolean safety;
 
 	@Transient
-	@InforField(xpath = "OUTOFSERVICE")
-	private Boolean outOfService = false;
+	@InforField(xpath = "OUTOFSERVICE", booleanType = BooleanType.TRUE_FALSE)
+	private Boolean outOfService;
 
 	@Transient
 	@InforField(xpath = "COSTCODEID/COSTCODE")

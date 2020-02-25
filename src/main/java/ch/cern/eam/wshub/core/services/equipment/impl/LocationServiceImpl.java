@@ -2,6 +2,7 @@ package ch.cern.eam.wshub.core.services.equipment.impl;
 
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.entities.BatchResponse;
+import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.equipment.LocationService;
 import ch.cern.eam.wshub.core.services.equipment.entities.Location;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
@@ -12,6 +13,7 @@ import net.datastream.schemas.mp_entities.location_001.ParentLocation;
 import net.datastream.schemas.mp_fields.DEPARTMENTID_Type;
 import net.datastream.schemas.mp_fields.LOCATIONID_Type;
 import net.datastream.schemas.mp_fields.TYPE_Type;
+import net.datastream.schemas.mp_fields.USERDEFINEDAREA;
 import net.datastream.schemas.mp_functions.SessionType;
 import net.datastream.schemas.mp_functions.mp0317_001.MP0317_AddLocation_001;
 import net.datastream.schemas.mp_functions.mp0318_001.MP0318_GetLocation_001;
@@ -109,12 +111,8 @@ public class LocationServiceImpl implements LocationService {
 		locationInfor.getLOCATIONID().setLOCATIONCODE(locationParam.getCode());
 		locationInfor.getLOCATIONID().setORGANIZATIONID(tools.getOrganization(context));
 
-		// Check Custom fields. If they change, or now we have them
-		if (locationParam.getClassCode() != null && (locationInfor.getCLASSID() == null
-				|| !locationParam.getClassCode().toUpperCase().equals(locationInfor.getCLASSID().getCLASSCODE()))) {
-			locationInfor.setUSERDEFINEDAREA(
-					tools.getCustomFieldsTools().getInforCustomFields(context, "LOC", locationParam.getClassCode().toUpperCase()));
-		}
+		USERDEFINEDAREA customFields = getInforCustomFields(context, locationParam, locationInfor);
+		if(customFields != null) locationInfor.setUSERDEFINEDAREA(customFields);
 
 		tools.getInforFieldTools().transformWSHubObject(locationInfor, locationParam, context);
 
@@ -154,17 +152,11 @@ public class LocationServiceImpl implements LocationService {
 
 		net.datastream.schemas.mp_entities.location_001.Location locationInfor = result.getResultData().getLocation();
 
-		// Check Custom fields. If they change, or now we have them
-		if (locationParam.getClassCode() != null && (locationInfor.getCLASSID() == null
-				|| !locationParam.getClassCode().toUpperCase().equals(locationInfor.getCLASSID().getCLASSCODE()))) {
-			locationInfor.setUSERDEFINEDAREA(
-					tools.getCustomFieldsTools().getInforCustomFields(context, "LOC", locationParam.getClassCode().toUpperCase()));
-		}
+		USERDEFINEDAREA customFields = getInforCustomFields(context, locationParam, locationInfor);
+		if(customFields != null) locationInfor.setUSERDEFINEDAREA(customFields);
 
 		locationInfor.setLocationParentHierarchy(getLocationParentHierarchy(context, locationParam));
-
 		tools.getInforFieldTools().transformWSHubObject(locationInfor, locationParam, context);
-
 
 		// call infor web service
 		MP0319_SyncLocation_001 syncLocation = new MP0319_SyncLocation_001();
@@ -247,5 +239,23 @@ public class LocationServiceImpl implements LocationService {
 		locationParentHierarchy.setParentLocation(parentLocation);
 
 		return locationParentHierarchy;
+	}
+
+	private USERDEFINEDAREA getInforCustomFields(
+		InforContext context,
+		Location locationParam,
+		net.datastream.schemas.mp_entities.location_001.Location locationInfor)
+			throws InforException {
+
+		String classCode;
+		String targetClassCode = locationParam.getClassCode();
+		net.datastream.schemas.mp_fields.CLASSID_Type sourceClassId = locationInfor.getCLASSID();
+
+		if(targetClassCode == null) classCode = "*";
+		else if(sourceClassId == null
+			|| !targetClassCode.equalsIgnoreCase(sourceClassId.getCLASSCODE())) classCode = targetClassCode;
+		else return null;
+
+		return tools.getCustomFieldsTools().getInforCustomFields(context, "LOC", classCode.toUpperCase());
 	}
 }
