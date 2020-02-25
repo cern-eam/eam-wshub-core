@@ -14,8 +14,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static ch.cern.eam.wshub.core.GlobalContext.*;
 
 public class TestLocation {
-    private LocationService locationService = inforClient.getLocationService();
-
     private Location parentLocation;
 
     @BeforeEach

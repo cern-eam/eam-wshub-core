@@ -3,6 +3,8 @@ package ch.cern.eam.wshub.core;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.entities.Credentials;
+import ch.cern.eam.wshub.core.services.equipment.EquipmentFacadeService;
+import ch.cern.eam.wshub.core.services.equipment.LocationService;
 import ch.cern.eam.wshub.core.tools.Tools;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -17,6 +19,9 @@ public class GlobalContext {
     public static String username;
     public static Random random;
 
+    public static LocationService locationService;
+    public static EquipmentFacadeService equipmentFacadeService;
+
     static {
         inforClient = new InforClient.Builder("https://cmmsx-test.cern.ch/axis/services/EWSConnector")
                 .withDefaultTenant("infor")
@@ -30,6 +35,9 @@ public class GlobalContext {
         tools = inforClient.getTools();
 
         random = new Random();
+
+        locationService = inforClient.getLocationService();
+        equipmentFacadeService = inforClient.getEquipmentFacadeService();
     }
 
     public static String getCode(String type) {
