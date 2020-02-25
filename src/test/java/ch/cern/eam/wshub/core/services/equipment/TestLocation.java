@@ -139,8 +139,6 @@ public class TestLocation {
 
         udf.setUdfdate01(date);
 
-        locationService.updateLocation(context, location);
-
         CustomField[] customFields = new CustomField[1];
         customFields[0] = new CustomField();
         customFields[0].setCode("HMLPR019");
@@ -148,6 +146,10 @@ public class TestLocation {
 
         location.setCustomFields(customFields);
 
+        locationService.updateLocation(context, location);
+
+        // try to update the location with the same values again,
+        // ensuring we can update a filled location to a filled location
         locationService.updateLocation(context, location);
 
         // read the location back again and confirm it has been updated
@@ -189,6 +191,10 @@ public class TestLocation {
 
         locationService.updateLocation(context, location);
 
+        // try to update the location with the same values again,
+        // ensuring we can update a nullified location to a nullified location
+        locationService.updateLocation(context, location);
+
         location = locationService.readLocation(context, code);
         assertEquals(null, location.getClassCode());
         assertEquals(false, location.getSafety());
@@ -214,5 +220,19 @@ public class TestLocation {
         } catch(InforException e) {
             assertEquals("Cannot find the location record.", e.getMessage());
         }
+    }
+
+    @Test
+    void testDefaultValues() throws Exception {
+        Location location = createLocation(true);
+
+        Location brandNew = new Location();
+        brandNew.setCode(location.getCode());
+        brandNew.setDescription("ricardoricardo");
+        locationService.updateLocation(context, brandNew);
+
+        location = locationService.readLocation(context, location.getCode());
+        assertEquals("ricardoricardo", location.getDescription());
+        assertEquals(true, location.getOutOfService());
     }
 }
