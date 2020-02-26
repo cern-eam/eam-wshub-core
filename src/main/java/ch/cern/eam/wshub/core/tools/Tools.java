@@ -30,6 +30,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.nonNullOrDefault;
+
 public class Tools {
 
 	private ApplicationData applicationData;
@@ -303,4 +305,104 @@ public class Tools {
 		return (this.entityManagerFactory != null && getDataSource() != null);
 	}
 
+	public USERDEFINEDAREA getInforCustomFields(
+			InforContext context,
+			String previousClass,
+			USERDEFINEDAREA previousCustomFields,
+			String targetClass,
+			String entityType)
+			throws InforException {
+
+		/*	Table with all possible cases of inputs
+			IAE = IllegalArgumentException
+			prevC = previousClass
+			prevCFs = previousCustomFields
+			targetC = targetClass
+
+			+----+-------+---------+---------+----------------+---------------------------------+
+			| ID | prevC | prevCFs | targetC | description    | usage                           |
+			+----+-------+---------+---------+----------------+---------------------------------+
+			| 1  | null  | CF      | null    | prevCFs        | no previous class nor target    | [4]
+			| 2  | null  | CF      | ""      | merge with "*" | nullifying null class           | [3]
+			| 3  | null  | CF      | "D"     | merge with "D" | merge "*" into "D"              | [3]
+			| 4  | ""    | CF      | null    | IAE            | illegal argument                | [1]
+			| 5  | ""    | CF      | ""      | IAE            | illegal argument                | [1]
+			| 6  | ""    | CF      | "D"     | IAE            | illegal argument                | [1]
+			| 7  | "C"   | CF      | null    | prevCFs        | null [non-]update               | [4]
+			| 8  | "C"   | CF      | ""      | merge with "*" | merge "C" into "*"              | [3]
+			| 9  | "C"   | CF      | "D"     | merge with "D" | merge "C" into "D"              | [3]
+			| 10 | null  | null    | null    | "*" CFs        | null constructor                | [5]
+			| 11 | null  | null    | ""      | "*" CFs        | "" constructor                  | [2]
+			| 12 | null  | null    | "D"     | "D" CFs        | constructor with "D" CFs        | [2]
+			| 13 | ""    | null    | null    | IAE            | illegal argument                | [1]
+			| 14 | ""    | null    | ""      | IAE            | illegal argument                | [1]
+			| 15 | ""    | null    | "D"     | IAE            | illegal argument                | [1]
+			| 16 | "C"   | null    | null    | IAE            | illegal argument                | [1]
+			| 17 | "C"   | null    | ""      | IAE            | illegal argument                | [1]
+			| 18 | "C"   | null    | "D"     | IAE            | illegal argument                | [1]
+			+----+-------+---------+---------+----------------+---------------------------------+
+		*/
+
+		// [1] handle cases 4 to 6 and 13 to 18
+		if(previousClass != null && (previousClass.equals("") || previousCustomFields == null)) {
+			throw new IllegalArgumentException("");
+		}
+
+		if(targetClass != null) {
+			// this determines whether the class we should use is "*"or newClass
+			// this separates cases 2 and 3, and 8 and 9
+			String newClass = targetClass.length() == 0 ? "*" : targetClass;
+
+			USERDEFINEDAREA classCustomFields =
+				getCustomFieldsTools().getInforCustomFields(context, entityType, newClass);
+
+			// [2] handle case 11 and 12
+			if(previousCustomFields == null) return classCustomFields;
+
+			// [3] handle cases 2, 3, 8 and 9
+			return merge(classCustomFields, previousCustomFields);
+		}
+
+		// we can now assume that targetClass is null
+
+		// [4] handle case 1 and 7
+		if(previousCustomFields != null) return previousCustomFields;
+
+		// [5] handle case 10
+		return getCustomFieldsTools().getInforCustomFields(context, entityType, "*");
+	}
+
+	// IMPORTANT: this method mutates the argument called "base"
+	private USERDEFINEDAREA merge(USERDEFINEDAREA base, USERDEFINEDAREA toppings) {
+		// this hashmap turns the merge into a linear time operation
+		HashMap<String, CUSTOMFIELD> codeToTopping = new HashMap<>();
+		toppings.getCUSTOMFIELD().stream().forEach(topping -> codeToTopping.put(topping.getPROPERTYCODE(), topping));
+
+		base.getCUSTOMFIELD().stream().forEach(baseCustomField -> {
+			CUSTOMFIELD toppingCustomField = codeToTopping.get(baseCustomField.getPROPERTYCODE());
+
+			CUSTOMFIELD sourceCustomField = toppingCustomField;
+			if(toppingCustomField == null) sourceCustomField = baseCustomField;
+
+			baseCustomField.setPROPERTYCODE(sourceCustomField.getPROPERTYCODE());
+
+			// we must keep the base class regardless of the new topping class
+			baseCustomField.setCLASSID(baseCustomField.getCLASSID());
+
+			baseCustomField.setDATEFIELD(
+					nonNullOrDefault(sourceCustomField.getDATEFIELD(), baseCustomField.getDATEFIELD()));
+			baseCustomField.setDATETIMEFIELD(
+					nonNullOrDefault(sourceCustomField.getDATETIMEFIELD(), baseCustomField.getDATETIMEFIELD()));
+			baseCustomField.setNUMBERFIELD(
+					nonNullOrDefault(sourceCustomField.getNUMBERFIELD(), baseCustomField.getNUMBERFIELD()));
+			baseCustomField.setTEXTFIELD(
+					nonNullOrDefault(sourceCustomField.getTEXTFIELD(), baseCustomField.getTEXTFIELD()));
+			baseCustomField.setCODEDESCFIELD(
+					nonNullOrDefault(sourceCustomField.getCODEDESCFIELD(), baseCustomField.getCODEDESCFIELD()));
+			baseCustomField.setENTITYCODEFIELD(
+					nonNullOrDefault(sourceCustomField.getENTITYCODEFIELD(), baseCustomField.getENTITYCODEFIELD()));
+		});
+
+		return base;
+	}
 }

@@ -2,7 +2,6 @@ package ch.cern.eam.wshub.core.services.equipment.impl;
 
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.entities.BatchResponse;
-import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.equipment.LocationService;
 import ch.cern.eam.wshub.core.services.equipment.entities.Location;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
@@ -10,10 +9,7 @@ import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_entities.location_001.LocationParentHierarchy;
 import net.datastream.schemas.mp_entities.location_001.ParentLocation;
-import net.datastream.schemas.mp_fields.DEPARTMENTID_Type;
-import net.datastream.schemas.mp_fields.LOCATIONID_Type;
-import net.datastream.schemas.mp_fields.TYPE_Type;
-import net.datastream.schemas.mp_fields.USERDEFINEDAREA;
+import net.datastream.schemas.mp_fields.*;
 import net.datastream.schemas.mp_functions.SessionType;
 import net.datastream.schemas.mp_functions.mp0317_001.MP0317_AddLocation_001;
 import net.datastream.schemas.mp_functions.mp0318_001.MP0318_GetLocation_001;
@@ -111,12 +107,18 @@ public class LocationServiceImpl implements LocationService {
 		locationInfor.getLOCATIONID().setLOCATIONCODE(locationParam.getCode());
 		locationInfor.getLOCATIONID().setORGANIZATIONID(tools.getOrganization(context));
 
-		USERDEFINEDAREA customFields = getInforCustomFields(context, locationParam, locationInfor);
-		if(customFields != null) locationInfor.setUSERDEFINEDAREA(customFields);
+		locationInfor.setUSERDEFINEDAREA(tools.getInforCustomFields(
+				context,
+				toClassCodeString(locationInfor.getCLASSID()),
+				locationInfor.getUSERDEFINEDAREA(),
+				locationParam.getClassCode(),
+				"LOC"));
 
 		tools.getInforFieldTools().transformWSHubObject(locationInfor, locationParam, context);
 
-		locationInfor.setLocationParentHierarchy(getLocationParentHierarchy(context, locationParam));
+		if(locationParam.getHierarchyLocationCode() != null) {
+			locationInfor.setLocationParentHierarchy(getLocationParentHierarchy(context, locationParam));
+		}
 
 		MP0317_AddLocation_001 addLocation = new MP0317_AddLocation_001();
 		addLocation.setLocation(locationInfor);
@@ -152,10 +154,23 @@ public class LocationServiceImpl implements LocationService {
 
 		net.datastream.schemas.mp_entities.location_001.Location locationInfor = result.getResultData().getLocation();
 
-		USERDEFINEDAREA customFields = getInforCustomFields(context, locationParam, locationInfor);
-		if(customFields != null) locationInfor.setUSERDEFINEDAREA(customFields);
+		locationInfor.setUSERDEFINEDAREA(tools.getInforCustomFields(
+			context,
+			toClassCodeString(locationInfor.getCLASSID()),
+			locationInfor.getUSERDEFINEDAREA(),
+			locationParam.getClassCode(),
+			"LOC"));
 
-		locationInfor.setLocationParentHierarchy(getLocationParentHierarchy(context, locationParam));
+		if(locationParam.getHierarchyLocationCode() == null) {
+			locationParam.setHierarchyLocationCode(toLocationCodeString(locationInfor.getParentLocationID()));
+		}
+
+		if(locationParam.getHierarchyLocationCode() != null && !locationParam.getHierarchyLocationCode().equals("")) {
+			locationInfor.setLocationParentHierarchy(getLocationParentHierarchy(context, locationParam));
+		}
+
+		locationInfor.setParentLocationID(null);
+
 		tools.getInforFieldTools().transformWSHubObject(locationInfor, locationParam, context);
 
 		// call infor web service
@@ -241,21 +256,11 @@ public class LocationServiceImpl implements LocationService {
 		return locationParentHierarchy;
 	}
 
-	private USERDEFINEDAREA getInforCustomFields(
-		InforContext context,
-		Location locationParam,
-		net.datastream.schemas.mp_entities.location_001.Location locationInfor)
-			throws InforException {
+	private String toClassCodeString(CLASSID_Type classIdType) {
+		return classIdType == null ? null : classIdType.getCLASSCODE();
+	}
 
-		String classCode;
-		String targetClassCode = locationParam.getClassCode();
-		net.datastream.schemas.mp_fields.CLASSID_Type sourceClassId = locationInfor.getCLASSID();
-
-		if(targetClassCode == null) classCode = "*";
-		else if(sourceClassId == null
-			|| !targetClassCode.equalsIgnoreCase(sourceClassId.getCLASSCODE())) classCode = targetClassCode;
-		else return null;
-
-		return tools.getCustomFieldsTools().getInforCustomFields(context, "LOC", classCode.toUpperCase());
+	private String toLocationCodeString(LOCATIONID_Type locationIdType) {
+		return locationIdType == null ? null : locationIdType.getLOCATIONCODE();
 	}
 }
