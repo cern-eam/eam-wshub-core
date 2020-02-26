@@ -7,6 +7,7 @@ import ch.cern.eam.wshub.core.tools.InforException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -54,10 +55,13 @@ public class TestLocation {
 
             location.setUserDefinedFields(udf);
 
-            CustomField[] customFields = new CustomField[1];
+            CustomField[] customFields = new CustomField[2];
             customFields[0] = new CustomField();
             customFields[0].setCode("HMLPR019");
             customFields[0].setValue("5");
+            customFields[1] = new CustomField();
+            customFields[1].setCode("HMLPR147");
+            customFields[1].setValue("10");
 
             location.setCustomFields(customFields);
         }
@@ -82,9 +86,16 @@ public class TestLocation {
             assertEquals("test", location.getUserDefinedFields().getUdfchar01());
             assertEquals(true, location.getUserDefinedFields().getUdfchkbox01());
             assertEquals(date, location.getUserDefinedFields().getUdfdate01());
-            assertEquals(1, location.getCustomFields().length);
-            assertEquals("HMLPR019", location.getCustomFields()[0].getCode());
-            assertEquals("5", location.getCustomFields()[0].getValue());
+
+            CustomField[] customFields = location.getCustomFields();
+
+            CustomField classCustomField = Arrays.stream(customFields)
+                .filter(cf -> cf.getCode().equals("HMLPR019")).findFirst().get();
+            assertEquals("5", classCustomField.getValue());
+
+            CustomField generalCustomField = Arrays.stream(customFields)
+                    .filter(cf -> cf.getCode().equals("HMLPR147")).findFirst().get();
+            assertEquals("10", generalCustomField.getValue());
         }
 
         return location;
@@ -110,7 +121,15 @@ public class TestLocation {
         assertEquals(null, location.getUserDefinedFields().getUdfchar01());
         assertEquals(false, location.getUserDefinedFields().getUdfchkbox01());
         assertEquals(null, location.getUserDefinedFields().getUdfdate01());
-        assertEquals(0, location.getCustomFields().length);
+
+        CustomField[] customFields = location.getCustomFields();
+
+        assertFalse(Arrays.stream(customFields)
+                .filter(cf -> cf.getCode().equals("HMLPR019")).findFirst().isPresent());
+
+        CustomField generalCustomField = Arrays.stream(customFields)
+                .filter(cf -> cf.getCode().equals("HMLPR147")).findFirst().get();
+        assertEquals("", generalCustomField.getValue());
 
         // update the just read location
         location.setDescription("update test");
@@ -137,10 +156,13 @@ public class TestLocation {
 
         udf.setUdfdate01(date);
 
-        CustomField[] customFields = new CustomField[1];
+        customFields = new CustomField[2];
         customFields[0] = new CustomField();
         customFields[0].setCode("HMLPR019");
         customFields[0].setValue("5");
+        customFields[1] = new CustomField();
+        customFields[1].setCode("HMLPR147");
+        customFields[1].setValue("10");
 
         location.setCustomFields(customFields);
 
@@ -148,6 +170,11 @@ public class TestLocation {
 
         // try to update the location with the same values again,
         // ensuring we can update a filled location to a filled location
+        locationService.updateLocation(context, location);
+
+        // try updating the location with an empty Location (no changes)
+        location = new Location();
+        location.setCode(code);
         locationService.updateLocation(context, location);
 
         // read the location back again and confirm it has been updated
@@ -163,9 +190,16 @@ public class TestLocation {
         assertEquals("test", location.getUserDefinedFields().getUdfchar01());
         assertEquals(true, location.getUserDefinedFields().getUdfchkbox01());
         assertEquals(date, location.getUserDefinedFields().getUdfdate01());
-        assertEquals(1, location.getCustomFields().length);
-        assertEquals("HMLPR019", location.getCustomFields()[0].getCode());
-        assertEquals("5", location.getCustomFields()[0].getValue());
+
+        customFields = location.getCustomFields();
+
+        CustomField classCustomField = Arrays.stream(customFields)
+                .filter(cf -> cf.getCode().equals("HMLPR019")).findFirst().get();
+        assertEquals("5", classCustomField.getValue());
+
+        generalCustomField = Arrays.stream(customFields)
+                .filter(cf -> cf.getCode().equals("HMLPR147")).findFirst().get();
+        assertEquals("10", generalCustomField.getValue());
     }
 
     @Test
@@ -178,7 +212,7 @@ public class TestLocation {
         location.setSafety(false);
         location.setOutOfService(false);
         location.setCostCode("");
-        location.setHierarchyLocationCode(null);
+        location.setHierarchyLocationCode("");
 
         UserDefinedFields udf = location.getUserDefinedFields();
         udf.setUdfchar01("");
@@ -193,6 +227,11 @@ public class TestLocation {
         // ensuring we can update a nullified location to a nullified location
         locationService.updateLocation(context, location);
 
+        // try updating the location with an empty Location (no changes)
+        location = new Location();
+        location.setCode(code);
+        locationService.updateLocation(context, location);
+
         location = locationService.readLocation(context, code);
         assertEquals(null, location.getClassCode());
         assertEquals(false, location.getSafety());
@@ -202,7 +241,15 @@ public class TestLocation {
         assertEquals(null, location.getUserDefinedFields().getUdfchar01());
         assertEquals(false, location.getUserDefinedFields().getUdfchkbox01());
         assertEquals(null, location.getUserDefinedFields().getUdfdate01());
-        assertEquals(0, location.getCustomFields().length);
+
+        CustomField[] customFields = location.getCustomFields();
+
+        assertFalse(Arrays.stream(customFields)
+                .filter(cf -> cf.getCode().equals("HMLPR019")).findFirst().isPresent());
+
+        CustomField generalCustomField = Arrays.stream(customFields)
+                .filter(cf -> cf.getCode().equals("HMLPR147")).findFirst().get();
+        assertEquals("10", generalCustomField.getValue());
     }
 
     @Test
@@ -232,5 +279,43 @@ public class TestLocation {
         location = locationService.readLocation(context, location.getCode());
         assertEquals("ricardoricardo", location.getDescription());
         assertEquals(true, location.getOutOfService());
+    }
+
+    @Test
+    void testMergeFromFilled() throws Exception {
+        String code = createLocation(true).getCode();
+        Location location = new Location();
+        location.setCode(code);
+        location.setClassCode("FIC");
+        locationService.updateLocation(context, location);
+
+        location = locationService.readLocation(context, location.getCode());
+        CustomField[] customFields = location.getCustomFields();
+        CustomField classCustomField = Arrays.stream(customFields)
+            .filter(cf -> cf.getCode().equals("HMLPR019")).findFirst().get();
+        assertEquals("5", classCustomField.getValue());
+
+        CustomField generalCustomField = Arrays.stream(customFields)
+                .filter(cf -> cf.getCode().equals("HMLPR147")).findFirst().get();
+        assertEquals("10", generalCustomField.getValue());
+    }
+
+    @Test
+    void testMergeFromEmpty() throws Exception {
+        String code = createLocation(false).getCode();
+        Location location = new Location();
+        location.setCode(code);
+        location.setClassCode("FIC");
+        locationService.updateLocation(context, location);
+
+        location = locationService.readLocation(context, location.getCode());
+        CustomField[] customFields = location.getCustomFields();
+        CustomField classCustomField = Arrays.stream(customFields)
+                .filter(cf -> cf.getCode().equals("HMLPR019")).findFirst().get();
+        assertEquals(null, classCustomField.getValue());
+
+        CustomField generalCustomField = Arrays.stream(customFields)
+                .filter(cf -> cf.getCode().equals("HMLPR147")).findFirst().get();
+        assertEquals("", generalCustomField.getValue());
     }
 }

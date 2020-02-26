@@ -29,7 +29,7 @@ public class GlobalContext {
                 .withLogger(Logger.getLogger("wshublogger"))
                 .build();
 
-        context = new InforContext(new Credentials("plavarin", "***REMOVED***"));
+        context = new InforContext(new Credentials(System.getenv("TESTS_USERNAME"), System.getenv("TESTS_PASSPHRASE")));
         username = context.getCredentials().getUsername().toUpperCase();
 
         tools = inforClient.getTools();
