@@ -1,18 +1,18 @@
 package ch.cern.eam.wshub.core.services.equipment.entities;
 
 import ch.cern.eam.wshub.core.annotations.InforField;
-
 import java.math.BigInteger;
+import java.util.Date;
 
-public class ReleasedPMSchedule
-{
-    @InforField(xpath="WORKORDERID/JOBNUM")
+public class ReleasedPMSchedule {
+
+    @InforField(xpath = "WORKORDERID/JOBNUM")
     private String workOrder;
-    @InforField(xpath="STATUS/STATUSCODE")
+    @InforField(xpath = "STATUS/STATUSCODE")
     private String statusCode;
-    @InforField(xpath="TARGETDATE")
-    private String targetDate;
-    @InforField(xpath="recordid")
+    @InforField(xpath = "TARGETDATE")
+    private Date scheduledStart;
+    @InforField(xpath = "recordid")
     private BigInteger updateCount;
 
     public String getWorkOrder() {
@@ -31,12 +31,12 @@ public class ReleasedPMSchedule
         this.statusCode = statusCode;
     }
 
-    public String getTargetDate() {
-        return targetDate;
+    public Date getScheduledStart() {
+        return scheduledStart;
     }
 
-    public void setTargetDate(String targetDate) {
-        this.targetDate = targetDate;
+    public void setScheduledStart(Date scheduledStart) {
+        this.scheduledStart = scheduledStart;
     }
 
     public BigInteger getUpdateCount() {
@@ -50,10 +50,10 @@ public class ReleasedPMSchedule
     @Override
     public String toString() {
         return "ReleasedPMSchedule{" +
-                "statusCode='" + statusCode + '\'' +
-                ", targetDate='" + targetDate + '\'' +
-                ", updateCount=" + updateCount +
-                ", workOrder='" + workOrder + '\'' +
-                '}';
+            "workOrder='" + workOrder + '\'' +
+            ", statusCode='" + statusCode + '\'' +
+            ", scheduledStart=" + scheduledStart +
+            ", updateCount=" + updateCount +
+            '}';
     }
 }
