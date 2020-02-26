@@ -116,11 +116,12 @@ public class SystemServiceImpl implements SystemService {
 
 			SystemEquipment systemEquipment = readSystemInfor(context, systemParam.getCode());
 			//
-			if (systemParam.getClassCode() != null && (systemEquipment.getCLASSID() == null
-					|| !systemParam.getClassCode().toUpperCase().equals(systemEquipment.getCLASSID().getCLASSCODE()))) {
-				systemEquipment.setUSERDEFINEDAREA(
-						tools.getCustomFieldsTools().getInforCustomFields(context, "OBJ", systemParam.getClassCode().toUpperCase()));
-			}
+			systemEquipment.setUSERDEFINEDAREA(tools.getInforCustomFields(
+				context,
+				toCodeString(systemEquipment.getCLASSID()),
+				systemEquipment.getUSERDEFINEDAREA(),
+				systemParam.getClassCode(),
+				"OBJ"));
 
 			initializeSystemObject(systemEquipment, systemParam, context);
 			tools.getInforFieldTools().transformWSHubObject(systemEquipment, systemParam, context);
@@ -144,14 +145,13 @@ public class SystemServiceImpl implements SystemService {
 
 		SystemEquipment systemEquipment = new SystemEquipment();
 		//
-		if (systemParam.getCustomFields() != null && systemParam.getCustomFields().length > 0) {
-			if (systemParam.getClassCode() != null && !systemParam.getClassCode().trim().equals("")) {
-				systemEquipment.setUSERDEFINEDAREA(
-						tools.getCustomFieldsTools().getInforCustomFields(context, "OBJ", systemParam.getClassCode()));
-			} else {
-				systemEquipment.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(context, "OBJ", "*"));
-			}
-		}
+		systemEquipment.setUSERDEFINEDAREA(tools.getInforCustomFields(
+			context,
+			toCodeString(systemEquipment.getCLASSID()),
+			systemEquipment.getUSERDEFINEDAREA(),
+			systemParam.getClassCode(),
+			"OBJ"));
+
 		//
 		initializeSystemObject(systemEquipment, systemParam, context);
 		tools.getInforFieldTools().transformWSHubObject(systemEquipment, systemParam, context);

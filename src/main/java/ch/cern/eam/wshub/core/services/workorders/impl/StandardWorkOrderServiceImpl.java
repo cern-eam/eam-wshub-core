@@ -23,6 +23,8 @@ import net.datastream.wsdls.inforws.InforWebServicesPT;
 
 import javax.xml.ws.Holder;
 
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.toCodeString;
+
 public class StandardWorkOrderServiceImpl implements StandardWorkOrderService {
 
     private Tools tools;
@@ -88,11 +90,12 @@ public class StandardWorkOrderServiceImpl implements StandardWorkOrderService {
         net.datastream.schemas.mp_entities.standardworkorder_001.StandardWorkOrder inforStandardWorkOrder = readStandardWorkOrderInfor(context, standardWorkOrder.getCode());
 
         // Check Custom fields. If they change, or now we have them
-        if (standardWorkOrder.getClassCode() != null && (inforStandardWorkOrder.getCLASSID() == null
-                || !standardWorkOrder.getClassCode().toUpperCase().equals(inforStandardWorkOrder.getCLASSID().getCLASSCODE()))) {
-            inforStandardWorkOrder.setUSERDEFINEDAREA(
-                    tools.getCustomFieldsTools().getInforCustomFields(context, "EVNT", standardWorkOrder.getClassCode().toUpperCase()));
-        }
+        inforStandardWorkOrder.setUSERDEFINEDAREA(tools.getInforCustomFields(
+            context,
+            toCodeString(inforStandardWorkOrder.getCLASSID()),
+            inforStandardWorkOrder.getUSERDEFINEDAREA(),
+            standardWorkOrder.getClassCode(),
+            "EVNT"));
 
         tools.getInforFieldTools().transformWSHubObject(inforStandardWorkOrder, standardWorkOrder, context);
 

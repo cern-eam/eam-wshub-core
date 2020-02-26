@@ -33,6 +33,8 @@ import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.toCodeString;
+
 
 public class WorkOrderServiceImpl implements WorkOrderService {
 
@@ -262,11 +264,12 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		net.datastream.schemas.mp_entities.workorder_001.WorkOrder inforWorkOrder = readWorkOrderInfor(context, workorderParam.getNumber());
 
 		// Check Custom fields. If they change, or now we have them
-		if (workorderParam.getClassCode() != null && (inforWorkOrder.getCLASSID() == null
-				|| !workorderParam.getClassCode().toUpperCase().equals(inforWorkOrder.getCLASSID().getCLASSCODE()))) {
-			inforWorkOrder.setUSERDEFINEDAREA(
-					tools.getCustomFieldsTools().getInforCustomFields(context, "EVNT", workorderParam.getClassCode().toUpperCase()));
-		}
+		inforWorkOrder.setUSERDEFINEDAREA(tools.getInforCustomFields(
+			context,
+			toCodeString(inforWorkOrder.getCLASSID()),
+			inforWorkOrder.getUSERDEFINEDAREA(),
+			workorderParam.getClassCode(),
+			"EVNT"));
 
 		// SET ALL PROPERTIES
 		tools.getInforFieldTools().transformWSHubObject(inforWorkOrder, workorderParam, context);

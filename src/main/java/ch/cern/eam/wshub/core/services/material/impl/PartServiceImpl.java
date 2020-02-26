@@ -23,6 +23,8 @@ import net.datastream.schemas.mp_results.mp0242_001.MP0242_SyncPart_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 import javax.xml.ws.Holder;
 
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.toCodeString;
+
 public class PartServiceImpl implements PartService {
 
 	private Tools tools;
@@ -65,14 +67,12 @@ public class PartServiceImpl implements PartService {
 		//
 		//
 		//
-		if (partParam.getCustomFields() != null && partParam.getCustomFields().length > 0) {
-			if (partParam.getClassCode() != null && !partParam.getClassCode().trim().equals("")) {
-				inforPart.setUSERDEFINEDAREA(
-						tools.getCustomFieldsTools().getInforCustomFields(context, "PART", partParam.getClassCode()));
-			} else {
-				inforPart.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(context, "PART", "*"));
-			}
-		}
+		inforPart.setUSERDEFINEDAREA(tools.getInforCustomFields(
+			context,
+			toCodeString(inforPart.getCLASSID()),
+			inforPart.getUSERDEFINEDAREA(),
+			partParam.getClassCode(),
+			"PART"));
 
 		// POPULATE ALL OTHER FIELDS
 		tools.getInforFieldTools().transformWSHubObject(inforPart, partParam, context);
@@ -125,11 +125,12 @@ public class PartServiceImpl implements PartService {
 
 		net.datastream.schemas.mp_entities.part_001.Part inforPart = readPartInfor(context, partParam.getCode());
 
-		if (partParam.getClassCode() != null && (inforPart.getCLASSID() == null
-				|| !partParam.getClassCode().toUpperCase().equals(inforPart.getCLASSID().getCLASSCODE()))) {
-			inforPart.setUSERDEFINEDAREA(
-					tools.getCustomFieldsTools().getInforCustomFields(context, "PART", partParam.getClassCode().toUpperCase()));
-		}
+		inforPart.setUSERDEFINEDAREA(tools.getInforCustomFields(
+			context,
+			toCodeString(inforPart.getCLASSID()),
+			inforPart.getUSERDEFINEDAREA(),
+			partParam.getClassCode(),
+			"PART"));
 
 		// SET ALL PROPERTIES
 		tools.getInforFieldTools().transformWSHubObject(inforPart, partParam, context);

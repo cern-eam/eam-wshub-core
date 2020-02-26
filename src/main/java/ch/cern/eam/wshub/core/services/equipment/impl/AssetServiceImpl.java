@@ -293,10 +293,12 @@ public class AssetServiceImpl implements AssetService {
         AssetEquipment assetEquipment = readInforAsset(context, assetParam.getCode());
 
         //
-        if (assetParam.getClassCode() != null &&
-                (assetEquipment.getCLASSID() == null || !assetParam.getClassCode().toUpperCase().equals(assetEquipment.getCLASSID().getCLASSCODE()))) {
-            assetEquipment.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(context, "OBJ", assetParam.getClassCode().toUpperCase()));
-        }
+        assetEquipment.setUSERDEFINEDAREA(tools.getInforCustomFields(
+            context,
+            toCodeString(assetEquipment.getCLASSID()),
+            assetEquipment.getUSERDEFINEDAREA(),
+            assetParam.getClassCode(),
+            "OBJ"));
 
         initializeAssetObject(assetEquipment, assetParam, context);
         tools.getInforFieldTools().transformWSHubObject(assetEquipment, assetParam, context);
@@ -312,13 +314,12 @@ public class AssetServiceImpl implements AssetService {
 
         AssetEquipment assetEquipment = new AssetEquipment();
         //
-        if (assetParam.getCustomFields() != null && assetParam.getCustomFields().length > 0) {
-            if (isNotEmpty(assetParam.getClassCode())) {
-                assetEquipment.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(context, "OBJ", assetParam.getClassCode()));
-            } else {
-                assetEquipment.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(context, "OBJ", "*"));
-            }
-        }
+        assetEquipment.setUSERDEFINEDAREA(tools.getInforCustomFields(
+            context,
+            toCodeString(assetEquipment.getCLASSID()),
+            assetEquipment.getUSERDEFINEDAREA(),
+            assetParam.getClassCode(),
+            "OBJ"));
 
         //
         initializeAssetObject(assetEquipment, assetParam, context);

@@ -24,8 +24,8 @@ import net.datastream.schemas.mp_results.mp0307_001.MP0307_GetPositionEquipment_
 import net.datastream.schemas.mp_results.mp0328_002.MP0328_GetPositionParentHierarchy_002_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 import javax.xml.ws.Holder;
-import static ch.cern.eam.wshub.core.tools.DataTypeTools.encodeBoolean;
-import static ch.cern.eam.wshub.core.tools.DataTypeTools.decodeBoolean;
+
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.*;
 
 
 public class PositionServiceImpl implements PositionService {
@@ -44,14 +44,12 @@ public class PositionServiceImpl implements PositionService {
 
 		PositionEquipment positionEquipment = new PositionEquipment();
 		//
-		if (positionParam.getCustomFields() != null && positionParam.getCustomFields().length > 0) {
-			if (positionParam.getClassCode() != null && !positionParam.getClassCode().trim().equals("")) {
-				positionEquipment.setUSERDEFINEDAREA(
-						tools.getCustomFieldsTools().getInforCustomFields(context, "OBJ", positionParam.getClassCode()));
-			} else {
-				positionEquipment.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(context, "OBJ", "*"));
-			}
-		}
+		positionEquipment.setUSERDEFINEDAREA(tools.getInforCustomFields(
+			context,
+			toCodeString(positionEquipment.getCLASSID()),
+			positionEquipment.getUSERDEFINEDAREA(),
+			positionParam.getClassCode(),
+			"OBJ"));
 
 		//
 		initializePositionObject(context, positionEquipment, positionParam, true);
@@ -317,11 +315,12 @@ public class PositionServiceImpl implements PositionService {
 		//
 		//
 		//
-		if (positionParam.getClassCode() != null && (positionEquipment.getCLASSID() == null
-				|| !positionParam.getClassCode().toUpperCase().equals(positionEquipment.getCLASSID().getCLASSCODE()))) {
-			positionEquipment.setUSERDEFINEDAREA(
-					tools.getCustomFieldsTools().getInforCustomFields(context, "OBJ", positionParam.getClassCode().toUpperCase()));
-		}
+		positionEquipment.setUSERDEFINEDAREA(tools.getInforCustomFields(
+			context,
+			toCodeString(positionEquipment.getCLASSID()),
+			positionEquipment.getUSERDEFINEDAREA(),
+			positionParam.getClassCode(),
+			"OBJ"));
 
 		initializePositionObject(context, positionEquipment, positionParam, false);
 		tools.getInforFieldTools().transformWSHubObject(positionEquipment, positionParam, context);

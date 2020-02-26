@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.toCodeString;
+
 public class LocationServiceImpl implements LocationService {
 
 	private Tools tools;
@@ -108,11 +110,11 @@ public class LocationServiceImpl implements LocationService {
 		locationInfor.getLOCATIONID().setORGANIZATIONID(tools.getOrganization(context));
 
 		locationInfor.setUSERDEFINEDAREA(tools.getInforCustomFields(
-				context,
-				toClassCodeString(locationInfor.getCLASSID()),
-				locationInfor.getUSERDEFINEDAREA(),
-				locationParam.getClassCode(),
-				"LOC"));
+			context,
+			toCodeString(locationInfor.getCLASSID()),
+			locationInfor.getUSERDEFINEDAREA(),
+			locationParam.getClassCode(),
+			"LOC"));
 
 		tools.getInforFieldTools().transformWSHubObject(locationInfor, locationParam, context);
 
@@ -156,13 +158,13 @@ public class LocationServiceImpl implements LocationService {
 
 		locationInfor.setUSERDEFINEDAREA(tools.getInforCustomFields(
 			context,
-			toClassCodeString(locationInfor.getCLASSID()),
+			toCodeString(locationInfor.getCLASSID()),
 			locationInfor.getUSERDEFINEDAREA(),
 			locationParam.getClassCode(),
 			"LOC"));
 
 		if(locationParam.getHierarchyLocationCode() == null) {
-			locationParam.setHierarchyLocationCode(toLocationCodeString(locationInfor.getParentLocationID()));
+			locationParam.setHierarchyLocationCode(toCodeString(locationInfor.getParentLocationID()));
 		}
 
 		if(locationParam.getHierarchyLocationCode() != null && !locationParam.getHierarchyLocationCode().equals("")) {
@@ -254,13 +256,5 @@ public class LocationServiceImpl implements LocationService {
 		locationParentHierarchy.setParentLocation(parentLocation);
 
 		return locationParentHierarchy;
-	}
-
-	private String toClassCodeString(CLASSID_Type classIdType) {
-		return classIdType == null ? null : classIdType.getCLASSCODE();
-	}
-
-	private String toLocationCodeString(LOCATIONID_Type locationIdType) {
-		return locationIdType == null ? null : locationIdType.getLOCATIONCODE();
 	}
 }

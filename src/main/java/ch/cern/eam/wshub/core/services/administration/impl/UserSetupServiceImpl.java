@@ -29,6 +29,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.toCodeString;
+
 public class UserSetupServiceImpl implements UserSetupService {
 
 	private Tools tools;
@@ -149,14 +151,12 @@ public class UserSetupServiceImpl implements UserSetupService {
 		net.datastream.schemas.mp_entities.usersetup_001.UserSetup userInfor = new net.datastream.schemas.mp_entities.usersetup_001.UserSetup();
 
 		// Check custom fields
-		if (userParam.getCustomFields() != null && userParam.getCustomFields().length > 0) {
-			if (userParam.getClassCode() != null && !userParam.getClassCode().trim().equals("")) {
-				userInfor.setUSERDEFINEDAREA(
-						tools.getCustomFieldsTools().getInforCustomFields(context, "USER", userParam.getClassCode()));
-			} else {
-				userInfor.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(context, "USER", "*"));
-			}
-		}
+		userInfor.setUSERDEFINEDAREA(tools.getInforCustomFields(
+			context,
+			toCodeString(userInfor.getCLASSID()),
+			userInfor.getUSERDEFINEDAREA(),
+			userParam.getClassCode(),
+			"USER"));
 
 		// Init object for creation
 		initializeInforUserObject(userInfor, userParam, context);
@@ -206,11 +206,13 @@ public class UserSetupServiceImpl implements UserSetupService {
 				.getUserSetup();
 
 		// If there are custom fields
-		if (userParam.getClassCode() != null && (userInfor.getCLASSID() == null
-				|| !userParam.getClassCode().toUpperCase().equals(userInfor.getCLASSID().getCLASSCODE()))) {
-			userInfor.setUSERDEFINEDAREA(
-					tools.getCustomFieldsTools().getInforCustomFields(context, "USER", userParam.getClassCode().toUpperCase()));
-		}
+		userInfor.setUSERDEFINEDAREA(tools.getInforCustomFields(
+			context,
+			toCodeString(userInfor.getCLASSID()),
+			userInfor.getUSERDEFINEDAREA(),
+			userParam.getClassCode(),
+			"USER"));
+
 		// Init object for update
 		initializeInforUserObject(userInfor, userParam, context);
 

@@ -286,19 +286,6 @@ public class CustomFieldsTools {
 
     public CustomField[] getWSHubCustomFields(InforContext context, String entity, String inforClass)
             throws InforException {
-        CUSTOMFIELDREQ cfreq = new CUSTOMFIELDREQ();
-        cfreq.setORGANIZATIONID(tools.getOrganization(context));
-
-        if (inforClass != null) {
-            cfreq.setCLASSID(new CLASSID_Type());
-            cfreq.getCLASSID().setORGANIZATIONID(tools.getOrganization(context));
-            cfreq.getCLASSID().setCLASSCODE(inforClass.toUpperCase());
-        }
-
-        if (entity != null) {
-            cfreq.setENTITYNAME(entity.toUpperCase());
-        }
-
         return readInforCustomFields(getInforCustomFields(context, entity, inforClass));
     }
 
