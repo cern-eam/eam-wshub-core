@@ -434,6 +434,14 @@ public class WorkOrder implements Serializable {
 		this.standardWO = standardWO;
 	}
 
+	public String getStandardWODesc() {
+		return standardWODesc;
+	}
+
+	public void setStandardWODesc(String standardWODesc) {
+		this.standardWODesc = standardWODesc;
+	}
+
 	public String getParentWO() {
 		return parentWO;
 	}
@@ -630,6 +638,8 @@ public class WorkOrder implements Serializable {
 	public void setConfirmedIncompleteChecklist(boolean confirmedIncompleteChecklist) {
 		this.confirmedIncompleteChecklist = confirmedIncompleteChecklist;
 	}
+
+
 
 	@Override
 	public String toString() {
