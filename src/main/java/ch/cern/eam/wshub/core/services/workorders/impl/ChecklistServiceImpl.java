@@ -60,16 +60,8 @@ public class ChecklistServiceImpl implements ChecklistService {
 		//
 		MP7914_GetWorkOrderActivityCheckList_001 getwoactchl = new MP7914_GetWorkOrderActivityCheckList_001();
 		getwoactchl.setCHECKLISTCODE(workOrderActivityCheckList.getCheckListCode());
-		MP7914_GetWorkOrderActivityCheckList_001_Result getresult;
-
-		if (context.getCredentials() != null) {
-			getresult = inforws.getWorkOrderActivityCheckListOp(getwoactchl, "*",
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			getresult = inforws.getWorkOrderActivityCheckListOp(getwoactchl, "*", null, null,
-					new Holder<>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
+		MP7914_GetWorkOrderActivityCheckList_001_Result getresult =
+			tools.performInforOperation(context, inforws::getWorkOrderActivityCheckListOp, getwoactchl);
 
 		//
 		// Sync afterwards
@@ -172,15 +164,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 		MP7913_SyncWorkOrderActivityCheckList_001 syncwoactchl = new MP7913_SyncWorkOrderActivityCheckList_001();
 		syncwoactchl.setWorkOrderActivityCheckList(workOrderActivityCheckListInfor);
 
-		if (context.getCredentials() != null) {
-			inforws.syncWorkOrderActivityCheckListOp(syncwoactchl, "*",
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			inforws.syncWorkOrderActivityCheckListOp(syncwoactchl, "*", null, null,
-					new Holder<>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
-
+		tools.performInforOperation(context, inforws::syncWorkOrderActivityCheckListOp, syncwoactchl);
 		return null;
 	}
 
@@ -287,15 +271,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 		MP7916_AddTaskChecklist_001 addTaskChecklist = new MP7916_AddTaskChecklist_001();
 		addTaskChecklist.setTaskChecklist(taskChecklistInfor);
 
-		if (context.getCredentials() != null) {
-			inforws.addTaskChecklistOp(addTaskChecklist, "*",
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			inforws.addTaskChecklistOp(addTaskChecklist, "*", null, null,
-					new Holder<>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
-
+		tools.performInforOperation(context, inforws::addTaskChecklistOp, addTaskChecklist);
 		return "OK";
 	}
 
@@ -490,7 +466,6 @@ public class ChecklistServiceImpl implements ChecklistService {
 
 	public Long createFollowUpWorkOrders(InforContext context, Activity activity) throws InforException {
 		MP8000_CreateFollowUpWorkOrder_001 createFUWO = new MP8000_CreateFollowUpWorkOrder_001();
-		MP8000_CreateFollowUpWorkOrder_001_Result createFUWOResult;
 
 		Long activityNumber;
 		try {
@@ -506,14 +481,8 @@ public class ChecklistServiceImpl implements ChecklistService {
 		createFUWO.getACTIVITYID().getACTIVITYCODE().setValue(activityNumber);
 		createFUWO.getACTIVITYID().getWORKORDERID().setORGANIZATIONID(tools.getOrganization(context));
 
-		if (context.getCredentials() != null) {
-			createFUWOResult = inforws.createFollowUpWorkOrderOp(createFUWO, "*",
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			createFUWOResult = inforws.createFollowUpWorkOrderOp(createFUWO, "*", null, null,
-					new Holder<>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
+		MP8000_CreateFollowUpWorkOrder_001_Result createFUWOResult =
+			tools.performInforOperation(context, inforws::createFollowUpWorkOrderOp, createFUWO);
 		return createFUWOResult.getResultData().getWORKORDERCOUNT();
 	}
 }

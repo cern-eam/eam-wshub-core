@@ -23,6 +23,8 @@ import net.datastream.schemas.mp_results.mp0242_001.MP0242_SyncPart_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 import javax.xml.ws.Holder;
 
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.toCodeString;
+
 public class PartServiceImpl implements PartService {
 
 	private Tools tools;
@@ -45,17 +47,8 @@ public class PartServiceImpl implements PartService {
 		getPart.getPARTID().setORGANIZATIONID(tools.getOrganization(context));
 		getPart.getPARTID().setPARTCODE(partCode);
 
-		MP0241_GetPart_001_Result getPartResult = null;
-
-		if (context.getCredentials() != null) {
-			getPartResult = inforws.getPartOp(getPart, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					null, tools.getTenant(context));
-
-		} else {
-			getPartResult = inforws.getPartOp(getPart, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
+		MP0241_GetPart_001_Result getPartResult =
+			tools.performInforOperation(context, inforws::getPartOp, getPart);
 
 		return getPartResult.getResultData().getPart();
 	}
@@ -65,14 +58,12 @@ public class PartServiceImpl implements PartService {
 		//
 		//
 		//
-		if (partParam.getCustomFields() != null && partParam.getCustomFields().length > 0) {
-			if (partParam.getClassCode() != null && !partParam.getClassCode().trim().equals("")) {
-				inforPart.setUSERDEFINEDAREA(
-						tools.getCustomFieldsTools().getInforCustomFields(context, "PART", partParam.getClassCode()));
-			} else {
-				inforPart.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(context, "PART", "*"));
-			}
-		}
+		inforPart.setUSERDEFINEDAREA(tools.getInforCustomFields(
+			context,
+			toCodeString(inforPart.getCLASSID()),
+			inforPart.getUSERDEFINEDAREA(),
+			partParam.getClassCode(),
+			"PART"));
 
 		// POPULATE ALL OTHER FIELDS
 		tools.getInforFieldTools().transformWSHubObject(inforPart, partParam, context);
@@ -80,16 +71,8 @@ public class PartServiceImpl implements PartService {
 		MP0240_AddPart_001 addPart = new MP0240_AddPart_001();
 		addPart.setPart(inforPart);
 
-		MP0240_AddPart_001_Result result = null;
-
-		if (context.getCredentials() != null) {
-			result = inforws.addPartOp(addPart, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					null, tools.getTenant(context));
-		} else {
-			result = inforws.addPartOp(addPart, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
+		MP0240_AddPart_001_Result result =
+			tools.performInforOperation(context, inforws::addPartOp, addPart);
 
 		return result.getPARTID().getPARTCODE();
 	}
@@ -109,15 +92,7 @@ public class PartServiceImpl implements PartService {
 			changePartNumber.getChangePartNumber().getNEWPARTID().setORGANIZATIONID(tools.getOrganization(context));
 			changePartNumber.getChangePartNumber().getNEWPARTID().setPARTCODE(partParam.getNewCode());
 
-			if (context.getCredentials() != null) {
-				inforws.changePartNumberOp(changePartNumber, tools.getOrganizationCode(context),
-						tools.createSecurityHeader(context), "TERMINATE",
-						null, null, tools.getTenant(context));
-			} else {
-				inforws.changePartNumberOp(changePartNumber, tools.getOrganizationCode(context), null, null,
-						new Holder<SessionType>(tools.createInforSession(context)), null,
-						tools.getTenant(context));
-			}
+			tools.performInforOperation(context, inforws::changePartNumberOp, changePartNumber);
 
 			partParam.setCode(partParam.getNewCode());
 
@@ -125,11 +100,12 @@ public class PartServiceImpl implements PartService {
 
 		net.datastream.schemas.mp_entities.part_001.Part inforPart = readPartInfor(context, partParam.getCode());
 
-		if (partParam.getClassCode() != null && (inforPart.getCLASSID() == null
-				|| !partParam.getClassCode().toUpperCase().equals(inforPart.getCLASSID().getCLASSCODE()))) {
-			inforPart.setUSERDEFINEDAREA(
-					tools.getCustomFieldsTools().getInforCustomFields(context, "PART", partParam.getClassCode().toUpperCase()));
-		}
+		inforPart.setUSERDEFINEDAREA(tools.getInforCustomFields(
+			context,
+			toCodeString(inforPart.getCLASSID()),
+			inforPart.getUSERDEFINEDAREA(),
+			partParam.getClassCode(),
+			"PART"));
 
 		// SET ALL PROPERTIES
 		tools.getInforFieldTools().transformWSHubObject(inforPart, partParam, context);
@@ -139,17 +115,8 @@ public class PartServiceImpl implements PartService {
 		MP0242_SyncPart_001 syncPart = new MP0242_SyncPart_001();
 		syncPart.setPart(inforPart);
 
-		MP0242_SyncPart_001_Result result = null;
-
-		if (context.getCredentials() != null) {
-			result = inforws.syncPartOp(syncPart, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE",
-					null, null, tools.getTenant(context));
-		} else {
-			result = inforws.syncPartOp(syncPart, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null,
-					tools.getTenant(context));
-		}
+		MP0242_SyncPart_001_Result result =
+			tools.performInforOperation(context, inforws::syncPartOp, syncPart);
 
 		return result.getResultData().getPart().getPARTID().getPARTCODE();
 
@@ -161,14 +128,7 @@ public class PartServiceImpl implements PartService {
 		deletePart.getPARTID().setORGANIZATIONID(tools.getOrganization(context));
 		deletePart.getPARTID().setPARTCODE(partCode);
 
-		if (context.getCredentials() != null) {
-			inforws.deletePartOp(deletePart, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					null, tools.getTenant(context));
-		} else {
-			inforws.deletePartOp(deletePart, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
+		tools.performInforOperation(context, inforws::deletePartOp, deletePart);
 		return partCode;
 	}
 

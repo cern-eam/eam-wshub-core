@@ -33,6 +33,8 @@ import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.toCodeString;
+
 
 public class WorkOrderServiceImpl implements WorkOrderService {
 
@@ -55,36 +57,20 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 	// BATCH WEB SERVICES
 	//
 
-	public BatchResponse<String> createWorkOrderBatch(InforContext context, List<WorkOrder> workOrderParam)
-			throws InforException {
-		List<Callable<String>> callableList = workOrderParam.stream()
-				.<Callable<String>>map(wo -> () -> createWorkOrder(context, wo))
-				.collect(Collectors.toList());
-
-		return tools.processCallables(callableList);
+	public BatchResponse<String> createWorkOrderBatch(InforContext context, List<WorkOrder> workOrderParam) {
+		return tools.batchOperation(context, this::createWorkOrder, workOrderParam);
 	}
 
 	public BatchResponse<WorkOrder> readWorkOrderBatch(InforContext context, List<String> workOrderNumbers)  {
-		List<Callable<WorkOrder>> callableList = workOrderNumbers.stream()
-				.<Callable<WorkOrder>>map(workOrderNumber -> () -> readWorkOrder(context, workOrderNumber))
-				.collect(Collectors.toList());
-		return tools.processCallables(callableList);
+		return tools.batchOperation(context, this::readWorkOrder, workOrderNumbers);
 	}
 
-	public BatchResponse<String> updateWorkOrderBatch(InforContext context, List<WorkOrder> workOrders)
-			throws InforException {
-		List<Callable<String>> callableList = workOrders.stream()
-				.<Callable<String>>map(workOrder -> () -> updateWorkOrder(context, workOrder))
-				.collect(Collectors.toList());
-		return tools.processCallables(callableList);
+	public BatchResponse<String> updateWorkOrderBatch(InforContext context, List<WorkOrder> workOrders) {
+		return tools.batchOperation(context, this::updateWorkOrder, workOrders);
 	}
 
-	public BatchResponse<String> deleteWorkOrderBatch(InforContext context, List<String> workOrderNumbers)
-			throws InforException {
-		List<Callable<String>> callableList = workOrderNumbers.stream()
-				.<Callable<String>>map(workOrderNumber -> () -> deleteWorkOrder(context, workOrderNumber))
-				.collect(Collectors.toList());
-		return tools.processCallables(callableList);
+	public BatchResponse<String> deleteWorkOrderBatch(InforContext context, List<String> workOrderNumbers) {
+		return tools.batchOperation(context, this::deleteWorkOrder, workOrderNumbers);
 	}
 
 	//
@@ -103,16 +89,8 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		getWorkOrder.getWORKORDERID().setJOBNUM(number);
 		getWorkOrder.getWORKORDERID().setORGANIZATIONID(tools.getOrganization(context));
 
-		MP0024_GetWorkOrder_001_Result result = null;
-		if (context.getCredentials() != null) {
-			result = inforws.getWorkOrderOp(getWorkOrder, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			result = inforws.getWorkOrderOp(getWorkOrder, tools.getOrganizationCode(context), null, "",
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
-
+		MP0024_GetWorkOrder_001_Result result =
+			tools.performInforOperation(context, inforws::getWorkOrderOp, getWorkOrder);
 		return result.getResultData().getWorkOrder();
 	}
 
@@ -124,16 +102,8 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
 		getWorkOrderDefault.setORGANIZATIONID(new ORGANIZATIONID_Type());
 		getWorkOrderDefault.getORGANIZATIONID().setORGANIZATIONCODE(context.getOrganizationCode());
-		MP0026_GetWorkOrderDefault_001_Result getWODefaultResult = null;
-
-		if (context.getCredentials() != null) {
-			getWODefaultResult = inforws.getWorkOrderDefaultOp(getWorkOrderDefault, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			getWODefaultResult = inforws.getWorkOrderDefaultOp(getWorkOrderDefault, tools.getOrganizationCode(context), null, "",
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
+		MP0026_GetWorkOrderDefault_001_Result getWODefaultResult =
+			tools.performInforOperation(context, inforws::getWorkOrderDefaultOp, getWorkOrderDefault);
 		ResultData resultData = getWODefaultResult.getResultData();
 		//
 		// Populate the 'workOrder' object
@@ -235,16 +205,8 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
 		MP0023_AddWorkOrder_001 addWO = new MP0023_AddWorkOrder_001();
 		addWO.setWorkOrder(inforWorkOrder);
-		MP0023_AddWorkOrder_001_Result result;
-
-		if (context.getCredentials() != null) {
-			result = inforws.addWorkOrderOp(addWO, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			result = inforws.addWorkOrderOp(addWO, tools.getOrganizationCode(context), null, "",
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
+		MP0023_AddWorkOrder_001_Result result =
+			tools.performInforOperation(context, inforws::addWorkOrderOp, addWO);
 
 		// Work Order has been created, check if comment should be added
 		if (workorderParam.getComment() != null && !workorderParam.getComment().trim().equals("")) {
@@ -262,11 +224,12 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		net.datastream.schemas.mp_entities.workorder_001.WorkOrder inforWorkOrder = readWorkOrderInfor(context, workorderParam.getNumber());
 
 		// Check Custom fields. If they change, or now we have them
-		if (workorderParam.getClassCode() != null && (inforWorkOrder.getCLASSID() == null
-				|| !workorderParam.getClassCode().toUpperCase().equals(inforWorkOrder.getCLASSID().getCLASSCODE()))) {
-			inforWorkOrder.setUSERDEFINEDAREA(
-					tools.getCustomFieldsTools().getInforCustomFields(context, "EVNT", workorderParam.getClassCode().toUpperCase()));
-		}
+		inforWorkOrder.setUSERDEFINEDAREA(tools.getInforCustomFields(
+			context,
+			toCodeString(inforWorkOrder.getCLASSID()),
+			inforWorkOrder.getUSERDEFINEDAREA(),
+			workorderParam.getClassCode(),
+			"EVNT"));
 
 		// SET ALL PROPERTIES
 		tools.getInforFieldTools().transformWSHubObject(inforWorkOrder, workorderParam, context);
@@ -278,15 +241,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		if(workorderParam.isConfirmedIncompleteChecklist())
 			syncWO.setConfirmincompletechecklist("confirmed");
 
-		if (context.getCredentials() != null) {
-			inforws.syncWorkOrderOp(syncWO, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			inforws.syncWorkOrderOp(syncWO, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
-
+		tools.performInforOperation(context, inforws::syncWorkOrderOp, syncWO);
 		return inforWorkOrder.getWORKORDERID().getJOBNUM();
 	}
 
@@ -297,14 +252,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		deleteWO.getWORKORDERID().setORGANIZATIONID(tools.getOrganization(context));
 		deleteWO.getWORKORDERID().setJOBNUM(workOrderNumber);
 
-		if (context.getCredentials() != null) {
-			inforws.deleteWorkOrderOp(deleteWO, "*",
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			inforws.deleteWorkOrderOp(deleteWO, "*", null, null, new Holder<>(tools.createInforSession(context)),
-					tools.createMessageConfig(), tools.getTenant(context));
-		}
+		tools.performInforOperation(context, inforws::deleteWorkOrderOp, deleteWO);
 		return workOrderNumber;
 	}
 
@@ -317,14 +265,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		changeWOStatus.setNEWSTATUS(new STATUS_Type());
 		changeWOStatus.getNEWSTATUS().setSTATUSCODE(statusCode);
 
-		if (context.getCredentials() != null) {
-			inforws.changeWorkOrderStatusOp(changeWOStatus, "*",
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			inforws.changeWorkOrderStatusOp(changeWOStatus, "*", null, null,
-					new Holder<>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
+		tools.performInforOperation(context, inforws::changeWorkOrderStatusOp, changeWOStatus);
 		return workOrderNumber;
 	}
 

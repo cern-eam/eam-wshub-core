@@ -24,8 +24,8 @@ import net.datastream.schemas.mp_results.mp0307_001.MP0307_GetPositionEquipment_
 import net.datastream.schemas.mp_results.mp0328_002.MP0328_GetPositionParentHierarchy_002_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 import javax.xml.ws.Holder;
-import static ch.cern.eam.wshub.core.tools.DataTypeTools.encodeBoolean;
-import static ch.cern.eam.wshub.core.tools.DataTypeTools.decodeBoolean;
+
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.*;
 
 
 public class PositionServiceImpl implements PositionService {
@@ -44,14 +44,12 @@ public class PositionServiceImpl implements PositionService {
 
 		PositionEquipment positionEquipment = new PositionEquipment();
 		//
-		if (positionParam.getCustomFields() != null && positionParam.getCustomFields().length > 0) {
-			if (positionParam.getClassCode() != null && !positionParam.getClassCode().trim().equals("")) {
-				positionEquipment.setUSERDEFINEDAREA(
-						tools.getCustomFieldsTools().getInforCustomFields(context, "OBJ", positionParam.getClassCode()));
-			} else {
-				positionEquipment.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(context, "OBJ", "*"));
-			}
-		}
+		positionEquipment.setUSERDEFINEDAREA(tools.getInforCustomFields(
+			context,
+			toCodeString(positionEquipment.getCLASSID()),
+			positionEquipment.getUSERDEFINEDAREA(),
+			positionParam.getClassCode(),
+			"OBJ"));
 
 		//
 		initializePositionObject(context, positionEquipment, positionParam, true);
@@ -59,16 +57,8 @@ public class PositionServiceImpl implements PositionService {
 		//
 		MP0306_AddPositionEquipment_001 addPosition = new MP0306_AddPositionEquipment_001();
 		addPosition.setPositionEquipment(positionEquipment);
-		MP0306_AddPositionEquipment_001_Result result;
-
-		if (context.getCredentials() != null) {
-			result = inforws.addPositionEquipmentOp(addPosition, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			result = inforws.addPositionEquipmentOp(addPosition, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
+		MP0306_AddPositionEquipment_001_Result result =
+			tools.performInforOperation(context, inforws::addPositionEquipmentOp, addPosition);
 		//TODO Update CERN properties
 		//equipmentOther.updateEquipmentCERNProperties(positionParam);
 		return result.getResultData().getPOSITIONID().getEQUIPMENTCODE();
@@ -81,14 +71,7 @@ public class PositionServiceImpl implements PositionService {
 		deletePosition.getPOSITIONID().setORGANIZATIONID(tools.getOrganization(context));
 		deletePosition.getPOSITIONID().setEQUIPMENTCODE(positionCode);
 
-		if (context.getCredentials() != null) {
-			inforws.deletePositionEquipmentOp(deletePosition, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					null, tools.getTenant(context));
-		} else {
-			inforws.deletePositionEquipmentOp(deletePosition, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
+		tools.performInforOperation(context, inforws::deletePositionEquipmentOp, deletePosition);
 
 		return positionCode;
 	}
@@ -100,15 +83,8 @@ public class PositionServiceImpl implements PositionService {
 		getpositionph.getPOSITIONID().setORGANIZATIONID(tools.getOrganization(context));
 		getpositionph.getPOSITIONID().setEQUIPMENTCODE(assetCode);
 
-		MP0328_GetPositionParentHierarchy_002_Result result;
-		if (context.getCredentials() != null) {
-			result = inforws.getPositionParentHierarchyOp(getpositionph, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					null, tools.getTenant(context));
-		} else {
-			result = inforws.getPositionParentHierarchyOp(getpositionph, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
+		MP0328_GetPositionParentHierarchy_002_Result result =
+			tools.performInforOperation(context, inforws::getPositionParentHierarchyOp, getpositionph);
 
 		return result.getResultData().getPositionParentHierarchy();
 	}
@@ -297,16 +273,8 @@ public class PositionServiceImpl implements PositionService {
 		getPosition.setPOSITIONID(new EQUIPMENTID_Type());
 		getPosition.getPOSITIONID().setORGANIZATIONID(tools.getOrganization(context));
 		getPosition.getPOSITIONID().setEQUIPMENTCODE(positionCode);
-		MP0307_GetPositionEquipment_001_Result getAssetResult = new MP0307_GetPositionEquipment_001_Result();
-
-		if (context.getCredentials() != null) {
-			getAssetResult = inforws.getPositionEquipmentOp(getPosition, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					null, tools.getTenant(context));
-		} else {
-			getAssetResult = inforws.getPositionEquipmentOp(getPosition, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
+		MP0307_GetPositionEquipment_001_Result getAssetResult =
+			tools.performInforOperation(context, inforws::getPositionEquipmentOp, getPosition);
 		return getAssetResult.getResultData().getPositionEquipment();
 
 	}
@@ -317,25 +285,19 @@ public class PositionServiceImpl implements PositionService {
 		//
 		//
 		//
-		if (positionParam.getClassCode() != null && (positionEquipment.getCLASSID() == null
-				|| !positionParam.getClassCode().toUpperCase().equals(positionEquipment.getCLASSID().getCLASSCODE()))) {
-			positionEquipment.setUSERDEFINEDAREA(
-					tools.getCustomFieldsTools().getInforCustomFields(context, "OBJ", positionParam.getClassCode().toUpperCase()));
-		}
+		positionEquipment.setUSERDEFINEDAREA(tools.getInforCustomFields(
+			context,
+			toCodeString(positionEquipment.getCLASSID()),
+			positionEquipment.getUSERDEFINEDAREA(),
+			positionParam.getClassCode(),
+			"OBJ"));
 
 		initializePositionObject(context, positionEquipment, positionParam, false);
 		tools.getInforFieldTools().transformWSHubObject(positionEquipment, positionParam, context);
 		// Update it
 		MP0308_SyncPositionEquipment_001 syncPosition = new MP0308_SyncPositionEquipment_001();
 		syncPosition.setPositionEquipment(positionEquipment);
-		if (context.getCredentials() != null) {
-			inforws.syncPositionEquipmentOp(syncPosition, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			inforws.syncPositionEquipmentOp(syncPosition, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
+		tools.performInforOperation(context, inforws::syncPositionEquipmentOp, syncPosition);
 		//TODO Update CERN properties
 		//equipmentOther.updateEquipmentCERNProperties(positionParam);
 		return positionParam.getCode();

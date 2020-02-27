@@ -38,23 +38,12 @@ public class PickTicketServiceImpl implements PickTicketService {
 
     public String createPickTicket(InforContext context, PickTicket pickTicketParam) throws InforException {
         MP0296_AddPickList_001 createPickTicket = new MP0296_AddPickList_001();
-        MP0296_AddPickList_001_Result result = new MP0296_AddPickList_001_Result();
 
         pickTicketParam.setCode("");
         createPickTicket.setPickList(pickTicket2pickList(context, pickTicketParam));
 
-        // Invoke Infor web service
-        if (context.getCredentials() != null) {
-            result = inforws.addPickListOp(createPickTicket,
-                    applicationData.getOrganization(),
-                    tools.createSecurityHeader(context),
-                    "TERMINATE", null, null, tools.getTenant(context));
-        } else {
-            result = inforws.addPickListOp(createPickTicket, applicationData.getOrganization(),
-                    null, null, new Holder<>(tools.createInforSession(context)), null,
-                    tools.getTenant(context));
-        }
-
+        MP0296_AddPickList_001_Result result =
+            tools.performInforOperation(context, inforws::addPickListOp, createPickTicket);
         return result.getPICKLISTID().getPICKLIST();
     }
 
@@ -130,7 +119,6 @@ public class PickTicketServiceImpl implements PickTicketService {
     //ONLY WORKS FOR UPDATING STATUS
     public String updatePickTicket(InforContext context, PickTicket pickTicketParam) throws InforException {
         MP0297_SyncPickList_001 syncPickTicket = new MP0297_SyncPickList_001();
-        MP0297_SyncPickList_001_Result result;
 
         PickList pickList = readPickTicket(context, pickTicketParam.getCode());
 
@@ -139,18 +127,8 @@ public class PickTicketServiceImpl implements PickTicketService {
         }
         syncPickTicket.setPickList(pickList);
 
-        // Invoke Infor web service
-        if (context.getCredentials() != null) {
-            result = inforws.syncPickListOp(syncPickTicket,
-                    applicationData.getOrganization(),
-                    tools.createSecurityHeader(context),
-                    "TERMINATE", null, null, tools.getTenant(context));
-        } else {
-            result = inforws.syncPickListOp(syncPickTicket, applicationData.getOrganization(),
-                    null, null, new Holder<>(tools.createInforSession(context)), null,
-                    tools.getTenant(context));
-        }
-
+        MP0297_SyncPickList_001_Result result =
+            tools.performInforOperation(context, inforws::syncPickListOp, syncPickTicket);
         return result.getResultData().getPICKLISTID().getPICKLIST();
     }
 
@@ -158,23 +136,13 @@ public class PickTicketServiceImpl implements PickTicketService {
         MP0211_GetPickList_001 getPickList = new MP0211_GetPickList_001();
         getPickList.setPICKLISTID(new PICKLIST_Type());
         getPickList.getPICKLISTID().setPICKLIST(code);
-        MP0211_GetPickList_001_Result pickListResult;
-        if (context.getCredentials() != null) {
-            pickListResult = inforws.getPickListOp(getPickList, applicationData.getOrganization(),
-                    tools.createSecurityHeader(context),
-                    "TERMINATE", null, null,
-                    tools.getTenant(context));
-        } else {
-            pickListResult = inforws.getPickListOp(getPickList, applicationData.getOrganization(), null,
-                    null, new Holder<>(tools.createInforSession(context)), null,
-                    tools.getTenant(context));
-        }
+        MP0211_GetPickList_001_Result pickListResult =
+            tools.performInforOperation(context, inforws::getPickListOp, getPickList);
         return pickListResult.getResultData().getPickList();
     }
 
     public String addPartToPickTicket(InforContext context, PickTicketPart pickTicketPartParam) throws InforException {
         MP1223_AddPickListPart_001 addPickListPart = new MP1223_AddPickListPart_001();
-        MP1223_AddPickListPart_001_Result result;
 
         addPickListPart.setPickListPart(new PickListPart());
 
@@ -195,17 +163,8 @@ public class PickTicketServiceImpl implements PickTicketService {
 
         addPickListPart.getPickListPart().setPICKLISTPARTID(picklist_type);
 
-
-        if (context.getCredentials() != null) {
-            result = inforws.addPickListPartOp(addPickListPart, applicationData.getOrganization(),
-                    tools.createSecurityHeader(context),
-                    "TERMINATE", null, null,
-                    tools.getTenant(context));
-        } else {
-            result = inforws.addPickListPartOp(addPickListPart, applicationData.getOrganization(), null,
-                    null, new Holder<>(tools.createInforSession(context)), null,
-                    tools.getTenant(context));
-        }
+        MP1223_AddPickListPart_001_Result result =
+            tools.performInforOperation(context, inforws::addPickListPartOp, addPickListPart);
         return result.toString();
     }
 }

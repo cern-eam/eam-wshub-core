@@ -42,40 +42,23 @@ public class EmployeeServiceImpl implements EmployeeService {
 		this.inforws = inforWebServicesToolkitClient;
 	}
 
-	public BatchResponse<String> createEmployeeBatch(InforContext context, List<Employee> workOrderParam)
-			throws InforException {
-		List<Callable<String>> callableList = workOrderParam.stream()
-				.<Callable<String>>map(wo -> () -> createEmployee(context, wo))
-				.collect(Collectors.toList());
-
-		return tools.processCallables(callableList);
+	public BatchResponse<String> createEmployeeBatch(InforContext context, List<Employee> workOrderParam) {
+		return tools.batchOperation(context, this::createEmployee, workOrderParam);
 	}
 
-	public BatchResponse<String> updateEmployeeBatch(InforContext context, List<Employee> workOrders)
-			throws InforException {
-		List<Callable<String>> callableList = workOrders.stream()
-				.<Callable<String>>map(workOrder -> () -> updateEmployee(context, workOrder))
-				.collect(Collectors.toList());
-		return tools.processCallables(callableList);
+	public BatchResponse<String> updateEmployeeBatch(InforContext context, List<Employee> workOrders) {
+		return tools.batchOperation(context, this::updateEmployee, workOrders);
 	}
 
 
 	public Employee readEmployee(InforContext context, String employeeCode) throws InforException {
-		MP7037_GetEmployee_001_Result result = null;
 		MP7037_GetEmployee_001 request = new MP7037_GetEmployee_001();
 
 		request.setEMPLOYEEID(new Employee_Type());
 		request.getEMPLOYEEID().setEMPLOYEECODE(employeeCode);
 
-		if (context.getCredentials() != null) {
-			result = inforws.getEmployeeOp(request, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-
-		} else {
-			result = inforws.getEmployeeOp(request, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
+		MP7037_GetEmployee_001_Result result =
+			tools.performInforOperation(context, inforws::getEmployeeOp, request);
 
 		net.datastream.schemas.mp_entities.employee_001.Employee inforEmployee = result.getResultData().getEmployee();
 
@@ -136,36 +119,19 @@ public class EmployeeServiceImpl implements EmployeeService {
 		MP7038_AddEmployee_001 request = new MP7038_AddEmployee_001();
 		request.setEmployee(inforEmployee);
 
-		MP7038_AddEmployee_001_Result result = null;
-
-		if (context.getCredentials() != null) {
-			result = inforws.addEmployeeOp(request, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			result = inforws.addEmployeeOp(request, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
-
+		MP7038_AddEmployee_001_Result result =
+			tools.performInforOperation(context, inforws::addEmployeeOp, request);
 		return result.getResultData().getEMPLOYEEID().getEMPLOYEECODE();
 	}
 
 	public String updateEmployee(InforContext context, Employee employee) throws InforException {
 		MP7037_GetEmployee_001 readRequest = new MP7037_GetEmployee_001();
-		MP7037_GetEmployee_001_Result readResult = null;
 
 		readRequest.setEMPLOYEEID(new Employee_Type());
 		readRequest.getEMPLOYEEID().setEMPLOYEECODE(employee.getCode());
 
-		if (context.getCredentials() != null) {
-			readResult = inforws.getEmployeeOp(readRequest, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-
-		} else {
-			readResult = inforws.getEmployeeOp(readRequest, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
+		MP7037_GetEmployee_001_Result readResult =
+			tools.performInforOperation(context, inforws::getEmployeeOp, readRequest);
 
 		net.datastream.schemas.mp_entities.employee_001.Employee inforEmployee = readResult.getResultData()
 				.getEmployee();
@@ -175,18 +141,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 		MP7039_SyncEmployee_001 syncRequest = new MP7039_SyncEmployee_001();
 		syncRequest.setEmployee(inforEmployee);
 
-		MP7039_SyncEmployee_001_Result syncResult = null;
-
-		if (context.getCredentials() != null) {
-			syncResult = inforws.syncEmployeeOp(syncRequest, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-
-		} else {
-			syncResult = inforws.syncEmployeeOp(syncRequest, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
-
+		MP7039_SyncEmployee_001_Result syncResult =
+			tools.performInforOperation(context, inforws::syncEmployeeOp, syncRequest);
 		return syncResult.getResultData().getEmployee().getEMPLOYEEID().getEMPLOYEECODE();
 	}
 
@@ -196,15 +152,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 		request.setEMPLOYEEID(new Employee_Type());
 		request.getEMPLOYEEID().setEMPLOYEECODE(employeeCode);
 
-		if (context.getCredentials() != null) {
-			inforws.deleteEmployeeOp(request, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			inforws.deleteEmployeeOp(request, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
-
+		tools.performInforOperation(context, inforws::deleteEmployeeOp, request);
 		return employeeCode;
 	}
 

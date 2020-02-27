@@ -56,15 +56,7 @@ public class InspectionServiceImpl implements InspectionService {
 		MP1027_AddInspectionPoint_001 addInspPoint = new MP1027_AddInspectionPoint_001();
 		addInspPoint.setInspectionPoint(inspectionPoint);
 
-		if (context.getCredentials() != null) {
-			inforws.addInspectionPointOp(addInspPoint, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			inforws.addInspectionPointOp(addInspPoint, tools.getOrganizationCode(context), null, "",
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
-
+		tools.performInforOperation(context, inforws::addInspectionPointOp, addInspPoint);
 	}
 
 	private void addInspectionAspect(InforContext context, Aspect aspect, String aobject) throws InforException {
@@ -81,14 +73,7 @@ public class InspectionServiceImpl implements InspectionService {
 
 		MP1022_AddInspectionAspect_001 addInspAspect = new MP1022_AddInspectionAspect_001();
 		addInspAspect.setInspectionAspect(inspectionAspect);
-		if (context.getCredentials() != null) {
-			inforws.addInspectionAspectOp(addInspAspect, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			inforws.addInspectionAspectOp(addInspAspect, tools.getOrganizationCode(context), null, "",
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
+		tools.performInforOperation(context, inforws::addInspectionAspectOp, addInspAspect);
 	}
 
 	private void addAspectPoint(InforContext context, AspectPoint aspectPoint, String aobject)
@@ -118,14 +103,7 @@ public class InspectionServiceImpl implements InspectionService {
 		MP1031_AddInspectionAspectPoint_001 addInspAspectPoint = new MP1031_AddInspectionAspectPoint_001();
 		addInspAspectPoint.setInspectionAspectPoint(inspectionAspectPoint);
 
-		if (context.getCredentials() != null) {
-			inforws.addInspectionAspectPointOp(addInspAspectPoint, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			inforws.addInspectionAspectPointOp(addInspAspectPoint, tools.getOrganizationCode(context), null, "",
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
+		tools.performInforOperation(context, inforws::addInspectionAspectPointOp, addInspAspectPoint);
 	}
 
 	private void addWOInspections(InforContext context, AspectPoint aspectPoint, String inspobject, String woNumber, BigDecimal seqNumber) throws InforException {
@@ -158,15 +136,7 @@ public class InspectionServiceImpl implements InspectionService {
 		MP7177_AddInspectionsForWorkOrder_001 addInspForWO = new MP7177_AddInspectionsForWorkOrder_001();
 		addInspForWO.setInspectionsForWorkOrder(inspectionsForWO);
 
-		if (context.getCredentials() != null) {
-			inforws.addInspectionsForWorkOrderOp(addInspForWO, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			inforws.addInspectionsForWorkOrderOp(addInspForWO, tools.getOrganizationCode(context), null, "",
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
-
+		tools.performInforOperation(context, inforws::addInspectionsForWorkOrderOp, addInspForWO);
 	}
 
 
@@ -179,14 +149,7 @@ public class InspectionServiceImpl implements InspectionService {
 
 		MP1017_AddAspect_001 addAspect = new MP1017_AddAspect_001();
 		addAspect.setAspect(inforAspect);
-		if (context.getCredentials() != null) {
-			inforws.addAspectOp(addAspect, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			inforws.addAspectOp(addAspect, tools.getOrganizationCode(context), null, "",
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
+		tools.performInforOperation(context, inforws::addAspectOp, addAspect);
 		return aspect.getCode();
 	}
 

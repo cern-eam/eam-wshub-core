@@ -45,14 +45,7 @@ public class DataspyServiceImpl implements DataspyService {
         MP6516_CopyScreenDataspy_001_Result result = null;
 
         // Execute operation of reading
-        if (context.getCredentials() != null) {
-            result = inforws.copyScreenDataspyOp(copyScreenDataspy, tools.getOrganizationCode(context),
-                    tools.createSecurityHeader(context), "TERMINATE", null,
-                    null, tools.getTenant(context));
-        } else {
-            result = inforws.copyScreenDataspyOp(copyScreenDataspy, tools.getOrganizationCode(context), null, null,
-                    new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-        }
+        result = tools.performInforOperation(context, inforws::copyScreenDataspyOp, copyScreenDataspy);
 
         return tools.getDataTypeTools().decodeQuantity(result.getResultData().getSCREENDATASPYID().getDDSPYID());
     }

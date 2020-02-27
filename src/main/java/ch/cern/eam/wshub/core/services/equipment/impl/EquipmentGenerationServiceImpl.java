@@ -48,35 +48,15 @@ public class EquipmentGenerationServiceImpl implements EquipmentGenerationServic
             MP3231_AddEquipmentGeneration_001 addEquipmentGeneration = new MP3231_AddEquipmentGeneration_001();
             initializeEquipmentGenerationObject(inforEquipmentGeneration, equipmentGeneration, context);
             addEquipmentGeneration.setEquipmentGeneration(inforEquipmentGeneration);
-            MP3231_AddEquipmentGeneration_001_Result addEquipmentGenerationResult;
-
-            if (context.getCredentials() != null) {
-                addEquipmentGenerationResult = inforws.addEquipmentGenerationOp(addEquipmentGeneration, tools.getOrganizationCode(context),
-                        tools.createSecurityHeader(context), "TERMINATE", null,
-                        tools.createMessageConfig(), tools.getTenant(context));
-            } else {
-                addEquipmentGenerationResult = inforws.addEquipmentGenerationOp(addEquipmentGeneration, tools.getOrganizationCode(context), null, "",
-                        new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-            }
+            MP3231_AddEquipmentGeneration_001_Result addEquipmentGenerationResult =
+                tools.performInforOperation(context, inforws::addEquipmentGenerationOp, addEquipmentGeneration);
             return addEquipmentGenerationResult.getResultData().getEQUIPMENTGENERATIONID().getEQUIPMENTGENERATIONCODE();
     }
 
     private void updateInforEquipmentGeneration(InforContext context, EquipmentGeneration equipmentGeneration) throws InforException {
-        try {
-            MP3232_SyncEquipmentGeneration_001 syncEquipmentGeneration = new MP3232_SyncEquipmentGeneration_001();
-            syncEquipmentGeneration.setEquipmentGeneration(equipmentGeneration);
-
-            if (context.getCredentials() != null) {
-                inforws.syncEquipmentGenerationOp(syncEquipmentGeneration, "*",
-                        tools.createSecurityHeader(context), "TERMINATE", null,
-                        tools.createMessageConfig(), tools.getTenant(context));
-            } else {
-                inforws.syncEquipmentGenerationOp(syncEquipmentGeneration, "*", null, null, new Holder<>(tools.createInforSession(context)),
-                        tools.createMessageConfig(), tools.getTenant(context));
-            }
-        }catch (Exception ex){
-            ex.printStackTrace();
-        }
+        MP3232_SyncEquipmentGeneration_001 syncEquipmentGeneration = new MP3232_SyncEquipmentGeneration_001();
+        syncEquipmentGeneration.setEquipmentGeneration(equipmentGeneration);
+        tools.performInforOperation(context, inforws::syncEquipmentGenerationOp, syncEquipmentGeneration);
     }
 
     @Override
@@ -94,25 +74,14 @@ public class EquipmentGenerationServiceImpl implements EquipmentGenerationServic
 
     @Override
     public String deleteEquipmentGeneration(InforContext context, String equipmentGenerationCode) throws InforException {
-        try {
-            MP3233_DeleteEquipmentGeneration_001 deleteEquipmentGeneration = new MP3233_DeleteEquipmentGeneration_001();
+        MP3233_DeleteEquipmentGeneration_001 deleteEquipmentGeneration = new MP3233_DeleteEquipmentGeneration_001();
 
-            deleteEquipmentGeneration.setEQUIPMENTGENERATIONID(new EQUIPMENTGENERATIONID_Type());
-            deleteEquipmentGeneration.getEQUIPMENTGENERATIONID().setORGANIZATIONID(tools.getOrganization(context));
-            deleteEquipmentGeneration.getEQUIPMENTGENERATIONID().getORGANIZATIONID().setORGANIZATIONCODE(tools.getOrganizationCode(context));
-            deleteEquipmentGeneration.getEQUIPMENTGENERATIONID().setEQUIPMENTGENERATIONCODE(equipmentGenerationCode);
+        deleteEquipmentGeneration.setEQUIPMENTGENERATIONID(new EQUIPMENTGENERATIONID_Type());
+        deleteEquipmentGeneration.getEQUIPMENTGENERATIONID().setORGANIZATIONID(tools.getOrganization(context));
+        deleteEquipmentGeneration.getEQUIPMENTGENERATIONID().getORGANIZATIONID().setORGANIZATIONCODE(tools.getOrganizationCode(context));
+        deleteEquipmentGeneration.getEQUIPMENTGENERATIONID().setEQUIPMENTGENERATIONCODE(equipmentGenerationCode);
 
-            if (context.getCredentials() != null) {
-                inforws.deleteEquipmentGenerationOp(deleteEquipmentGeneration, "*",
-                        tools.createSecurityHeader(context), "TERMINATE", null,
-                        tools.createMessageConfig(), tools.getTenant(context));
-            } else {
-                inforws.deleteEquipmentGenerationOp(deleteEquipmentGeneration, "*", null, null, new Holder<>(tools.createInforSession(context)),
-                        tools.createMessageConfig(), tools.getTenant(context));
-            }
-        }catch(InforException exception){
-            exception.printStackTrace();
-        }
+        tools.performInforOperation(context, inforws::deleteEquipmentGenerationOp, deleteEquipmentGeneration);
 
         return equipmentGenerationCode;
     }
@@ -126,16 +95,11 @@ public class EquipmentGenerationServiceImpl implements EquipmentGenerationServic
         createEquipmentGenerationPreview.getEQUIPMENTGENERATIONID().getORGANIZATIONID().setORGANIZATIONCODE(tools.getOrganizationCode(context));
         createEquipmentGenerationPreview.getEQUIPMENTGENERATIONID().setEQUIPMENTGENERATIONCODE(equipmentGenerationCode);
 
-        MP3235_CreateEquipmentGenerationPreview_001_Result createEquipmentGenerationPreviewResult;
-
-        if (context.getCredentials() != null) {
-            createEquipmentGenerationPreviewResult = inforws.createEquipmentGenerationPreviewOp(createEquipmentGenerationPreview, "*",
-                    tools.createSecurityHeader(context), "TERMINATE", null,
-                    tools.createMessageConfig(), tools.getTenant(context));
-        } else {
-            createEquipmentGenerationPreviewResult = inforws.createEquipmentGenerationPreviewOp(createEquipmentGenerationPreview, "*", null, null, new Holder<>(tools.createInforSession(context)),
-                    tools.createMessageConfig(), tools.getTenant(context));
-        }
+        MP3235_CreateEquipmentGenerationPreview_001_Result createEquipmentGenerationPreviewResult =
+            tools.performInforOperation(
+                context,
+                inforws::createEquipmentGenerationPreviewOp,
+                createEquipmentGenerationPreview);
 
         return createEquipmentGenerationPreviewResult.getResultData().getEQUIPMENTGENERATIONID().toString();
     }
@@ -149,16 +113,8 @@ public class EquipmentGenerationServiceImpl implements EquipmentGenerationServic
         generateEquipmentGeneration.getEQUIPMENTGENERATIONID().getORGANIZATIONID().setORGANIZATIONCODE(tools.getOrganizationCode(context));
         generateEquipmentGeneration.getEQUIPMENTGENERATIONID().setEQUIPMENTGENERATIONCODE(equipmentGenerationCode);
 
-        MP3251_GenerateEquipmentGeneration_001_Result generateEquipmentGenerationResult;
-
-        if (context.getCredentials() != null) {
-            generateEquipmentGenerationResult = inforws.generateEquipmentGenerationOp(generateEquipmentGeneration, "*",
-                    tools.createSecurityHeader(context), "TERMINATE", null,
-                    tools.createMessageConfig(), tools.getTenant(context));
-        } else {
-            generateEquipmentGenerationResult = inforws.generateEquipmentGenerationOp(generateEquipmentGeneration, "*", null, null, new Holder<>(tools.createInforSession(context)),
-                    tools.createMessageConfig(), tools.getTenant(context));
-        }
+        MP3251_GenerateEquipmentGeneration_001_Result generateEquipmentGenerationResult =
+            tools.performInforOperation(context, inforws::generateEquipmentGenerationOp, generateEquipmentGeneration);
 
         return generateEquipmentGenerationResult.getResultData().getEQUIPMENTGENERATIONID().toString();
     }
@@ -171,16 +127,8 @@ public class EquipmentGenerationServiceImpl implements EquipmentGenerationServic
         getEquipmentGeneration.getEQUIPMENTGENERATIONID().setORGANIZATIONID(tools.getOrganization(context));
         getEquipmentGeneration.getEQUIPMENTGENERATIONID().setEQUIPMENTGENERATIONCODE(equipmentGenerationCode);
 
-        MP3234_GetEquipmentGeneration_001_Result getEquipmentGenerationResult;
-        if (context.getCredentials() != null) {
-            getEquipmentGenerationResult = inforws.getEquipmentGenerationOp(getEquipmentGeneration,
-                    tools.getOrganizationCode(context),
-                    tools.createSecurityHeader(context), "TERMINATE", null,
-                    tools.createMessageConfig(), tools.getTenant(context));
-        } else {
-            getEquipmentGenerationResult = inforws.getEquipmentGenerationOp(getEquipmentGeneration, tools.getOrganizationCode(context), null, "",
-                    new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-        }
+        MP3234_GetEquipmentGeneration_001_Result getEquipmentGenerationResult =
+            tools.performInforOperation(context, inforws::getEquipmentGenerationOp, getEquipmentGeneration);
         return getEquipmentGenerationResult.getResultData().getEquipmentGeneration();
 
     }
@@ -383,14 +331,9 @@ public class EquipmentGenerationServiceImpl implements EquipmentGenerationServic
 
         MP3230_GetEquipmentGenerationDefault_001_Result getEGDefaultResult = new MP3230_GetEquipmentGenerationDefault_001_Result();
 
-        if (context.getCredentials() != null) {
-            getEGDefaultResult = inforws.getEquipmentGenerationDefaultOp(getEquipmentGenerationDefault, tools.getOrganizationCode(context),
-                    tools.createSecurityHeader(context), "TERMINATE", null,
-                    tools.createMessageConfig(), tools.getTenant(context));
-        } else {
-            getEGDefaultResult = inforws.getEquipmentGenerationDefaultOp(getEquipmentGenerationDefault, tools.getOrganizationCode(context), null, "",
-                    new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-        }
+        getEGDefaultResult = tools.performInforOperation(context,
+            inforws::getEquipmentGenerationDefaultOp,
+            getEquipmentGenerationDefault);
         EquipmentGenerationEntity equipmentGeneration = new EquipmentGenerationEntity();
         net.datastream.schemas.mp_entities.equipmentgenerationdefault_001.EquipmentGenerationDefault inforEquipmentGenerationDefault =
                 getEGDefaultResult.getResultData().getEquipmentGenerationDefault();

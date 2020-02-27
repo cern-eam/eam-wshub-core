@@ -9,7 +9,6 @@ import net.datastream.schemas.mp_functions.MessageConfigType;
 import net.datastream.schemas.mp_functions.MessageItemConfigType;
 import net.datastream.schemas.mp_functions.SessionType;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xmlsoap.schemas.ws._2002._04.secext.Password;
 import org.xmlsoap.schemas.ws._2002._04.secext.Username;
@@ -20,6 +19,7 @@ import org.xmlsoap.schemas.ws._2002._04.secext.ObjectFactory;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
+import javax.xml.ws.Holder;
 import javax.xml.ws.soap.SOAPFaultException;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -313,6 +313,10 @@ public class Tools {
 			String entityType)
 			throws InforException {
 
+		// TODO: check if uppercasing these classes is actually necessary, left here for safety
+		previousClass = previousClass == null ? null : previousClass.toUpperCase();
+		targetClass = targetClass == null ? null : targetClass.toUpperCase();
+
 		/*	Table with all possible cases of inputs
 			IAE = IllegalArgumentException
 			prevC = previousClass
@@ -401,5 +405,33 @@ public class Tools {
 		});
 
 		return base;
+	}
+
+	public <A, R> BatchResponse<R> batchOperation(InforContext context, WSHubOperation<A, R> operation, List<A> arguments) {
+		List<Callable<R>> callableList = arguments.stream()
+				.<Callable<R>>map(argument -> () -> operation.apply(context, argument))
+				.collect(Collectors.toList());
+
+		return processCallables(callableList);
+	}
+
+	public <A, R> R performInforOperation(InforContext context, InforOperation<A, R> operation, A argument)
+			throws InforException {
+		Security security = null;
+		String organization = getOrganizationCode(context);
+		String unknown2 = "TERMINATE";
+		Holder holder = null;
+		MessageConfigType messageConfigType = createMessageConfig();
+
+		if(context.getCredentials() != null) {
+			security = createSecurityHeader(context);
+			unknown2 = null;
+		} else {
+			holder = new Holder<>(createInforSession(context));
+		}
+
+		String tenant = getTenant(context);
+
+		return operation.apply(argument, organization, security, unknown2, holder, messageConfigType, tenant);
 	}
 }

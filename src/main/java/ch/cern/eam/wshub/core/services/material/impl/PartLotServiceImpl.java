@@ -56,11 +56,7 @@ public class PartLotServiceImpl implements PartLotService {
         MP1201_AddLot_001 addlot = new MP1201_AddLot_001();
         addlot.setLot(lotInfor);
 
-        if (context.getCredentials() != null) {
-            inforws.addLotOp(addlot, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
-        } else {
-            inforws.addLotOp(addlot, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-        }
+        tools.performInforOperation(context, inforws::addLotOp, addlot);
 
         return lot.getCode();
     }

@@ -238,15 +238,8 @@ public class AssetServiceImpl implements AssetService {
         getassetph.getASSETID().setORGANIZATIONID(tools.getOrganization(context));
         getassetph.getASSETID().setEQUIPMENTCODE(assetCode);
 
-        MP0327_GetAssetParentHierarchy_001_Result result;
-        if (context.getCredentials() != null) {
-            result = inforws.getAssetParentHierarchyOp(getassetph, tools.getOrganizationCode(context),
-                    tools.createSecurityHeader(context), "TERMINATE", null,
-                    null, tools.getTenant(context));
-        } else {
-            result = inforws.getAssetParentHierarchyOp(getassetph, tools.getOrganizationCode(context), null, null,
-                    new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-        }
+        MP0327_GetAssetParentHierarchy_001_Result result =
+            tools.performInforOperation(context, inforws::getAssetParentHierarchyOp, getassetph);
 
         return result.getResultData().getAssetParentHierarchy();
 
@@ -258,20 +251,10 @@ public class AssetServiceImpl implements AssetService {
         getAsset.setASSETID(new EQUIPMENTID_Type());
         getAsset.getASSETID().setORGANIZATIONID(tools.getOrganization(context));
         getAsset.getASSETID().setEQUIPMENTCODE(assetCode);
-        MP0302_GetAssetEquipment_001_Result getAssetResult = new MP0302_GetAssetEquipment_001_Result();
 
-        if (context.getCredentials() != null) {
-            getAssetResult = inforws.getAssetEquipmentOp(getAsset,
-                    tools.getOrganizationCode(context),
-                    tools.createSecurityHeader(context), "TERMINATE", null,
-                    tools.createMessageConfig(), tools.getTenant(context));
-        } else {
-            getAssetResult = inforws.getAssetEquipmentOp(getAsset,
-                    tools.getOrganizationCode(context), null, null,
-                    new Holder<SessionType>(tools.createInforSession(context)),
-                    tools.createMessageConfig(),
-                    tools.getTenant(context));
-        }
+        MP0302_GetAssetEquipment_001_Result getAssetResult =
+            tools.performInforOperation(context, inforws::getAssetEquipmentOp, getAsset);
+
         return getAssetResult.getResultData().getAssetEquipment();
     }
 
@@ -279,24 +262,19 @@ public class AssetServiceImpl implements AssetService {
             throws InforException {
         MP0303_SyncAssetEquipment_001 syncAsset = new MP0303_SyncAssetEquipment_001();
         syncAsset.setAssetEquipment(assetEquipment);
-        if (context.getCredentials() != null) {
-            inforws.syncAssetEquipmentOp(syncAsset, tools.getOrganizationCode(context),
-                    tools.createSecurityHeader(context), "TERMINATE", null,
-                    tools.createMessageConfig(), tools.getTenant(context));
-        } else {
-            inforws.syncAssetEquipmentOp(syncAsset, tools.getOrganizationCode(context), null, null,
-                    new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-        }
+        tools.performInforOperation(context, inforws::syncAssetEquipmentOp, syncAsset);
     }
 
     public String updateAsset(InforContext context, Equipment assetParam) throws InforException {
         AssetEquipment assetEquipment = readInforAsset(context, assetParam.getCode());
 
         //
-        if (assetParam.getClassCode() != null &&
-                (assetEquipment.getCLASSID() == null || !assetParam.getClassCode().toUpperCase().equals(assetEquipment.getCLASSID().getCLASSCODE()))) {
-            assetEquipment.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(context, "OBJ", assetParam.getClassCode().toUpperCase()));
-        }
+        assetEquipment.setUSERDEFINEDAREA(tools.getInforCustomFields(
+            context,
+            toCodeString(assetEquipment.getCLASSID()),
+            assetEquipment.getUSERDEFINEDAREA(),
+            assetParam.getClassCode(),
+            "OBJ"));
 
         initializeAssetObject(assetEquipment, assetParam, context);
         tools.getInforFieldTools().transformWSHubObject(assetEquipment, assetParam, context);
@@ -312,13 +290,12 @@ public class AssetServiceImpl implements AssetService {
 
         AssetEquipment assetEquipment = new AssetEquipment();
         //
-        if (assetParam.getCustomFields() != null && assetParam.getCustomFields().length > 0) {
-            if (isNotEmpty(assetParam.getClassCode())) {
-                assetEquipment.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(context, "OBJ", assetParam.getClassCode()));
-            } else {
-                assetEquipment.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(context, "OBJ", "*"));
-            }
-        }
+        assetEquipment.setUSERDEFINEDAREA(tools.getInforCustomFields(
+            context,
+            toCodeString(assetEquipment.getCLASSID()),
+            assetEquipment.getUSERDEFINEDAREA(),
+            assetParam.getClassCode(),
+            "OBJ"));
 
         //
         initializeAssetObject(assetEquipment, assetParam, context);
@@ -326,16 +303,8 @@ public class AssetServiceImpl implements AssetService {
         //
         MP0301_AddAssetEquipment_001 addAsset = new MP0301_AddAssetEquipment_001();
         addAsset.setAssetEquipment(assetEquipment);
-        MP0301_AddAssetEquipment_001_Result addAssetResult = null;
-
-        if (context.getCredentials() != null) {
-            addAssetResult = inforws.addAssetEquipmentOp(addAsset, tools.getOrganizationCode(context),
-                    tools.createSecurityHeader(context), "TERMINATE", null,
-                    tools.createMessageConfig(), tools.getTenant(context));
-        } else {
-            addAssetResult = inforws.addAssetEquipmentOp(addAsset, tools.getOrganizationCode(context), null, null,
-                    new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-        }
+        MP0301_AddAssetEquipment_001_Result addAssetResult =
+            tools.performInforOperation(context, inforws::addAssetEquipmentOp, addAsset);
 
         return addAssetResult.getResultData().getASSETID().getEQUIPMENTCODE();
     }
@@ -346,14 +315,7 @@ public class AssetServiceImpl implements AssetService {
         deleteAsset.getASSETID().setORGANIZATIONID(tools.getOrganization(context));
         deleteAsset.getASSETID().setEQUIPMENTCODE(assetCode);
 
-        if (context.getCredentials() != null) {
-            inforws.deleteAssetEquipmentOp(deleteAsset, tools.getOrganizationCode(context),
-                    tools.createSecurityHeader(context), "TERMINATE", null,
-                    tools.createMessageConfig(), tools.getTenant(context));
-        } else {
-            inforws.deleteAssetEquipmentOp(deleteAsset, tools.getOrganizationCode(context), null, null,
-                    new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-        }
+        tools.performInforOperation(context, inforws::deleteAssetEquipmentOp, deleteAsset);
         return assetCode;
     }
 

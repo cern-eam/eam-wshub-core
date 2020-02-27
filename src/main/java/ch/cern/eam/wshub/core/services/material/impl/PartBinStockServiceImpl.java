@@ -65,11 +65,7 @@ public class PartBinStockServiceImpl implements PartBinStockService {
 		MP0248_AddBinStock_001 addbinstock = new MP0248_AddBinStock_001();
 		addbinstock.setBinStock(binStock);
 
-		if (context.getCredentials() != null) {
-			inforws.addBinStockOp(addbinstock, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			inforws.addBinStockOp(addbinstock, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
+		tools.performInforOperation(context, inforws::addBinStockOp, addbinstock);
 
 		return null;
 	}
@@ -94,13 +90,8 @@ public class PartBinStockServiceImpl implements PartBinStockService {
 		getBinStock.getBINSTOCKID().getSTOREID().setORGANIZATIONID(tools.getOrganization(context));
 		getBinStock.getBINSTOCKID().getSTOREID().setSTORECODE(partStockParam.getStoreCode());
 
-		MP0250_GetBinStock_001_Result result = new MP0250_GetBinStock_001_Result();
-
-		if (context.getCredentials() != null) {
-			result = inforws.getBinStockOp(getBinStock, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			result = inforws.getBinStockOp(getBinStock, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
+		MP0250_GetBinStock_001_Result result =
+			tools.performInforOperation(context, inforws::getBinStockOp, getBinStock);
 		//
 		// UPDATE AFTERWARDS
 		//
@@ -112,11 +103,7 @@ public class PartBinStockServiceImpl implements PartBinStockService {
 			syncBinStock.getBinStock().setQTYONHAND(tools.getDataTypeTools().encodeAmount(partStockParam.getQtyOnHand(),"Qty. On Hand"));
 		}
 
-		if (context.getCredentials() != null) {
-			inforws.syncBinStockOp(syncBinStock, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			inforws.syncBinStockOp(syncBinStock, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
+		tools.performInforOperation(context, inforws::syncBinStockOp, syncBinStock);
 
 		return null;
 	}

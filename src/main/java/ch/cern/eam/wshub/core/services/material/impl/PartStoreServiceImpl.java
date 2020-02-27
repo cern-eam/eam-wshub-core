@@ -45,12 +45,8 @@ public class PartStoreServiceImpl implements PartStoreService {
 		getPartStores.getSTOREPARTID().getSTOREID().setORGANIZATIONID(tools.getOrganization(context));
 		getPartStores.getSTOREPARTID().getSTOREID().setSTORECODE(partStoreParam.getStoreCode());
 
-		MP0254_GetPartStores_001_Result result;
-		if (context.getCredentials() != null) {
-			result = inforws.getPartStoresOp(getPartStores, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			result = inforws.getPartStoresOp(getPartStores, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
+		MP0254_GetPartStores_001_Result result =
+			tools.performInforOperation(context, inforws::getPartStoresOp, getPartStores);
 		//
 		// DO THE UPDATE NOW
 		//
@@ -117,13 +113,7 @@ public class PartStoreServiceImpl implements PartStoreService {
 		MP0256_SyncPartStores_001 syncPartStores = new MP0256_SyncPartStores_001();
 		syncPartStores.setPartStores(partStoresResult);
 
-		if (context.getCredentials() != null) {
-			inforws.syncPartStoresOp(syncPartStores, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			inforws.syncPartStoresOp(syncPartStores, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
-
-
+		tools.performInforOperation(context, inforws::syncPartStoresOp, syncPartStores);
 		return null;
 	}
 
@@ -210,12 +200,7 @@ public class PartStoreServiceImpl implements PartStoreService {
 		MP0255_AddPartStores_001 addPartStores = new  MP0255_AddPartStores_001();
 		addPartStores.setPartStores(partStoresInfor);
 
-		if (context.getCredentials() != null) {
-			inforws.addPartStoresOp(addPartStores, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			inforws.addPartStoresOp(addPartStores, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
-
+		tools.performInforOperation(context, inforws::addPartStoresOp, addPartStores);
 		return null;
 	}
 

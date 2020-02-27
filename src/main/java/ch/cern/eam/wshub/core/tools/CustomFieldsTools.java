@@ -269,36 +269,14 @@ public class CustomFieldsTools {
         MP9501_GetCustomFields_001 getcustomfields = new MP9501_GetCustomFields_001();
         getcustomfields.setCUSTOMFIELDREQ(cfreq);
 
-        MP9501_GetCustomFields_001_Result result;
-
-        if (context.getCredentials() != null) {
-            result = inforws.getCustomFieldsOp(getcustomfields, tools.getOrganizationCode(context),
-                    tools.createSecurityHeader(context), "TERMINATE", null, null,
-                    tools.getTenant(context));
-        } else {
-            result = inforws.getCustomFieldsOp(getcustomfields, tools.getOrganizationCode(context), null, null,
-                    new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-        }
-
+        MP9501_GetCustomFields_001_Result result =
+            tools.performInforOperation(context, inforws::getCustomFieldsOp, getcustomfields);
         return result.getUSERDEFINEDAREA();
 
     }
 
     public CustomField[] getWSHubCustomFields(InforContext context, String entity, String inforClass)
             throws InforException {
-        CUSTOMFIELDREQ cfreq = new CUSTOMFIELDREQ();
-        cfreq.setORGANIZATIONID(tools.getOrganization(context));
-
-        if (inforClass != null) {
-            cfreq.setCLASSID(new CLASSID_Type());
-            cfreq.getCLASSID().setORGANIZATIONID(tools.getOrganization(context));
-            cfreq.getCLASSID().setCLASSCODE(inforClass.toUpperCase());
-        }
-
-        if (entity != null) {
-            cfreq.setENTITYNAME(entity.toUpperCase());
-        }
-
         return readInforCustomFields(getInforCustomFields(context, entity, inforClass));
     }
 

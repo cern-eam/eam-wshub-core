@@ -62,14 +62,7 @@ public class EquipmentStructureServiceImpl implements EquipmentStructureService 
 					.setSEQUENCENUMBER(tools.getDataTypeTools().encodeLong(equipmentStructure.getSequenceNumber(), "Sequence Number"));
 		}
 
-		if (context.getCredentials() != null) {
-			inforws.addEquipmentStructureOp(addEqStr, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					null, tools.getTenant(context));
-		} else {
-			inforws.addEquipmentStructureOp(addEqStr, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
+		tools.performInforOperation(context, inforws::addEquipmentStructureOp, addEqStr);
 
 		return "OK";
 	}
@@ -91,14 +84,7 @@ public class EquipmentStructureServiceImpl implements EquipmentStructureService 
 					.setEQUIPMENTCODE(equipmentStructure.getParentCode().trim().toUpperCase());
 		}
 
-		if (context.getCredentials() != null) {
-			inforws.removeEquipmentFromStructureOp(removeeq, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					null, tools.getTenant(context));
-		} else {
-			inforws.removeEquipmentFromStructureOp(removeeq, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
+		tools.performInforOperation(context, inforws::removeEquipmentFromStructureOp, removeeq);
 
 		return "OK";
 	}
@@ -134,15 +120,7 @@ public class EquipmentStructureServiceImpl implements EquipmentStructureService 
 				updateEqStr.setDEPENDENTON(tools.getDataTypeTools().encodeBoolean(equipmentStructure.getDependent(), BooleanType.TRUE_FALSE));
 			}
 
-			if (context.getCredentials() != null) {
-				inforws.updateEquipmentStructurePropertiesOp(updateEqStr, tools.getOrganizationCode(context),
-						tools.createSecurityHeader(context), "TERMINATE",
-						null, null, tools.getTenant(context));
-			} else {
-				inforws.updateEquipmentStructurePropertiesOp(updateEqStr, tools.getOrganizationCode(context), null, null,
-						new Holder<SessionType>(tools.createInforSession(context)), null,
-						tools.getTenant(context));
-			}
+			tools.performInforOperation(context, inforws::updateEquipmentStructurePropertiesOp, updateEqStr);
 
 		} else {
 
@@ -181,15 +159,7 @@ public class EquipmentStructureServiceImpl implements EquipmentStructureService 
 						.setEQUIPMENTCODE(equipmentStructure.getNewParentCode().trim().toUpperCase());
 			}
 
-			if (context.getCredentials() != null) {
-				inforws.syncEquipmentStructureOp(synceqpstr, tools.getOrganizationCode(context),
-						tools.createSecurityHeader(context), "TERMINATE",
-						null, null, tools.getTenant(context));
-			} else {
-				inforws.syncEquipmentStructureOp(synceqpstr, tools.getOrganizationCode(context), null, null,
-						new Holder<SessionType>(tools.createInforSession(context)), null,
-						tools.getTenant(context));
-			}
+			tools.performInforOperation(context, inforws::syncEquipmentStructureOp, synceqpstr);
 		}
 		return "OK";
 	}

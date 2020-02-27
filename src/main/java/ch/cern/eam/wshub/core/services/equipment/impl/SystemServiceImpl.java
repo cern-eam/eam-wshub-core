@@ -50,15 +50,8 @@ public class SystemServiceImpl implements SystemService {
 		// HIERARCHY
 		MP0329_GetSystemParentHierarchy_001 getsystemh = new MP0329_GetSystemParentHierarchy_001();
 		getsystemh.setSYSTEMID(systemEquipment.getSYSTEMID());
-		MP0329_GetSystemParentHierarchy_001_Result gethresult;
-		if (context.getCredentials() != null)
-			gethresult = inforws.getSystemParentHierarchyOp(getsystemh, "*",
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					null, tools.getTenant(context));
-		else {
-			gethresult = inforws.getSystemParentHierarchyOp(getsystemh, "*", null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
+		MP0329_GetSystemParentHierarchy_001_Result gethresult =
+			tools.performInforOperation(context, inforws::getSystemParentHierarchyOp, getsystemh);
 		// System parent hierarchy
 		systemEquipment.setSystemParentHierarchy(gethresult.getResultData().getSystemParentHierarchy());
 
@@ -98,16 +91,8 @@ public class SystemServiceImpl implements SystemService {
 		getSystem.setSYSTEMID(new EQUIPMENTID_Type());
 		getSystem.getSYSTEMID().setORGANIZATIONID(tools.getOrganization(context));
 		getSystem.getSYSTEMID().setEQUIPMENTCODE(systemCode);
-		MP0312_GetSystemEquipment_001_Result getAssetResult = new MP0312_GetSystemEquipment_001_Result();
-
-		if (context.getCredentials() != null)
-			getAssetResult = inforws.getSystemEquipmentOp(getSystem, "*",
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					null, tools.getTenant(context));
-		else {
-			getAssetResult = inforws.getSystemEquipmentOp(getSystem, "*", null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
+		MP0312_GetSystemEquipment_001_Result getAssetResult =
+			tools.performInforOperation(context, inforws::getSystemEquipmentOp, getSystem);
 
 		return getAssetResult.getResultData().getSystemEquipment();
 	}
@@ -116,25 +101,19 @@ public class SystemServiceImpl implements SystemService {
 
 			SystemEquipment systemEquipment = readSystemInfor(context, systemParam.getCode());
 			//
-			if (systemParam.getClassCode() != null && (systemEquipment.getCLASSID() == null
-					|| !systemParam.getClassCode().toUpperCase().equals(systemEquipment.getCLASSID().getCLASSCODE()))) {
-				systemEquipment.setUSERDEFINEDAREA(
-						tools.getCustomFieldsTools().getInforCustomFields(context, "OBJ", systemParam.getClassCode().toUpperCase()));
-			}
+			systemEquipment.setUSERDEFINEDAREA(tools.getInforCustomFields(
+				context,
+				toCodeString(systemEquipment.getCLASSID()),
+				systemEquipment.getUSERDEFINEDAREA(),
+				systemParam.getClassCode(),
+				"OBJ"));
 
 			initializeSystemObject(systemEquipment, systemParam, context);
 			tools.getInforFieldTools().transformWSHubObject(systemEquipment, systemParam, context);
 
 			MP0313_SyncSystemEquipment_001 syncPosition = new MP0313_SyncSystemEquipment_001();
 			syncPosition.setSystemEquipment(systemEquipment);
-			if (context.getCredentials() != null) {
-				inforws.syncSystemEquipmentOp(syncPosition, "*",
-						tools.createSecurityHeader(context), "TERMINATE", null,
-						tools.createMessageConfig(), tools.getTenant(context));
-			} else {
-				inforws.syncSystemEquipmentOp(syncPosition, "*", null, null,
-						new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-			}
+			tools.performInforOperation(context, inforws::syncSystemEquipmentOp, syncPosition);
 
 			return systemParam.getCode();
 
@@ -144,29 +123,21 @@ public class SystemServiceImpl implements SystemService {
 
 		SystemEquipment systemEquipment = new SystemEquipment();
 		//
-		if (systemParam.getCustomFields() != null && systemParam.getCustomFields().length > 0) {
-			if (systemParam.getClassCode() != null && !systemParam.getClassCode().trim().equals("")) {
-				systemEquipment.setUSERDEFINEDAREA(
-						tools.getCustomFieldsTools().getInforCustomFields(context, "OBJ", systemParam.getClassCode()));
-			} else {
-				systemEquipment.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(context, "OBJ", "*"));
-			}
-		}
+		systemEquipment.setUSERDEFINEDAREA(tools.getInforCustomFields(
+			context,
+			toCodeString(systemEquipment.getCLASSID()),
+			systemEquipment.getUSERDEFINEDAREA(),
+			systemParam.getClassCode(),
+			"OBJ"));
+
 		//
 		initializeSystemObject(systemEquipment, systemParam, context);
 		tools.getInforFieldTools().transformWSHubObject(systemEquipment, systemParam, context);
 		//
 		MP0311_AddSystemEquipment_001 addPosition = new MP0311_AddSystemEquipment_001();
 		addPosition.setSystemEquipment(systemEquipment);
-		MP0311_AddSystemEquipment_001_Result result;
-		if (context.getCredentials() != null) {
-			result = inforws.addSystemEquipmentOp(addPosition, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			result = inforws.addSystemEquipmentOp(addPosition, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
+		MP0311_AddSystemEquipment_001_Result result =
+			tools.performInforOperation(context, inforws::addSystemEquipmentOp, addPosition);
 		return result.getResultData().getSYSTEMID().getEQUIPMENTCODE();
 
 	}
@@ -178,14 +149,7 @@ public class SystemServiceImpl implements SystemService {
 		deleteSystem.getSYSTEMID().setORGANIZATIONID(tools.getOrganization(context));
 		deleteSystem.getSYSTEMID().setEQUIPMENTCODE(systemCode);
 
-		if (context.getCredentials() != null) {
-			inforws.deleteSystemEquipmentOp(deleteSystem, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					null, tools.getTenant(context));
-		} else {
-			inforws.deleteSystemEquipmentOp(deleteSystem, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
+		tools.performInforOperation(context, inforws::deleteSystemEquipmentOp, deleteSystem);
 
 		return systemCode;
 	}
