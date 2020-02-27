@@ -325,9 +325,9 @@ public class Tools {
 			| 1  | null  | CF      | null    | prevCFs        | no previous class nor target    | [4]
 			| 2  | null  | CF      | ""      | merge with "*" | nullifying null class           | [3]
 			| 3  | null  | CF      | "D"     | merge with "D" | merge "*" into "D"              | [3]
-			| 4  | ""    | CF      | null    | IAE            | illegal argument                | [1]
-			| 5  | ""    | CF      | ""      | IAE            | illegal argument                | [1]
-			| 6  | ""    | CF      | "D"     | IAE            | illegal argument                | [1]
+			| 4  | ""    | CF      | null    | prevCFs        | no previous class nor target    | [5]
+			| 5  | ""    | CF      | ""      | merge with "*" | nullifying null class           | [3]
+			| 6  | ""    | CF      | "D"     | merge with "D" | merge "*" into "D"              | [3]
 			| 7  | "C"   | CF      | null    | prevCFs        | null [non-]update               | [4]
 			| 8  | "C"   | CF      | ""      | merge with "*" | merge "C" into "*"              | [3]
 			| 9  | "C"   | CF      | "D"     | merge with "D" | merge "C" into "D"              | [3]
@@ -343,14 +343,14 @@ public class Tools {
 			+----+-------+---------+---------+----------------+---------------------------------+
 		*/
 
-		// [1] handle cases 4 to 6 and 13 to 18
-		if(previousClass != null && (previousClass.equals("") || previousCustomFields == null)) {
+		// [1] handle cases 13 to 18
+		if(previousCustomFields == null && previousClass != null) {
 			throw new IllegalArgumentException("");
 		}
 
 		if(targetClass != null) {
 			// this determines whether the class we should use is "*"or newClass
-			// this separates cases 2 and 3, and 8 and 9
+			// this separates cases 2 and 3, 5 and 6, 8 and 9
 			String newClass = targetClass.length() == 0 ? "*" : targetClass;
 
 			USERDEFINEDAREA classCustomFields =
@@ -359,7 +359,7 @@ public class Tools {
 			// [2] handle case 11 and 12
 			if(previousCustomFields == null) return classCustomFields;
 
-			// [3] handle cases 2, 3, 8 and 9
+			// [3] handle cases 2, 3, 5, 6, 8 and 9
 			return merge(classCustomFields, previousCustomFields);
 		}
 
@@ -368,7 +368,7 @@ public class Tools {
 		// [4] handle case 1 and 7
 		if(previousCustomFields != null) return previousCustomFields;
 
-		// [5] handle case 10
+		// [5] handle case 4 and 10
 		return getCustomFieldsTools().getInforCustomFields(context, entityType, "*");
 	}
 
