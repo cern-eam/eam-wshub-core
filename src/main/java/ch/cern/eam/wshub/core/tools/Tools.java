@@ -386,9 +386,6 @@ public class Tools {
 
 			baseCustomField.setPROPERTYCODE(sourceCustomField.getPROPERTYCODE());
 
-			// we must keep the base class regardless of the new topping class
-			baseCustomField.setCLASSID(baseCustomField.getCLASSID());
-
 			baseCustomField.setDATEFIELD(
 					nonNullOrDefault(sourceCustomField.getDATEFIELD(), baseCustomField.getDATEFIELD()));
 			baseCustomField.setDATETIMEFIELD(
