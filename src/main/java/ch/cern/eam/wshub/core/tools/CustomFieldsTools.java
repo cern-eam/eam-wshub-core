@@ -269,17 +269,8 @@ public class CustomFieldsTools {
         MP9501_GetCustomFields_001 getcustomfields = new MP9501_GetCustomFields_001();
         getcustomfields.setCUSTOMFIELDREQ(cfreq);
 
-        MP9501_GetCustomFields_001_Result result;
-
-        if (context.getCredentials() != null) {
-            result = inforws.getCustomFieldsOp(getcustomfields, tools.getOrganizationCode(context),
-                    tools.createSecurityHeader(context), "TERMINATE", null, null,
-                    tools.getTenant(context));
-        } else {
-            result = inforws.getCustomFieldsOp(getcustomfields, tools.getOrganizationCode(context), null, null,
-                    new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-        }
-
+        MP9501_GetCustomFields_001_Result result =
+            tools.performInforOperation(context, inforws::getCustomFieldsOp, getcustomfields);
         return result.getUSERDEFINEDAREA();
 
     }

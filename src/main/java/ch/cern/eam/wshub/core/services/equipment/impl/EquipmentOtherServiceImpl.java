@@ -66,18 +66,9 @@ public class EquipmentOtherServiceImpl implements EquipmentOtherService {
 
 		getdepdef.setFROMDATE(tools.getDataTypeTools().formatDate(equipmentDepreciation.getFromDate(), "From Date"));
 
-		DepreciationDefault depreciationDefault;
-		if (context.getCredentials() != null) {
-			depreciationDefault = inforws
-					.getDepreciationDefaultOp(getdepdef, tools.getOrganizationCode(context),
-							tools.createSecurityHeader(context),
-							"TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context))
-					.getResultData().getDepreciationDefault();
-		} else {
-			depreciationDefault = inforws.getDepreciationDefaultOp(getdepdef, tools.getOrganizationCode(context), null,
-					null, new Holder<SessionType>(tools.createInforSession(context)), null,
-					tools.getTenant(context)).getResultData().getDepreciationDefault();
-		}
+		DepreciationDefault depreciationDefault =
+			tools.performInforOperation(context, inforws::getDepreciationDefaultOp, getdepdef)
+				.getResultData().getDepreciationDefault();
 
 		Depreciation depreciation = new Depreciation();
 
@@ -184,14 +175,7 @@ public class EquipmentOtherServiceImpl implements EquipmentOtherService {
 		// ADD DEPRECIATION
 		MP3017_AddDepreciation_001 adddep = new MP3017_AddDepreciation_001();
 		adddep.setDepreciation(depreciation);
-		if (context.getCredentials() != null) {
-			inforws.addDepreciationOp(adddep, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					null, tools.getTenant(context));
-		} else {
-			inforws.addDepreciationOp(adddep, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
+		tools.performInforOperation(context, inforws::addDepreciationOp, adddep);
 
 		return "OK";
 	}
@@ -222,15 +206,8 @@ public class EquipmentOtherServiceImpl implements EquipmentOtherService {
 		MP3016_GetDepreciation_001 getdep = new MP3016_GetDepreciation_001();
 		getdep.setDEPRECIATIONPK(tools.getDataTypeTools().encodeQuantity(equipmentDepreciation.getDepreciationPK(), "Depreciation PK"));
 
-		MP3016_GetDepreciation_001_Result result;
-		if (context.getCredentials() != null) {
-			result = inforws.getDepreciationOp(getdep, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					null, tools.getTenant(context));
-		} else {
-			result = inforws.getDepreciationOp(getdep, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
+		MP3016_GetDepreciation_001_Result result =
+			tools.performInforOperation(context, inforws::getDepreciationOp, getdep);
 		//
 		// UPDATE DEPRECIATION
 		//
@@ -309,14 +286,7 @@ public class EquipmentOtherServiceImpl implements EquipmentOtherService {
 
 		MP3018_SyncDepreciation_001 syncdep = new MP3018_SyncDepreciation_001();
 		syncdep.setDepreciation(depreciation);
-		if (context.getCredentials() != null) {
-			inforws.syncDepreciationOp(syncdep, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					null, tools.getTenant(context));
-		} else {
-			inforws.syncDepreciationOp(syncdep, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
+		tools.performInforOperation(context, inforws::syncDepreciationOp, syncdep);
 
 		return "OK";
 	}
@@ -335,14 +305,7 @@ public class EquipmentOtherServiceImpl implements EquipmentOtherService {
 		changeeqpnum.getChangeEquipmentNumber().getNEWEQUIPMENTID().setORGANIZATIONID(tools.getOrganization(context));
 		changeeqpnum.getChangeEquipmentNumber().getNEWEQUIPMENTID().setEQUIPMENTCODE(equipmentNewCode);
 
-		if (context.getCredentials() != null) {
-			inforws.changeEquipmentNumberOp(changeeqpnum, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			inforws.changeEquipmentNumberOp(changeeqpnum, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
+		tools.performInforOperation(context, inforws::changeEquipmentNumberOp, changeeqpnum);
 
 		return "OK";
 	}
@@ -367,14 +330,7 @@ public class EquipmentOtherServiceImpl implements EquipmentOtherService {
 
 		addCampaignEquipment.setCampaignEquipment(campaignEquipment);
 
-		if (context.getCredentials() != null) {
-			inforws.addCampaignEquipmentOp(addCampaignEquipment, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					null, tools.getTenant(context));
-		} else {
-			inforws.addCampaignEquipmentOp(addCampaignEquipment, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
+		tools.performInforOperation(context, inforws::addCampaignEquipmentOp, addCampaignEquipment);
 
 		return null;
 	}

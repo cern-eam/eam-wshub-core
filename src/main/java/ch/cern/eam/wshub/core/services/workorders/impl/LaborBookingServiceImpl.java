@@ -121,13 +121,8 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 		MP0042_AddLaborBooking_001 addLaborBoking = new MP0042_AddLaborBooking_001();
 		addLaborBoking.setLaborBooking(laborBookingInfor);
 
-		MP0042_AddLaborBooking_001_Result result = null;
-
-		if (context.getCredentials() != null) {
-			result = inforws.addLaborBookingOp(addLaborBoking, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			result = inforws.addLaborBookingOp(addLaborBoking, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
+		MP0042_AddLaborBooking_001_Result result =
+			tools.performInforOperation(context, inforws::addLaborBookingOp, addLaborBoking);
 		return laborBookingParam.getActivityCode();
 	}
 
@@ -230,16 +225,8 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 		MP0037_AddActivity_001 addActivity = new MP0037_AddActivity_001();
 		addActivity.setActivity(activityInfor);
 
-		MP0037_AddActivity_001_Result result;
-
-		if (context.getCredentials() != null) {
-			result = inforws.addActivityOp(addActivity, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			result = inforws.addActivityOp(addActivity, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
+		MP0037_AddActivity_001_Result result =
+			tools.performInforOperation(context, inforws::addActivityOp, addActivity);
 		return result.getResultData().getACTIVITYID().getACTIVITYCODE().getValue() + "";
 	}
 
@@ -260,16 +247,8 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 		getActivity.getACTIVITYID().getWORKORDERID().setORGANIZATIONID(tools.getOrganization(context));
 		getActivity.getACTIVITYID().getWORKORDERID().setJOBNUM(activityParam.getWorkOrderNumber());
 
-		MP0035_GetActivity_001_Result getresult = null;
-
-		if (context.getCredentials() != null) {
-			getresult = inforws.getActivityOp(getActivity, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			getresult = inforws.getActivityOp(getActivity, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
+		MP0035_GetActivity_001_Result getresult =
+			tools.performInforOperation(context, inforws::getActivityOp, getActivity);
 
 		net.datastream.schemas.mp_entities.activity_001.Activity activityInfor = getresult.getResultData().getActivity();
 
@@ -338,16 +317,8 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 		MP0038_SyncActivity_001 syncActivity = new MP0038_SyncActivity_001();
 		syncActivity.setActivity(activityInfor);
 
-		MP0038_SyncActivity_001_Result syncresult = null;
-
-		if (context.getCredentials() != null) {
-			syncresult = inforws.syncActivityOp(syncActivity, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			syncresult = inforws.syncActivityOp(syncActivity, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
+		MP0038_SyncActivity_001_Result syncresult =
+			tools.performInforOperation(context, inforws::syncActivityOp, syncActivity);
 		return syncresult.getResultData().getACTIVITYID().getACTIVITYCODE().getValue() + "";
 	}
 
@@ -364,16 +335,8 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 		deleteActivity.getACTIVITYID().getWORKORDERID().setJOBNUM(activityParam.getWorkOrderNumber());
 		deleteActivity.setConfirmdeletechecklist("true");
 
-		MP0039_DeleteActivity_001_Result result = null;
-
-		if (context.getCredentials() != null) {
-			result = inforws.deleteActivityOp(deleteActivity, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			result = inforws.deleteActivityOp(deleteActivity, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
+		MP0039_DeleteActivity_001_Result result =
+			tools.performInforOperation(context, inforws::deleteActivityOp, deleteActivity);
 		return result.getResultData().getACTIVITYID().getACTIVITYCODE().getValue() + "";
 	}
 

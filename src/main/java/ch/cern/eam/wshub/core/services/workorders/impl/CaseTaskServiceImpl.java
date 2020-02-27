@@ -41,15 +41,8 @@ public class CaseTaskServiceImpl implements CaseTaskService {
 		getCaseTask.setCASEMANAGEMENTTASKID(new CASEMANAGEMENTTASKID_Type());
 		getCaseTask.getCASEMANAGEMENTTASKID().setCASEMANAGEMENTTASKCODE(caseTaskID);
 
-		MP3658_GetCaseManagementTask_001_Result result = null;
-		if (context.getCredentials() != null) {
-			result = inforws.getCaseManagementTaskOp(getCaseTask, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			result = inforws.getCaseManagementTaskOp(getCaseTask, tools.getOrganizationCode(context), null, "",
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
+		MP3658_GetCaseManagementTask_001_Result result =
+			tools.performInforOperation(context, inforws::getCaseManagementTaskOp, getCaseTask);
 
 		CaseManagementTask caseTaskInfor = result.getResultData().getCaseManagementTask();
 		InforCaseTask caseTaskMT = new InforCaseTask();
@@ -159,17 +152,8 @@ public class CaseTaskServiceImpl implements CaseTaskService {
 		initCaseTaskObject(caseManagement, caseTaskMT, context);
 		MP3655_AddCaseManagementTask_001 initCaseTask = new MP3655_AddCaseManagementTask_001();
 		initCaseTask.setCaseManagementTask(caseManagement);
-		MP3655_AddCaseManagementTask_001_Result initCaseTaskResult = null;
-
-		if (context.getCredentials() != null) {
-			initCaseTaskResult = inforws.addCaseManagementTaskOp(initCaseTask, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			initCaseTaskResult = inforws.addCaseManagementTaskOp(initCaseTask, tools.getOrganizationCode(context), null,
-					"", new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(),
-					tools.getTenant(context));
-		}
+		MP3655_AddCaseManagementTask_001_Result initCaseTaskResult =
+			tools.performInforOperation(context, inforws::addCaseManagementTaskOp, initCaseTask);
 		return initCaseTaskResult.getResultData().getCASEMANAGEMENTTASKID().getCASEMANAGEMENTTASKCODE();
 	}
 
@@ -181,15 +165,8 @@ public class CaseTaskServiceImpl implements CaseTaskService {
 		getCaseTask.setCASEMANAGEMENTTASKID(new CASEMANAGEMENTTASKID_Type());
 		getCaseTask.getCASEMANAGEMENTTASKID().setCASEMANAGEMENTTASKCODE(caseTaskMT.getTaskCode());
 
-		MP3658_GetCaseManagementTask_001_Result result = null;
-		if (context.getCredentials() != null) {
-			result = inforws.getCaseManagementTaskOp(getCaseTask, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			result = inforws.getCaseManagementTaskOp(getCaseTask, tools.getOrganizationCode(context), null, "",
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
+		MP3658_GetCaseManagementTask_001_Result result =
+			tools.performInforOperation(context, inforws::getCaseManagementTaskOp, getCaseTask);
 
 		CaseManagementTask caseManagementTask = result.getResultData().getCaseManagementTask();
 		initCaseTaskObject(caseManagementTask, caseTaskMT, context);
@@ -199,16 +176,8 @@ public class CaseTaskServiceImpl implements CaseTaskService {
 		//
 		MP3656_SyncCaseManagementTask_001 syncCase = new MP3656_SyncCaseManagementTask_001();
 		syncCase.setCaseManagementTask(caseManagementTask);
-		MP3656_SyncCaseManagementTask_001_Result syncCaseResult = null;
-
-		if (context.getCredentials() != null) {
-			syncCaseResult = inforws.syncCaseManagementTaskOp(syncCase, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			syncCaseResult = inforws.syncCaseManagementTaskOp(syncCase, tools.getOrganizationCode(context), null, "",
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
+		MP3656_SyncCaseManagementTask_001_Result syncCaseResult =
+			tools.performInforOperation(context, inforws::syncCaseManagementTaskOp, syncCase);
 		return syncCaseResult.getResultData().getCASEMANAGEMENTTASKID().getCASEMANAGEMENTTASKCODE();
 	}
 
@@ -220,14 +189,7 @@ public class CaseTaskServiceImpl implements CaseTaskService {
 		caseManagementTaskIdType.setCASEMANAGEMENTTASKCODE(caseTaskID);
 		deleteCaseTask.setCASEMANAGEMENTTASKID(caseManagementTaskIdType);
 
-		if (context.getCredentials() != null) {
-			inforws.deleteCaseManagementTaskOp(deleteCaseTask, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			inforws.deleteCaseManagementTaskOp(deleteCaseTask, tools.getOrganizationCode(context), null, "",
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
+		tools.performInforOperation(context, inforws::deleteCaseManagementTaskOp, deleteCaseTask);
 		return deleteCaseTask.getCASEMANAGEMENTTASKID().getCASEMANAGEMENTTASKCODE();
 	}
 

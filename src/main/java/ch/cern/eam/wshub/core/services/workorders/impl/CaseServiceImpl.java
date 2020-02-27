@@ -43,15 +43,8 @@ public class CaseServiceImpl implements CaseService {
 		getCase.getCASEID().setCASECODE(caseID);
 		getCase.getCASEID().setORGANIZATIONID(tools.getOrganization(context));
 
-		MP3643_GetCaseManagement_001_Result result = null;
-		if (context.getCredentials() != null) {
-			result = inforws.getCaseManagementOp(getCase, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			result = inforws.getCaseManagementOp(getCase, tools.getOrganizationCode(context), null, "",
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
+		MP3643_GetCaseManagement_001_Result result =
+			tools.performInforOperation(context, inforws::getCaseManagementOp, getCase);
 
 		CaseManagement caseManagement = result.getResultData().getCaseManagement();
 		InforCase caseMT = new InforCase();
@@ -203,16 +196,8 @@ public class CaseServiceImpl implements CaseService {
 
 		MP3640_AddCaseManagement_001 addCase = new MP3640_AddCaseManagement_001();
 		addCase.setCaseManagement(caseManagement);
-		MP3640_AddCaseManagement_001_Result addCaseResult = null;
-
-		if (context.getCredentials() != null) {
-			addCaseResult = inforws.addCaseManagementOp(addCase, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			addCaseResult = inforws.addCaseManagementOp(addCase, tools.getOrganizationCode(context), null, "",
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
+		MP3640_AddCaseManagement_001_Result addCaseResult =
+			tools.performInforOperation(context, inforws::addCaseManagementOp, addCase);
 		return addCaseResult.getResultData().getCASEID().getCASECODE();
 	}
 
@@ -223,14 +208,7 @@ public class CaseServiceImpl implements CaseService {
 		deleteCase.getCASEID().setCASECODE(caseID);
 		deleteCase.getCASEID().setORGANIZATIONID(tools.getOrganization(context));
 
-		if (context.getCredentials() != null) {
-			inforws.deleteCaseManagementOp(deleteCase, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			inforws.deleteCaseManagementOp(deleteCase, tools.getOrganizationCode(context), null, "",
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
+		tools.performInforOperation(context, inforws::deleteCaseManagementOp, deleteCase);
 		return caseID;
 	}
 
@@ -244,15 +222,8 @@ public class CaseServiceImpl implements CaseService {
 		getCase.getCASEID().setCASECODE(caseMT.getCode());
 		getCase.getCASEID().setORGANIZATIONID(tools.getOrganization(context));
 
-		MP3643_GetCaseManagement_001_Result result = null;
-		if (context.getCredentials() != null) {
-			result = inforws.getCaseManagementOp(getCase, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			result = inforws.getCaseManagementOp(getCase, tools.getOrganizationCode(context), null, "",
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
+		MP3643_GetCaseManagement_001_Result result =
+			tools.performInforOperation(context, inforws::getCaseManagementOp, getCase);
 
 		CaseManagement caseManagement = result.getResultData().getCaseManagement();
 
@@ -270,16 +241,8 @@ public class CaseServiceImpl implements CaseService {
 		//
 		MP3641_SyncCaseManagement_001 syncCase = new MP3641_SyncCaseManagement_001();
 		syncCase.setCaseManagement(caseManagement);
-		MP3641_SyncCaseManagement_001_Result syncCaseResult = null;
-
-		if (context.getCredentials() != null) {
-			syncCaseResult = inforws.syncCaseManagementOp(syncCase, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			syncCaseResult = inforws.syncCaseManagementOp(syncCase, tools.getOrganizationCode(context), null, "",
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
+		MP3641_SyncCaseManagement_001_Result syncCaseResult =
+			tools.performInforOperation(context, inforws::syncCaseManagementOp, syncCase);
 		return syncCaseResult.getResultData().getCASEID().getCASECODE();
 	}
 

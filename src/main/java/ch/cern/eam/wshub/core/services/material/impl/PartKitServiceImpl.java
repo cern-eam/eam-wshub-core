@@ -76,12 +76,8 @@ public class PartKitServiceImpl implements PartKitService {
 
 		MP2227_AddKitTemplate_001 addKitTemplate = new MP2227_AddKitTemplate_001();
 		addKitTemplate.setKitTemplate(kitTemplate);
-		
-		if (context.getCredentials() != null) {
-			inforws.addKitTemplateOp(addKitTemplate, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			inforws.addKitTemplateOp(addKitTemplate, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
+
+		tools.performInforOperation(context, inforws::addKitTemplateOp, addKitTemplate);
 
 		return null;
 	}	
@@ -121,13 +117,10 @@ public class PartKitServiceImpl implements PartKitService {
 		kitSession.getSTOREID().setSTORECODE(buildKitParam.getStoreCode().trim().toUpperCase());
 		
 		MP2231_CreateKitSession_001 kitSessionMsg = new MP2231_CreateKitSession_001();
-		MP2231_CreateKitSession_001_Result r = null;
 		kitSessionMsg.setKitSession(kitSession);
-		if (context.getCredentials() != null) {
-			r = inforws.createKitSessionOp(kitSessionMsg, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			r = inforws.createKitSessionOp(kitSessionMsg, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		} 
+
+		MP2231_CreateKitSession_001_Result r =
+			tools.performInforOperation(context, inforws::createKitSessionOp, kitSessionMsg);
 
 		return r.getResultData().getDBSESSIONID().getVALUE().toString();
 	}
@@ -142,11 +135,7 @@ public class PartKitServiceImpl implements PartKitService {
 		createKitMsg.getDBSESSIONID().setSIGN("+");
 		createKitMsg.getDBSESSIONID().setUOM("default");
 		createKitMsg.getDBSESSIONID().setQualifier("OTHER");
-		if (context.getCredentials() != null) {
-			createKitResult = inforws.createKitOp(createKitMsg, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			createKitResult = inforws.createKitOp(createKitMsg, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}  		
+		tools.performInforOperation(context, inforws::createKitOp, createKitMsg);
 
 		return createKitResult.getResultData().getDBSESSIONID().getVALUE().toString();
 	}

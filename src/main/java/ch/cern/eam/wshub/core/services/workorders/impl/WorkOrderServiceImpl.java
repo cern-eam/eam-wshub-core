@@ -89,16 +89,8 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		getWorkOrder.getWORKORDERID().setJOBNUM(number);
 		getWorkOrder.getWORKORDERID().setORGANIZATIONID(tools.getOrganization(context));
 
-		MP0024_GetWorkOrder_001_Result result = null;
-		if (context.getCredentials() != null) {
-			result = inforws.getWorkOrderOp(getWorkOrder, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			result = inforws.getWorkOrderOp(getWorkOrder, tools.getOrganizationCode(context), null, "",
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
-
+		MP0024_GetWorkOrder_001_Result result =
+			tools.performInforOperation(context, inforws::getWorkOrderOp, getWorkOrder);
 		return result.getResultData().getWorkOrder();
 	}
 
@@ -110,16 +102,8 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
 		getWorkOrderDefault.setORGANIZATIONID(new ORGANIZATIONID_Type());
 		getWorkOrderDefault.getORGANIZATIONID().setORGANIZATIONCODE(context.getOrganizationCode());
-		MP0026_GetWorkOrderDefault_001_Result getWODefaultResult = null;
-
-		if (context.getCredentials() != null) {
-			getWODefaultResult = inforws.getWorkOrderDefaultOp(getWorkOrderDefault, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			getWODefaultResult = inforws.getWorkOrderDefaultOp(getWorkOrderDefault, tools.getOrganizationCode(context), null, "",
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
+		MP0026_GetWorkOrderDefault_001_Result getWODefaultResult =
+			tools.performInforOperation(context, inforws::getWorkOrderDefaultOp, getWorkOrderDefault);
 		ResultData resultData = getWODefaultResult.getResultData();
 		//
 		// Populate the 'workOrder' object
@@ -221,16 +205,8 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
 		MP0023_AddWorkOrder_001 addWO = new MP0023_AddWorkOrder_001();
 		addWO.setWorkOrder(inforWorkOrder);
-		MP0023_AddWorkOrder_001_Result result;
-
-		if (context.getCredentials() != null) {
-			result = inforws.addWorkOrderOp(addWO, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			result = inforws.addWorkOrderOp(addWO, tools.getOrganizationCode(context), null, "",
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
+		MP0023_AddWorkOrder_001_Result result =
+			tools.performInforOperation(context, inforws::addWorkOrderOp, addWO);
 
 		// Work Order has been created, check if comment should be added
 		if (workorderParam.getComment() != null && !workorderParam.getComment().trim().equals("")) {
@@ -265,15 +241,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		if(workorderParam.isConfirmedIncompleteChecklist())
 			syncWO.setConfirmincompletechecklist("confirmed");
 
-		if (context.getCredentials() != null) {
-			inforws.syncWorkOrderOp(syncWO, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			inforws.syncWorkOrderOp(syncWO, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
-
+		tools.performInforOperation(context, inforws::syncWorkOrderOp, syncWO);
 		return inforWorkOrder.getWORKORDERID().getJOBNUM();
 	}
 
@@ -284,14 +252,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		deleteWO.getWORKORDERID().setORGANIZATIONID(tools.getOrganization(context));
 		deleteWO.getWORKORDERID().setJOBNUM(workOrderNumber);
 
-		if (context.getCredentials() != null) {
-			inforws.deleteWorkOrderOp(deleteWO, "*",
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			inforws.deleteWorkOrderOp(deleteWO, "*", null, null, new Holder<>(tools.createInforSession(context)),
-					tools.createMessageConfig(), tools.getTenant(context));
-		}
+		tools.performInforOperation(context, inforws::deleteWorkOrderOp, deleteWO);
 		return workOrderNumber;
 	}
 
@@ -304,14 +265,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		changeWOStatus.setNEWSTATUS(new STATUS_Type());
 		changeWOStatus.getNEWSTATUS().setSTATUSCODE(statusCode);
 
-		if (context.getCredentials() != null) {
-			inforws.changeWorkOrderStatusOp(changeWOStatus, "*",
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			inforws.changeWorkOrderStatusOp(changeWOStatus, "*", null, null,
-					new Holder<>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
+		tools.performInforOperation(context, inforws::changeWorkOrderStatusOp, changeWOStatus);
 		return workOrderNumber;
 	}
 

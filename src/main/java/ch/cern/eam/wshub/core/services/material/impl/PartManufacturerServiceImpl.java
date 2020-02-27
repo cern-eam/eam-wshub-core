@@ -69,11 +69,7 @@ public class PartManufacturerServiceImpl implements PartManufacturerService {
 		//
 		MP0261_AddPartManufacturer_001 addPartManufacturer = new  MP0261_AddPartManufacturer_001();
 		addPartManufacturer.setPartManufacturer(partManufacturerInfor);
-		if (context.getCredentials() != null) {
-			inforws.addPartManufacturerOp(addPartManufacturer, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			inforws.addPartManufacturerOp(addPartManufacturer,tools.getOrganizationCode(context),  null, null, new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
+		tools.performInforOperation(context, inforws::addPartManufacturerOp, addPartManufacturer);
 		return partManufacturerParam.getManufacturerCode();
 	}
 
@@ -82,7 +78,6 @@ public class PartManufacturerServiceImpl implements PartManufacturerService {
 
 		MP0264_GetPartManufacturer_001 getPartM = new MP0264_GetPartManufacturer_001();
 
-		MP0264_GetPartManufacturer_001_Result result = new MP0264_GetPartManufacturer_001_Result();
 		getPartM.setPARTMANUFACTURERID(new PARTMANUFACTURERID_Type());
 		getPartM.getPARTMANUFACTURERID().setMANUFACTURERCODE(partManufacturerParam.getManufacturerCode());
 		if (partManufacturerParam.getManufacturerPartNumber() != null && !partManufacturerParam.getManufacturerPartNumber().trim().equals("")) {
@@ -92,11 +87,8 @@ public class PartManufacturerServiceImpl implements PartManufacturerService {
 		getPartM.getPARTMANUFACTURERID().getPARTID().setORGANIZATIONID(tools.getOrganization(context));
 		getPartM.getPARTMANUFACTURERID().getPARTID().setPARTCODE(partManufacturerParam.getPartCode());
 		// first get it:
-		if (context.getCredentials() != null) {
-			result = inforws.getPartManufacturerOp(getPartM, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			result = inforws.getPartManufacturerOp(getPartM,tools.getOrganizationCode(context),  null, null, new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
+		MP0264_GetPartManufacturer_001_Result result =
+			tools.performInforOperation(context, inforws::getPartManufacturerOp, getPartM);
 
 		partManufacturerInfor = result.getResultData().getPartManufacturer();
 		//
@@ -125,11 +117,7 @@ public class PartManufacturerServiceImpl implements PartManufacturerService {
 		//
 		MP0262_SyncPartManufacturer_001 syncPartManufacturer = new  MP0262_SyncPartManufacturer_001();
 		syncPartManufacturer.setPartManufacturer(partManufacturerInfor);
-		if (context.getCredentials() != null) {
-			inforws.syncPartManufacturerOp(syncPartManufacturer, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			inforws.syncPartManufacturerOp(syncPartManufacturer,tools.getOrganizationCode(context),  null, null, new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
+		tools.performInforOperation(context, inforws::syncPartManufacturerOp, syncPartManufacturer);
 		return partManufacturerParam.getManufacturerCode();
 	}
 
@@ -146,11 +134,7 @@ public class PartManufacturerServiceImpl implements PartManufacturerService {
 		deletePartM.getPARTMANUFACTURERID().getPARTID().setPARTCODE(partManufacturerParam.getPartCode());
 
 		// first get it:
-		if (context.getCredentials() != null) {
-			inforws.deletePartManufacturerOp(deletePartM, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			inforws.deletePartManufacturerOp(deletePartM,tools.getOrganizationCode(context),  null, null, new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
+		tools.performInforOperation(context, inforws::deletePartManufacturerOp, deletePartM);
 
 		return partManufacturerParam.getManufacturerCode();
 	}

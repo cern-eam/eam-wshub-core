@@ -51,15 +51,8 @@ public class StandardWorkOrderServiceImpl implements StandardWorkOrderService {
         getStandardWorkOrder.getSTANDARDWO().setORGANIZATIONID(tools.getOrganization(context));
         getStandardWorkOrder.getSTANDARDWO().setSTDWOCODE(number);
 
-        MP7082_GetStandardWorkOrder_001_Result result = null;
-        if (context.getCredentials() != null) {
-            result = inforws.getStandardWorkOrderOp(getStandardWorkOrder, tools.getOrganizationCode(context),
-                    tools.createSecurityHeader(context), "TERMINATE", null,
-                    tools.createMessageConfig(), tools.getTenant(context));
-        } else {
-            result = inforws.getStandardWorkOrderOp(getStandardWorkOrder, tools.getOrganizationCode(context), null, "",
-                    new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-        }
+        MP7082_GetStandardWorkOrder_001_Result result =
+            tools.performInforOperation(context, inforws::getStandardWorkOrderOp, getStandardWorkOrder);
 
         return result.getResultData().getStandardWorkOrder();
     }
@@ -72,16 +65,8 @@ public class StandardWorkOrderServiceImpl implements StandardWorkOrderService {
 
         tools.getInforFieldTools().transformWSHubObject(addStandardWorkOrder.getStandardWorkOrder(), standardWorkOrder, context);
 
-        MP7079_AddStandardWorkOrder_001_Result result = new MP7079_AddStandardWorkOrder_001_Result();
-
-        if (context.getCredentials() != null) {
-             result = inforws.addStandardWorkOrderOp(addStandardWorkOrder, tools.getOrganizationCode(context),
-                    tools.createSecurityHeader(context), "TERMINATE", null,
-                    tools.createMessageConfig(), tools.getTenant(context));
-        } else {
-             result = inforws.addStandardWorkOrderOp(addStandardWorkOrder, tools.getOrganizationCode(context), null, "",
-                    new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-        }
+        MP7079_AddStandardWorkOrder_001_Result result =
+            tools.performInforOperation(context, inforws::addStandardWorkOrderOp, addStandardWorkOrder);
 
         return result.getResultData().getSTANDARDWO().getSTDWOCODE();
     }
@@ -105,14 +90,7 @@ public class StandardWorkOrderServiceImpl implements StandardWorkOrderService {
         MP7080_SyncStandardWorkOrder_001 syncStandardWorkOrder = new MP7080_SyncStandardWorkOrder_001();
         syncStandardWorkOrder.setStandardWorkOrder(inforStandardWorkOrder);
 
-        if (context.getCredentials() != null) {
-            inforws.syncStandardWorkOrderOp(syncStandardWorkOrder, tools.getOrganizationCode(context),
-                    tools.createSecurityHeader(context), "TERMINATE", null,
-                    tools.createMessageConfig(), tools.getTenant(context));
-        } else {
-            inforws.syncStandardWorkOrderOp(syncStandardWorkOrder, tools.getOrganizationCode(context), null, null,
-                    new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-        }
+        tools.performInforOperation(context, inforws::syncStandardWorkOrderOp, syncStandardWorkOrder);
 
         return inforStandardWorkOrder.getSTANDARDWO().getSTDWOCODE();
     }

@@ -84,16 +84,8 @@ public class InforGrids implements Serializable {
 		//
 		MP0116_GetGridDataOnly_001 getgridd = new MP0116_GetGridDataOnly_001();
 		getgridd.setFUNCTION_REQUEST_INFO(funRequest);
-		MP0116_GetGridDataOnly_001_Result result = new MP0116_GetGridDataOnly_001_Result();
-
-		if (context.getCredentials() != null) {
-			result = inforws.getGridDataOnlyOp(getgridd, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
-		} else 
-		{
-			SessionType session = new SessionType();
-			session.setSessionId(context.getSessionID());
-			result = inforws.getGridDataOnlyOp(getgridd, tools.getOrganizationCode(context), null,"", new Holder<SessionType>(session), null, tools.getTenant(context));
-		}
+		MP0116_GetGridDataOnly_001_Result result =
+			tools.performInforOperation(context, inforws::getGridDataOnlyOp, getgridd);
 
 		GridRequestResult grr = new GridRequestResult();
 		//
@@ -189,16 +181,8 @@ public class InforGrids implements Serializable {
 		//
 		MP0118_GetGridHeaderData_001 getgridd = new MP0118_GetGridHeaderData_001();
 		getgridd.setFUNCTION_REQUEST_INFO(funRequest);
-		MP0118_GetGridHeaderData_001_Result result = new MP0118_GetGridHeaderData_001_Result();
-
-		if (context.getCredentials() != null) {
-			result = inforws.getGridHeaderDataOp(getgridd, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
-		} else
-		{
-			SessionType session = new SessionType();
-			session.setSessionId(context.getSessionID());
-			result = inforws.getGridHeaderDataOp(getgridd, tools.getOrganizationCode(context), null,"", new Holder<SessionType>(session), null, tools.getTenant(context));
-		}
+		MP0118_GetGridHeaderData_001_Result result =
+			tools.performInforOperation(context, inforws::getGridHeaderDataOp, getgridd);
 
 		GridRequestResult grr = new GridRequestResult();
 		//

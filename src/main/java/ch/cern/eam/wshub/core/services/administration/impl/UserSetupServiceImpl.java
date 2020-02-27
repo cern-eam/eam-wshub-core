@@ -65,15 +65,7 @@ public class UserSetupServiceImpl implements UserSetupService {
 		getUserSetup.getUSERID().setUSERCODE(userCode);
 
 		// Execute operation of reading
-		if (context.getCredentials() != null) {
-			getUserSetupResult = inforws.getUserSetupOp(getUserSetup, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					null, tools.getTenant(context));
-
-		} else {
-			getUserSetupResult = inforws.getUserSetupOp(getUserSetup, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
+		getUserSetupResult = tools.performInforOperation(context, inforws::getUserSetupOp, getUserSetup);
 
 		net.datastream.schemas.mp_entities.usersetup_001.UserSetup userInfor = getUserSetupResult.getResultData()
 				.getUserSetup();
@@ -168,14 +160,7 @@ public class UserSetupServiceImpl implements UserSetupService {
 		MP0602_AddUserSetup_001_Result result = null;
 
 		// Execute operation
-		if (context.getCredentials() != null) {
-			result = inforws.addUserSetupOp(addUser, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					null, tools.getTenant(context));
-		} else {
-			result = inforws.addUserSetupOp(addUser, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
+		result = tools.performInforOperation(context, inforws::addUserSetupOp, addUser);
 
 		// Return result of adding the user
 		return result.getUSERID().getUSERCODE();
@@ -191,15 +176,7 @@ public class UserSetupServiceImpl implements UserSetupService {
 		getUserSetup.getUSERID().setUSERCODE(userParam.getUserCode());
 
 		// Execute operation of reading
-		if (context.getCredentials() != null) {
-			getUserSetupResult = inforws.getUserSetupOp(getUserSetup, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					null, tools.getTenant(context));
-
-		} else {
-			getUserSetupResult = inforws.getUserSetupOp(getUserSetup, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
+		getUserSetupResult = tools.performInforOperation(context, inforws::getUserSetupOp, getUserSetup);
 
 		// Assign the result
 		net.datastream.schemas.mp_entities.usersetup_001.UserSetup userInfor = getUserSetupResult.getResultData()
@@ -221,15 +198,9 @@ public class UserSetupServiceImpl implements UserSetupService {
 		syncUser.setUserSetup(userInfor);
 
 		// Execute the operation of sync user
-		MP0603_SyncUserSetup_001_Result result = null;
-		if (context.getCredentials() != null) {
-			result = inforws.syncUserSetupOp(syncUser, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					null, tools.getTenant(context));
-		} else {
-			result = inforws.syncUserSetupOp(syncUser, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
+		MP0603_SyncUserSetup_001_Result result =
+			tools.performInforOperation(context, inforws::syncUserSetupOp, syncUser);
+
 		// Return the result of the update
 		return result.getUSERID().getUSERCODE();
 	}
@@ -239,14 +210,8 @@ public class UserSetupServiceImpl implements UserSetupService {
 		deleteUser.setUSERID(new USERID_Type());
 		deleteUser.getUSERID().setUSERCODE(userCode);
 
-		if (context.getCredentials() != null) {
-			inforws.deleteUserSetupOp(deleteUser, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					null, tools.getTenant(context));
-		} else {
-			inforws.deleteUserSetupOp(deleteUser, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
+		tools.performInforOperation(context, inforws::deleteUserSetupOp, deleteUser);
+		
 		return "success";
 	}
 

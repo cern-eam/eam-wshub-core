@@ -76,13 +76,8 @@ public class EquipmentWarrantyCoverageServiceImpl implements EquipmentWarrantyCo
 		MP0344_AddWarrantyCoverage_001 addwarrantycoverage = new MP0344_AddWarrantyCoverage_001();
 		addwarrantycoverage.setEquipmentWarranty(equipmentWarranty);
 
-		MP0344_AddWarrantyCoverage_001_Result result = null;
-
-		if (context.getCredentials() != null) {
-			result = inforws.addWarrantyCoverageOp(addwarrantycoverage, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			result = inforws.addWarrantyCoverageOp(addwarrantycoverage, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
+		MP0344_AddWarrantyCoverage_001_Result result =
+			tools.performInforOperation(context, inforws::addWarrantyCoverageOp, addwarrantycoverage);
 		return result.getResultData().getWARRANTYCOVERAGESEQNUM() + "";
 	}
 
@@ -111,17 +106,8 @@ public class EquipmentWarrantyCoverageServiceImpl implements EquipmentWarrantyCo
 
 		getwarrantycoverege.setWARRANTYCOVERAGESEQNUM(Long.parseLong(equipmentWarrantyParam.getSequenceNumber()));
 
-		if (context.getCredentials() != null) {
-			getwarrantycoveregeResult = inforws.getWarrantyCoverageOp(getwarrantycoverege,
-					tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(),
-					tools.getTenant(context));
-		} else {
-			getwarrantycoveregeResult = inforws.getWarrantyCoverageOp(getwarrantycoverege,
-                    tools.getOrganizationCode(context), null, null,
-                    new Holder<SessionType>(tools.createInforSession(context)), null,
-                    tools.getTenant(context));
-		}
+		getwarrantycoveregeResult =
+			tools.performInforOperation(context, inforws::getWarrantyCoverageOp, getwarrantycoverege);
 		//
 		//
 		//
@@ -158,13 +144,8 @@ public class EquipmentWarrantyCoverageServiceImpl implements EquipmentWarrantyCo
 		MP0345_SyncWarrantyCoverage_001 syncwarrantycoverege = new MP0345_SyncWarrantyCoverage_001();
 		syncwarrantycoverege.setWarrantyCoverage(warrantyCoverege);
 
-		MP0345_SyncWarrantyCoverage_001_Result result = null;
-
-		if (context.getCredentials() != null) {
-			result = inforws.syncWarrantyCoverageOp(syncwarrantycoverege, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			result = inforws.syncWarrantyCoverageOp(syncwarrantycoverege, tools.getOrganizationCode(context), null, null, new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
+		MP0345_SyncWarrantyCoverage_001_Result result =
+			tools.performInforOperation(context, inforws::syncWarrantyCoverageOp, syncwarrantycoverege);
 		return result.getResultData().getWARRANTYCOVERAGESEQNUM() + "";
 	}
 

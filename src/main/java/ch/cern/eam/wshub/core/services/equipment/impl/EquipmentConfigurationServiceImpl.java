@@ -46,16 +46,8 @@ public class EquipmentConfigurationServiceImpl implements EquipmentConfiguration
         getEquipmentConfiguration.getEQUIPMENTCONFIGURATIONID().setEQUIPMENTCONFIGURATIONCODE(equipmentConfigurationCode);
         getEquipmentConfiguration.getEQUIPMENTCONFIGURATIONID().setREVISIONNUM(tools.getDataTypeTools().encodeQuantity(revisionNum, "Revision number"));
 
-        MP3228_GetEquipmentConfiguration_001_Result getEquipmentConfigurationResult;
-        if (context.getCredentials() != null) {
-            getEquipmentConfigurationResult = inforws.getEquipmentConfigurationOp(getEquipmentConfiguration,
-                    tools.getOrganizationCode(context),
-                    tools.createSecurityHeader(context), "TERMINATE", null,
-                    tools.createMessageConfig(), tools.getTenant(context));
-        } else {
-            getEquipmentConfigurationResult = inforws.getEquipmentConfigurationOp(getEquipmentConfiguration, tools.getOrganizationCode(context), null, "",
-                    new Holder<>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-        }
+        MP3228_GetEquipmentConfiguration_001_Result getEquipmentConfigurationResult =
+            tools.performInforOperation(context, inforws::getEquipmentConfigurationOp, getEquipmentConfiguration);
         return getEquipmentConfigurationResult.getResultData().getEquipmentConfiguration();
     }
 

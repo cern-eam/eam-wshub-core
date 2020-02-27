@@ -96,14 +96,7 @@ public class PartMiscServiceImpl implements PartMiscService {
 		MP0271_AddCatalogue_001 addCatalogue = new MP0271_AddCatalogue_001();
 		addCatalogue.setCatalogue(catalogue);
 
-		if (context.getCredentials() != null) {
-			inforws.addCatalogueOp(addCatalogue, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					null, tools.getTenant(context));
-		} else {
-			inforws.addCatalogueOp(addCatalogue, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
+		tools.performInforOperation(context, inforws::addCatalogueOp, addCatalogue);
 
 		return null;
 	}
@@ -280,15 +273,11 @@ public class PartMiscServiceImpl implements PartMiscService {
 		//
 		//
 		//
-		MP0220_AddIssueReturnTransaction_001_Result result = null;
 		MP0220_AddIssueReturnTransaction_001 addIssueReturnTransaction = new MP0220_AddIssueReturnTransaction_001();
 		addIssueReturnTransaction.setIssueReturnTransaction(issueReturnTransactionInfor);
 
-		if (context.getCredentials() != null) {
-			result = inforws.addIssueReturnTransactionOp(addIssueReturnTransaction, tools.getOrganizationCode(context), tools.createSecurityHeader(context),"TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			result = inforws.addIssueReturnTransactionOp(addIssueReturnTransaction, tools.getOrganizationCode(context),  null, null, new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
+		MP0220_AddIssueReturnTransaction_001_Result result =
+			tools.performInforOperation(context, inforws::addIssueReturnTransactionOp, addIssueReturnTransaction);
 
 		String transactId = result.getResultData().getIssueReturnTransaction().getTRANSACTIONID().getTRANSACTIONCODE();
 
@@ -333,17 +322,8 @@ public class PartMiscServiceImpl implements PartMiscService {
 		addpass.getPartsAssociated().getPARTASSOCIATEDID().setPARTASSOCIATEDPK("0");
 		addpass.getPartsAssociated().setPARTASSOCIATEDTYPE("*");
 
-		MP0612_AddPartsAssociated_001_Result result;
-
-		// first get it:
-		if (context.getCredentials() != null) {
-			result = inforws.addPartsAssociatedOp(addpass, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					null, tools.getTenant(context));
-		} else {
-			result = inforws.addPartsAssociatedOp(addpass, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
+		MP0612_AddPartsAssociated_001_Result result =
+			tools.performInforOperation(context, inforws::addPartsAssociatedOp, addpass);
 
 		return result.getResultData().getPartsAssociated().getPARTASSOCIATEDID().getPARTASSOCIATEDPK();
 	}
@@ -368,14 +348,7 @@ public class PartMiscServiceImpl implements PartMiscService {
 			em.close();
 		}
 
-		if (context.getCredentials() != null) {
-			inforws.deletePartsAssociatedOp(deletepass, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					null, tools.getTenant(context));
-		} else {
-			inforws.deletePartsAssociatedOp(deletepass, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
+		tools.performInforOperation(context, inforws::deletePartsAssociatedOp, deletepass);
 		return "OK";
 	}
 
@@ -410,14 +383,7 @@ public class PartMiscServiceImpl implements PartMiscService {
 			addPartSub.getSubstitutePart().setFULLYCOMPATIBLE(partSubstitute.getFullyCompatible());
 		}
 
-		if (context.getCredentials() != null) {
-			inforws.addSubstitutePartOp(addPartSub, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					null, tools.getTenant(context));
-		} else {
-			inforws.addSubstitutePartOp(addPartSub, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
+		tools.performInforOperation(context, inforws::addSubstitutePartOp, addPartSub);
 
 		return "OK";
 	}
@@ -445,14 +411,7 @@ public class PartMiscServiceImpl implements PartMiscService {
 		MP0281_AddStoreBin_001 storeBin = new MP0281_AddStoreBin_001();
 		storeBin.setStoreBin(bin);
 
-		if (context.getCredentials() != null) {
-			inforws.addStoreBinOp(storeBin, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					null, tools.getTenant(context));
-		} else {
-			inforws.addStoreBinOp(storeBin, tools.getOrganizationCode(context), null, null,
-					new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
+		tools.performInforOperation(context, inforws::addStoreBinOp, storeBin);
 		return null;
 	}
 
