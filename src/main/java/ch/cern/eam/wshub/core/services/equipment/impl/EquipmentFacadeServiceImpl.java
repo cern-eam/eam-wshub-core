@@ -108,6 +108,8 @@ public class EquipmentFacadeServiceImpl implements EquipmentFacadeService {
             case "R": // Route
             case "S": // System
                 return systemService.updateSystem(inforContext, equipment);
+            case "L": // Location
+                throw tools.generateFault("Locations are not available here. Use LocationService.");
             default:
                 throw tools.generateFault("Wrong equipment type.");
         }
@@ -131,6 +133,8 @@ public class EquipmentFacadeServiceImpl implements EquipmentFacadeService {
             case "R": // Route
             case "S": // System
                 return systemService.createSystem(inforContext, equipment);
+            case "L": // Location
+                throw tools.generateFault("Locations are not available here. Use LocationService.");
             default:
                 throw tools.generateFault("Equipment type not recognized.");
         }
@@ -155,8 +159,8 @@ public class EquipmentFacadeServiceImpl implements EquipmentFacadeService {
             case "R": // Route
             case "S": // System
                 return systemService.readSystem(inforContext, equipmentCode);
-            case "L":
-                return locationService.readLocation(inforContext, equipmentCode);
+            case "L": // Location
+                throw tools.generateFault("Locations are no longer available here. Use LocationService.");
             default:
                 throw tools.generateFault("Equipment type not recognized.");
         }
@@ -180,8 +184,8 @@ public class EquipmentFacadeServiceImpl implements EquipmentFacadeService {
             case "R": // Route
             case "S": // System
                 return systemService.deleteSystem(inforContext, equipmentCode);
-            case "L":
-                throw tools.generateFault("Deletion of locations is not supported.");
+            case "L": // Location
+                throw tools.generateFault("Locations are no longer available here. Use LocationService.");
             default:
                 throw tools.generateFault("Equipment type not recognized.");
         }
@@ -199,17 +203,22 @@ public class EquipmentFacadeServiceImpl implements EquipmentFacadeService {
         types.put("Lot", "B");
         types.put("Route", "R");
         types.put("Material", "M");
-        types.put("Location", "L");
-        types.put("Localisation", "L");
-        //
+
         GridRequest gridRequest = new GridRequest("LVREPCOGALLEQUIPMENT", GridRequest.GRIDTYPE.LOV);
         gridRequest.getGridRequestFilters().add(new GridRequestFilter("code", equipmentCode, "="));
         GridRequestResult requestResult = gridsService.executeQuery(inforContext, gridRequest);
-        if (requestResult.getRows().length == 1) {
-            return types.get(GridTools.getCellContent("type", requestResult.getRows()[0]));
-        } else {
+
+        if(requestResult.getRows().length != 1) {
             throw tools.generateFault("The equipment record couldn't be found.");
         }
+
+        String type = types.get(GridTools.getCellContent("type", requestResult.getRows()[0]));
+
+        if(type == null) {
+            throw tools.generateFault("This code does not correspond to an equipment.");
+        }
+
+        return type;
     }
 
 }

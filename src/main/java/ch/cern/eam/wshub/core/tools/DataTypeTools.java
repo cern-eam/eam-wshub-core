@@ -372,4 +372,9 @@ public class DataTypeTools {
             return "false";
         }
     }
+
+    public static <T> T nonNullOrDefault(T newValue, T defaultValue) {
+        return newValue == null ? defaultValue : newValue;
+    }
+
 }
