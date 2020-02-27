@@ -407,29 +407,12 @@ public class Tools {
 		return base;
 	}
 
-	@FunctionalInterface
-	public interface WSHubOperation<A, R> {
-		R apply(InforContext inforContext, A a) throws InforException;
-	}
-
 	public <A, R> BatchResponse<R> batchOperation(InforContext context, WSHubOperation<A, R> operation, List<A> arguments) {
 		List<Callable<R>> callableList = arguments.stream()
 				.<Callable<R>>map(argument -> () -> operation.apply(context, argument))
 				.collect(Collectors.toList());
 
 		return processCallables(callableList);
-	}
-
-	@FunctionalInterface
-	public interface InforOperation<A, R> {
-		R apply(
-			A operation,
-			String unknown,
-			Security securityHeader,
-			String unknown2,
-			Holder holder,
-			MessageConfigType messageConfigType,
-			String tenant);
 	}
 
 	public <A, R> R performInforOperation(InforContext context, InforOperation<A, R> operation, A argument)
