@@ -170,6 +170,9 @@ public class WorkOrder implements Serializable {
 	@InforField(xpath = "STANDARDWO/STDWOCODE")
 	private String standardWO;
 	@Transient
+	@InforField(xpath = "STANDARDWO/DESCRIPTION", readOnly = true)
+	private String standardWODesc;
+	@Transient
 	@InforField(xpath = "PARENTWO/JOBNUM")
 	private String parentWO;
 	@Transient
