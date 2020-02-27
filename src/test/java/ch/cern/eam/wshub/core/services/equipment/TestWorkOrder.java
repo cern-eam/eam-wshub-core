@@ -8,6 +8,7 @@ import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrder;
 import ch.cern.eam.wshub.core.tools.InforException;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -16,6 +17,15 @@ import static ch.cern.eam.wshub.core.GlobalContext.context;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/*
+    TEST ASSUMPTIONS:
+        There is an asset "PA-A-001"
+        There is a type code "EX"
+        There is a department "RPM"
+        There is a status code "R"
+        There is a workorder class "RP01"
+        There is a custom field "P214" in the "RP01" class
+ */
 public class TestWorkOrder {
     private static WorkOrderService workOrderService = inforClient.getWorkOrderService();
 
@@ -50,10 +60,8 @@ public class TestWorkOrder {
 
         workOrder = workOrderService.readWorkOrder(context, number);
 
-        for(CustomField customField : workOrder.getCustomFields()) {
-            if(customField.getCode().equals("P214")) {
-                assertEquals("22", customField.getValue());
-            }
-        }
+        CustomField classCustomField = Arrays.stream(workOrder.getCustomFields())
+                .filter(cf -> cf.getCode().equals("P214")).findFirst().get();
+        assertEquals("22", classCustomField.getValue());
     }
 }

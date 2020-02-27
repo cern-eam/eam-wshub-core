@@ -14,6 +14,15 @@ import java.util.Date;
 import static org.junit.jupiter.api.Assertions.*;
 import static ch.cern.eam.wshub.core.GlobalContext.*;
 
+/*
+    TEST ASSUMPTIONS:
+        There is a department "HXMF"
+        There are location classes "DES" and "FIC"
+        There is a cost code "H#96231"
+        There is a custom field "HMLPR019" on classes "DES" and "FIC"
+        There is a custom field "HMLPR147" on class "*"
+        The current date is compatible with the date type in Infor EAM
+ */
 public class TestLocation {
     private Location parentLocation;
 
