@@ -49,40 +49,23 @@ public class EquipmentFacadeServiceImpl implements EquipmentFacadeService {
     // BATCH PROCESSING
     //
     @Override
-    public BatchResponse<String> createEquipmentBatch(InforContext inforContext, List<Equipment> equipmentList)
-            throws InforException {
-        List<Callable<String>> callableList = equipmentList.stream()
-                .<Callable<String>>map(equipment -> () -> createEquipment(inforContext, equipment))
-                .collect(Collectors.toList());
-        return tools.processCallables(callableList);
+    public BatchResponse<String> createEquipmentBatch(InforContext inforContext, List<Equipment> equipmentList) {
+        return tools.batchOperation(inforContext, this::createEquipment, equipmentList);
     }
 
     @Override
     public BatchResponse<Equipment> readEquipmentBatch(InforContext inforContext, List<String> equipmentCodes) {
-        List<Callable<Equipment>> callableList = equipmentCodes.stream()
-                .<Callable<Equipment>>map(equipmentCode -> () -> readEquipment(inforContext, equipmentCode))
-                .collect(Collectors.toList());
-        return tools.processCallables(callableList);
+        return tools.batchOperation(inforContext, this::readEquipment, equipmentCodes);
     }
 
     @Override
-    public BatchResponse<String> updateEquipmentBatch(InforContext inforContext, List<Equipment> equipmentList)
-            throws InforException {
-        List<Callable<String>> callableList = equipmentList.stream()
-                .<Callable<String>>map(equipment -> () -> updateEquipment(inforContext, equipment))
-                .collect(Collectors.toList());
-
-        return tools.processCallables(callableList);
+    public BatchResponse<String> updateEquipmentBatch(InforContext inforContext, List<Equipment> equipmentList) {
+        return tools.batchOperation(inforContext, this::updateEquipment, equipmentList);
     }
 
     @Override
-    public BatchResponse<String> deleteEquipmentBatch(InforContext inforContext, List<String> equipmentCodes)
-            throws InforException {
-        List<Callable<String>> callableList = equipmentCodes.stream()
-                .<Callable<String>>map(equipment -> () -> deleteEquipment(inforContext, equipment))
-                .collect(Collectors.toList());
-
-        return tools.processCallables(callableList);
+    public BatchResponse<String> deleteEquipmentBatch(InforContext inforContext, List<String> equipmentCodes) {
+        return tools.batchOperation(inforContext, this::deleteEquipment, equipmentCodes);
     }
 
     //

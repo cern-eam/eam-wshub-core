@@ -42,21 +42,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 		this.inforws = inforWebServicesToolkitClient;
 	}
 
-	public BatchResponse<String> createEmployeeBatch(InforContext context, List<Employee> workOrderParam)
-			throws InforException {
-		List<Callable<String>> callableList = workOrderParam.stream()
-				.<Callable<String>>map(wo -> () -> createEmployee(context, wo))
-				.collect(Collectors.toList());
-
-		return tools.processCallables(callableList);
+	public BatchResponse<String> createEmployeeBatch(InforContext context, List<Employee> workOrderParam) {
+		return tools.batchOperation(context, this::createEmployee, workOrderParam);
 	}
 
-	public BatchResponse<String> updateEmployeeBatch(InforContext context, List<Employee> workOrders)
-			throws InforException {
-		List<Callable<String>> callableList = workOrders.stream()
-				.<Callable<String>>map(workOrder -> () -> updateEmployee(context, workOrder))
-				.collect(Collectors.toList());
-		return tools.processCallables(callableList);
+	public BatchResponse<String> updateEmployeeBatch(InforContext context, List<Employee> workOrders) {
+		return tools.batchOperation(context, this::updateEmployee, workOrders);
 	}
 
 

@@ -57,36 +57,20 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 	// BATCH WEB SERVICES
 	//
 
-	public BatchResponse<String> createWorkOrderBatch(InforContext context, List<WorkOrder> workOrderParam)
-			throws InforException {
-		List<Callable<String>> callableList = workOrderParam.stream()
-				.<Callable<String>>map(wo -> () -> createWorkOrder(context, wo))
-				.collect(Collectors.toList());
-
-		return tools.processCallables(callableList);
+	public BatchResponse<String> createWorkOrderBatch(InforContext context, List<WorkOrder> workOrderParam) {
+		return tools.batchOperation(context, this::createWorkOrder, workOrderParam);
 	}
 
 	public BatchResponse<WorkOrder> readWorkOrderBatch(InforContext context, List<String> workOrderNumbers)  {
-		List<Callable<WorkOrder>> callableList = workOrderNumbers.stream()
-				.<Callable<WorkOrder>>map(workOrderNumber -> () -> readWorkOrder(context, workOrderNumber))
-				.collect(Collectors.toList());
-		return tools.processCallables(callableList);
+		return tools.batchOperation(context, this::readWorkOrder, workOrderNumbers);
 	}
 
-	public BatchResponse<String> updateWorkOrderBatch(InforContext context, List<WorkOrder> workOrders)
-			throws InforException {
-		List<Callable<String>> callableList = workOrders.stream()
-				.<Callable<String>>map(workOrder -> () -> updateWorkOrder(context, workOrder))
-				.collect(Collectors.toList());
-		return tools.processCallables(callableList);
+	public BatchResponse<String> updateWorkOrderBatch(InforContext context, List<WorkOrder> workOrders) {
+		return tools.batchOperation(context, this::updateWorkOrder, workOrders);
 	}
 
-	public BatchResponse<String> deleteWorkOrderBatch(InforContext context, List<String> workOrderNumbers)
-			throws InforException {
-		List<Callable<String>> callableList = workOrderNumbers.stream()
-				.<Callable<String>>map(workOrderNumber -> () -> deleteWorkOrder(context, workOrderNumber))
-				.collect(Collectors.toList());
-		return tools.processCallables(callableList);
+	public BatchResponse<String> deleteWorkOrderBatch(InforContext context, List<String> workOrderNumbers) {
+		return tools.batchOperation(context, this::deleteWorkOrder, workOrderNumbers);
 	}
 
 	//

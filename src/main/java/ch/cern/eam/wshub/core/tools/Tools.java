@@ -9,7 +9,6 @@ import net.datastream.schemas.mp_functions.MessageConfigType;
 import net.datastream.schemas.mp_functions.MessageItemConfigType;
 import net.datastream.schemas.mp_functions.SessionType;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xmlsoap.schemas.ws._2002._04.secext.Password;
 import org.xmlsoap.schemas.ws._2002._04.secext.Username;
@@ -405,5 +404,18 @@ public class Tools {
 		});
 
 		return base;
+	}
+
+	@FunctionalInterface
+	public interface WSHubOperation<A, R> {
+		R apply(InforContext inforContext, A a) throws InforException;
+	}
+
+	public <A, R> BatchResponse<R> batchOperation(InforContext context, WSHubOperation<A, R> operation, List<A> arguments) {
+		List<Callable<R>> callableList = arguments.stream()
+				.<Callable<R>>map(argument -> () -> operation.apply(context, argument))
+				.collect(Collectors.toList());
+
+		return processCallables(callableList);
 	}
 }

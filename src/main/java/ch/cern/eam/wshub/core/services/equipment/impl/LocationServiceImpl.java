@@ -22,8 +22,6 @@ import net.datastream.schemas.mp_results.mp0361_001.MP0361_GetLocationParentHier
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 import javax.xml.ws.Holder;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.stream.Collectors;
 
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.toCodeString;
 
@@ -43,37 +41,20 @@ public class LocationServiceImpl implements LocationService {
 	// BATCH WEB SERVICES
 	//
 
-	public BatchResponse<String> createLocationBatch(InforContext context, List<Location> locations)
-			throws InforException {
-		List<Callable<String>> callableList = locations.stream()
-				.<Callable<String>>map(location -> () -> createLocation(context, location))
-				.collect(Collectors.toList());
-
-		return tools.processCallables(callableList);
+	public BatchResponse<String> createLocationBatch(InforContext context, List<Location> locations) {
+		return tools.batchOperation(context, this::createLocation, locations);
 	}
 
-	public BatchResponse<Location> readLocationBatch(InforContext context, List<String> locationCodes)
-			throws InforException {
-		List<Callable<Location>> callableList = locationCodes.stream()
-				.<Callable<Location>>map(locationCode -> () -> readLocation(context, locationCode))
-				.collect(Collectors.toList());
-		return tools.processCallables(callableList);
+	public BatchResponse<Location> readLocationBatch(InforContext context, List<String> locationCodes) {
+		return tools.batchOperation(context, this::readLocation, locationCodes);
 	}
 
-	public BatchResponse<String> updateLocationBatch(InforContext context, List<Location> locations)
-			throws InforException {
-		List<Callable<String>> callableList = locations.stream()
-				.<Callable<String>>map(location -> () -> updateLocation(context, location))
-				.collect(Collectors.toList());
-		return tools.processCallables(callableList);
+	public BatchResponse<String> updateLocationBatch(InforContext context, List<Location> locations) {
+		return tools.batchOperation(context, this::updateLocation, locations);
 	}
 
-	public BatchResponse<String> deleteLocationBatch(InforContext context, List<String> locationCodes)
-			throws InforException {
-		List<Callable<String>> callableList = locationCodes.stream()
-				.<Callable<String>>map(locationCode -> () -> deleteLocation(context, locationCode))
-				.collect(Collectors.toList());
-		return tools.processCallables(callableList);
+	public BatchResponse<String> deleteLocationBatch(InforContext context, List<String> locationCodes) {
+		return tools.batchOperation(context, this::deleteLocation, locationCodes);
 	}
 
 	public Location readLocation(InforContext context, String locationCode) throws InforException
