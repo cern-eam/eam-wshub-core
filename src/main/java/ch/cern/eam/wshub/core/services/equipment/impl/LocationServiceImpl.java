@@ -84,7 +84,7 @@ public class LocationServiceImpl implements LocationService {
 		locationInfor.getLOCATIONID().setLOCATIONCODE(locationParam.getCode());
 		locationInfor.getLOCATIONID().setORGANIZATIONID(tools.getOrganization(context));
 
-		locationInfor.setUSERDEFINEDAREA(tools.getInforCustomFields(
+		locationInfor.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(
 			context,
 			toCodeString(locationInfor.getCLASSID()),
 			locationInfor.getUSERDEFINEDAREA(),
@@ -115,7 +115,7 @@ public class LocationServiceImpl implements LocationService {
 
 		net.datastream.schemas.mp_entities.location_001.Location locationInfor = result.getResultData().getLocation();
 
-		locationInfor.setUSERDEFINEDAREA(tools.getInforCustomFields(
+		locationInfor.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(
 			context,
 			toCodeString(locationInfor.getCLASSID()),
 			locationInfor.getUSERDEFINEDAREA(),

@@ -269,7 +269,7 @@ public class AssetServiceImpl implements AssetService {
         AssetEquipment assetEquipment = readInforAsset(context, assetParam.getCode());
 
         //
-        assetEquipment.setUSERDEFINEDAREA(tools.getInforCustomFields(
+        assetEquipment.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(
             context,
             toCodeString(assetEquipment.getCLASSID()),
             assetEquipment.getUSERDEFINEDAREA(),
@@ -290,7 +290,7 @@ public class AssetServiceImpl implements AssetService {
 
         AssetEquipment assetEquipment = new AssetEquipment();
         //
-        assetEquipment.setUSERDEFINEDAREA(tools.getInforCustomFields(
+        assetEquipment.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(
             context,
             toCodeString(assetEquipment.getCLASSID()),
             assetEquipment.getUSERDEFINEDAREA(),

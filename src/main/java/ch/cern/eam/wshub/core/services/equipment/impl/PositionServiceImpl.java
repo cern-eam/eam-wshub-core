@@ -44,7 +44,7 @@ public class PositionServiceImpl implements PositionService {
 
 		PositionEquipment positionEquipment = new PositionEquipment();
 		//
-		positionEquipment.setUSERDEFINEDAREA(tools.getInforCustomFields(
+		positionEquipment.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(
 			context,
 			toCodeString(positionEquipment.getCLASSID()),
 			positionEquipment.getUSERDEFINEDAREA(),
@@ -285,7 +285,7 @@ public class PositionServiceImpl implements PositionService {
 		//
 		//
 		//
-		positionEquipment.setUSERDEFINEDAREA(tools.getInforCustomFields(
+		positionEquipment.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(
 			context,
 			toCodeString(positionEquipment.getCLASSID()),
 			positionEquipment.getUSERDEFINEDAREA(),

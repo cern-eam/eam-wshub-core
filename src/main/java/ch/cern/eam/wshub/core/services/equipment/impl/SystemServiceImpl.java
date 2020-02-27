@@ -101,7 +101,7 @@ public class SystemServiceImpl implements SystemService {
 
 			SystemEquipment systemEquipment = readSystemInfor(context, systemParam.getCode());
 			//
-			systemEquipment.setUSERDEFINEDAREA(tools.getInforCustomFields(
+			systemEquipment.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(
 				context,
 				toCodeString(systemEquipment.getCLASSID()),
 				systemEquipment.getUSERDEFINEDAREA(),
@@ -123,7 +123,7 @@ public class SystemServiceImpl implements SystemService {
 
 		SystemEquipment systemEquipment = new SystemEquipment();
 		//
-		systemEquipment.setUSERDEFINEDAREA(tools.getInforCustomFields(
+		systemEquipment.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(
 			context,
 			toCodeString(systemEquipment.getCLASSID()),
 			systemEquipment.getUSERDEFINEDAREA(),

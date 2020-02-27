@@ -58,7 +58,7 @@ public class PartServiceImpl implements PartService {
 		//
 		//
 		//
-		inforPart.setUSERDEFINEDAREA(tools.getInforCustomFields(
+		inforPart.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(
 			context,
 			toCodeString(inforPart.getCLASSID()),
 			inforPart.getUSERDEFINEDAREA(),
@@ -100,7 +100,7 @@ public class PartServiceImpl implements PartService {
 
 		net.datastream.schemas.mp_entities.part_001.Part inforPart = readPartInfor(context, partParam.getCode());
 
-		inforPart.setUSERDEFINEDAREA(tools.getInforCustomFields(
+		inforPart.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(
 			context,
 			toCodeString(inforPart.getCLASSID()),
 			inforPart.getUSERDEFINEDAREA(),

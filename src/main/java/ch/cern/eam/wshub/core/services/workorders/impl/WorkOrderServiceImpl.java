@@ -224,7 +224,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		net.datastream.schemas.mp_entities.workorder_001.WorkOrder inforWorkOrder = readWorkOrderInfor(context, workorderParam.getNumber());
 
 		// Check Custom fields. If they change, or now we have them
-		inforWorkOrder.setUSERDEFINEDAREA(tools.getInforCustomFields(
+		inforWorkOrder.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(
 			context,
 			toCodeString(inforWorkOrder.getCLASSID()),
 			inforWorkOrder.getUSERDEFINEDAREA(),

@@ -146,7 +146,7 @@ public class UserSetupServiceImpl implements UserSetupService {
 		net.datastream.schemas.mp_entities.usersetup_001.UserSetup userInfor = new net.datastream.schemas.mp_entities.usersetup_001.UserSetup();
 
 		// Check custom fields
-		userInfor.setUSERDEFINEDAREA(tools.getInforCustomFields(
+		userInfor.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(
 			context,
 			toCodeString(userInfor.getCLASSID()),
 			userInfor.getUSERDEFINEDAREA(),
@@ -186,7 +186,7 @@ public class UserSetupServiceImpl implements UserSetupService {
 				.getUserSetup();
 
 		// If there are custom fields
-		userInfor.setUSERDEFINEDAREA(tools.getInforCustomFields(
+		userInfor.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(
 			context,
 			toCodeString(userInfor.getCLASSID()),
 			userInfor.getUSERDEFINEDAREA(),
