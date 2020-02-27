@@ -345,7 +345,7 @@ public class Tools {
 
 		// [1] handle cases 13 to 18
 		if(previousCustomFields == null && previousClass != null) {
-			throw new IllegalArgumentException("");
+			throw new IllegalArgumentException("Unable to create an object that already has a previous class.");
 		}
 
 		if(targetClass != null) {
