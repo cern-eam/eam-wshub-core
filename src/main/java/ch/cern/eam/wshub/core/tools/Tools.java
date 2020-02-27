@@ -315,7 +315,7 @@ public class Tools {
 
 		// TODO: check if uppercasing these classes is actually necessary, left here for safety
 		previousClass = previousClass == null ? null : previousClass.toUpperCase();
-		targetClass = previousClass == null ? null : targetClass.toUpperCase();
+		targetClass = targetClass == null ? null : targetClass.toUpperCase();
 
 		/*	Table with all possible cases of inputs
 			IAE = IllegalArgumentException
