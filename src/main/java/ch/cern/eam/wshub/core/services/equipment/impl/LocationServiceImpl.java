@@ -10,17 +10,14 @@ import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_entities.location_001.LocationParentHierarchy;
 import net.datastream.schemas.mp_entities.location_001.ParentLocation;
 import net.datastream.schemas.mp_fields.*;
-import net.datastream.schemas.mp_functions.SessionType;
 import net.datastream.schemas.mp_functions.mp0317_001.MP0317_AddLocation_001;
 import net.datastream.schemas.mp_functions.mp0318_001.MP0318_GetLocation_001;
 import net.datastream.schemas.mp_functions.mp0319_001.MP0319_SyncLocation_001;
 import net.datastream.schemas.mp_functions.mp0320_001.MP0320_DeleteLocation_001;
 import net.datastream.schemas.mp_functions.mp0361_001.MP0361_GetLocationParentHierarchy_001;
-import net.datastream.schemas.mp_results.mp0317_001.MP0317_AddLocation_001_Result;
 import net.datastream.schemas.mp_results.mp0318_001.MP0318_GetLocation_001_Result;
 import net.datastream.schemas.mp_results.mp0361_001.MP0361_GetLocationParentHierarchy_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
-import javax.xml.ws.Holder;
 import java.util.List;
 
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.toCodeString;
@@ -65,13 +62,10 @@ public class LocationServiceImpl implements LocationService {
 		getLocation.getLOCATIONID().setLOCATIONCODE(locationCode);
 		MP0318_GetLocation_001_Result getLocationResult = new MP0318_GetLocation_001_Result();
 
-		if (context.getCredentials() != null)
-			getLocationResult = inforws.getLocationOp(getLocation, "*", tools.createSecurityHeader(context), "TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
-		else {
-			getLocationResult = inforws.getLocationOp(getLocation, "*", null, null, new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
+		getLocationResult = tools.performInforOperation(context, inforws::getLocationOp, getLocation);
 
-		net.datastream.schemas.mp_entities.location_001.Location locationInfor = getLocationResult.getResultData().getLocation();
+		net.datastream.schemas.mp_entities.location_001.Location locationInfor =
+			getLocationResult.getResultData().getLocation();
 
 		Location location = tools.getInforFieldTools().transformInforObject(new Location(), locationInfor);
 
@@ -105,16 +99,7 @@ public class LocationServiceImpl implements LocationService {
 
 		MP0317_AddLocation_001 addLocation = new MP0317_AddLocation_001();
 		addLocation.setLocation(locationInfor);
-		MP0317_AddLocation_001_Result result;
-
-		if (context.getCredentials() != null) {
-			result = inforws.addLocationOp(addLocation, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			result = inforws.addLocationOp(addLocation, tools.getOrganizationCode(context), null, "",
-					new Holder<>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
+		tools.performInforOperation(context, inforws::addLocationOp, addLocation);
 
 		return locationInfor.getLOCATIONID().getLOCATIONCODE();
 	}
@@ -125,15 +110,8 @@ public class LocationServiceImpl implements LocationService {
 		getLocation.getLOCATIONID().setLOCATIONCODE(locationParam.getCode());
 		getLocation.getLOCATIONID().setORGANIZATIONID(tools.getOrganization(context));
 
-		MP0318_GetLocation_001_Result result = null;
-		if (context.getCredentials() != null) {
-			result = inforws.getLocationOp(getLocation, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			result = inforws.getLocationOp(getLocation, tools.getOrganizationCode(context), null, "",
-					new Holder<SessionType>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
+		MP0318_GetLocation_001_Result result =
+			tools.performInforOperation(context, inforws::getLocationOp, getLocation);
 
 		net.datastream.schemas.mp_entities.location_001.Location locationInfor = result.getResultData().getLocation();
 
@@ -160,14 +138,7 @@ public class LocationServiceImpl implements LocationService {
 		MP0319_SyncLocation_001 syncLocation = new MP0319_SyncLocation_001();
 		syncLocation.setLocation(locationInfor);
 
-		if (context.getCredentials() != null) {
-			inforws.syncLocationOp(syncLocation, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			inforws.syncLocationOp(syncLocation, tools.getOrganizationCode(context), null, null,
-					new Holder<>(tools.createInforSession(context)), tools.createMessageConfig(), tools.getTenant(context));
-		}
+		tools.performInforOperation(context, inforws::syncLocationOp, syncLocation);
 
 		return locationInfor.getLOCATIONID().getLOCATIONCODE();
 	}
@@ -179,14 +150,7 @@ public class LocationServiceImpl implements LocationService {
 		deleteLocation.getLOCATIONID().setORGANIZATIONID(tools.getOrganization(context));
 		deleteLocation.getLOCATIONID().setLOCATIONCODE(locationCode);
 
-		if (context.getCredentials() != null) {
-			inforws.deleteLocationOp(deleteLocation, "*",
-					tools.createSecurityHeader(context), "TERMINATE", null,
-					tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			inforws.deleteLocationOp(deleteLocation, "*", null, null, new Holder<>(tools.createInforSession(context)),
-					tools.createMessageConfig(), tools.getTenant(context));
-		}
+		tools.performInforOperation(context, inforws::deleteLocationOp, deleteLocation);
 
 		return locationCode;
 	}
@@ -196,13 +160,9 @@ public class LocationServiceImpl implements LocationService {
 		getLocationParentHierarchy.setLOCATIONID(new LOCATIONID_Type());
 		getLocationParentHierarchy.getLOCATIONID().setLOCATIONCODE(locationCode);
 		getLocationParentHierarchy.getLOCATIONID().setORGANIZATIONID(tools.getOrganization(context));
-		MP0361_GetLocationParentHierarchy_001_Result getLocationParentHierarchyResult = new MP0361_GetLocationParentHierarchy_001_Result();
 
-		if (context.getCredentials() != null) {
-			getLocationParentHierarchyResult = inforws.getLocationParentHierarchyOp(getLocationParentHierarchy, "*", tools.createSecurityHeader(context), "TERMINATE", null, tools.createMessageConfig(), tools.getTenant(context));
-		} else {
-			getLocationParentHierarchyResult = inforws.getLocationParentHierarchyOp(getLocationParentHierarchy, "*", null, null, new Holder<SessionType>(tools.createInforSession(context)), null, tools.getTenant(context));
-		}
+		MP0361_GetLocationParentHierarchy_001_Result getLocationParentHierarchyResult =
+			tools.performInforOperation(context, inforws::getLocationParentHierarchyOp, getLocationParentHierarchy);
 
 		return getLocationParentHierarchyResult.getResultData().getLocationParentHierarchy();
 	}

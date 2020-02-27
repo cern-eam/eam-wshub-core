@@ -19,6 +19,7 @@ import org.xmlsoap.schemas.ws._2002._04.secext.ObjectFactory;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
+import javax.xml.ws.Holder;
 import javax.xml.ws.soap.SOAPFaultException;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -417,5 +418,37 @@ public class Tools {
 				.collect(Collectors.toList());
 
 		return processCallables(callableList);
+	}
+
+	@FunctionalInterface
+	public interface InforOperation<A, R> {
+		R apply(
+			A operation,
+			String unknown,
+			Security securityHeader,
+			String unknown2,
+			Holder holder,
+			MessageConfigType messageConfigType,
+			String tenant);
+	}
+
+	public <A, R> R performInforOperation(InforContext context, InforOperation<A, R> operation, A argument)
+			throws InforException {
+		Security security = null;
+		String organization = getOrganizationCode(context);
+		String unknown2 = "TERMINATE";
+		Holder holder = null;
+		MessageConfigType messageConfigType = createMessageConfig();
+
+		if(context.getCredentials() != null) {
+			security = createSecurityHeader(context);
+			unknown2 = null;
+		} else {
+			holder = new Holder<>(createInforSession(context));
+		}
+
+		String tenant = getTenant(context);
+
+		return operation.apply(argument, organization, security, unknown2, holder, messageConfigType, tenant);
 	}
 }
