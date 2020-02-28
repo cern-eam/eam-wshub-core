@@ -22,6 +22,9 @@ public class GlobalContext {
     public static LocationService locationService;
     public static EquipmentFacadeService equipmentFacadeService;
 
+    final private static String RANDOM_CHAR_SET =
+        "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
     static {
         inforClient = new InforClient.Builder("https://cmmsx-test.cern.ch/axis/services/EWSConnector")
                 .withDefaultTenant("infor")
@@ -40,7 +43,22 @@ public class GlobalContext {
         equipmentFacadeService = inforClient.getEquipmentFacadeService();
     }
 
+    public static String getRandomCharacter() {
+        int index = random.nextInt(RANDOM_CHAR_SET.length());
+        return RANDOM_CHAR_SET.substring(index, index + 1);
+    }
+
+    public static String getRandomString(int length) {
+        if(length > 100)
+            throw new IllegalArgumentException("This function has low performance on large strings");
+
+        String returnString = "";
+        for(int i = 0; i < length; ++i)
+            returnString += getRandomCharacter();
+        return returnString;
+    }
+
     public static String getCode(String type) {
-        return "7LO7WD" + type + username + "-" + random.nextInt(Integer.MAX_VALUE);
+        return "7LO7WD" + type + username + "-" + getRandomString(10);
     }
 }
