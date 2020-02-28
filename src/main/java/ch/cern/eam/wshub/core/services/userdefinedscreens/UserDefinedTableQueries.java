@@ -212,7 +212,6 @@ public class UserDefinedTableQueries {
             throws InforException {
         //Create list to guarantee ordering
         String query = getDeleteQuery(tableName, whereFilters);
-        //em.joinTransaction();
         try {
             Query nativeQuery = createQuery(query, new HashMap<>(), whereFilters, em);
             return nativeQuery.executeUpdate();

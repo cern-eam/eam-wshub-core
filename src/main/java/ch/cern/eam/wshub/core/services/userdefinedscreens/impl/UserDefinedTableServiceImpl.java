@@ -42,6 +42,7 @@ public class UserDefinedTableServiceImpl implements UserDefinedTableService {
             throws InforException {
         tools.demandDatabaseConnection();
         UserDefinedTableValidator.validateOperation(tableName, rows);
+        entityManager.joinTransaction();
         for (UDTRow row: rows) {
             Map<String, Object> parameters = getUDTRowAsMap(row);
             parameters.putAll(getDefaultInsertColumns(context.getCredentials().getUsername()));
@@ -72,6 +73,7 @@ public class UserDefinedTableServiceImpl implements UserDefinedTableService {
     public int updateUserDefinedTableRows(InforContext context, String tableName, UDTRow fieldsToUpdate,
                                              UDTRow filters) throws InforException {
         tools.demandDatabaseConnection();
+        entityManager.joinTransaction();
         UserDefinedTableValidator.validateOperation(tableName, fieldsToUpdate, filters);
         Map<String, Object> updateMapMap = getUDTRowAsMap(fieldsToUpdate);
         Map<String, Object> whereMap = getUDTRowAsMap(filters);
@@ -84,6 +86,7 @@ public class UserDefinedTableServiceImpl implements UserDefinedTableService {
     @Override
     public int deleteUserDefinedTableRows(InforContext context, String tableName, UDTRow filters) throws InforException {
         tools.demandDatabaseConnection();
+        entityManager.joinTransaction();
         UserDefinedTableValidator.validateOperation(tableName, null, filters);
         Map<String, Object> filterMap = getUDTRowAsMap(filters);
         return UserDefinedTableQueries.executeDeleteQuery(tableName, filterMap, entityManager);
