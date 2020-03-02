@@ -1,6 +1,7 @@
 package ch.cern.eam.wshub.core.services.workorders.entities;
 
 import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
+import ch.cern.eam.wshub.core.adapters.BigIntegerAdapter;
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
 import ch.cern.eam.wshub.core.annotations.GridField;
 
@@ -83,6 +84,7 @@ public class Activity implements Serializable {
 		this.workOrderNumber = workOrderNumber;
 	}
 
+	@XmlJavaTypeAdapter(BigIntegerAdapter.class)
 	public BigInteger getPeopleRequired() {
 		return peopleRequired;
 	}
@@ -91,6 +93,7 @@ public class Activity implements Serializable {
 		this.peopleRequired = peopleRequired;
 	}
 
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getEstimatedHours() {
 		return estimatedHours;
 	}
@@ -100,7 +103,6 @@ public class Activity implements Serializable {
 	}
 
 	@XmlJavaTypeAdapter(DateAdapter.class)
-
 	public Date getStartDate() {
 		return startDate;
 	}
@@ -110,7 +112,6 @@ public class Activity implements Serializable {
 	}
 
 	@XmlJavaTypeAdapter(DateAdapter.class)
-
 	public Date getEndDate() {
 		return endDate;
 	}
@@ -143,6 +144,7 @@ public class Activity implements Serializable {
 		this.tradeCode = tradeCode;
 	}
 
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getHoursRemaining() {
 		return hoursRemaining;
 	}
