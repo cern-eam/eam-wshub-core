@@ -10,7 +10,6 @@ import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import ch.cern.eam.wshub.core.tools.UserDefinedFieldsTools;
-import com.sun.xml.bind.api.impl.NameConverter;
 import net.datastream.schemas.mp_entities.catalogue_001.Catalogue;
 import net.datastream.schemas.mp_entities.issuereturntransaction_001.IssueReturnTransaction;
 import net.datastream.schemas.mp_entities.issuereturntransactionline_001.IssueReturnTransactionLine;
