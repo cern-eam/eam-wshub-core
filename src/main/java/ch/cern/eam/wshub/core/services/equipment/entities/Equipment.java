@@ -286,6 +286,14 @@ public class Equipment implements Serializable {
 	@InforField(xpath = "ORIGINALINSTALLDATE")
 	private Date originalInstallDate;
 
+    @Transient
+    @InforField(xpath = "XLOCATION")
+    private BigDecimal xLocation;
+
+    @Transient
+    @InforField(xpath = "YLOCATION")
+    private BigDecimal yLocation;
+
 	@Transient
 	private String lastLocationCode;
 	@Transient
@@ -298,14 +306,16 @@ public class Equipment implements Serializable {
 	private Integer cernCao;
 	@Transient
 	private Double cernX;
-	@Transient
-	private Double cernY;
+    @Transient
+    private Double cernY;
 	@Transient
 	private Double cernZ;
 	@Transient
 	private String cernPos;
 	@Transient
 	private String cernFonc;
+
+
 
 	public String getDescription() {
 		return description;
@@ -1083,7 +1093,23 @@ public class Equipment implements Serializable {
 		this.hierarchyPrimarySystemCostRollUp = hierarchyPrimarySystemCostRollUp;
 	}
 
-	public String getStateCode() {
+    public BigDecimal getxLocation() {
+        return xLocation;
+    }
+
+    public void setxLocation(BigDecimal xLocation) {
+        this.xLocation = xLocation;
+    }
+
+    public BigDecimal getyLocation() {
+        return yLocation;
+    }
+
+    public void setyLocation(BigDecimal yLocation) {
+        this.yLocation = yLocation;
+    }
+
+    public String getStateCode() {
 		return stateCode;
 	}
 
