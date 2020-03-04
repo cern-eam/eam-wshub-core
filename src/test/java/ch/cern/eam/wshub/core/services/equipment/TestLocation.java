@@ -21,8 +21,10 @@ import static ch.cern.eam.wshub.core.GlobalContext.*;
         There is a cost code "H#96231"
         There is a custom field "HMLPR019" on classes "DES" and "FIC"
         There is a custom field "HMLPR147" on class "*"
-        The current date is compatible with the date type in Infor EAM
+        The intervals for the dates must be compatible with Infor EAM
  */
+
+// test the CRUD operations on locations
 public class TestLocation {
     private Location parentLocation;
 
@@ -31,8 +33,11 @@ public class TestLocation {
         parentLocation = createLocation(false);
     }
 
+    // this helper function creates a test location
+    // it also confirms that the created location is read as created
+    // filled: whether the optional fields should be filled
     Location createLocation(boolean filled) throws Exception {
-        String code = getCode("L");
+        String code = getCode(TypeCode.L);
 
         // create the location
         Location location = new Location();
@@ -41,13 +46,7 @@ public class TestLocation {
         location.setDescription("location test");
         location.setDepartmentCode("HXMF");
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-        Date date = calendar.getTime();
+        Date date = getCurrentDate();
 
         if(filled) {
             location.setClassCode("DES");
@@ -110,6 +109,7 @@ public class TestLocation {
         return location;
     }
 
+    // tests creation of a unfilled location, and fills it using an update
     @Test
     void testCreateNullUpdateFill() throws Exception {
         Location location = createLocation(false);
@@ -211,6 +211,7 @@ public class TestLocation {
         assertEquals("10", generalCustomField.getValue());
     }
 
+    // tests creation of a filled location, and nulls it using an update
     @Test
     void testCreateFillUpdateNull() throws Exception {
         Location location = createLocation(true);
@@ -261,6 +262,7 @@ public class TestLocation {
         assertEquals("10", generalCustomField.getValue());
     }
 
+    // tests the deletion of locations
     @Test
     void testDelete() throws Exception {
         Location location = createLocation(false);
@@ -276,6 +278,8 @@ public class TestLocation {
         }
     }
 
+    // tests whether default values for the location fields have been set
+    // (which would be a big problem when updating just part of a location)
     @Test
     void testDefaultValues() throws Exception {
         Location location = createLocation(true);
@@ -290,6 +294,8 @@ public class TestLocation {
         assertEquals(true, location.getOutOfService());
     }
 
+    // tests changing a filled location from class DES to class FIC
+    // ensuring the custom fields are kept
     @Test
     void testMergeFromFilled() throws Exception {
         String code = createLocation(true).getCode();
@@ -309,6 +315,8 @@ public class TestLocation {
         assertEquals("10", generalCustomField.getValue());
     }
 
+    // tests changing a unfilled location from no class to FIC
+    // ensuring the nullified values are kept
     @Test
     void testMergeFromEmpty() throws Exception {
         String code = createLocation(false).getCode();

@@ -29,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class TestWorkOrder {
     private static WorkOrderService workOrderService = inforClient.getWorkOrderService();
 
+    // this helper function creates a test work order
     WorkOrder createWorkOrder() throws Exception {
         WorkOrder workOrder = new WorkOrder();
         workOrder.setDescription("test");
@@ -43,6 +44,7 @@ public class TestWorkOrder {
         return workOrder;
     }
 
+    // tests whether we can create and update a work order
     @Test
     void testCreateUpdate() throws Exception {
         WorkOrder workOrder = createWorkOrder();

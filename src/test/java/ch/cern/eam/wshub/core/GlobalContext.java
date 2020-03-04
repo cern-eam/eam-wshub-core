@@ -6,13 +6,17 @@ import ch.cern.eam.wshub.core.services.entities.Credentials;
 import ch.cern.eam.wshub.core.services.equipment.EquipmentFacadeService;
 import ch.cern.eam.wshub.core.services.equipment.LocationService;
 import ch.cern.eam.wshub.core.tools.Tools;
-import org.junit.jupiter.api.extension.BeforeAllCallback;
-import org.junit.jupiter.api.extension.ExtensionContext;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Random;
 import java.util.logging.Logger;
 
 public class GlobalContext {
+    public enum TypeCode {
+        L
+    }
+
     public static InforClient inforClient;
     public static InforContext context;
     public static Tools tools;
@@ -43,12 +47,26 @@ public class GlobalContext {
         equipmentFacadeService = inforClient.getEquipmentFacadeService();
     }
 
-    public static String getRandomCharacter() {
+    public static Date getCurrentDate() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar.getTime();
+    }
+
+    public static String getCode(TypeCode type) {
+        return "__T3ST__" + type.name() + "-" + getRandomString(16);
+    }
+
+    private static String getRandomCharacter() {
         int index = random.nextInt(RANDOM_CHAR_SET.length());
         return RANDOM_CHAR_SET.substring(index, index + 1);
     }
 
-    public static String getRandomString(int length) {
+    private static String getRandomString(int length) {
         if(length > 100)
             throw new IllegalArgumentException("This function has low performance on large strings");
 
@@ -56,9 +74,5 @@ public class GlobalContext {
         for(int i = 0; i < length; ++i)
             returnString += getRandomCharacter();
         return returnString;
-    }
-
-    public static String getCode(String type) {
-        return "7LO7WD" + type + username + "-" + getRandomString(10);
     }
 }

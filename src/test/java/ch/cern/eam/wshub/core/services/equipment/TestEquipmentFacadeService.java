@@ -14,7 +14,7 @@ import static ch.cern.eam.wshub.core.GlobalContext.*;
 public class TestEquipmentFacadeService {
     @Test
     public void testDeprecatedLocations() throws InforException {
-        String code = getCode("L");
+        String code = getCode(TypeCode.L);
         Location location = new Location();
         location.setCode(code);
         location.setDescription("location test");
