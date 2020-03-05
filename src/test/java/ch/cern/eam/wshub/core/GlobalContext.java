@@ -70,12 +70,12 @@ public class GlobalContext {
     }
 
     private static String getRandomString(int length) {
-        if(length > 100)
+        if(length > 100) {
             throw new IllegalArgumentException("This function has low performance on large strings");
+        }
 
         String returnString = "";
-        for(int i = 0; i < length; ++i)
-            returnString += getRandomCharacter();
+        for(int i = 0; i < length; ++i) returnString += getRandomCharacter();
         return returnString;
     }
 }
