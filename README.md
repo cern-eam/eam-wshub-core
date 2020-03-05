@@ -22,8 +22,8 @@ You first need to create an instance of InforClient, with the configuration spec
 
 ```
 InforClient inforClient = new InforClient.Builder(
-        "https://<your.domain.name>/axis/services/EWSConnector", 
-        "<tenant>")
+        "https://<your.domain.name>/axis/services/EWSConnector") 
+    .withDefaultTenant("<tenant>")
     .withDefaultOrganizationCode("<your-organization-code>")
     .build();
 ```
