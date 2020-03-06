@@ -19,9 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /*
     TEST ASSUMPTIONS:
-        There is an asset "PA-A-001"
         There is a type code "EX"
-        There is a department "RPM"
         There is a status code "R"
         There is a workorder class "RP01"
         There is a custom field "P214" in the "RP01" class
@@ -33,9 +31,9 @@ public class TestWorkOrder {
     WorkOrder createWorkOrder() throws Exception {
         WorkOrder workOrder = new WorkOrder();
         workOrder.setDescription("test");
-        workOrder.setEquipmentCode("PA-A-001");
+        workOrder.setEquipmentCode(ASSET_CODE);
         workOrder.setTypeCode("EX");
-        workOrder.setDepartmentCode("RPM");
+        workOrder.setDepartmentCode(DEPARTMENT);
         workOrder.setStatusCode("R");
 
         String number = workOrderService.createWorkOrder(context, workOrder);

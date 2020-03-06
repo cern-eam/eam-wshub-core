@@ -3,8 +3,6 @@ package ch.cern.eam.wshub.core;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.entities.Credentials;
-import ch.cern.eam.wshub.core.services.equipment.EquipmentFacadeService;
-import ch.cern.eam.wshub.core.services.equipment.LocationService;
 import ch.cern.eam.wshub.core.tools.Tools;
 
 import java.util.Calendar;
@@ -36,6 +34,10 @@ public class GlobalContext {
     public static String getCode(TypeCode type) {
         return "__T3ST__" + type.name() + "-" + getRandomString(16);
     }
+
+    public static String DEPARTMENT = "HXMF";
+    public static String COST_CODE = "H#96231";
+    public static String ASSET_CODE = "PA-A-001";
 
     static {
         int cores = Runtime.getRuntime().availableProcessors();

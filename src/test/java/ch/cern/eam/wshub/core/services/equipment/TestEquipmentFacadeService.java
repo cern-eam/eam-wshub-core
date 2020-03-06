@@ -10,7 +10,7 @@ import static ch.cern.eam.wshub.core.GlobalContext.*;
 
 /*
     TEST ASSUMPTIONS:
-        There is a department "HXMF"
+        None
  */
 public class TestEquipmentFacadeService {
     private LocationService locationService;
@@ -28,7 +28,7 @@ public class TestEquipmentFacadeService {
         Location location = new Location();
         location.setCode(code);
         location.setDescription("location test");
-        location.setDepartmentCode("HXMF");
+        location.setDepartmentCode(DEPARTMENT);
         locationService.createLocation(context, location);
 
         assertThrows(InforException.class, () -> equipmentFacadeService.readEquipment(context, code));

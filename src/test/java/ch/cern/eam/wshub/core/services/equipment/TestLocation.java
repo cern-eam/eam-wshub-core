@@ -15,9 +15,7 @@ import static ch.cern.eam.wshub.core.GlobalContext.*;
 
 /*
     TEST ASSUMPTIONS:
-        There is a department "HXMF"
         There are location classes "DES" and "FIC"
-        There is a cost code "H#96231"
         There is a custom field "HMLPR019" on classes "DES" and "FIC"
         There is a custom field "HMLPR147" on class "*"
         The intervals for the dates must be compatible with Infor EAM
@@ -45,7 +43,7 @@ public class TestLocation {
         // set mandatory fields
         location.setCode(code);
         location.setDescription("location test");
-        location.setDepartmentCode("HXMF");
+        location.setDepartmentCode(DEPARTMENT);
 
         Date date = getCurrentDate();
 
@@ -53,7 +51,7 @@ public class TestLocation {
             location.setClassCode("DES");
             location.setSafety(true);
             location.setOutOfService(true);
-            location.setCostCode("H#96231");
+            location.setCostCode(COST_CODE);
             location.setHierarchyLocationCode(parentLocation.getCode());
 
             UserDefinedFields udf = new UserDefinedFields();
@@ -81,16 +79,16 @@ public class TestLocation {
         location = locationService.readLocation(context, code);
         assertEquals(code, location.getCode());
         assertEquals("location test", location.getDescription());
-        assertEquals("HXMF", location.getDepartmentCode());
+        assertEquals(DEPARTMENT, location.getDepartmentCode());
 
         if(filled) {
             assertEquals("location test", location.getDescription());
-            assertEquals("HXMF", location.getDepartmentCode());
+            assertEquals(DEPARTMENT, location.getDepartmentCode());
 
             assertEquals("DES", location.getClassCode());
             assertEquals(true, location.getSafety());
             assertEquals(true, location.getOutOfService());
-            assertEquals("H#96231", location.getCostCode());
+            assertEquals(COST_CODE, location.getCostCode());
             assertEquals(parentLocation.getCode(), location.getHierarchyLocationCode());
             assertEquals("test", location.getUserDefinedFields().getUdfchar01());
             assertEquals(true, location.getUserDefinedFields().getUdfchkbox01());
@@ -120,7 +118,7 @@ public class TestLocation {
         location = locationService.readLocation(context, code);
         assertEquals(code, location.getCode());
         assertEquals("location test", location.getDescription());
-        assertEquals("HXMF", location.getDepartmentCode());
+        assertEquals(DEPARTMENT, location.getDepartmentCode());
 
         // check that all the other fields are null
         assertEquals(null, location.getClassCode());
@@ -149,7 +147,7 @@ public class TestLocation {
         location.setClassCode("DES");
         location.setSafety(true);
         location.setOutOfService(true);
-        location.setCostCode("H#96231");
+        location.setCostCode(COST_CODE);
         location.setHierarchyLocationCode(parentLocation.getCode());
 
         UserDefinedFields udf = location.getUserDefinedFields();
@@ -189,7 +187,7 @@ public class TestLocation {
         assertEquals("DES", location.getClassCode());
         assertEquals(true, location.getSafety());
         assertEquals(true, location.getOutOfService());
-        assertEquals("H#96231", location.getCostCode());
+        assertEquals(COST_CODE, location.getCostCode());
         assertEquals(parentLocation.getCode(), location.getHierarchyLocationCode());
         assertEquals("test", location.getUserDefinedFields().getUdfchar01());
         assertEquals(true, location.getUserDefinedFields().getUdfchkbox01());
