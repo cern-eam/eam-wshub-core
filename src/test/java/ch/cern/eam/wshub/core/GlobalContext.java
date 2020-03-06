@@ -20,9 +20,6 @@ public class GlobalContext {
     public static String username;
     public static Random random;
 
-    public static LocationService locationService;
-    public static EquipmentFacadeService equipmentFacadeService;
-
     public static Date getCurrentDate() {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
@@ -57,25 +54,17 @@ public class GlobalContext {
         tools = inforClient.getTools();
 
         random = new Random();
-
-        locationService = inforClient.getLocationService();
-        equipmentFacadeService = inforClient.getEquipmentFacadeService();
     }
 
     final private static String RANDOM_CHAR_SET =
             "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    private static String getRandomCharacter() {
-        int index = random.nextInt(RANDOM_CHAR_SET.length());
-        return RANDOM_CHAR_SET.substring(index, index + 1);
+    private static char getRandomCharacter() {
+        return RANDOM_CHAR_SET.charAt(random.nextInt(RANDOM_CHAR_SET.length()));
     }
 
     private static String getRandomString(int length) {
-        if(length > 100) {
-            throw new IllegalArgumentException("This function has low performance on large strings");
-        }
-
-        String returnString = "";
-        for(int i = 0; i < length; ++i) returnString += getRandomCharacter();
-        return returnString;
+        char[] charArr = new char[length];
+        for(int i = 0; i < length; ++i) charArr[i] = getRandomCharacter();
+        return new String(charArr);
     }
 }

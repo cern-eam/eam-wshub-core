@@ -26,9 +26,11 @@ import static ch.cern.eam.wshub.core.GlobalContext.*;
 // test the CRUD operations on locations
 public class TestLocation {
     private Location parentLocation;
+    private LocationService locationService;
 
     @BeforeEach
     void setup() throws Exception {
+        locationService = inforClient.getLocationService();
         parentLocation = createLocation(false);
     }
 
