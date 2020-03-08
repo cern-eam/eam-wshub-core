@@ -1,22 +1,34 @@
 package ch.cern.eam.wshub.core.services.entities;
 
 import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
+import ch.cern.eam.wshub.core.annotations.GridField;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.math.BigDecimal;
 
 public class WorkOrderPart {
 
+	@GridField(name = "partcode")
 	private String partCode;
+
+	@GridField(name = "partdescription")
 	private String partDesc;
+
+	@GridField(name = "plannedqty")
 	private BigDecimal plannedQty;
 	private BigDecimal reservedQty;
 	private BigDecimal allocatedQty;
+
+	@GridField(name = "usedqty")
 	private BigDecimal usedQty;
 	private BigDecimal quantity;
 	private String activityCode;
+
+	@GridField(name = "activity_display")
 	private String activityDesc;
 	private String tradeCode;
+
+	@GridField(name = "storecode")
 	private String storeCode;
 
 	private String plannedSource;

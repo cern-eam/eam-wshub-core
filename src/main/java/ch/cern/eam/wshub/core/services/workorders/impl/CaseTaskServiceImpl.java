@@ -137,8 +137,7 @@ public class CaseTaskServiceImpl implements CaseTaskService {
 		//
 		// USER DEFINED FIELDS
 		//
-		caseTaskMT.setUserDefinedFields(
-				tools.getUDFTools().readInforUserDefinedFields(caseTaskInfor.getStandardUserDefinedFields()));
+		//TODO caseTaskMT.setUserDefinedFields(tools.getUDFTools().readInforUserDefinedFields(caseTaskInfor.getStandardUserDefinedFields()));
 		//
 		//
 		//
@@ -248,8 +247,7 @@ public class CaseTaskServiceImpl implements CaseTaskService {
 		//
 		// USER DEFINED FIELDS
 		//
-		tools.getUDFTools().updateInforUserDefinedFields(caseTaskInfor.getStandardUserDefinedFields(),
-				caseTaskMT.getUserDefinedFields());
+		//TODO tools.getUDFTools().updateInforUserDefinedFields(caseTaskInfor.getStandardUserDefinedFields(), caseTaskMT.getUserDefinedFields());
 		//
 		// TRACKING DETAILS
 		//

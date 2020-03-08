@@ -1,6 +1,9 @@
-package ch.cern.eam.wshub.core.services.entities;
+package ch.cern.eam.wshub.core.services.administration.entities;
 
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
+import ch.cern.eam.wshub.core.annotations.InforField;
+import ch.cern.eam.wshub.core.services.entities.CustomField;
+import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlElement;
@@ -22,47 +25,50 @@ public class EAMUser implements Serializable {
 
 	@Id
 	@Column(name = "USR_CODE")
+	@InforField(xpath = "USERID/USERCODE")
 	private String userCode;
+
 	@Column(name = "USR_DESC")
+	@InforField(xpath = "USERID/DESCRIPTION")
 	private String userDesc;
+
 	@Column(name = "USR_GROUP")
+	@InforField(xpath = "USERGROUP")
 	private String userGroup;
+
 	@Column(name = "USR_EXPUSER")
 	@Temporal(TemporalType.DATE)
+	@InforField(xpath = "USEREXPIREDATE")
 	private Date userIDExpirationDate;
+
 	@Transient
+	@InforField(xpath = "PASSWORD")
 	private String password;
+
 	@Transient
+	@InforField(xpath = "PASSEXPIREDATE")
 	private Date passwordExpirationDate;
+
 	@Column(name = "USR_EMAILADDRESS")
+	@InforField(xpath = "EMAIL")
 	private String emailAddress;
+
 	@Column(name = "USR_MRC")
+	@InforField(xpath = "DEPARTMENTCODE")
 	private String department;
+
 	@Column(name = "USR_CLASS")
+	@InforField(xpath = "CLASSID/CLASSCODE")
 	private String classCode;
+
+	private String employeeCode;
+
 	@Transient
+	@InforField(xpath = "USERDEFINEDAREA")
 	private CustomField[] customFields;
-	@Column(name = "USR_UDFCHAR01")
-	private String udfchar01;
-	@Column(name = "USR_UDFCHAR02")
-	private String udfchar02;
-	@Column(name = "USR_UDFCHAR03")
-	private String udfchar03;
-	@Column(name = "USR_UDFCHAR04")
-	private String udfchar04;
-	@Column(name = "USR_UDFCHAR05")
-	private String udfchar05;
-	@Column(name = "USR_UDFCHAR06")
-	private String udfchar06;
-	@Column(name = "USR_UDFCHAR07")
-	private String udfchar07;
-	@Column(name = "USR_UDFCHAR08")
-	private String udfchar08;
-	@Column(name = "USR_UDFCHAR09")
-	private String udfchar09;
+
 	@Transient
-	private String cernId;
-	@Transient
+	@InforField(xpath = "StandardUserDefinedFields")
 	private UserDefinedFields userDefinedFields;
 
 	public String getUserCode() {
@@ -165,156 +171,6 @@ public class EAMUser implements Serializable {
 	}
 
 	/**
-	 * @return the udfchar01 (Department 01)
-	 */
-	public String getUdfchar01() {
-		return udfchar01;
-	}
-
-	/**
-	 * @param udfchar01
-	 *            the udfchar01 to set
-	 */
-	public void setUdfchar01(String udfchar01) {
-		this.udfchar01 = udfchar01;
-	}
-
-	/**
-	 * @return the udfchar02 (Department 02)
-	 */
-	public String getUdfchar02() {
-		return udfchar02;
-	}
-
-	/**
-	 * @param udfchar02
-	 *            the udfchar02 to set
-	 */
-	public void setUdfchar02(String udfchar02) {
-		this.udfchar02 = udfchar02;
-	}
-
-	/**
-	 * @return the udfchar03 (Department 03)
-	 */
-	public String getUdfchar03() {
-		return udfchar03;
-	}
-
-	/**
-	 * @param udfchar03
-	 *            the udfchar03 to set
-	 */
-	public void setUdfchar03(String udfchar03) {
-		this.udfchar03 = udfchar03;
-	}
-
-	/**
-	 * @return the udfchar04 (Department 04)
-	 */
-	public String getUdfchar04() {
-		return udfchar04;
-	}
-
-	/**
-	 * @param udfchar04
-	 *            the udfchar04 to set
-	 */
-	public void setUdfchar04(String udfchar04) {
-		this.udfchar04 = udfchar04;
-	}
-
-	/**
-	 * @return the udfchar05 (Default Work Order screen)
-	 */
-	public String getUdfchar05() {
-		return udfchar05;
-	}
-
-	/**
-	 * @param udfchar05
-	 *            the udfchar05 to set
-	 */
-	public void setUdfchar05(String udfchar05) {
-		this.udfchar05 = udfchar05;
-	}
-
-	/**
-	 * @return the udfchar06 (Default Part Screen)
-	 */
-	public String getUdfchar06() {
-		return udfchar06;
-	}
-
-	/**
-	 * @param udfchar06
-	 *            the udfchar06 to set
-	 */
-	public void setUdfchar06(String udfchar06) {
-		this.udfchar06 = udfchar06;
-	}
-
-	/**
-	 * @return the udfchar07 (Default Asset Screen)
-	 */
-	public String getUdfchar07() {
-		return udfchar07;
-	}
-
-	/**
-	 * @param udfchar07
-	 *            the udfchar07 to set
-	 */
-	public void setUdfchar07(String udfchar07) {
-		this.udfchar07 = udfchar07;
-	}
-
-	/**
-	 * @return the udfchar08 (Default Position Screen)
-	 */
-	public String getUdfchar08() {
-		return udfchar08;
-	}
-
-	/**
-	 * @param udfchar08
-	 *            the udfchar08 to set
-	 */
-	public void setUdfchar08(String udfchar08) {
-		this.udfchar08 = udfchar08;
-	}
-
-	/**
-	 * @return the udfchar09 (Default System screen)
-	 */
-	public String getUdfchar09() {
-		return udfchar09;
-	}
-
-	/**
-	 * @param udfchar09
-	 *            the udfchar09 to set
-	 */
-	public void setUdfchar09(String udfchar09) {
-		this.udfchar09 = udfchar09;
-	}
-
-	/**
-	 * @return the cernId
-	 */
-	public String getCernId() {
-		return cernId;
-	}
-
-	/**
-	 * @param cernId
-	 *            the cernId to set
-	 */
-	public void setCernId(String cernId) {
-		this.cernId = cernId;
-	}
-
-	/**
 	 * @return the userDefinedFields
 	 */
 	public UserDefinedFields getUserDefinedFields() {
@@ -327,6 +183,14 @@ public class EAMUser implements Serializable {
 	 */
 	public void setUserDefinedFields(UserDefinedFields userDefinedFields) {
 		this.userDefinedFields = userDefinedFields;
+	}
+
+	public String getEmployeeCode() {
+		return employeeCode;
+	}
+
+	public void setEmployeeCode(String employeeCode) {
+		this.employeeCode = employeeCode;
 	}
 
 	/*
@@ -346,16 +210,6 @@ public class EAMUser implements Serializable {
 				+ (department != null ? "department=" + department + ", " : "")
 				+ (classCode != null ? "classCode=" + classCode + ", " : "")
 				+ (customFields != null ? "customFields=" + Arrays.toString(customFields) + ", " : "")
-				+ (udfchar01 != null ? "udfchar01=" + udfchar01 + ", " : "")
-				+ (udfchar02 != null ? "udfchar02=" + udfchar02 + ", " : "")
-				+ (udfchar03 != null ? "udfchar03=" + udfchar03 + ", " : "")
-				+ (udfchar04 != null ? "udfchar04=" + udfchar04 + ", " : "")
-				+ (udfchar05 != null ? "udfchar05=" + udfchar05 + ", " : "")
-				+ (udfchar06 != null ? "udfchar06=" + udfchar06 + ", " : "")
-				+ (udfchar07 != null ? "udfchar07=" + udfchar07 + ", " : "")
-				+ (udfchar08 != null ? "udfchar08=" + udfchar08 + ", " : "")
-				+ (udfchar09 != null ? "udfchar09=" + udfchar09 + ", " : "")
-				+ (cernId != null ? "cernId=" + cernId + ", " : "")
 				+ (userDefinedFields != null ? "userDefinedFields=" + userDefinedFields : "") + "]";
 	}
 

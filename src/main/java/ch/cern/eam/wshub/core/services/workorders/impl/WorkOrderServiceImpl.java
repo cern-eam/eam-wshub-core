@@ -6,15 +6,14 @@ import ch.cern.eam.wshub.core.services.comments.impl.CommentServiceImpl;
 import ch.cern.eam.wshub.core.services.entities.BatchResponse;
 import ch.cern.eam.wshub.core.services.comments.entities.Comment;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
-import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
+import ch.cern.eam.wshub.core.services.workorders.StandardWorkOrderService;
 import ch.cern.eam.wshub.core.services.workorders.WorkOrderService;
+import ch.cern.eam.wshub.core.services.workorders.entities.StandardWorkOrder;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrder;
-import net.datastream.schemas.mp_entities.standardworkorder_001.StandardWorkOrder;
 import net.datastream.schemas.mp_fields.*;
-import net.datastream.schemas.mp_functions.SessionType;
 import net.datastream.schemas.mp_functions.mp0023_001.MP0023_AddWorkOrder_001;
 import net.datastream.schemas.mp_functions.mp0024_001.MP0024_GetWorkOrder_001;
 import net.datastream.schemas.mp_functions.mp0025_001.MP0025_SyncWorkOrder_001;
@@ -26,11 +25,8 @@ import net.datastream.schemas.mp_results.mp0024_001.MP0024_GetWorkOrder_001_Resu
 import net.datastream.schemas.mp_results.mp0026_001.MP0026_GetWorkOrderDefault_001_Result;
 import net.datastream.schemas.mp_results.mp0026_001.ResultData;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
-import javax.xml.ws.Holder;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.toCodeString;
@@ -42,15 +38,14 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 	private InforWebServicesPT inforws;
 	private ApplicationData applicationData;
 	private CommentService comments;
-	private StandardWorkOrderServiceImpl standardWorkOrderServiceImpl;
+	private StandardWorkOrderService standardWorkOrderService;
 
 	public WorkOrderServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
 		this.applicationData = applicationData;
 		this.tools = tools;
 		this.inforws = inforWebServicesToolkitClient;
 		this.comments = new CommentServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
-		this.standardWorkOrderServiceImpl = new StandardWorkOrderServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
-
+		this.standardWorkOrderService = new StandardWorkOrderServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
 	}
 
 	//
@@ -141,8 +136,6 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 	public String createWorkOrder(InforContext context, WorkOrder workorderParam) throws InforException {
 		net.datastream.schemas.mp_entities.workorder_001.WorkOrder inforWorkOrder = new net.datastream.schemas.mp_entities.workorder_001.WorkOrder();
 
-		String woClass = "*";
-
 		// REQUIRED
 		inforWorkOrder.setWORKORDERID(new WOID_Type());
 		inforWorkOrder.getWORKORDERID().setORGANIZATIONID(tools.getOrganization(context));
@@ -151,62 +144,29 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
 		// STANDARD WORK ORDER
 		if (workorderParam.getStandardWO() != null && !workorderParam.getStandardWO().trim().equals("")) {
-			StandardWorkOrder standardWO = standardWorkOrderServiceImpl.readStandardWorkOrderInfor(context, workorderParam.getStandardWO());
-			inforWorkOrder.setPERMITREVIEWEDBY(standardWO.getPERMITREVIEWEDBY());
-			inforWorkOrder.setPRIORITY(standardWO.getPRIORITY());
-			inforWorkOrder.setPROBLEMCODEID(standardWO.getPROBLEMCODEID());
-			inforWorkOrder.setSAFETYREVIEWEDBY(standardWO.getSAFETYREVIEWEDBY());
-			inforWorkOrder.setSTANDARDWO(standardWO.getSTANDARDWO());
-			inforWorkOrder.setCLASSID(standardWO.getWORKORDERCLASSID());
-
-			CustomField[] swoCFs = tools.getCustomFieldsTools().readInforCustomFields(standardWO.getUSERDEFINEDAREA());
-			CustomField[] paramCFs = workorderParam.getCustomFields() == null ?
-					new CustomField[0]
-					: workorderParam.getCustomFields()
-					;
-
-			//inforWorkOrder.setUSERDEFINEDAREA(standardWO.getUSERDEFINEDAREA());
-			if (standardWO.getWORKORDERCLASSID() != null
-					&& standardWO.getWORKORDERCLASSID().getCLASSCODE() != null){
-				woClass = standardWO.getWORKORDERCLASSID().getCLASSCODE();
-			}
-
-			CustomField[] customFields = Stream.concat(
-					Arrays.stream(swoCFs)
-					.filter(
-							swo -> Arrays.stream(paramCFs).noneMatch(
-									cf -> swo.getCode().equals(cf.getCode())
-							)
-					),
-					Arrays.stream(paramCFs)
-				)
-				.toArray(CustomField[]::new);
-			workorderParam.setCustomFields(customFields);
-
-			inforWorkOrder.setTYPE(standardWO.getWORKORDERTYPE());
-			inforWorkOrder.getWORKORDERID().setORGANIZATIONID(standardWO.getSTANDARDWO().getORGANIZATIONID());
-			inforWorkOrder.getWORKORDERID().setDESCRIPTION(standardWO.getSTANDARDWO().getDESCRIPTION());
-
-			// Create temporary workorder to make use of the transformWSHubObject method to populate udfs
-			WorkOrder wo = new WorkOrder();
-			wo.setUserDefinedFields(tools.getUDFTools().readInforUserDefinedFields(standardWO.getUserDefinedFields()));
-			tools.getInforFieldTools().transformWSHubObject(inforWorkOrder, wo, context);
+			StandardWorkOrder standardWorkOrder = standardWorkOrderService.readStandardWorkOrder(context, workorderParam.getStandardWO());
+			workorderParam.setDescription(standardWorkOrder.getDesc());
+			workorderParam.setClassCode(standardWorkOrder.getWoClassCode());
+			workorderParam.setPriorityCode(standardWorkOrder.getPriorityCode());
+			workorderParam.setTypeCode(standardWorkOrder.getWorkOrderTypeCode());
+			workorderParam.setProblemCode(standardWorkOrder.getProblemCode());
+			workorderParam.setCustomFields(standardWorkOrder.getCustomFields());
+			workorderParam.setUserDefinedFields(standardWorkOrder.getUserDefinedFields());
 		}
 
-		// CUSTOM FIELDS
-		if (workorderParam.getClassCode() != null && !workorderParam.getClassCode().trim().equals("")) {
-			woClass = workorderParam.getClassCode();
-		}
-		USERDEFINEDAREA cfs = tools.getCustomFieldsTools().getInforCustomFields(context, "EVNT", woClass);
-		inforWorkOrder.setUSERDEFINEDAREA(cfs);
+		inforWorkOrder.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(
+				context,
+				toCodeString(inforWorkOrder.getCLASSID()),
+				inforWorkOrder.getUSERDEFINEDAREA(),
+				workorderParam.getClassCode(),
+				"EVNT"));
 
 		// POPULATE ALL OTHER FIELDS
 		tools.getInforFieldTools().transformWSHubObject(inforWorkOrder, workorderParam, context);
 
 		MP0023_AddWorkOrder_001 addWO = new MP0023_AddWorkOrder_001();
 		addWO.setWorkOrder(inforWorkOrder);
-		MP0023_AddWorkOrder_001_Result result =
-			tools.performInforOperation(context, inforws::addWorkOrderOp, addWO);
+		MP0023_AddWorkOrder_001_Result result = tools.performInforOperation(context, inforws::addWorkOrderOp, addWO);
 
 		// Work Order has been created, check if comment should be added
 		if (workorderParam.getComment() != null && !workorderParam.getComment().trim().equals("")) {
@@ -238,15 +198,15 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		MP0025_SyncWorkOrder_001 syncWO = new MP0025_SyncWorkOrder_001();
 		syncWO.setWorkOrder(inforWorkOrder);
 
-		if(workorderParam.isConfirmedIncompleteChecklist())
+		if (workorderParam.isConfirmedIncompleteChecklist()) {
 			syncWO.setConfirmincompletechecklist("confirmed");
+		}
 
 		tools.performInforOperation(context, inforws::syncWorkOrderOp, syncWO);
 		return inforWorkOrder.getWORKORDERID().getJOBNUM();
 	}
 
 	public String deleteWorkOrder(InforContext context, String workOrderNumber) throws InforException {
-
 		MP0055_DeleteWorkOrder_001 deleteWO = new MP0055_DeleteWorkOrder_001();
 		deleteWO.setWORKORDERID(new WOID_Type());
 		deleteWO.getWORKORDERID().setORGANIZATIONID(tools.getOrganization(context));
@@ -257,7 +217,6 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 	}
 
 	public String updateWorkOrderStatus(InforContext context, String workOrderNumber, String statusCode) throws InforException {
-
 		MP7161_ChangeWorkOrderStatus_001 changeWOStatus = new MP7161_ChangeWorkOrderStatus_001();
 		changeWOStatus.setWORKORDERID(new WOID_Type());
 		changeWOStatus.getWORKORDERID().setORGANIZATIONID(tools.getOrganization(context));

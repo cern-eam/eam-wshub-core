@@ -79,6 +79,7 @@ public class InforClient implements Serializable {
     private EmployeeService employeeService;
     private ChecklistService checklistService;
     private InspectionService inspectionService;
+    private RouteService routeService;
 
     private AssetService assetService;
     private PositionService positionService;
@@ -246,6 +247,7 @@ public class InforClient implements Serializable {
             inforClient.equipmentConfigurationService = proxy(EquipmentConfigurationService.class, new EquipmentConfigurationServiceImpl(applicationData, tools, inforWebServicesToolkitClient),inforInterceptor, tools);
             inforClient.dataspyService = proxy(DataspyService.class, new DataspyServiceImpl(applicationData, tools, inforWebServicesToolkitClient),inforInterceptor, tools);
             inforClient.userDefinedTableServices = proxy(UserDefinedTableService.class, new UserDefinedTableServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
+            inforClient.routeService = proxy(RouteService.class, new RouteServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.inforWebServicesToolkitClient = inforWebServicesToolkitClient;
             if (!tools.isDatabaseConnectionConfigured()) {
                 logger.log(Level.WARNING, "Some of the services might require a database connection.");
@@ -392,6 +394,10 @@ public class InforClient implements Serializable {
 
     public EquipmentConfigurationService getEquipmentConfigurationService() {
         return equipmentConfigurationService;
+    }
+
+    public RouteService getRouteService() {
+        return routeService;
     }
 
     public DataspyService getDataspyService() { return dataspyService; }

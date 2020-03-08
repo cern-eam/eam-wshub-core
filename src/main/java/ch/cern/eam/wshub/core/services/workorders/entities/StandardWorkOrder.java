@@ -66,6 +66,9 @@ public class StandardWorkOrder {
     @InforField(xpath = "UserDefinedFields")
     private UserDefinedFields userDefinedFields;
 
+    @InforField(xpath = "PROBLEMCODEID/PROBLEMCODE")
+    private String problemCode;
+
     public String getCode() {
         return code;
     }
@@ -228,6 +231,14 @@ public class StandardWorkOrder {
 
     public void setUserDefinedFields(UserDefinedFields userDefinedFields) {
         this.userDefinedFields = userDefinedFields;
+    }
+
+    public String getProblemCode() {
+        return problemCode;
+    }
+
+    public void setProblemCode(String problemCode) {
+        this.problemCode = problemCode;
     }
 
     @Override

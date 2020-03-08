@@ -5,7 +5,7 @@ import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.interceptors.LogDataReferenceType;
 import ch.cern.eam.wshub.core.services.INFOR_OPERATION;
 import ch.cern.eam.wshub.core.services.entities.BatchResponse;
-import ch.cern.eam.wshub.core.services.entities.EAMUser;
+import ch.cern.eam.wshub.core.services.administration.entities.EAMUser;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 import java.util.List;

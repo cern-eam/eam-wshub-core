@@ -11,7 +11,6 @@ import ch.cern.eam.wshub.core.services.workorders.entities.Activity;
 import ch.cern.eam.wshub.core.services.workorders.entities.Finding;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.annotations.BooleanType;
-import ch.cern.eam.wshub.core.tools.DataTypeTools;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.*;
@@ -26,26 +25,32 @@ import net.datastream.schemas.mp_functions.mp8000_001.MP8000_CreateFollowUpWorkO
 import net.datastream.schemas.mp_results.mp7914_001.MP7914_GetWorkOrderActivityCheckList_001_Result;
 import net.datastream.schemas.mp_results.mp8000_001.MP8000_CreateFollowUpWorkOrder_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
+
+import static ch.cern.eam.wshub.core.tools.GridTools.extractSingleResultFromGridResult;
 import static ch.cern.eam.wshub.core.tools.GridTools.getCellContent;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.decodeBoolean;
 import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrderActivityCheckList.*;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.isEmpty;
 
-import javax.persistence.EntityManager;
-import javax.xml.ws.Holder;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 public class ChecklistServiceImpl implements ChecklistService {
+
 	private Tools tools;
 	private InforWebServicesPT inforws;
 	private ApplicationData applicationData;
 	private GridsService gridsService;
+	public static final Map<String, String> findingsCache = new ConcurrentHashMap<>();
 
 	public ChecklistServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
 		this.applicationData = applicationData;
@@ -285,16 +290,17 @@ public class ChecklistServiceImpl implements ChecklistService {
 		gridRequest.getParams().put("param.jobseq", "0");
 		GridRequestResult gridRequestResult = gridsService.executeQuery(context, gridRequest);
 
+
 		LinkedList<WorkOrderActivityCheckList> checklists = new LinkedList<>();
-		for(GridRequestRow row : gridRequestResult.getRows()) {
-			checklists.add(getCheckList(row, activity));
+		for (GridRequestRow row : gridRequestResult.getRows()) {
+			checklists.add(getCheckList(context, row, activity));
 		}
 
 		return checklists.toArray(new WorkOrderActivityCheckList[]{});
 	}
 
 
-	private WorkOrderActivityCheckList getCheckList(GridRequestRow row, Activity activity) throws InforException {
+	private WorkOrderActivityCheckList getCheckList(InforContext context, GridRequestRow row, Activity activity) throws InforException {
 		WorkOrderActivityCheckList checklist = new WorkOrderActivityCheckList();
 		checklist.setWorkOrderCode(activity.getWorkOrderNumber());
 		checklist.setActivityCode(activity.getActivityCode());
@@ -354,11 +360,11 @@ public class ChecklistServiceImpl implements ChecklistService {
 				break;
 			case CheckListType.QUALITATIVE:
 				checklist.setFinding(getCellContent("finding", row));
-				checklist.setPossibleFindings(getPossibleFindings(row));
+				checklist.setPossibleFindings(getPossibleFindings(context, row));
 				break;
 			case CheckListType.INSPECTION:
 				checklist.setFinding(getCellContent("finding", row));
-				checklist.setPossibleFindings(getPossibleFindings(row));
+				checklist.setPossibleFindings(getPossibleFindings(context, row));
 				// no break here, INSPECTION is the same as QUANTITATIVE/METER_READING,
 				// but with findings and possible findings, so we will set the numeric value and UOM below
 			case CheckListType.QUANTITATIVE:
@@ -422,25 +428,32 @@ public class ChecklistServiceImpl implements ChecklistService {
 		return checklist;
 	}
 
-	private Finding[] getPossibleFindings(GridRequestRow row) {
-		String[] possibleFindings = getCellContent("possiblefindings", row).split(",");
-		List<Finding> findings = new LinkedList<>();
+	/**
+	 * Fetches the list of Findings (code, desc) for GridRequestRow containing comma-delimited string of finding codes.
+	 *
+	 * @param context
+	 * @param row
+	 * @return
+	 */
+	private List<Finding> getPossibleFindings(InforContext context, GridRequestRow row) {
+		List<String> possibleFindings = Arrays.asList(getCellContent("possiblefindings", row).split(","));
 
-		if (tools.isDatabaseConnectionConfigured()) {
-			for (String findingCode : possibleFindings) {
-				EntityManager em = tools.getEntityManager();
+		for (String findingCode : possibleFindings) {
+			if (!findingsCache.containsKey(findingCode)) {
 				try {
-					Finding findingTemp = em.find(Finding.class, findingCode);
-					findings.add(findingTemp);
-				} catch (Exception e) {
-					tools.log(Level.SEVERE, "Error in readWOActivityChecklists");
-				} finally {
-					em.close();
+					GridRequest gridRequest = new GridRequest("ISFIND", GridRequest.GRIDTYPE.LIST);
+					gridRequest.addFilter("findingcode", findingCode, "=");
+					findingsCache.put(findingCode, extractSingleResultFromGridResult(gridsService.executeQuery(context, gridRequest), "findingdesc2"));
+				}
+				catch (Exception e) {
+					tools.log(Level.WARNING, "Finding could not be fetched: " + e.getMessage());
 				}
 			}
 		}
 
-		return findings.toArray(new Finding[findings.size()]);
+		return possibleFindings.stream()
+				.map(findingCode -> new Finding(findingCode, findingsCache.containsKey(findingCode) ? findingsCache.get(findingCode) : findingCode))
+				.collect(Collectors.toList());
 	}
 
 	private boolean cellEquals(GridRequestRow row, String key, String value) {

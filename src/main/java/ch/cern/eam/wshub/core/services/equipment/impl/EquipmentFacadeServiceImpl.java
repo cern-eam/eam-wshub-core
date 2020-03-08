@@ -178,6 +178,9 @@ public class EquipmentFacadeServiceImpl implements EquipmentFacadeService {
         //TODO: Find more suitable grid to fetch equipment type
         Map<String, String> types = new HashMap<>();
         types.put("Equipement", "A");
+        types.put("Piece de lot", "PB");
+        types.put("Piece de materiel", "PM");
+        types.put("Outil", "T");
         types.put("Asset", "A");
         types.put("Position", "P");
         types.put("Position fonctionelle", "P");
@@ -186,6 +189,7 @@ public class EquipmentFacadeServiceImpl implements EquipmentFacadeService {
         types.put("Lot", "B");
         types.put("Route", "R");
         types.put("Material", "M");
+        types.put("Matériel", "M");
 
         GridRequest gridRequest = new GridRequest("LVREPCOGALLEQUIPMENT", GridRequest.GRIDTYPE.LOV);
         gridRequest.getGridRequestFilters().add(new GridRequestFilter("code", equipmentCode, "="));

@@ -45,7 +45,6 @@ public class Tools {
 
 	private CustomFieldsTools customFieldsTools;
 	private DataTypeTools dataTypeTools;
-	private UserDefinedFieldsTools udfTools;
 	private FieldDescriptionTools fieldDescriptionsTools;
 	private GridTools gridTools;
 	private InforFieldTools inforFieldTools;
@@ -66,7 +65,6 @@ public class Tools {
 		this.customFieldsTools = new CustomFieldsTools(this, applicationData, inforws);
 		this.inforFieldTools = new InforFieldTools(customFieldsTools, this);
 		this.dataTypeTools = new DataTypeTools(this);
-		this.udfTools = new UserDefinedFieldsTools(this);
 		this.fieldDescriptionsTools = new FieldDescriptionTools(this);
 		this.gridTools = new GridTools(this);
 
@@ -88,10 +86,6 @@ public class Tools {
 	public CustomFieldsTools getCustomFieldsTools() {return this.customFieldsTools; }
 
 	public DataTypeTools getDataTypeTools() {return this.dataTypeTools; }
-
-	public UserDefinedFieldsTools getUDFTools() {
-		return udfTools;
-	}
 
 	public FieldDescriptionTools getFieldDescriptionsTools() {return fieldDescriptionsTools; }
 
