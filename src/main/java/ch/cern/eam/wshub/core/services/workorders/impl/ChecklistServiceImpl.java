@@ -443,7 +443,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 				try {
 					GridRequest gridRequest = new GridRequest("ISFIND", GridRequest.GRIDTYPE.LIST);
 					gridRequest.addFilter("findingcode", findingCode, "=");
-					findingsCache.put(findingCode, extractSingleResultFromGridResult(gridsService.executeQuery(context, gridRequest), "findingdesc2"));
+					findingsCache.put(findingCode, extractSingleResultFromGridResult(gridsService.executeQuery(context, gridRequest), "findingdesc"));
 				}
 				catch (Exception e) {
 					tools.log(Level.WARNING, "Finding could not be fetched: " + e.getMessage());
