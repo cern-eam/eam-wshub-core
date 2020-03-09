@@ -11,7 +11,6 @@ import ch.cern.eam.wshub.core.tools.InforException;
 import java.util.List;
 
 public interface UserSetupService {
-
     @Operation(logOperation = INFOR_OPERATION.LOGIN)
     String login(InforContext context, String userCode) throws InforException;
 

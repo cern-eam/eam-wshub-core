@@ -3,8 +3,10 @@ package ch.cern.eam.wshub.core.client;
 import ch.cern.eam.wshub.core.interceptors.InforInterceptor;
 import ch.cern.eam.wshub.core.interceptors.InforInvocationHandler;
 import ch.cern.eam.wshub.core.services.administration.DataspyService;
+import ch.cern.eam.wshub.core.services.administration.UserGroupMenuService;
 import ch.cern.eam.wshub.core.services.administration.UserSetupService;
 import ch.cern.eam.wshub.core.services.administration.impl.DataspyServiceImpl;
+import ch.cern.eam.wshub.core.services.administration.impl.UserGroupMenuServiceImpl;
 import ch.cern.eam.wshub.core.services.administration.impl.UserSetupServiceImpl;
 import ch.cern.eam.wshub.core.services.comments.CommentService;
 import ch.cern.eam.wshub.core.services.comments.impl.CommentServiceImpl;
@@ -37,7 +39,6 @@ import ch.cern.eam.wshub.core.services.workorders.impl.LaborBookingServiceImpl;
 import ch.cern.eam.wshub.core.services.workorders.impl.WorkOrderMiscServiceImpl;
 import ch.cern.eam.wshub.core.services.workorders.impl.WorkOrderServiceImpl;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 
 import net.datastream.wsdls.inforws.InforWebServicesPT;
@@ -106,6 +107,7 @@ public class InforClient implements Serializable {
     private GridsService gridsService;
     private DocumentsService documentsService;
     private DataspyService dataspyService;
+    private UserGroupMenuService userGroupMenuService;
 
     private EquipmentGenerationService equipmentGenerationService;
     private EquipmentConfigurationService equipmentConfigurationService;
@@ -245,6 +247,7 @@ public class InforClient implements Serializable {
             inforClient.equipmentGenerationService = proxy(EquipmentGenerationService.class, new EquipmentGenerationServiceImpl(applicationData, tools, inforWebServicesToolkitClient),inforInterceptor, tools);
             inforClient.equipmentConfigurationService = proxy(EquipmentConfigurationService.class, new EquipmentConfigurationServiceImpl(applicationData, tools, inforWebServicesToolkitClient),inforInterceptor, tools);
             inforClient.dataspyService = proxy(DataspyService.class, new DataspyServiceImpl(applicationData, tools, inforWebServicesToolkitClient),inforInterceptor, tools);
+            inforClient.userGroupMenuService = proxy(UserGroupMenuService.class, new UserGroupMenuServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.userDefinedTableServices = proxy(UserDefinedTableService.class, new UserDefinedTableServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.inforWebServicesToolkitClient = inforWebServicesToolkitClient;
             if (!tools.isDatabaseConnectionConfigured()) {
@@ -395,6 +398,8 @@ public class InforClient implements Serializable {
     }
 
     public DataspyService getDataspyService() { return dataspyService; }
+
+    public UserGroupMenuService getUserGroupMenuService() { return userGroupMenuService; }
 
     public BindingProvider getBindingProvider() { return bindingProvider; }
 
