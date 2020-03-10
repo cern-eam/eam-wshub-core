@@ -60,8 +60,7 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         }
     }
 
-    @Override
-    public String addToMenuHierarchy(InforContext context, MenuSpecification node) throws InforException {
+    private ExtMenusHierarchy getExtMenuHierarchy(InforContext context, MenuSpecification node) throws InforException {
         MP6005_GetExtMenusHierarchy_001 getExtMenusHierarchy = new MP6005_GetExtMenusHierarchy_001();
         getExtMenusHierarchy.setUSERGROUPID(new USERGROUPID_Type());
         getExtMenusHierarchy.getUSERGROUPID().setUSERGROUPCODE(node.userGroup);
@@ -70,8 +69,13 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
                 tools.performInforOperation(context, inforws::getExtMenusHierarchyOp, getExtMenusHierarchy)
                         .getResultData().getExtMenusHierarchy();
 
-        List<GenericMenuEntry> menuEntries = new ArrayList<>();
+        return result;
+    }
 
+    private List<GenericMenuEntry> getExtMenuHierarchyAsList(InforContext context, MenuSpecification node) throws InforException {
+        ExtMenusHierarchy result = this.getExtMenuHierarchy(context, node);
+
+        List<GenericMenuEntry> menuEntries = new ArrayList<>();
         for(MENU_Type menu : result.getMENU()) {
             menuEntries.add(new GenericMenuEntry(menu));
             for(FOLDER_Type folder : menu.getFOLDER()) {
@@ -79,18 +83,46 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
             }
         }
 
-        String previous = null;
+        return menuEntries;
+    }
+
+//    private MenuNode getExtMenuHierarchyAsTree(InforContext context, MenuSpecification node) throws InforException {
+//        ExtMenusHierarchy result = this.getExtMenuHierarchy(context, node);
+//
+//        MenuNode tree = new MenuNode();
+//
+//        List<GenericMenuEntry> menuEntries = new ArrayList<>();
+//        for(MENU_Type menu : result.getMENU()) {
+//            menuEntries.add(new GenericMenuEntry(menu));
+//            for(FOLDER_Type folder : menu.getFOLDER()) {
+//                addFolderToEntries(menuEntries, folder);
+//            }
+//        }
+//
+//        return menuEntries;
+//    }
+
+    @Override
+    public String addToMenuHierarchy(InforContext context, MenuSpecification node) throws InforException {
+        // Get menu entries as list
+        List<GenericMenuEntry> menuEntries = this.getExtMenuHierarchyAsList(context, node);
+
+        // Find parent id of new entry
+        GenericMenuEntry previous = null;
         String[] words = node.path.split("\\/");
         for(String next : words) {
             for(GenericMenuEntry gme : menuEntries) {
                 if(gme.description.equals(next) && (previous == null || gme.parent.equals(previous))) {
-                    previous = gme.id;
+                    previous = gme;
                     System.out.println("!!!" + gme.id + "\t" + gme.parent + "\t" + gme.description);
                 }
             }
         }
 
-        String id = previous;
+        // With the previous ID found, fill the request object
+        String id = previous.getId();
+
+        System.out.println("Parent: " + previous.getId() + " " + previous.getDescription() + " " + previous.getClass());
 
         MP6043_AddExtMenus_001 addExtMenus = new MP6043_AddExtMenus_001();
 
@@ -105,11 +137,18 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
 
         extMenus.setEXTMENUPARENT(id);
         extMenus.setEXTMENUTYPE("S");
-        extMenus.setSEQUENCENUMBER(1000);
+        extMenus.setSEQUENCENUMBER(100);
         extMenus.setMOBILE("false");
 
-        tools.performInforOperation(context, inforws::addExtMenusOp, addExtMenus);
+        // With the request object created, perform the add operation
+        //tools.performInforOperation(context, inforws::addExtMenusOp, addExtMenus);
 
         return "OK";
+
+//        }catch(Exception e) {
+//            System.out.println("ERR " + e.getMessage());
+//            e.printStackTrace();
+//        }
+//        return null;
     }
 }
