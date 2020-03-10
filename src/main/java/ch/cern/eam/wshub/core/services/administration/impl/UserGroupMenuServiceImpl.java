@@ -104,12 +104,16 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
 
     @Override
     public String addToMenuHierarchy(InforContext context, MenuSpecification node) throws InforException {
+        //TODO validate node object (and check if path is correct (regex, throw))
+//        try {
+
         // Get menu entries as list
         List<GenericMenuEntry> menuEntries = this.getExtMenuHierarchyAsList(context, node);
 
-        // Find parent id of new entry
+        // Find parent id of new entry/item
         GenericMenuEntry previous = null;
         String[] words = node.path.split("\\/");
+        if (words.length > 0) {System.out.println("WORDS1: " + words[0]);}
         for(String next : words) {
             for(GenericMenuEntry gme : menuEntries) {
                 if(gme.description.equals(next) && (previous == null || gme.parent.equals(previous))) {
@@ -119,8 +123,21 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
             }
         }
 
+        String menuType;
+        // Decide menu type: if function type is not set, then assume it's a menu and not a function
+        if (node.menuCode == null || node.menuCode.isEmpty()) {
+            if (previous == null) {
+                menuType = "M"; // Item is main menu
+            } else {
+                menuType = "F"; // Item is submenu
+            }
+        } else {
+            menuType = "S"; // Item is function
+        }
+        //TODO issue, if two paths are identical, item will be added unreliably to one of them, as no item code is given (only path) to this function
+
         // With the previous ID found, fill the request object
-        String id = previous.getId();
+        String id = previous.getId(); // Which would be the extMenuCode of the parent..
 
         System.out.println("Parent: " + previous.getId() + " " + previous.getDescription() + " " + previous.getClass());
 
@@ -133,15 +150,19 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         extMenus.getUSERGROUPID().setUSERGROUPCODE(node.userGroup);
 
         extMenus.setFUNCTIONID(new FUNCTIONID_Type());
-        extMenus.getFUNCTIONID().setFUNCTIONCODE(node.menuCode);
+        if (menuType.equals("M") || menuType.equals("F")) { //TODO better with an enum, even if it's not our design
+            node.menuCode = "BSFOLD"; // And set internal BSFOLD code for menu item
+            extMenus.getFUNCTIONID().setFUNCTIONDESCRIPTION(words[words.length - 1]); // The last item on the path provided (the name of the menu item to add)
+        }
+        extMenus.getFUNCTIONID().setFUNCTIONCODE(node.menuCode); // Menu code is function code..
 
         extMenus.setEXTMENUPARENT(id);
-        extMenus.setEXTMENUTYPE("S");
+        extMenus.setEXTMENUTYPE(menuType);
         extMenus.setSEQUENCENUMBER(100);
         extMenus.setMOBILE("false");
 
         // With the request object created, perform the add operation
-        //tools.performInforOperation(context, inforws::addExtMenusOp, addExtMenus);
+       tools.performInforOperation(context, inforws::addExtMenusOp, addExtMenus);
 
         return "OK";
 
