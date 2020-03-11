@@ -109,11 +109,12 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
 
         if (words.length > 0) {System.out.println("WORDS1: " + words[0]);}
         for(String next : words) {
+            System.out.println("Current word:" + next);
             for(GenericMenuEntry gme : menuEntries) {
-                if(gme.description.equals(next) && (previous == null || gme.parent.equals(previous))) {
+                if(gme.description.equals(next) && (previous == null || gme.parent.equals(previous.getId()))) {
                     System.out.println("!! IN");
                     previous = gme;
-                    System.out.println("!!!" + gme.id + "\t" + gme.parent + "\t" + gme.description);
+                    System.out.println("!!! Parent Found (id, parent, description): " + gme.id + "\t" + gme.parent + "\t" + gme.description);
                 }
             }
         }
@@ -122,10 +123,10 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         return previous; // Can be null if it's a main menu item
     }
 
-    private String decideMenuType(String menuCode, GenericMenuEntry previous) {
+    private String decideMenuType(String menuCode, String[] path) {
         String menuType;
         if (menuCode == null || menuCode.isEmpty()) {
-            if (previous == null) {
+            if (path.length < 1) {
                 System.out.println("Main menu item");
                 menuType = "M"; // Item is main menu
             } else {
@@ -153,7 +154,8 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         GenericMenuEntry previous = this.getParentIdOfNewEntryFromList(menuEntries, words);
 
         // Decide menu type: if function type is not set, then assume it's a menu and not a function
-        String menuType = this.decideMenuType(node.menuCode, previous);
+//        String menuType = this.decideMenuType(node.menuCode, previous);
+        String menuType = this.decideMenuType(node.menuCode, words);
 
         // With the previous ID found and the menu type determined, fill the request object for both menu item or function item
         String id = previous.getId(); // Which would be the extMenuCode of the parent..
@@ -164,7 +166,7 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         extMenus.setUSERGROUPID(new USERGROUPID_Type());
         extMenus.getUSERGROUPID().setUSERGROUPCODE(node.userGroup);
         extMenus.setFUNCTIONID(new FUNCTIONID_Type());
-        if (menuType.equals("M") || menuType.equals("F")) { //TODO better with an enum, even if it's not our design
+        if (menuType.equals("M") || menuType.equals("F")) { //TODO better with an enum, even if it's not our design (but might be too cluttered)
             node.menuCode = "BSFOLD"; // And set internal BSFOLD code for menu item
             extMenus.getFUNCTIONID().setFUNCTIONDESCRIPTION(words[words.length - 1]); // The last item on the path provided (the name of the menu item to add)
         }
@@ -238,7 +240,7 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         extMenus.getFUNCTIONID().setFUNCTIONCODE(node.menuCode); // Menu code is function code..
         extMenus.setEXTMENUID(new EXTMENUID_Type());
         extMenus.getEXTMENUID().setEXTMENUCODE(id);
-        extMenus.setEXTMENUTYPE("F");
+        extMenus.setEXTMENUTYPE(this.decideMenuType(node.menuCode, words));
 
         System.out.println("MENU ID: " + extMenus.getEXTMENUID().getEXTMENUCODE());
         // With the request object created, perform the add operation
