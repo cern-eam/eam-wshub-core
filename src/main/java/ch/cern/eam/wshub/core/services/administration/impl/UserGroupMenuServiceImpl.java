@@ -14,8 +14,7 @@ import net.datastream.schemas.mp_functions.mp6045_001.MP6045_DeleteExtMenus_001;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 import org.omg.CORBA.DynAnyPackage.Invalid;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class UserGroupMenuServiceImpl implements UserGroupMenuService {
     private Tools tools;
@@ -29,6 +28,13 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
     }
 
     private void addFolderToEntries(List<GenericMenuEntry> entries, FOLDER_Type parent) {
+        entries.add(new GenericMenuEntry(parent));
+        for(FOLDER_Type child : parent.getFOLDER()) {
+            addFolderToEntries(entries, child);
+        }
+    }
+
+    private void addFolderToEntriesMap(List<GenericMenuEntry> entries, FOLDER_Type parent) {
         entries.add(new GenericMenuEntry(parent));
         for(FOLDER_Type child : parent.getFOLDER()) {
             addFolderToEntries(entries, child);
@@ -87,6 +93,29 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         return menuEntries;
     }
 
+    private List<GenericMenuEntry> getExtMenuHierarchyAsHashMap(InforContext context, MenuSpecification node) throws InforException {
+        ExtMenusHierarchy result = this.getExtMenuHierarchy(context, node);
+
+        Map<String, GenericMenuEntry> menuEntries = new HashMap<String, GenericMenuEntry>();
+
+        for (MENU_Type menu : result.getMENU()) {
+            menuEntries.put(menu.getEXTMENUCODE(), new GenericMenuEntry(menu));
+            for(FOLDER_Type folder : menu.getFOLDER()) {
+                addFolderToEntries(menuEntries, folder);
+            }
+        }
+
+//        List<GenericMenuEntry> menuEntries = new ArrayList<>();
+//        for(MENU_Type menu : result.getMENU()) {
+//            menuEntries.add(new GenericMenuEntry(menu));
+//            for(FOLDER_Type folder : menu.getFOLDER()) {
+//                addFolderToEntries(menuEntries, folder);
+//            }
+//        }
+
+        return menuEntries;
+    }
+
 //    private MenuNode getExtMenuHierarchyAsTree(InforContext context, MenuSpecification node) throws InforException {
 //        ExtMenusHierarchy result = this.getExtMenuHierarchy(context, node);
 //
@@ -105,16 +134,22 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
 
 
     private GenericMenuEntry getParentIdOfNewEntryFromList(List<GenericMenuEntry> menuEntries, String[] words) {
+        GenericMenuEntry current = null;
         GenericMenuEntry previous = null;
 
+        Boolean gmeFound = false;
         if (words.length > 0) {System.out.println("WORDS1: " + words[0]);}
         for(String next : words) {
+            gmeFound = false;
             System.out.println("Current word:" + next);
             for(GenericMenuEntry gme : menuEntries) {
-                if(gme.description.equals(next) && (previous == null || gme.parent.equals(previous.getId()))) {
+                if(!gmeFound && gme.description.equals(next) && (current == null || gme.parent.equals(current.getId()))) {
                     System.out.println("!! IN");
-                    previous = gme;
+                    previous = current;
+                    current = gme;
+                    gmeFound = true;
                     System.out.println("!!! Parent Found (id, parent, description): " + gme.id + "\t" + gme.parent + "\t" + gme.description);
+//                    break;
                 }
             }
         }
@@ -140,6 +175,25 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         return menuType;
     }
 
+//    private void addMissingPathToMenuHierarchy(String[] missingPath) {
+//        for (String currentPathStep: missingPath) {
+//            this.addToMenuHierarchy()
+//        }
+//    }
+
+//    private String[] calculateMissingPath(String[] words, List<GenericMenuEntry> menuEntries) {
+//        for (String currentPathStep: words) {
+//            this.getEntryByPathFromList(menuEntries, words);
+//        }
+//    }
+
+    /**
+     * //TODO write jdoc
+     * @param context
+     * @param node
+     * @return
+     * @throws InforException
+     */
     @Override
     public String addToMenuHierarchy(InforContext context, MenuSpecification node) throws InforException {
         //TODO validate node object (and check if path is correct (regex, throw))
@@ -149,8 +203,20 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         // Get menu entries as list
         List<GenericMenuEntry> menuEntries = this.getExtMenuHierarchyAsList(context, node);
 
-        // Find parent id of new entry/item from previous list
+        // Define is the path does not exist; if it doesn't, add all submenus (or menu)
         String[] words = node.path.split("\\/");
+//        String[] missingPath = this.calculateMissingPath(words, menuEntries);
+//        if (!missingPath.isEmpty()) {
+//            System.out.println("---1");
+//            System.out.println(node.path);
+//            node.path = String.join("\\/", Arrays.copyOf(words, words.length-1));
+//            //this.addMissingPathToMenuHierarchy(missingPath);
+//            this.addToMenuHierarchy(context, node);
+//            System.out.println(node.path);
+//            System.out.println("---2");
+//        }
+
+        // Find parent id of new entry/item from previous list
         GenericMenuEntry previous = this.getParentIdOfNewEntryFromList(menuEntries, words);
 
         // Decide menu type: if function type is not set, then assume it's a menu and not a function
@@ -173,13 +239,13 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         extMenus.getFUNCTIONID().setFUNCTIONCODE(node.menuCode); // Menu code is function code..
         extMenus.setEXTMENUPARENT(id);
         extMenus.setEXTMENUTYPE(menuType);
-        extMenus.setSEQUENCENUMBER(100);
+        extMenus.setSEQUENCENUMBER(100); //TODO set to a different number depending on position
         extMenus.setMOBILE("false");
 
         // With the request object created, perform the add operation
        tools.performInforOperation(context, inforws::addExtMenusOp, addExtMenus);
 
-        return "OK";
+       return "OK";
 
 //        }catch(Exception e) {
 //            System.out.println("ERR " + e.getMessage());
@@ -187,7 +253,6 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
 //        }
 //        return null;
     }
-
 
 
     private GenericMenuEntry getEntryByPathFromList(List<GenericMenuEntry> menuEntries, String[] words) {
