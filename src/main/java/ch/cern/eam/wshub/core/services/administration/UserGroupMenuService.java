@@ -16,4 +16,9 @@ public interface UserGroupMenuService {
 
     @Operation(logOperation = INFOR_OPERATION.WORKORDER_CREATE, logDataReference1 = LogDataReferenceType.RESULT)
     String addToMenuHierarchy(InforContext context, MenuSpecification node) throws InforException;
+
+    @Operation(logOperation = INFOR_OPERATION.WORKORDER_CREATE, logDataReference1 = LogDataReferenceType.RESULT)
+    String deleteFromMenuHierarchy(InforContext context, MenuSpecification node) throws InforException;
+
+
 }

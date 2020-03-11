@@ -10,6 +10,7 @@ import net.datastream.schemas.mp_entities.extmenushierarchy_001.ExtMenusHierarch
 import net.datastream.schemas.mp_fields.*;
 import net.datastream.schemas.mp_functions.mp6005_001.MP6005_GetExtMenusHierarchy_001;
 import net.datastream.schemas.mp_functions.mp6043_001.MP6043_AddExtMenus_001;
+import net.datastream.schemas.mp_functions.mp6045_001.MP6045_DeleteExtMenus_001;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 import org.omg.CORBA.DynAnyPackage.Invalid;
 
@@ -102,31 +103,30 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
 //        return menuEntries;
 //    }
 
-    @Override
-    public String addToMenuHierarchy(InforContext context, MenuSpecification node) throws InforException {
-        //TODO validate node object (and check if path is correct (regex, throw))
-//        try {
 
-        // Get menu entries as list
-        List<GenericMenuEntry> menuEntries = this.getExtMenuHierarchyAsList(context, node);
-
-        // Find parent id of new entry/item
+    private GenericMenuEntry getParentIdOfNewEntryFromList(List<GenericMenuEntry> menuEntries, String[] words) {
         GenericMenuEntry previous = null;
-        String[] words = node.path.split("\\/");
+
         if (words.length > 0) {System.out.println("WORDS1: " + words[0]);}
         for(String next : words) {
             for(GenericMenuEntry gme : menuEntries) {
                 if(gme.description.equals(next) && (previous == null || gme.parent.equals(previous))) {
+                    System.out.println("!! IN");
                     previous = gme;
                     System.out.println("!!!" + gme.id + "\t" + gme.parent + "\t" + gme.description);
                 }
             }
         }
+        //TODO if adding a menu item on Root hierarchy, then the maximum amount is 10 items; it should be checked here
 
+        return previous; // Can be null if it's a main menu item
+    }
+
+    private String decideMenuType(String menuCode, GenericMenuEntry previous) {
         String menuType;
-        // Decide menu type: if function type is not set, then assume it's a menu and not a function
-        if (node.menuCode == null || node.menuCode.isEmpty()) {
+        if (menuCode == null || menuCode.isEmpty()) {
             if (previous == null) {
+                System.out.println("Main menu item");
                 menuType = "M"; // Item is main menu
             } else {
                 menuType = "F"; // Item is submenu
@@ -136,26 +136,39 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         }
         //TODO issue, if two paths are identical, item will be added unreliably to one of them, as no item code is given (only path) to this function
 
-        // With the previous ID found, fill the request object
+        return menuType;
+    }
+
+    @Override
+    public String addToMenuHierarchy(InforContext context, MenuSpecification node) throws InforException {
+        //TODO validate node object (and check if path is correct (regex, throw))
+        //TODO for now, we assume that the path provided exists (all except last entry, in case of menu item). Next step is to implement mutiple directories creation
+//        try {
+
+        // Get menu entries as list
+        List<GenericMenuEntry> menuEntries = this.getExtMenuHierarchyAsList(context, node);
+
+        // Find parent id of new entry/item from previous list
+        String[] words = node.path.split("\\/");
+        GenericMenuEntry previous = this.getParentIdOfNewEntryFromList(menuEntries, words);
+
+        // Decide menu type: if function type is not set, then assume it's a menu and not a function
+        String menuType = this.decideMenuType(node.menuCode, previous);
+
+        // With the previous ID found and the menu type determined, fill the request object for both menu item or function item
         String id = previous.getId(); // Which would be the extMenuCode of the parent..
-
         System.out.println("Parent: " + previous.getId() + " " + previous.getDescription() + " " + previous.getClass());
-
         MP6043_AddExtMenus_001 addExtMenus = new MP6043_AddExtMenus_001();
-
         ExtMenus extMenus = new ExtMenus();
         addExtMenus.setExtMenus(extMenus);
-
         extMenus.setUSERGROUPID(new USERGROUPID_Type());
         extMenus.getUSERGROUPID().setUSERGROUPCODE(node.userGroup);
-
         extMenus.setFUNCTIONID(new FUNCTIONID_Type());
         if (menuType.equals("M") || menuType.equals("F")) { //TODO better with an enum, even if it's not our design
             node.menuCode = "BSFOLD"; // And set internal BSFOLD code for menu item
             extMenus.getFUNCTIONID().setFUNCTIONDESCRIPTION(words[words.length - 1]); // The last item on the path provided (the name of the menu item to add)
         }
         extMenus.getFUNCTIONID().setFUNCTIONCODE(node.menuCode); // Menu code is function code..
-
         extMenus.setEXTMENUPARENT(id);
         extMenus.setEXTMENUTYPE(menuType);
         extMenus.setSEQUENCENUMBER(100);
@@ -172,4 +185,74 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
 //        }
 //        return null;
     }
+
+
+
+    private GenericMenuEntry getEntryByPathFromList(List<GenericMenuEntry> menuEntries, String[] words) {
+        GenericMenuEntry toDelete = null;
+
+        if (words.length > 0) {System.out.println("WORDS1: " + words[0]);}
+        for(String next : words) {
+            System.out.println(next);
+            for(GenericMenuEntry gme : menuEntries) {
+                System.out.println(gme.getId());
+                if (gme.getId().equals("54102")) {
+                    break;
+                }
+                // If the next word in the path is equals to the description of the current item, and the parent item ID
+                // is equals to the current item ID (or is in root hierarchy)
+                System.out.println("GME: description " + gme.description + ", parent " + gme.parent + ", id: " + gme.getId());
+                if(gme.description.equals(next) && (toDelete == null || gme.parent.equals(toDelete.getId()))) {
+//                if(gme.description.equals(next) && (toDelete == null || gme.parent.equals(toDelete))) {
+                    toDelete = gme;
+                    System.out.println("!!! Parent Found (id, parent, description): " + gme.id + "\t" + gme.parent + "\t" + gme.description);
+                }
+            }
+        }
+
+        return toDelete; //TODO Should not be null (check after method call)
+    }
+
+    @Override
+    public String deleteFromMenuHierarchy(InforContext context, MenuSpecification node) throws InforException {
+        //TODO validate node object (and check if path is correct (regex, throw))
+        //TODO for now, we assume that the path provided exists (all except last entry, in case of menu item). Next step is to implement mutiple directories creation
+
+//        try {
+
+        // Get menu entries as list
+        List<GenericMenuEntry> menuEntries = this.getExtMenuHierarchyAsList(context, node);
+
+        // Find id of the item to be removed
+        String[] words = node.path.split("\\/");
+        GenericMenuEntry entryToDelete = this.getEntryByPathFromList(menuEntries, words);
+
+        // With the id of the item, fill the request object
+        String id = entryToDelete.getId(); // Which would be the extMenuCode..
+        MP6045_DeleteExtMenus_001 deleteExtMenus = new MP6045_DeleteExtMenus_001();
+        ExtMenus extMenus = new ExtMenus();
+        deleteExtMenus.setExtMenus(extMenus);
+        extMenus.setUSERGROUPID(new USERGROUPID_Type());
+        extMenus.getUSERGROUPID().setUSERGROUPCODE(node.userGroup);
+        extMenus.setFUNCTIONID(new FUNCTIONID_Type());
+        extMenus.getFUNCTIONID().setFUNCTIONCODE(node.menuCode); // Menu code is function code..
+        extMenus.setEXTMENUID(new EXTMENUID_Type());
+        extMenus.getEXTMENUID().setEXTMENUCODE(id);
+        extMenus.setEXTMENUTYPE("F");
+
+        System.out.println("MENU ID: " + extMenus.getEXTMENUID().getEXTMENUCODE());
+        // With the request object created, perform the add operation
+       tools.performInforOperation(context, inforws::deleteExtMenusOp, deleteExtMenus);
+
+        return "OK";
+
+//        }catch(Exception e) {
+//            System.out.println("ERR " + e.getMessage());
+//            e.printStackTrace();
+//        }
+//        return null;
+    }
+
+
+
 }
