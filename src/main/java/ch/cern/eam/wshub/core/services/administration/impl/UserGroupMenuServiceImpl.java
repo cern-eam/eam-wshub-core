@@ -256,7 +256,7 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         // Get menu entries as list
         List<GenericMenuEntry> menuEntries = this.getExtMenuHierarchyAsList(context, node);
 
-        // Check if path already exists; if so, exception or continue
+        // Check if path already exists; if so, continue
         String[] words = node.path.split("\\/");
         String[] existingPath = this.calculateExistingPath(words, menuEntries);
         if (words.length - existingPath.length == 0 && node.menuCode.isEmpty()) { // Path already exists and no function to add
@@ -265,7 +265,7 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
 
         Boolean addingFunction = false;
         // Check if path is incomplete; if so, complete it (if it doesn't, add all submenus (or menu)) starting from second to last item
-        if ((words.length - existingPath.length) > 1) { // Path is incomplete (or doesn't exist)
+        if ((words.length - existingPath.length) > 1) { // Path is incomplete (or doesn't exist), since differs more than 1
             if (!node.menuCode.isEmpty()) { // If function is there, then we remove only that
                 String oldMenuCode = node.menuCode;
                 node.menuCode = "";
@@ -364,12 +364,18 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         // Get menu entries as list
         List<GenericMenuEntry> menuEntries = this.getExtMenuHierarchyAsList(context, node);
 
-        // Check if full path already exists; if not, exception or continue
+        // Check if path already exists; if so, continue
         String[] words = node.path.split("\\/");
-//        String[] existingPath = this.calculateExistingPath(words, menuEntries);
-//        if (words.length - existingPath.length > 0) { // Path is incomplete
+        String[] existingPath = this.calculateExistingPath(words, menuEntries);
+//        if (words.length - existingPath.length == 0 && node.menuCode.isEmpty()) { // Path already exists and no function to delete
 //            return "OK";
 //        }
+
+        Boolean addingFunction = false;
+        // Check if path is incomplete; if so, stop
+        if ((words.length - existingPath.length) > 0) { // Path is not submenu leaf
+            throw new InforException("Path is not leaf submenu (in menu hierarchy)", null, null); //TODO Check if it's the correct exception class
+        }
 
         // Find id of the menu item to be removed
         GenericMenuEntry entryToDelete = this.getEntryByPathFromList(menuEntries, words);
