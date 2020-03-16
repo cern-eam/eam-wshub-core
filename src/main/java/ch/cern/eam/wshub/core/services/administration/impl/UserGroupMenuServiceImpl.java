@@ -184,8 +184,9 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
 
     private String decideMenuType(String menuCode, String[] path) {
         String menuType;
+        System.out.println("MENU CODE: " + menuCode);
         if (menuCode == null || menuCode.isEmpty()) {
-            if (path.length < 1) {
+            if (path.length <= 1) {
                 System.out.println("Main menu item");
                 menuType = "M"; // Item is main menu
             } else {
@@ -280,6 +281,7 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
 
         // Find parent id of new entry/item from previous list
         GenericMenuEntry parent;
+        System.out.println("MENU TYPE: " + menuType);
         if (menuType.equals("M") || menuType.equals("F")) { //TODO better with an enum, even if it's not our design (but might be too cluttered)
             parent = this.getEntryByPathFromList(menuEntries, Arrays.copyOf(words, words.length - 1));
         } else { // If to be added is a function, get end of path
@@ -287,8 +289,8 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         }
 
         // With the previous ID found and the menu type determined, fill the request object for both menu item or function item
-        String id = parent.getId(); // Which would be the extMenuCode of the parent..
-        System.out.println("Parent: " + parent.getId() + " " + parent.getDescription() + " " + parent.getClass());
+        String id = parent != null ? parent.getId() : ""; // Which would be the extMenuCode of the parent..
+//        System.out.println("Parent: " + parent.getId() + " " + parent.getDescription() + " " + parent.getClass());
         MP6043_AddExtMenus_001 addExtMenus = new MP6043_AddExtMenus_001();
         ExtMenus extMenus = new ExtMenus();
         addExtMenus.setExtMenus(extMenus);
@@ -325,7 +327,7 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
 //                if (gme.getId().equals("56400")) { //TODO Fix!
 //                    break;
 //                }
-                if (gme.getDescription().equals("TEST1")) {
+                if (gme.getDescription().equals("TEST")) {
                     System.out.println("!!!!!");
                 }
                 // If the next word in the path is equals to the description of the current item, and the parent item ID
@@ -339,7 +341,7 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
             }
         }
 
-        return current; //TODO Should not be null (check after method call)
+        return current; // Could be null, if it's root folder (check after method call)
     }
 
     private GenericMenuEntry findFunctionId(GenericMenuEntry entryToDelete, List<GenericMenuEntry> menuEntries, String functionId) {
