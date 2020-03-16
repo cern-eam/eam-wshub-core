@@ -222,7 +222,7 @@ public class GridTools {
                 .map(GridRequestCell::getContent).findFirst().orElse(null);
     }
 
-    public static String extractSingleResultFromGridResult(GridRequestResult gridRequestResult, String columnName) {
+    public static String extractSingleResult(GridRequestResult gridRequestResult, String columnName) {
         if (gridRequestResult == null ||
             gridRequestResult.getRows() == null ||
             gridRequestResult.getRows().length != 1) {

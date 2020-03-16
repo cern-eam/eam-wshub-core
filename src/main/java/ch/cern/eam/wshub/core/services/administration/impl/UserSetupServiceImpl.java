@@ -4,11 +4,14 @@ import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.administration.UserSetupService;
 import ch.cern.eam.wshub.core.services.entities.BatchResponse;
 import ch.cern.eam.wshub.core.services.administration.entities.EAMUser;
+import ch.cern.eam.wshub.core.services.entities.Department;
 import ch.cern.eam.wshub.core.services.grids.GridsService;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
 import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
-import static ch.cern.eam.wshub.core.tools.GridTools.extractSingleResultFromGridResult;
+import static ch.cern.eam.wshub.core.tools.GridTools.extractSingleResult;
+import static ch.cern.eam.wshub.core.tools.GridTools.convertGridResultToObject;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_fields.USERID_Type;
@@ -68,15 +71,24 @@ public class UserSetupServiceImpl implements UserSetupService {
 		// Execute operation of reading
 		MP0601_GetUserSetup_001_Result getUserSetupResult = tools.performInforOperation(context, inforws::getUserSetupOp, getUserSetup);
 
-		net.datastream.schemas.mp_entities.usersetup_001.UserSetup userInfor = getUserSetupResult.getResultData()
-				.getUserSetup();
+		net.datastream.schemas.mp_entities.usersetup_001.UserSetup userInfor = getUserSetupResult.getResultData().getUserSetup();
 
 		// Populate 'EAMUser' Object
 		EAMUser user = tools.getInforFieldTools().transformInforObject(new EAMUser(), userInfor);
 
-		GridRequest gridRequest = new GridRequest("WSEMPS", GridRequest.GRIDTYPE.LIST);
-		gridRequest.addFilter("associateduser", userCode, "=");
-		user.setEmployeeCode(extractSingleResultFromGridResult(gridsService.executeQuery(context, gridRequest), "employee"));
+		// Fetch corresponding employee code and description
+		GridRequest employeeGridRequest = new GridRequest("WSEMPS", GridRequest.GRIDTYPE.LIST);
+		employeeGridRequest.addFilter("associateduser", userCode, "=");
+		GridRequestResult employeeGridResult = gridsService.executeQuery(context, employeeGridRequest);
+		user.setEmployeeCode(extractSingleResult(employeeGridResult, "employee"));
+		user.setEmployeeDesc(extractSingleResult(employeeGridResult, "employeedescription"));
+
+		// Fetch user's departments
+		GridRequest departmentsGridRequest = new GridRequest("BSUSER_DSE", GridRequest.GRIDTYPE.LIST, 1000);
+		departmentsGridRequest.addParam("param.usercode", userCode);
+		user.setUserDepartments(convertGridResultToObject(Department.class,
+				null,
+				gridsService.executeQuery(context, departmentsGridRequest)));
 
 		return user;
 	}

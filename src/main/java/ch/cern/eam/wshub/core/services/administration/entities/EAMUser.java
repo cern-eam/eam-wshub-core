@@ -3,6 +3,7 @@ package ch.cern.eam.wshub.core.services.administration.entities;
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
 import ch.cern.eam.wshub.core.annotations.InforField;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
+import ch.cern.eam.wshub.core.services.entities.Department;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 
 import javax.persistence.*;
@@ -62,6 +63,7 @@ public class EAMUser implements Serializable {
 	private String classCode;
 
 	private String employeeCode;
+	private String employeeDesc;
 
 	@Transient
 	@InforField(xpath = "USERDEFINEDAREA")
@@ -70,6 +72,8 @@ public class EAMUser implements Serializable {
 	@Transient
 	@InforField(xpath = "StandardUserDefinedFields")
 	private UserDefinedFields userDefinedFields;
+
+	private List<Department> userDepartments;
 
 	public String getUserCode() {
 		return userCode;
@@ -191,6 +195,18 @@ public class EAMUser implements Serializable {
 
 	public void setEmployeeCode(String employeeCode) {
 		this.employeeCode = employeeCode;
+	}
+
+	public String getEmployeeDesc() {
+		return employeeDesc;
+	}
+
+	public void setEmployeeDesc(String employeeDesc) {
+		this.employeeDesc = employeeDesc;
+	}
+
+	public void setUserDepartments(List<Department> userDepartments) {
+		this.userDepartments = userDepartments;
 	}
 
 	/*

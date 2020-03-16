@@ -26,7 +26,7 @@ import net.datastream.schemas.mp_results.mp7914_001.MP7914_GetWorkOrderActivityC
 import net.datastream.schemas.mp_results.mp8000_001.MP8000_CreateFollowUpWorkOrder_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
-import static ch.cern.eam.wshub.core.tools.GridTools.extractSingleResultFromGridResult;
+import static ch.cern.eam.wshub.core.tools.GridTools.extractSingleResult;
 import static ch.cern.eam.wshub.core.tools.GridTools.getCellContent;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.decodeBoolean;
 import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrderActivityCheckList.*;
@@ -443,7 +443,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 				try {
 					GridRequest gridRequest = new GridRequest("ISFIND", GridRequest.GRIDTYPE.LIST);
 					gridRequest.addFilter("findingcode", findingCode, "=");
-					findingsCache.put(findingCode, extractSingleResultFromGridResult(gridsService.executeQuery(context, gridRequest), "findingdesc"));
+					findingsCache.put(findingCode, extractSingleResult(gridsService.executeQuery(context, gridRequest), "findingdesc"));
 				}
 				catch (Exception e) {
 					tools.log(Level.WARNING, "Finding could not be fetched: " + e.getMessage());

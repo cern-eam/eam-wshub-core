@@ -25,9 +25,9 @@ import net.datastream.schemas.mp_results.mp0024_001.MP0024_GetWorkOrder_001_Resu
 import net.datastream.schemas.mp_results.mp0026_001.MP0026_GetWorkOrderDefault_001_Result;
 import net.datastream.schemas.mp_results.mp0026_001.ResultData;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
-import java.util.Arrays;
+
+import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Stream;
 
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.toCodeString;
 
@@ -75,7 +75,16 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		// Get Infor Work Order
 		net.datastream.schemas.mp_entities.workorder_001.WorkOrder inforWorkOrder = readWorkOrderInfor(context, number);
 		//
-		return tools.getInforFieldTools().transformInforObject(new WorkOrder(), inforWorkOrder);
+		WorkOrder workOrder = tools.getInforFieldTools().transformInforObject(new WorkOrder(), inforWorkOrder);
+
+		// Fetching various descriptions not returned by Infor web service
+		List<Runnable> runnables = new LinkedList<>();
+		runnables.add(() -> workOrder.setAssignedToDesc(tools.getFieldDescriptionsTools().readPersonDesc(context, workOrder.getAssignedTo())));
+		runnables.add(() -> workOrder.setDepartmentDesc(tools.getFieldDescriptionsTools().readDepartmentDesc(context, workOrder.getDepartmentCode())));
+		runnables.add(() -> workOrder.setClassDesc(tools.getFieldDescriptionsTools().readClassDesc(context, "EVNT", workOrder.getClassCode())));
+		tools.processRunnables(runnables);
+
+		return workOrder;
 	}
 
 	public net.datastream.schemas.mp_entities.workorder_001.WorkOrder readWorkOrderInfor(InforContext context, String number) throws InforException {

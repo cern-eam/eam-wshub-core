@@ -22,6 +22,8 @@ import net.datastream.wsdls.inforws.InforWebServicesPT;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.*;
 
 import javax.xml.ws.Holder;
+import java.util.LinkedList;
+import java.util.List;
 
 public class AssetServiceImpl implements AssetService {
 
@@ -45,10 +47,17 @@ public class AssetServiceImpl implements AssetService {
         //
         Equipment asset = tools.getInforFieldTools().transformInforObject(new Equipment(), assetEquipment);
 
+        // ID
         if (assetEquipment.getASSETID() != null) {
             asset.setCode(assetEquipment.getASSETID().getEQUIPMENTCODE());
             asset.setDescription(assetEquipment.getASSETID().getDESCRIPTION());
         }
+
+        // DESCRIPTIONS
+        List<Runnable> runnables = new LinkedList<>();
+        runnables.add(() -> asset.setManufacturerDesc(tools.getFieldDescriptionsTools().readManufacturerDesc(context, asset.getManufacturerCode())));
+        runnables.add(() -> asset.setBinDesc(tools.getFieldDescriptionsTools().readBinDesc(context, asset.getStoreCode(), asset.getBin())));
+        tools.processRunnables(runnables);
 
         // HIERARCHY
         assetEquipment.setAssetParentHierarchy(readInforAssetHierarchy(context, assetCode));
