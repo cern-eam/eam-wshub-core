@@ -109,26 +109,6 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         return menuEntries;
     }
 
-    private GenericMenuEntry getParentIdOfNewEntryFromList(List<GenericMenuEntry> menuEntries, String[] words) {
-        GenericMenuEntry current = null;
-        GenericMenuEntry previous = null;
-
-        Boolean gmeFound = false;
-        for(String next : words) {
-            gmeFound = false;
-            for(GenericMenuEntry gme : menuEntries) {
-                if(!gmeFound && gme.description.equals(next) && (current == null || gme.parent.equals(current.getId()))) {
-                    previous = current;
-                    current = gme;
-                    gmeFound = true;
-                }
-            }
-        }
-        //TODO if adding a menu item on Root hierarchy, then the maximum amount is 10 items; it should be checked here
-
-        return previous; // Can be null if it's a main menu item
-    }
-
     private String decideMenuType(String menuCode, String[] path) {
         String menuType;
         if (menuCode == null || menuCode.isEmpty()) {
