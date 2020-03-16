@@ -259,22 +259,32 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         // Check if path already exists; if so, exception or continue
         String[] words = node.path.split("\\/");
         String[] existingPath = this.calculateExistingPath(words, menuEntries);
-        if (words.length - existingPath.length == 0) { // Path already exists
+        if (words.length - existingPath.length == 0 && node.menuCode.isEmpty()) { // Path already exists and no function to add
             return "OK";
         }
 
+        Boolean addingFunction = false;
         // Check if path is incomplete; if so, complete it (if it doesn't, add all submenus (or menu)) starting from second to last item
         if ((words.length - existingPath.length) > 1) { // Path is incomplete (or doesn't exist)
-            String[] oldPath = Arrays.copyOf(words, words.length);
-            node.path = String.join("/", Arrays.copyOf(words, words.length - 1));
-            System.out.println(this.addToMenuHierarchy(context, node));
-            menuEntries = this.getExtMenuHierarchyAsList(context, node); //TODO Calling a get two times is not good; fixed by using a HashMap or a tree
-            node.path = String.join("/", oldPath);
+            if (!node.menuCode.isEmpty()) { // If function is there, then we remove only that
+                String oldMenuCode = node.menuCode;
+                node.menuCode = "";
+                this.addToMenuHierarchy(context, node);
+                menuEntries = this.getExtMenuHierarchyAsList(context, node); //TODO Calling a get two times is not good; fixed by using a HashMap or a tree
+                node.menuCode = oldMenuCode;
+                addingFunction = true;
+            } else { // If no function, then we remove only one path item at the end
+                String[] oldPath = Arrays.copyOf(words, words.length);
+                node.path = String.join("/", Arrays.copyOf(words, words.length - 1));
+                System.out.println(this.addToMenuHierarchy(context, node));
+                menuEntries = this.getExtMenuHierarchyAsList(context, node); //TODO Calling a get two times is not good; fixed by using a HashMap or a tree
+                node.path = String.join("/", oldPath);
+            }
         }
 
         // Now add leaf item
         // Decide menu type: if function type is not set, then assume it's a menu and not a function
-        String menuType = this.decideMenuType(node.menuCode, words);
+        String menuType = addingFunction ? "S" : this.decideMenuType(node.menuCode, words);
 
         // Find parent id of new entry/item from previous list
         GenericMenuEntry parent;
@@ -314,7 +324,7 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         GenericMenuEntry current = null;
 
         Boolean gmeFound = false;
-        if (words.length > 0) {System.out.println("WORDS1: " + words[0]);}
+        if (words.length > 0) {System.out.println("WORDS LAST: " + words[words.length-1]);}
         for(String next : words) {
             gmeFound = false;
             for(GenericMenuEntry gme : menuEntries) {
