@@ -114,18 +114,13 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         GenericMenuEntry previous = null;
 
         Boolean gmeFound = false;
-//        if (words.length > 0) {System.out.println("WORDS1: " + words[0]);}
         for(String next : words) {
             gmeFound = false;
-//            System.out.println("Current word:" + next);
             for(GenericMenuEntry gme : menuEntries) {
                 if(!gmeFound && gme.description.equals(next) && (current == null || gme.parent.equals(current.getId()))) {
-//                    System.out.println("!! IN");
                     previous = current;
                     current = gme;
                     gmeFound = true;
-//                    System.out.println("!!! Parent Found (id, parent, description): " + gme.id + "\t" + gme.parent + "\t" + gme.description);
-//                    break;
                 }
             }
         }
@@ -136,10 +131,8 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
 
     private String decideMenuType(String menuCode, String[] path) {
         String menuType;
-        System.out.println("MENU CODE: " + menuCode);
         if (menuCode == null || menuCode.isEmpty()) {
             if (path.length <= 1) {
-                System.out.println("Main menu item");
                 menuType = "M"; // Item is main menu
             } else {
                 menuType = "F"; // Item is submenu
@@ -215,7 +208,6 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
             } else { // If no function, then we remove only one path item at the end
                 String[] oldPath = Arrays.copyOf(words, words.length);
                 node.path = String.join("/", Arrays.copyOf(words, words.length - 1));
-                System.out.println(this.addToMenuHierarchy(context, node));
                 menuEntries = this.getExtMenuHierarchyAsList(context, node); //TODO Calling a get two times is not good; fixed by using a HashMap or a tree
                 node.path = String.join("/", oldPath);
             }
@@ -257,12 +249,11 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
 
        return "OK";
     }
-    
+
     private GenericMenuEntry getEntryByPathFromList(List<GenericMenuEntry> menuEntries, String[] words) {
         GenericMenuEntry current = null;
 
         Boolean gmeFound = false;
-        if (words.length > 0) {System.out.println("WORDS LAST: " + words[words.length-1]);}
         for(String next : words) {
             gmeFound = false;
             for(GenericMenuEntry gme : menuEntries) {
