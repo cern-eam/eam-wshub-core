@@ -162,17 +162,17 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         GenericMenuEntry previous = null;
 
         Boolean gmeFound = false;
-        if (words.length > 0) {System.out.println("WORDS1: " + words[0]);}
+//        if (words.length > 0) {System.out.println("WORDS1: " + words[0]);}
         for(String next : words) {
             gmeFound = false;
-            System.out.println("Current word:" + next);
+//            System.out.println("Current word:" + next);
             for(GenericMenuEntry gme : menuEntries) {
                 if(!gmeFound && gme.description.equals(next) && (current == null || gme.parent.equals(current.getId()))) {
-                    System.out.println("!! IN");
+//                    System.out.println("!! IN");
                     previous = current;
                     current = gme;
                     gmeFound = true;
-                    System.out.println("!!! Parent Found (id, parent, description): " + gme.id + "\t" + gme.parent + "\t" + gme.description);
+//                    System.out.println("!!! Parent Found (id, parent, description): " + gme.id + "\t" + gme.parent + "\t" + gme.description);
 //                    break;
                 }
             }
@@ -213,30 +213,30 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
 //    }
 
 
-//    private String[] calculateExistingPath(String[] words, List<GenericMenuEntry> menuEntries) {
-//
-//
-//        GenericMenuEntry current = null;
-//        GenericMenuEntry previous = null;
-//
-//        Boolean gmeFound = false;
-//        for(String next : words) {
-//            gmeFound = false;
-//            for(GenericMenuEntry gme : menuEntries) {
-//                if(!gmeFound && gme.description.equals(next) && (current == null || gme.parent.equals(current.getId()))) {
-//                    System.out.println("!! IN");
-//                    previous = current;
-//                    current = gme;
-//                    gmeFound = true;
-//                    System.out.println("!!! Parent Found (id, parent, description): " + gme.id + "\t" + gme.parent + "\t" + gme.description);
-////                    break;
-//                }
-//            }
-//        }
-//        //TODO if adding a menu item on Root hierarchy, then the maximum amount is 10 items; it should be checked here
-//
-//        return previous; // Can be null if it's a main menu item
-//    }
+    private String[] calculateExistingPath(String[] words, List<GenericMenuEntry> menuEntries) {
+        GenericMenuEntry current = null;
+        GenericMenuEntry previous = null;
+
+        int amountFound = 0;
+        Boolean gmeFound = false;
+        for (String next : words) {
+            gmeFound = false;
+            for (GenericMenuEntry gme : menuEntries) {
+                if (!gmeFound && gme.description.equals(next) && (current == null || gme.parent.equals(current.getId()))) {
+                    previous = current;
+                    current = gme;
+                    gmeFound = true;
+                    amountFound++;
+                }
+            }
+            if (!gmeFound) {
+                return Arrays.copyOf(words, amountFound);
+            }
+        }
+        //TODO if adding a menu item on Root hierarchy, then the maximum amount is 10 items; it should be checked here
+
+        return words; // If reached the end, then all path could be found
+    }
 
 
     /**
@@ -248,40 +248,36 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
      */
     @Override
     public String addToMenuHierarchy(InforContext context, MenuSpecification node) throws InforException {
-        //TODO validate node object (and check if path is correct (regex, throw))
-        //TODO for now, we assume that the path provided exists (all except last entry, in case of menu item). Next step is to implement mutiple directories creation
-//        try {
+        //TODO validate node object (and check if path is correctly formed (regex, throw))
+        if (node.path.startsWith("/")) {
+            throw new InforException("Path cannot start with '/'", null, null); //TODO Check if it's the correct exception class
+        }
 
         // Get menu entries as list
         List<GenericMenuEntry> menuEntries = this.getExtMenuHierarchyAsList(context, node);
 
         // Check if path already exists; if so, exception or continue
         String[] words = node.path.split("\\/");
-//        String[] existingPath = this.calculateExistingPath(words, menuEntries);
-//        if (words.length - existingPath.length == 0) { // Path already exists
-//            return "OK";
-//        }
-//
-//        // Check if path is incomplete; if so, complete it (if it doesn't, add all submenus (or menu)) starting from second to last item
-//        if ((words.length - existingPath.length) > 1) { // Path is incomplete (or doesn't exist)
-////            System.out.println("---1");
-////            System.out.println(node.path);
-//            String[] oldPath = Arrays.copyOf(words, words.length);
-//            node.path = String.join("\\/", Arrays.copyOf(words, words.length-1));
-////            this.addMissingPathToMenuHierarchy(missingPath);
-//            this.addToMenuHierarchy(context, node);
-//            node.path = String.join("\\/", oldPath);
-////            System.out.println(node.path);
-////            System.out.println("---2");
-//        }
+        String[] existingPath = this.calculateExistingPath(words, menuEntries);
+        if (words.length - existingPath.length == 0) { // Path already exists
+            return "OK";
+        }
 
-        // Add leaf item
+        // Check if path is incomplete; if so, complete it (if it doesn't, add all submenus (or menu)) starting from second to last item
+        if ((words.length - existingPath.length) > 1) { // Path is incomplete (or doesn't exist)
+            String[] oldPath = Arrays.copyOf(words, words.length);
+            node.path = String.join("/", Arrays.copyOf(words, words.length - 1));
+            System.out.println(this.addToMenuHierarchy(context, node));
+            menuEntries = this.getExtMenuHierarchyAsList(context, node); //TODO Calling a get two times is not good; fixed by using a HashMap or a tree
+            node.path = String.join("/", oldPath);
+        }
+
+        // Now add leaf item
         // Decide menu type: if function type is not set, then assume it's a menu and not a function
         String menuType = this.decideMenuType(node.menuCode, words);
 
         // Find parent id of new entry/item from previous list
         GenericMenuEntry parent;
-        System.out.println("MENU TYPE: " + menuType);
         if (menuType.equals("M") || menuType.equals("F")) { //TODO better with an enum, even if it's not our design (but might be too cluttered)
             parent = this.getEntryByPathFromList(menuEntries, Arrays.copyOf(words, words.length - 1));
         } else { // If to be added is a function, get end of path
@@ -290,18 +286,18 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
 
         // With the previous ID found and the menu type determined, fill the request object for both menu item or function item
         String id = parent != null ? parent.getId() : ""; // Which would be the extMenuCode of the parent..
-//        System.out.println("Parent: " + parent.getId() + " " + parent.getDescription() + " " + parent.getClass());
         MP6043_AddExtMenus_001 addExtMenus = new MP6043_AddExtMenus_001();
         ExtMenus extMenus = new ExtMenus();
         addExtMenus.setExtMenus(extMenus);
         extMenus.setUSERGROUPID(new USERGROUPID_Type());
         extMenus.getUSERGROUPID().setUSERGROUPCODE(node.userGroup);
         extMenus.setFUNCTIONID(new FUNCTIONID_Type());
+        String menuCodeToSend = node.menuCode;
         if (menuType.equals("M") || menuType.equals("F")) { //TODO better with an enum, even if it's not our design (but might be too cluttered)
-            node.menuCode = "BSFOLD"; // And set internal BSFOLD code for menu item
+            menuCodeToSend = "BSFOLD"; // And set internal BSFOLD code for menu item
             extMenus.getFUNCTIONID().setFUNCTIONDESCRIPTION(words[words.length - 1]); // The last item on the path provided (the name of the menu item to add)
         }
-        extMenus.getFUNCTIONID().setFUNCTIONCODE(node.menuCode); // Menu code is function code..
+        extMenus.getFUNCTIONID().setFUNCTIONCODE(menuCodeToSend); // Menu code is function code..
         extMenus.setEXTMENUPARENT(id);
         extMenus.setEXTMENUTYPE(menuType);
         extMenus.setSEQUENCENUMBER(100); //TODO set to a different number depending on position
@@ -321,22 +317,12 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         if (words.length > 0) {System.out.println("WORDS1: " + words[0]);}
         for(String next : words) {
             gmeFound = false;
-            System.out.println(next);
             for(GenericMenuEntry gme : menuEntries) {
-                System.out.println(gme.getId());
-//                if (gme.getId().equals("56400")) { //TODO Fix!
-//                    break;
-//                }
-                if (gme.getDescription().equals("TEST")) {
-                    System.out.println("!!!!!");
-                }
                 // If the next word in the path is equals to the description of the current item, and the parent item ID
                 // is equals to the current item ID (or is in root hierarchy)
-                System.out.println("GME: description " + gme.description + ", parent " + gme.parent + ", id: " + gme.getId());
                 if(!gmeFound && gme.description.equals(next) && (current == null || gme.parent.equals(current.getId()))) {
                     current = gme;
                     gmeFound = true;
-                    System.out.println("!!! Parent Found (id, parent, description): " + gme.id + "\t" + gme.parent + "\t" + gme.description);
                 }
             }
         }
@@ -353,15 +339,17 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
             }
         }
 
-        return null; // TODO throw
+        return null; // TODO throw later
     }
 
     @Override
     public String deleteFromMenuHierarchy(InforContext context, MenuSpecification node) throws InforException {
         //TODO validate node object (and check if path is correct (regex, throw))
-        //TODO for now, we assume that the path provided exists (all except last entry, in case of menu item). Next step is to implement mutiple directories creation
+        if (node.path.startsWith("/")) {
+            throw new InforException("Path cannot start with '/'", null, null); //TODO Check if it's the correct exception class
+        }
 
-//        try {
+        //TODO for now, we only delete if item is a leaf item in the menu hierarchy, to avoid errors; if needed, deleting any object could be implemented too
 
         // Get menu entries as list
         List<GenericMenuEntry> menuEntries = this.getExtMenuHierarchyAsList(context, node);
@@ -380,7 +368,6 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         String menuType = this.decideMenuType(node.menuCode, words);
         if (menuType.equals("S")) {
             entryToDelete = this.findFunctionId(entryToDelete, menuEntries, node.menuCode);
-            System.out.println("A");
         }
 
         // With the id of the item, fill the request object
@@ -396,20 +383,9 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         extMenus.getEXTMENUID().setEXTMENUCODE(id);
         extMenus.setEXTMENUTYPE(menuType);
 
-        System.out.println("MENU ID: " + extMenus.getEXTMENUID().getEXTMENUCODE());
         // With the request object created, perform the add operation
        tools.performInforOperation(context, inforws::deleteExtMenusOp, deleteExtMenus);
 
         return "OK";
-
-//        }catch(Exception e) {
-//            System.out.println("ERR " + e.getMessage());
-//            e.printStackTrace();
-//        }
-//        return null;
     }
-
-
-
-
 }
