@@ -12,7 +12,6 @@ import net.datastream.schemas.mp_functions.mp6005_001.MP6005_GetExtMenusHierarch
 import net.datastream.schemas.mp_functions.mp6043_001.MP6043_AddExtMenus_001;
 import net.datastream.schemas.mp_functions.mp6045_001.MP6045_DeleteExtMenus_001;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
-import org.omg.CORBA.DynAnyPackage.Invalid;
 
 import java.util.*;
 
@@ -40,13 +39,6 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
     private void addFunctionToEntries(List<GenericMenuEntry> entries, FUNCTION_Type parent) {
         entries.add(new GenericMenuEntry(parent));
     }
-
-//    private void addFolderToEntriesMap(List<GenericMenuEntry> entries, FOLDER_Type parent) {
-//        entries.add(new GenericMenuEntry(parent));
-//        for(FOLDER_Type child : parent.getFOLDER()) {
-//            addFolderToEntries(entries, child);
-//        }
-//    }
 
     private class GenericMenuEntry {
         private String id;
@@ -117,46 +109,6 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         return menuEntries;
     }
 
-//    private List<GenericMenuEntry> getExtMenuHierarchyAsHashMap(InforContext context, MenuSpecification node) throws InforException {
-//        ExtMenusHierarchy result = this.getExtMenuHierarchy(context, node);
-//
-//        Map<String, GenericMenuEntry> menuEntries = new HashMap<String, GenericMenuEntry>();
-//
-//        for (MENU_Type menu : result.getMENU()) {
-//            menuEntries.put(menu.getEXTMENUPARENT(), new GenericMenuEntry(menu));
-//            for(FOLDER_Type folder : menu.getFOLDER()) {
-//                addFolderToEntries(menuEntries, folder);
-//            }
-//        }
-//
-////        List<GenericMenuEntry> menuEntries = new ArrayList<>();
-////        for(MENU_Type menu : result.getMENU()) {
-////            menuEntries.add(new GenericMenuEntry(menu));
-////            for(FOLDER_Type folder : menu.getFOLDER()) {
-////                addFolderToEntries(menuEntries, folder);
-////            }
-////        }
-//
-//        return menuEntries;
-//    }
-
-//    private MenuNode getExtMenuHierarchyAsTree(InforContext context, MenuSpecification node) throws InforException {
-//        ExtMenusHierarchy result = this.getExtMenuHierarchy(context, node);
-//
-//        MenuNode tree = new MenuNode();
-//
-//        List<GenericMenuEntry> menuEntries = new ArrayList<>();
-//        for(MENU_Type menu : result.getMENU()) {
-//            menuEntries.add(new GenericMenuEntry(menu));
-//            for(FOLDER_Type folder : menu.getFOLDER()) {
-//                addFolderToEntries(menuEntries, folder);
-//            }
-//        }
-//
-//        return menuEntries;
-//    }
-
-
     private GenericMenuEntry getParentIdOfNewEntryFromList(List<GenericMenuEntry> menuEntries, String[] words) {
         GenericMenuEntry current = null;
         GenericMenuEntry previous = null;
@@ -200,19 +152,6 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         return menuType;
     }
 
-//    private void addMissingPathToMenuHierarchy(String[] missingPath) {
-//        for (String currentPathStep: missingPath) {
-//            this.addToMenuHierarchy()
-//        }
-//    }
-
-//    private String[] calculateMissingPath(String[] words, List<GenericMenuEntry> menuEntries) {
-//        for (String currentPathStep: words) {
-//            this.getEntryByPathFromList(menuEntries, words);
-//        }
-//    }
-
-
     private String[] calculateExistingPath(String[] words, List<GenericMenuEntry> menuEntries) {
         GenericMenuEntry current = null;
         GenericMenuEntry previous = null;
@@ -240,9 +179,9 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
 
 
     /**
-     * //TODO write jdoc
-     * @param context
-     * @param node
+     * Adds a full menu/submenu/function path to the menu hierarchy.
+     * @param context the user credentials
+     * @param node the specified full path and function to add, for a specific user group
      * @return
      * @throws InforException
      */
@@ -318,8 +257,7 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
 
        return "OK";
     }
-
-
+    
     private GenericMenuEntry getEntryByPathFromList(List<GenericMenuEntry> menuEntries, String[] words) {
         GenericMenuEntry current = null;
 
@@ -352,6 +290,13 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         return null; // TODO throw later
     }
 
+    /**
+     * Deletes a function item, or a menu item with all its children.
+     * @param context the user credentials
+     * @param node the specified path and function to delete, for a specific user group
+     * @return
+     * @throws InforException
+     */
     @Override
     public String deleteFromMenuHierarchy(InforContext context, MenuSpecification node) throws InforException {
         //TODO validate node object (and check if path is correct (regex, throw))
