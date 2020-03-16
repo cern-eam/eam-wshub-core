@@ -340,7 +340,7 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         return current; // Could be null, if it's root folder (check after method call)
     }
 
-    private GenericMenuEntry findFunctionId(GenericMenuEntry entryToDelete, List<GenericMenuEntry> menuEntries, String functionId) {
+    private GenericMenuEntry findGMEFunctionId(GenericMenuEntry entryToDelete, List<GenericMenuEntry> menuEntries, String functionId) {
         for (GenericMenuEntry gme : menuEntries) {
             if (entryToDelete.getId().equals(gme.parent)) { // If the parent of the current gme is entry to delete
                 if (gme.getFunctionId().equals(functionId)) { // If the function is the one we want to delete
@@ -359,31 +359,20 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
             throw new InforException("Path cannot start with '/'", null, null); //TODO Check if it's the correct exception class
         }
 
-        //TODO for now, we only delete if item is a leaf item in the menu hierarchy, to avoid errors; if needed, deleting any object could be implemented too
-
         // Get menu entries as list
         List<GenericMenuEntry> menuEntries = this.getExtMenuHierarchyAsList(context, node);
 
-        // Check if path already exists; if so, continue
-        String[] words = node.path.split("\\/");
-        String[] existingPath = this.calculateExistingPath(words, menuEntries);
-//        if (words.length - existingPath.length == 0 && node.menuCode.isEmpty()) { // Path already exists and no function to delete
-//            return "OK";
-//        }
-
-        Boolean addingFunction = false;
-        // Check if path is incomplete; if so, stop
-        if ((words.length - existingPath.length) > 0) { // Path is not submenu leaf
-            throw new InforException("Path is not leaf submenu (in menu hierarchy)", null, null); //TODO Check if it's the correct exception class
-        }
-
         // Find id of the menu item to be removed
+        String[] words = node.path.split("\\/");
         GenericMenuEntry entryToDelete = this.getEntryByPathFromList(menuEntries, words);
 
         // If function is set, delete function and not the menu item
         String menuType = this.decideMenuType(node.menuCode, words);
         if (menuType.equals("S")) {
-            entryToDelete = this.findFunctionId(entryToDelete, menuEntries, node.menuCode);
+            entryToDelete = this.findGMEFunctionId(entryToDelete, menuEntries, node.menuCode);
+            if (entryToDelete == null) {
+                throw new InforException("No entry to delete found'", null, null); //TODO Check if it's the correct exception class
+            }
         }
 
         // With the id of the item, fill the request object
