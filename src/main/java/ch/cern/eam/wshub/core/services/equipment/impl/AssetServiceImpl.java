@@ -25,6 +25,7 @@ import javax.xml.ws.Holder;
 import java.util.LinkedList;
 import java.util.List;
 
+@SuppressWarnings("Duplicates")
 public class AssetServiceImpl implements AssetService {
 
     private Tools tools;
@@ -515,7 +516,7 @@ public class AssetServiceImpl implements AssetService {
         hierarchySystem.setEQUIPMENTCODE(assetParam.getHierarchyPrimarySystemCode());
 
         // Asset dependent
-        if (assetParam.getHierarchyAssetDependent() && tools.getDataTypeTools().isNotEmpty(assetParam.getHierarchyAssetCode())) {
+        if (assetParam.getHierarchyAssetDependent() != null && assetParam.getHierarchyAssetDependent() && tools.getDataTypeTools().isNotEmpty(assetParam.getHierarchyAssetCode())) {
 
             assetParentHierarchy.setAssetDependency(new AssetDependency());
             // Non dependent position
@@ -532,7 +533,7 @@ public class AssetServiceImpl implements AssetService {
             assetParentHierarchy.getAssetDependency().setDEPENDENTASSET(this.createHierarchyAsset(assetParam, hierarchyAsset));
         }
         // Position dependent
-        else if (assetParam.getHierarchyPositionDependent() && tools.getDataTypeTools().isNotEmpty(assetParam.getHierarchyPositionCode())) {
+        else if (assetParam.getHierarchyPositionDependent() != null && assetParam.getHierarchyPositionDependent() && tools.getDataTypeTools().isNotEmpty(assetParam.getHierarchyPositionCode())) {
             assetParentHierarchy.setPositionDependency(new PositionDependency());
 
             // Non dependent asset
@@ -552,7 +553,7 @@ public class AssetServiceImpl implements AssetService {
                     .setDEPENDENTPOSITION(this.createHierarchyPosition(assetParam, hierarchyPosition));
         }
         // System dependent
-        else if (assetParam.getHierarchyPrimarySystemDependent() && tools.getDataTypeTools().isNotEmpty(assetParam.getHierarchyPrimarySystemCode())) {
+        else if (assetParam.getHierarchyPrimarySystemDependent() != null && assetParam.getHierarchyPrimarySystemDependent() && tools.getDataTypeTools().isNotEmpty(assetParam.getHierarchyPrimarySystemCode())) {
 
             assetParentHierarchy.setPrimarySystemDependency(new PrimarySystemDependency());
             // Non dependent position

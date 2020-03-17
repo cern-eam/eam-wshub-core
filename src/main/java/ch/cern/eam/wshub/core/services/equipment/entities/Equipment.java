@@ -59,10 +59,10 @@ public class Equipment implements Serializable {
 	private BigInteger updateCount;
 	@Transient
 	@InforField(xpath = "OUTOFSERVICE")
-	private Boolean outOfService = false;
+	private Boolean outOfService;
 	@Transient
 	@InforField(xpath = "INPRODUCTION")
-	private Boolean inProduction = false;
+	private Boolean inProduction;
 	@Transient
 	@InforField(xpath = "PROFILEID/OBJECTCODE")
 	private String profileCode;
@@ -168,36 +168,36 @@ public class Equipment implements Serializable {
 	@Transient
 	private String hierarchyAssetDesc;
 	@Transient
-	private Boolean hierarchyAssetDependent = false;
+	private Boolean hierarchyAssetDependent;
 	@Transient
-	private Boolean hierarchyAssetCostRollUp = false;
+	private Boolean hierarchyAssetCostRollUp;
 	// Position
 	@Transient
 	private String hierarchyPositionCode;
 	@Transient
 	private String hierarchyPositionDesc;
 	@Transient
-	private Boolean hierarchyPositionDependent = false;
+	private Boolean hierarchyPositionDependent;
 	@Transient
-	private Boolean hierarchyPositionCostRollUp = false;
+	private Boolean hierarchyPositionCostRollUp;
 	// Primary System
 	@Transient
 	private String hierarchyPrimarySystemCode;
 	@Transient
 	private String hierarchyPrimarySystemDesc;
 	@Transient
-	private Boolean hierarchyPrimarySystemDependent = false;
+	private Boolean hierarchyPrimarySystemDependent;
 	@Transient
-	private Boolean hierarchyPrimarySystemCostRollUp = false;
+	private Boolean hierarchyPrimarySystemCostRollUp;
 	// System
 	@Transient
 	private String hierarchySystemCode;
 	@Transient
 	private String hierarchySystemDesc;
 	@Transient
-	private Boolean hierarchySystemDependent = false;
+	private Boolean hierarchySystemDependent;
 	@Transient
-	private Boolean hierarchySystemCostRollUp = false;
+	private Boolean hierarchySystemCostRollUp;
 	// Location
 	@Transient
 	private String hierarchyLocationCode;
