@@ -455,7 +455,7 @@ public class PositionServiceImpl implements PositionService {
 		hierarchySystem.setEQUIPMENTCODE(positionParam.getHierarchyPrimarySystemCode());
 
 		// Asset dependent
-		if (positionParam.getHierarchyAssetDependent()) {
+		if (positionParam.getHierarchyAssetDependent() != null && positionParam.getHierarchyAssetDependent()) {
 
 			positionParentHierarchy.setAssetDependency(new AssetDependency());
 			// Non dependent position
@@ -475,7 +475,7 @@ public class PositionServiceImpl implements PositionService {
 					.setDEPENDENTASSET(this.createHierarchyAsset(positionParam, hierarchyAsset));
 		}
 		// Position dependent
-		else if (positionParam.getHierarchyPositionDependent()) {
+		else if (positionParam.getHierarchyPositionDependent() != null && positionParam.getHierarchyPositionDependent()) {
 			positionParentHierarchy.setPositionDependency(new PositionDependency());
 
 			// Non dependent asset
@@ -495,7 +495,7 @@ public class PositionServiceImpl implements PositionService {
 					.setDEPENDENTPOSITION(this.createHierarchyPosition(positionParam, hierarchyPosition));
 		}
 		// System dependent
-		else if (positionParam.getHierarchyPrimarySystemDependent()) {
+		else if (positionParam.getHierarchyPrimarySystemDependent() != null && positionParam.getHierarchyPrimarySystemDependent()) {
 
 			positionParentHierarchy.setPrimarySystemDependency(new PrimarySystemDependency());
 			// Non dependent position
@@ -515,9 +515,10 @@ public class PositionServiceImpl implements PositionService {
 					.setDEPENDENTPRIMARYSYSTEM(this.createHierarchyPrymarySystem(positionParam, hierarchySystem));
 		}
 		// All non dependents
-		else if (!positionParam.getHierarchyAssetDependent()
-				&& !positionParam.getHierarchyPositionDependent()
-				&& !positionParam.getHierarchyPrimarySystemDependent()) {
+		else if (
+            (positionParam.getHierarchyAssetDependent() == null || !positionParam.getHierarchyAssetDependent())
+				&& (positionParam.getHierarchyPositionDependent() == null || !positionParam.getHierarchyPositionDependent())
+				&& (positionParam.getHierarchyPrimarySystemDependent() == null || !positionParam.getHierarchyPrimarySystemDependent())) {
 
 			// Non location
 			if (positionParam.getHierarchyLocationCode() == null) {

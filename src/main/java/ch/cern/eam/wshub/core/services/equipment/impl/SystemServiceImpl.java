@@ -286,7 +286,7 @@ public class SystemServiceImpl implements SystemService {
 		// HIERARCHY - PRIMARY SYSTEM
 		if (tools.getDataTypeTools().isNotEmpty(systemParam.getHierarchyPrimarySystemCode())) {
 
-			if (!systemParam.getHierarchyPrimarySystemDependent()) {
+			if (systemParam.getHierarchyPrimarySystemDependent() == null || !systemParam.getHierarchyPrimarySystemDependent()) {
 				systemParam.setHierarchyAssetDependent(false);
 			}
 			// System
@@ -294,7 +294,7 @@ public class SystemServiceImpl implements SystemService {
 			hierarchySystem.setORGANIZATIONID(tools.getOrganization(context));
 			hierarchySystem.setEQUIPMENTCODE(systemParam.getHierarchyPrimarySystemCode());
 			// System dependent
-			if (systemParam.getHierarchyPrimarySystemDependent()) {
+			if (systemParam.getHierarchyPrimarySystemDependent() != null && systemParam.getHierarchyPrimarySystemDependent()) {
 				SYSTEMPARENT_Type systemType = new SYSTEMPARENT_Type();
 				systemType.setSYSTEMID(hierarchySystem);
 				systemType.setCOSTROLLUP(encodeBoolean(systemParam.getHierarchyPrimarySystemCostRollUp(), BooleanType.TRUE_FALSE));
