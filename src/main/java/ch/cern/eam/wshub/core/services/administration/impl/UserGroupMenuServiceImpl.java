@@ -188,6 +188,7 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
             } else { // If no function, then we remove only one path item at the end
                 String[] oldPath = Arrays.copyOf(words, words.length);
                 node.path = String.join("/", Arrays.copyOf(words, words.length - 1));
+                this.addToMenuHierarchy(context, node);
                 menuEntries = this.getExtMenuHierarchyAsList(context, node); //TODO Calling a get two times is not good; fixed by using a HashMap or a tree
                 node.path = String.join("/", oldPath);
             }
@@ -271,6 +272,9 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
     @Override
     public String deleteFromMenuHierarchy(InforContext context, MenuSpecification node) throws InforException {
         //TODO validate node object (and check if path is correct (regex, throw))
+        if (node.path == null || node.path.isEmpty()) {
+            throw new InforException("Path cannot be root or null", null, null); //TODO Check if it's the correct exception class
+        }
         if (node.path.startsWith("/")) {
             throw new InforException("Path cannot start with '/'", null, null); //TODO Check if it's the correct exception class
         }
@@ -278,8 +282,15 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         // Get menu entries as list
         List<GenericMenuEntry> menuEntries = this.getExtMenuHierarchyAsList(context, node);
 
-        // Find id of the menu item to be removed
+
+        // Check if path already exists; if so, continue
         String[] words = node.path.split("\\/");
+        String[] existingPath = this.calculateExistingPath(words, menuEntries);
+        if (words.length > existingPath.length) { // Path doesn't exist
+            throw new InforException("Path doesn't exist", null, null); //TODO Check if it's the correct exception class
+        }
+
+        // Find id of the menu item to be removed
         GenericMenuEntry entryToDelete = this.getEntryByPathFromList(menuEntries, words);
 
         // If function is set, delete function and not the menu item
