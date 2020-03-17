@@ -288,7 +288,8 @@ public class InforFieldTools {
                 CustomField[] customFields = (CustomField[]) wshubFieldValue;
                 USERDEFINEDAREA userdefinedarea = (USERDEFINEDAREA) inforField.get(inforObject);
                 tools.getCustomFieldsTools().updateInforCustomFields(userdefinedarea, customFields);
-            } else if ("UserDefinedFields".equals(wshubField.getAnnotation(InforField.class).xpath())) {
+            } else if ("UserDefinedFields".equals(wshubField.getAnnotation(InforField.class).xpath())
+                || "StandardUserDefinedFields".equals(wshubField.getAnnotation(InforField.class).xpath())) {
                 // USER DEFINED FIELDS
                 UserDefinedFields userDefinedFieldsValue = (UserDefinedFields) wshubFieldValue;
                 if (inforField.get(inforObject) == null) {
