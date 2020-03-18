@@ -87,11 +87,9 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         getExtMenusHierarchy.setUSERGROUPID(new USERGROUPID_Type());
         getExtMenusHierarchy.getUSERGROUPID().setUSERGROUPCODE(node.userGroup);
 
-        System.out.println("get in " + node.path);
         ExtMenusHierarchy result =
                 tools.performInforOperation(context, inforws::getExtMenusHierarchyOp, getExtMenusHierarchy)
                         .getResultData().getExtMenusHierarchy();
-        System.out.println("get out");
 
         return result;
     }
@@ -210,7 +208,6 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         extMenus.setMOBILE("false");
 
         // With the request object created, perform the add operation
-        System.out.println("Now adding: " + node.path + "/" + node.menuCode);
        tools.performInforOperation(context, inforws::addExtMenusOp, addExtMenus);
 
        return "OK";
