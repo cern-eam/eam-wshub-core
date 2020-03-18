@@ -11,7 +11,6 @@ import net.datastream.schemas.mp_fields.*;
 import net.datastream.schemas.mp_functions.mp6005_001.MP6005_GetExtMenusHierarchy_001;
 import net.datastream.schemas.mp_functions.mp6043_001.MP6043_AddExtMenus_001;
 import net.datastream.schemas.mp_functions.mp6045_001.MP6045_DeleteExtMenus_001;
-import net.datastream.schemas.mp_results.mp6043_001.MP6043_AddExtMenus_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
 import java.util.*;
@@ -147,6 +146,7 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         return words; // If reached the end, then all path could be found
     }
 
+
     /**
      * Adds a full menu/submenu/function path to the menu hierarchy.
      * @param context the user credentials
@@ -155,12 +155,6 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
      */
     @Override
     public String addToMenuHierarchy(InforContext context, MenuSpecification node) throws InforException {
-        this.addToMenuHierarchyPrivate(context, node);
-
-        return "OK";
-    }
-
-    private MP6043_AddExtMenus_001_Result addToMenuHierarchyPrivate(InforContext context, MenuSpecification node) throws InforException {
         this.validateInputNode(node);
 
         // Get menu entries as list
@@ -180,9 +174,8 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
             if (node.menuCode.isEmpty()) { // But if no function, then we remove only one path item at the end
                 recursiveMenuSpecification = new UserGroupMenuService.MenuSpecification(String.join("/", Arrays.copyOf(words, words.length - 1)), node.menuCode, node.userGroup);
             }
-            MP6043_AddExtMenus_001_Result result = this.addToMenuHierarchyPrivate(context, recursiveMenuSpecification);
-
-            menuEntries = this.getExtMenuHierarchyAsList(context, recursiveMenuSpecification, result.getResultData().); //TODO Calling a get two times is not good; fixed by using a HashMap or a tree in a future iteration
+            this.addToMenuHierarchy(context, recursiveMenuSpecification);
+            menuEntries = this.getExtMenuHierarchyAsList(context, recursiveMenuSpecification); //TODO Calling a get two times is not good; fixed by using a HashMap or a tree in a future iteration
         }
 
         // Now add leaf item
@@ -218,7 +211,9 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
 
         // With the request object created, perform the add operation
         System.out.println("Now adding: " + node.path + "/" + node.menuCode);
-       return tools.performInforOperation(context, inforws::addExtMenusOp, addExtMenus);
+       tools.performInforOperation(context, inforws::addExtMenusOp, addExtMenus);
+
+       return "OK";
     }
 
     private void validateInputNode(MenuSpecification node) {
