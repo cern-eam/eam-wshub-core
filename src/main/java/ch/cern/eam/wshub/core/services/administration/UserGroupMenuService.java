@@ -12,6 +12,14 @@ public interface UserGroupMenuService {
         public String userGroup;
         public String path;
         public String menuCode;
+
+        public MenuSpecification() { }
+
+        public MenuSpecification(String path, String menuCode, String userGroup) {
+            this.path = path;
+            this.menuCode = menuCode;
+            this.userGroup = userGroup;
+        }
     }
 
     @Operation(logOperation = INFOR_OPERATION.WORKORDER_CREATE, logDataReference1 = LogDataReferenceType.RESULT)

@@ -47,37 +47,39 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         private String functionId;
 
         public GenericMenuEntry(FOLDER_Type folder) {
-            id = folder.getEXTMENUCODE();
-            description = folder.getFOLDERID().getFOLDERDESCRIPTION();
-            parent = folder.getEXTMENUPARENT();
-            functionId = folder.getFOLDERID().getFOLDERCODE();
+            this.id = folder.getEXTMENUCODE();
+            this.description = folder.getFOLDERID().getFOLDERDESCRIPTION();
+            this.parent = folder.getEXTMENUPARENT();
+            this.functionId = folder.getFOLDERID().getFOLDERCODE();
         }
 
         public GenericMenuEntry(MENU_Type menu) {
-            id = menu.getEXTMENUCODE();
-            description = menu.getMENUID().getMENUDESCRIPTION();
-            parent = menu.getEXTMENUPARENT();
-            functionId = menu.getMENUID().getMENUCODE();
+            this.id = menu.getEXTMENUCODE();
+            this.description = menu.getMENUID().getMENUDESCRIPTION();
+            this.parent = menu.getEXTMENUPARENT();
+            this.functionId = menu.getMENUID().getMENUCODE();
         }
 
         public GenericMenuEntry(FUNCTION_Type function) {
-            id = function.getEXTMENUCODE();
-            description = function.getFUNCTIONID().getFUNCTIONDESCRIPTION();
-            parent = function.getEXTMENUPARENT();
-            functionId = function.getFUNCTIONID().getFUNCTIONCODE();
+            this.id = function.getEXTMENUCODE();
+            this.description = function.getFUNCTIONID().getFUNCTIONDESCRIPTION();
+            this.parent = function.getEXTMENUPARENT();
+            this.functionId = function.getFUNCTIONID().getFUNCTIONCODE();
         }
 
         public String getId() {
-            return id;
+            return this.id;
         }
 
         public String getDescription() {
-            return description;
+            return this.description;
         }
 
         public String getFunctionId() {
-            return functionId;
+            return this.functionId;
         }
+
+        public Object getParent() { return this.parent; }
     }
 
     private ExtMenusHierarchy getExtMenuHierarchy(InforContext context, MenuSpecification node) throws InforException {
@@ -85,9 +87,11 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         getExtMenusHierarchy.setUSERGROUPID(new USERGROUPID_Type());
         getExtMenusHierarchy.getUSERGROUPID().setUSERGROUPCODE(node.userGroup);
 
+        System.out.println("get in " + node.path);
         ExtMenusHierarchy result =
                 tools.performInforOperation(context, inforws::getExtMenusHierarchyOp, getExtMenusHierarchy)
                         .getResultData().getExtMenusHierarchy();
+        System.out.println("get out");
 
         return result;
     }
@@ -98,12 +102,8 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         List<GenericMenuEntry> menuEntries = new ArrayList<>();
         for(MENU_Type menu : result.getMENU()) {
             menuEntries.add(new GenericMenuEntry(menu));
-            for (FOLDER_Type folder : menu.getFOLDER()) {
-                this.addFolderToEntries(menuEntries, folder);
-            }
-            for (FUNCTION_Type childFunction : menu.getFUNCTION()) {
-               this.addFunctionToEntries(menuEntries, childFunction);
-            }
+            menu.getFOLDER().stream().forEach(childFolder -> this.addFolderToEntries(menuEntries, childFolder));
+            menu.getFUNCTION().stream().forEach(childFunction -> this.addFunctionToEntries(menuEntries, childFunction));
         }
 
         return menuEntries;
@@ -120,22 +120,19 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         } else {
             menuType = "S"; // Item is function
         }
-        //TODO issue, if two paths are identical, item will be added unreliably to one of them, as no item code is given (only path) to this function
 
+        //WARN If two paths are identical, item will be added unreliably to one of them, as no item code is given (only path) to this function; we assume correct menu hierarchy already exists
         return menuType;
     }
 
     private String[] calculateExistingPath(String[] words, List<GenericMenuEntry> menuEntries) {
         GenericMenuEntry current = null;
-        GenericMenuEntry previous = null;
 
         int amountFound = 0;
-        Boolean gmeFound = false;
         for (String next : words) {
-            gmeFound = false;
+            Boolean gmeFound = false;
             for (GenericMenuEntry gme : menuEntries) {
-                if (!gmeFound && gme.description.equals(next) && (current == null || gme.parent.equals(current.getId()))) {
-                    previous = current;
+                if (!gmeFound && gme.description.equals(next) && (current == null || gme.getParent().equals(current.getId()))) {
                     current = gme;
                     gmeFound = true;
                     amountFound++;
@@ -145,7 +142,6 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
                 return Arrays.copyOf(words, amountFound);
             }
         }
-        //TODO if adding a menu item on Root hierarchy, then the maximum amount is 10 items; it should be checked here
 
         return words; // If reached the end, then all path could be found
     }
@@ -156,14 +152,10 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
      * @param context the user credentials
      * @param node the specified full path and function to add, for a specific user group
      * @return
-     * @throws InforException
      */
     @Override
     public String addToMenuHierarchy(InforContext context, MenuSpecification node) throws InforException {
-        //TODO validate node object (and check if path is correctly formed (regex, throw))
-        if (node.path.startsWith("/")) {
-            throw new InforException("Path cannot start with '/'", null, null); //TODO Check if it's the correct exception class
-        }
+        this.validateInputNode(node);
 
         // Get menu entries as list
         List<GenericMenuEntry> menuEntries = this.getExtMenuHierarchyAsList(context, node);
@@ -171,32 +163,24 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         // Check if path already exists; if so, continue
         String[] words = node.path.split("\\/");
         String[] existingPath = this.calculateExistingPath(words, menuEntries);
+
         if (words.length - existingPath.length == 0 && node.menuCode.isEmpty()) { // Path already exists and no function to add
             return "OK";
         }
 
-        Boolean addingFunction = false;
         // Check if path is incomplete; if so, complete it (if it doesn't, add all submenus (or menu)) starting from second to last item
-        if ((words.length - existingPath.length) > 1) { // Path is incomplete (or doesn't exist), since differs more than 1
-            if (!node.menuCode.isEmpty()) { // If function is there, then we remove only that
-                String oldMenuCode = node.menuCode;
-                node.menuCode = "";
-                this.addToMenuHierarchy(context, node);
-                menuEntries = this.getExtMenuHierarchyAsList(context, node); //TODO Calling a get two times is not good; fixed by using a HashMap or a tree
-                node.menuCode = oldMenuCode;
-                addingFunction = true;
-            } else { // If no function, then we remove only one path item at the end
-                String[] oldPath = Arrays.copyOf(words, words.length);
-                node.path = String.join("/", Arrays.copyOf(words, words.length - 1));
-                this.addToMenuHierarchy(context, node);
-                menuEntries = this.getExtMenuHierarchyAsList(context, node); //TODO Calling a get two times is not good; fixed by using a HashMap or a tree
-                node.path = String.join("/", oldPath);
+        if ((words.length - existingPath.length) > 0) { // Path is incomplete (or doesn't exist), since differs more than 0
+            UserGroupMenuService.MenuSpecification recursiveMenuSpecification = new UserGroupMenuService.MenuSpecification(node.path, "", node.userGroup); // If function is there, then we remove only that
+            if (node.menuCode.isEmpty()) { // But if no function, then we remove only one path item at the end
+                recursiveMenuSpecification = new UserGroupMenuService.MenuSpecification(String.join("/", Arrays.copyOf(words, words.length - 1)), node.menuCode, node.userGroup);
             }
+            this.addToMenuHierarchy(context, recursiveMenuSpecification);
+            menuEntries = this.getExtMenuHierarchyAsList(context, recursiveMenuSpecification); //TODO Calling a get two times is not good; fixed by using a HashMap or a tree in a future iteration
         }
 
         // Now add leaf item
         // Decide menu type: if function type is not set, then assume it's a menu and not a function
-        String menuType = addingFunction ? "S" : this.decideMenuType(node.menuCode, words);
+        String menuType = this.decideMenuType(node.menuCode, words);
 
         // Find parent id of new entry/item from previous list
         GenericMenuEntry parent;
@@ -226,9 +210,33 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         extMenus.setMOBILE("false");
 
         // With the request object created, perform the add operation
+        System.out.println("Now adding: " + node.path + "/" + node.menuCode);
        tools.performInforOperation(context, inforws::addExtMenusOp, addExtMenus);
 
        return "OK";
+    }
+
+    private void validateInputNode(MenuSpecification node) {
+        if (node.path == null || node.menuCode == null || node.userGroup == null) {
+            tools.generateFault("Menu specifications cannot be null");
+        }
+        if (node.path.isEmpty()) {
+            tools.generateFault("Path cannot be empty");
+        }
+        if (node.path.startsWith("/")) {
+            tools.generateFault("Path cannot start with '/'");
+        }
+        if (node.path.endsWith("/")) {
+            tools.generateFault("Path cannot end with '/'");
+        }
+        if (node.path.contains("//")) {
+            tools.generateFault("Path cannot have empty path items");
+        }
+        if (node.path.contains(" ")) {
+            tools.generateFault("Linear Reference ID must be present.");
+        }
+
+        return;
     }
 
     private GenericMenuEntry getEntryByPathFromList(List<GenericMenuEntry> menuEntries, String[] words) {
@@ -240,7 +248,7 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
             for(GenericMenuEntry gme : menuEntries) {
                 // If the next word in the path is equals to the description of the current item, and the parent item ID
                 // is equals to the current item ID (or is in root hierarchy)
-                if(!gmeFound && gme.description.equals(next) && (current == null || gme.parent.equals(current.getId()))) {
+                if(!gmeFound && gme.description.equals(next) && (current == null || gme.getParent().equals(current.getId()))) {
                     current = gme;
                     gmeFound = true;
                 }
@@ -252,14 +260,13 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
 
     private GenericMenuEntry findGMEFunctionId(GenericMenuEntry entryToDelete, List<GenericMenuEntry> menuEntries, String functionId) {
         for (GenericMenuEntry gme : menuEntries) {
-            if (entryToDelete.getId().equals(gme.parent)) { // If the parent of the current gme is entry to delete
-                if (gme.getFunctionId().equals(functionId)) { // If the function is the one we want to delete
-                    return gme;
-                }
+            if (entryToDelete.getId().equals(gme.getParent()) && // If the parent of the current gme is entry to delete
+                gme.getFunctionId().equals(functionId)) {  // If the function is the one we want to delete
+                return gme;
             }
         }
 
-        return null; // TODO throw later
+        return null;
     }
 
     /**
@@ -267,17 +274,10 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
      * @param context the user credentials
      * @param node the specified path and function to delete, for a specific user group
      * @return
-     * @throws InforException
      */
     @Override
     public String deleteFromMenuHierarchy(InforContext context, MenuSpecification node) throws InforException {
-        //TODO validate node object (and check if path is correct (regex, throw))
-        if (node.path == null || node.path.isEmpty()) {
-            throw new InforException("Path cannot be root or null", null, null); //TODO Check if it's the correct exception class
-        }
-        if (node.path.startsWith("/")) {
-            throw new InforException("Path cannot start with '/'", null, null); //TODO Check if it's the correct exception class
-        }
+        this.validateInputNode(node);
 
         // Get menu entries as list
         List<GenericMenuEntry> menuEntries = this.getExtMenuHierarchyAsList(context, node);
@@ -287,18 +287,19 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         String[] words = node.path.split("\\/");
         String[] existingPath = this.calculateExistingPath(words, menuEntries);
         if (words.length > existingPath.length) { // Path doesn't exist
-            throw new InforException("Path doesn't exist", null, null); //TODO Check if it's the correct exception class
+            tools.generateFault("Path doesn't exist");
         }
 
         // Find id of the menu item to be removed
         GenericMenuEntry entryToDelete = this.getEntryByPathFromList(menuEntries, words);
 
         // If function is set, delete function and not the menu item
+        // If function is set, delete function and not the menu item
         String menuType = this.decideMenuType(node.menuCode, words);
         if (menuType.equals("S")) {
             entryToDelete = this.findGMEFunctionId(entryToDelete, menuEntries, node.menuCode);
             if (entryToDelete == null) {
-                throw new InforException("No entry to delete found'", null, null); //TODO Check if it's the correct exception class
+                tools.generateFault("No entry to delete found'");
             }
         }
 
