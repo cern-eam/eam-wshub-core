@@ -30,8 +30,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import static ch.cern.eam.wshub.core.tools.DataTypeTools.nonNullOrDefault;
-
 public class Tools {
 
 	private ApplicationData applicationData;

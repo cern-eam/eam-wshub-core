@@ -11,7 +11,7 @@ import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
 import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import static ch.cern.eam.wshub.core.tools.GridTools.extractSingleResult;
-import static ch.cern.eam.wshub.core.tools.GridTools.convertGridResultToObject;
+import static ch.cern.eam.wshub.core.tools.GridTools.convertGridResultToMap;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_fields.USERID_Type;
@@ -78,15 +78,18 @@ public class UserSetupServiceImpl implements UserSetupService {
 
 		// Fetch corresponding employee code and description
 		GridRequest employeeGridRequest = new GridRequest("WSEMPS", GridRequest.GRIDTYPE.LIST);
+		employeeGridRequest.setUseNative(false);
 		employeeGridRequest.addFilter("associateduser", userCode, "=");
 		GridRequestResult employeeGridResult = gridsService.executeQuery(context, employeeGridRequest);
 		user.setEmployeeCode(extractSingleResult(employeeGridResult, "employee"));
 		user.setEmployeeDesc(extractSingleResult(employeeGridResult, "employeedescription"));
 
-		// Fetch user's departments
+		// Fetch user's departmental security rights
 		GridRequest departmentsGridRequest = new GridRequest("BSUSER_DSE", GridRequest.GRIDTYPE.LIST, 1000);
+		departmentsGridRequest.setUseNative(false);
 		departmentsGridRequest.addParam("param.usercode", userCode);
-		user.setUserDepartments(convertGridResultToObject(Department.class,
+		user.setDepartmentalSecurity(convertGridResultToMap(Department.class,
+				"departmentcode",
 				null,
 				gridsService.executeQuery(context, departmentsGridRequest)));
 

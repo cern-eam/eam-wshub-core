@@ -14,9 +14,11 @@ import net.datastream.schemas.mp_functions.mp0301_001.MP0301_AddAssetEquipment_0
 import net.datastream.schemas.mp_functions.mp0302_001.MP0302_GetAssetEquipment_001;
 import net.datastream.schemas.mp_functions.mp0303_001.MP0303_SyncAssetEquipment_001;
 import net.datastream.schemas.mp_functions.mp0304_001.MP0304_DeleteAssetEquipment_001;
+import net.datastream.schemas.mp_functions.mp0305_001.MP0305_GetAssetEquipmentDefault_001;
 import net.datastream.schemas.mp_functions.mp0327_001.MP0327_GetAssetParentHierarchy_001;
 import net.datastream.schemas.mp_results.mp0301_001.MP0301_AddAssetEquipment_001_Result;
 import net.datastream.schemas.mp_results.mp0302_001.MP0302_GetAssetEquipment_001_Result;
+import net.datastream.schemas.mp_results.mp0305_001.MP0305_GetAssetEquipmentDefault_001_Result;
 import net.datastream.schemas.mp_results.mp0327_001.MP0327_GetAssetParentHierarchy_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.*;
@@ -38,15 +40,27 @@ public class AssetServiceImpl implements AssetService {
         this.inforws = inforWebServicesToolkitClient;
     }
 
-    // Replace Equipment modes
-    private static final String STANDARD = "Standard";
-    private static final String SWAPPING = "Swapping";
+    public Equipment readAssetDefault(InforContext context, String organization) throws InforException {
 
+        MP0305_GetAssetEquipmentDefault_001 getAssetEquipmentDefault_001 = new MP0305_GetAssetEquipmentDefault_001();
+        if (isEmpty(organization)) {
+            getAssetEquipmentDefault_001.setORGANIZATIONID(tools.getOrganization(context));
+        } else {
+            getAssetEquipmentDefault_001.setORGANIZATIONID(new ORGANIZATIONID_Type());
+            getAssetEquipmentDefault_001.getORGANIZATIONID().setORGANIZATIONCODE(organization);
+        }
+
+        MP0305_GetAssetEquipmentDefault_001_Result result =
+                tools.performInforOperation(context, inforws::getAssetEquipmentDefaultOp, getAssetEquipmentDefault_001);
+
+        return tools.getInforFieldTools().transformInforObject(new Equipment(), result.getResultData().getAssetEquipment());
+    }
 
     public Equipment readAsset(InforContext context, String assetCode) throws InforException {
         AssetEquipment assetEquipment = readInforAsset(context, assetCode);
         //
         Equipment asset = tools.getInforFieldTools().transformInforObject(new Equipment(), assetEquipment);
+        asset.setSystemTypeCode("A");
 
         // ID
         if (assetEquipment.getASSETID() != null) {
@@ -242,7 +256,6 @@ public class AssetServiceImpl implements AssetService {
 
     private AssetParentHierarchy readInforAssetHierarchy(InforContext context, String assetCode)
             throws InforException {
-
         MP0327_GetAssetParentHierarchy_001 getassetph = new MP0327_GetAssetParentHierarchy_001();
         getassetph.setASSETID(new EQUIPMENTID_Type());
         getassetph.getASSETID().setORGANIZATIONID(tools.getOrganization(context));

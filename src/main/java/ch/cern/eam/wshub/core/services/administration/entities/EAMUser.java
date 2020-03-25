@@ -73,7 +73,7 @@ public class EAMUser implements Serializable {
 	@InforField(xpath = "StandardUserDefinedFields")
 	private UserDefinedFields userDefinedFields;
 
-	private List<Department> userDepartments;
+	private Map<String, Department> departmentalSecurity;
 
 	public String getUserCode() {
 		return userCode;
@@ -205,8 +205,12 @@ public class EAMUser implements Serializable {
 		this.employeeDesc = employeeDesc;
 	}
 
-	public void setUserDepartments(List<Department> userDepartments) {
-		this.userDepartments = userDepartments;
+	public Map<String, Department> getDepartmentalSecurity() {
+		return departmentalSecurity;
+	}
+
+	public void setDepartmentalSecurity(Map<String, Department> departmentalSecurity) {
+		this.departmentalSecurity = departmentalSecurity;
 	}
 
 	/*

@@ -14,13 +14,17 @@ import net.datastream.schemas.mp_entities.positionequipment_001.Variables;
 import net.datastream.schemas.mp_entities.positionhierarchy_002.*;
 import net.datastream.schemas.mp_fields.*;
 import net.datastream.schemas.mp_functions.SessionType;
+import net.datastream.schemas.mp_functions.mp0305_001.MP0305_GetAssetEquipmentDefault_001;
 import net.datastream.schemas.mp_functions.mp0306_001.MP0306_AddPositionEquipment_001;
 import net.datastream.schemas.mp_functions.mp0307_001.MP0307_GetPositionEquipment_001;
 import net.datastream.schemas.mp_functions.mp0308_001.MP0308_SyncPositionEquipment_001;
 import net.datastream.schemas.mp_functions.mp0309_001.MP0309_DeletePositionEquipment_001;
+import net.datastream.schemas.mp_functions.mp0310_001.MP0310_GetPositionEquipmentDefault_001;
 import net.datastream.schemas.mp_functions.mp0328_002.MP0328_GetPositionParentHierarchy_002;
+import net.datastream.schemas.mp_results.mp0305_001.MP0305_GetAssetEquipmentDefault_001_Result;
 import net.datastream.schemas.mp_results.mp0306_001.MP0306_AddPositionEquipment_001_Result;
 import net.datastream.schemas.mp_results.mp0307_001.MP0307_GetPositionEquipment_001_Result;
+import net.datastream.schemas.mp_results.mp0310_001.MP0310_GetPositionEquipmentDefault_001_Result;
 import net.datastream.schemas.mp_results.mp0328_002.MP0328_GetPositionParentHierarchy_002_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 import javax.xml.ws.Holder;
@@ -89,9 +93,26 @@ public class PositionServiceImpl implements PositionService {
 		return result.getResultData().getPositionParentHierarchy();
 	}
 
+	public Equipment readPositionDefault(InforContext context, String organization) throws InforException {
+
+		MP0310_GetPositionEquipmentDefault_001 getPositionEquipmentDefault_001 = new MP0310_GetPositionEquipmentDefault_001();
+		if (isEmpty(organization)) {
+			getPositionEquipmentDefault_001.setORGANIZATIONID(tools.getOrganization(context));
+		} else {
+			getPositionEquipmentDefault_001.setORGANIZATIONID(new ORGANIZATIONID_Type());
+			getPositionEquipmentDefault_001.getORGANIZATIONID().setORGANIZATIONCODE(organization);
+		}
+
+		MP0310_GetPositionEquipmentDefault_001_Result result =
+				tools.performInforOperation(context, inforws::getPositionEquipmentDefaultOp, getPositionEquipmentDefault_001);
+
+		return tools.getInforFieldTools().transformInforObject(new Equipment(), result.getResultData().getPositionEquipment());
+	}
+
 	public Equipment readPosition(InforContext context, String positionCode) throws InforException {
 		PositionEquipment positionEquipment = readInforPosition(context, positionCode);
 		Equipment position = tools.getInforFieldTools().transformInforObject(new Equipment(), positionEquipment);
+		position.setSystemTypeCode("P");
 
 		// POSITION ID
 		if (positionEquipment.getPOSITIONID() != null) {

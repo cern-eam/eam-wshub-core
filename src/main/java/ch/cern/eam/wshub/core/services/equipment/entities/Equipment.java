@@ -38,6 +38,8 @@ public class Equipment implements Serializable {
 	@InforField(xpath = "TYPE/DESCRIPTION", readOnly = true)
 	private String typeDesc;
 
+	private String systemTypeCode;
+
 	@Transient
 	@InforField(xpath = "EQUIPMENTALIAS")
 	private String alias;
@@ -630,6 +632,14 @@ public class Equipment implements Serializable {
 
 	public void setTypeCode(String typeCode) {
 		this.typeCode = typeCode;
+	}
+
+	public String getSystemTypeCode() {
+		return systemTypeCode;
+	}
+
+	public void setSystemTypeCode(String systemTypeCode) {
+		this.systemTypeCode = systemTypeCode;
 	}
 
 	public String getTypeDesc() {
