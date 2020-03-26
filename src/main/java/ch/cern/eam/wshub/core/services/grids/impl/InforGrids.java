@@ -5,7 +5,6 @@ import ch.cern.eam.wshub.core.services.grids.entities.*;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
-import net.datastream.schemas.mp_functions.SessionType;
 import net.datastream.schemas.mp_functions.gridrequest.*;
 import net.datastream.schemas.mp_functions.gridrequest.LOV.LOV_PARAMETERS;
 import net.datastream.schemas.mp_functions.gridrequest.LOV.LOV_PARAMETERS.LOV_PARAMETER;
@@ -19,7 +18,6 @@ import net.datastream.schemas.mp_functions.mp0118_getgridheaderdata_001_result.F
 import net.datastream.schemas.mp_functions.mp0118_getgridheaderdata_001_result.MP0118_GetGridHeaderData_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
-import javax.xml.ws.Holder;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Comparator;
@@ -209,7 +207,7 @@ public class InforGrids implements Serializable {
 		}
 
 		grr.setGridDataspies(result.getGRIDRESULT().getTOOLBAR().getFIELDVALUES().getROW().getDataspylist_Options().getOption().stream()
-				.map(option -> new GridDataspy(option.getValue().get(0), option.getDisplay().get(0))).collect(Collectors.toList()));
+				.map(option -> new GridDataspy(option.getValue().get(0), option.getDisplay().get(0), option.getValue().get(0).equals(grr.getDataSpyId()))).collect(Collectors.toList()));
 
 		grr.setGridFields(result.getGRIDRESULT().getGRID().getFIELDS().getFIELD().stream()
 				.filter(field -> Integer.parseInt(field.getOrder()) >= 0)
