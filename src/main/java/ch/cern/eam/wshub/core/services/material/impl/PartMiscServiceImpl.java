@@ -1,13 +1,17 @@
 package ch.cern.eam.wshub.core.services.material.impl;
 
 import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.services.entities.BatchResponse;
 import ch.cern.eam.wshub.core.services.material.entities.IssueReturnPartTransaction;
 import ch.cern.eam.wshub.core.services.material.entities.IssueReturnPartTransactionLine;
 import ch.cern.eam.wshub.core.services.material.PartMiscService;
 import ch.cern.eam.wshub.core.services.material.entities.*;
+import ch.cern.eam.wshub.core.services.workorders.entities.Employee;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
+import ch.cern.eam.wshub.core.tools.DataTypeTools;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
+import net.datastream.schemas.mp_entities.binstock_001.BinStock;
 import net.datastream.schemas.mp_entities.catalogue_001.Catalogue;
 import net.datastream.schemas.mp_entities.issuereturntransaction_001.IssueReturnTransaction;
 import net.datastream.schemas.mp_entities.issuereturntransactionline_001.IssueReturnTransactionLine;
@@ -19,6 +23,7 @@ import net.datastream.schemas.mp_fields.*;
 import net.datastream.schemas.mp_functions.mp0220_001.MP0220_AddIssueReturnTransaction_001;
 import net.datastream.schemas.mp_functions.mp0271_001.MP0271_AddCatalogue_001;
 import net.datastream.schemas.mp_functions.mp0281_001.MP0281_AddStoreBin_001;
+import net.datastream.schemas.mp_functions.mp0286_001.MP0286_Bin2BinTransfer_001;
 import net.datastream.schemas.mp_functions.mp0612_001.MP0612_AddPartsAssociated_001;
 import net.datastream.schemas.mp_functions.mp0614_001.MP0614_DeletePartsAssociated_001;
 import net.datastream.schemas.mp_functions.mp2051_001.MP2051_AddSubstitutePart_001;
@@ -412,4 +417,55 @@ public class PartMiscServiceImpl implements PartMiscService {
 
 	}
 
+	@Override
+	public String createBin2binTransfer(InforContext context, Bin2BinTransfer bin2BinTransfer) throws InforException {
+		net.datastream.schemas.mp_entities.bin2bintransfer_001.Bin2BinTransfer bin2BinTransferInfor =
+				new net.datastream.schemas.mp_entities.bin2bintransfer_001.Bin2BinTransfer();
+
+		BinStock binStockInfor = new BinStock();
+		bin2BinTransferInfor.setBinStock(binStockInfor);
+		bin2BinTransferInfor.setBIN(bin2BinTransfer.getDestinationBin());
+
+		binStockInfor.setSTOREID(new STOREID_Type());
+		binStockInfor.getSTOREID().setORGANIZATIONID(tools.getOrganization(context));
+		binStockInfor.getSTOREID().setSTORECODE(bin2BinTransfer.getStoreCode());
+
+		IssueReturnPartTransactionLine transactionLine = bin2BinTransfer.getTransactionLine();
+		if (transactionLine != null) {
+			binStockInfor.setPARTID(new PARTID_Type());
+			binStockInfor.getPARTID().setORGANIZATIONID(tools.getOrganization(context));
+			binStockInfor.getPARTID().setPARTCODE(treatCodeSafe(transactionLine.getPartCode()));
+
+			bin2BinTransferInfor.setSTOCKQTY(
+					DataTypeTools.encodeQuantity(transactionLine.getTransactionQty(), "Stock Quantity")
+			);
+
+			binStockInfor.setBIN(transactionLine.getBin());
+			binStockInfor.setLOT(transactionLine.getLot());
+
+			if (DataTypeTools.isNotEmpty(transactionLine.getAssetIDCode())) {
+				bin2BinTransferInfor.setASSETID(new EQUIPMENTID_Type());
+				bin2BinTransferInfor.getASSETID().setEQUIPMENTCODE(transactionLine.getAssetIDCode());
+				bin2BinTransferInfor.getASSETID().setORGANIZATIONID(tools.getOrganization(context));
+			}
+
+			IssueReturnTransactionLine lineInfor = tools.getInforFieldTools().transformWSHubObject(new IssueReturnTransactionLine(), transactionLine, context);
+			bin2BinTransferInfor.getBinStock().setStandardUserDefinedFields(lineInfor.getStandardUserDefinedFields());
+		}
+
+		MP0286_Bin2BinTransfer_001 opBean = new MP0286_Bin2BinTransfer_001();
+		opBean.setBin2BinTransfer(bin2BinTransferInfor);
+		tools.performInforOperation(context, inforws::bin2BinTransferOp, opBean);
+
+		return null;
+	}
+
+	public BatchResponse<String> createBin2binTransferBatch(InforContext context, List<Bin2BinTransfer> bin2BinTransferList) {
+		return tools.batchOperation(context, this::createBin2binTransfer, bin2BinTransferList);
+	}
+
+	private String treatCodeSafe(String code) {
+		if(code == null) return null;
+		return code.trim().toUpperCase();
+	}
 }
