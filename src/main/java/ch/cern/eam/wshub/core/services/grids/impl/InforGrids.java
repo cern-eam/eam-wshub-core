@@ -207,7 +207,7 @@ public class InforGrids implements Serializable {
 		}
 
 		grr.setGridDataspies(result.getGRIDRESULT().getTOOLBAR().getFIELDVALUES().getROW().getDataspylist_Options().getOption().stream()
-				.map(option -> new GridDataspy(option.getValue().get(0), option.getDisplay().get(0), option.getValue().get(0).equals(grr.getDataSpyId()))).collect(Collectors.toList()));
+				.map(option -> new GridDataspy(option.getValue().get(0), option.getDisplay().get(0))).collect(Collectors.toList()));
 
 		grr.setGridFields(result.getGRIDRESULT().getGRID().getFIELDS().getFIELD().stream()
 				.filter(field -> Integer.parseInt(field.getOrder()) >= 0)
@@ -225,12 +225,12 @@ public class InforGrids implements Serializable {
 			for (net.datastream.schemas.mp_functions.mp0118_getgridheaderdata_001_result.DATA.ROW inforRow : result.getGRIDRESULT().getGRID().getDATA().getROW()) {
 
 				//
-				List<GridRequestCell> cells = inforRow.getD().stream().map(inforCell -> {
-					return new GridRequestCell(inforCell.getN().toString(),
+				List<GridRequestCell> cells = inforRow.getD().stream().map(inforCell ->
+					 new GridRequestCell(inforCell.getN().toString(),
 											   decodeCellContent(gridFieldCache.get(gridRequest.getRequestKey()).get(inforCell.getN()), inforCell.getContent()),
 											   Integer.parseInt(gridFieldCache.get(gridRequest.getRequestKey()).get(inforCell.getN()).getOrder()),
-											   gridFieldCache.get(gridRequest.getRequestKey()).get(inforCell.getN()).getName());
-				}).collect(Collectors.toList());
+											   gridFieldCache.get(gridRequest.getRequestKey()).get(inforCell.getN()).getName())
+				).collect(Collectors.toList());
 
 				// Sort using the order
 				cells = cells.stream().sorted(Comparator.comparing(GridRequestCell::getOrder)).collect(Collectors.toList());
