@@ -11,16 +11,19 @@ import net.datastream.schemas.mp_functions.mp0240_001.MP0240_AddPart_001;
 import net.datastream.schemas.mp_functions.mp0241_001.MP0241_GetPart_001;
 import net.datastream.schemas.mp_functions.mp0242_001.MP0242_SyncPart_001;
 import net.datastream.schemas.mp_functions.mp0243_001.MP0243_DeletePart_001;
+import net.datastream.schemas.mp_functions.mp0244_001.MP0244_GetPartDefault_001;
 import net.datastream.schemas.mp_functions.mp2072_001.ChangePartNumber;
 import net.datastream.schemas.mp_functions.mp2072_001.MP2072_ChangePartNumber_001;
 import net.datastream.schemas.mp_results.mp0240_001.MP0240_AddPart_001_Result;
 import net.datastream.schemas.mp_results.mp0241_001.MP0241_GetPart_001_Result;
 import net.datastream.schemas.mp_results.mp0242_001.MP0242_SyncPart_001_Result;
+import net.datastream.schemas.mp_results.mp0244_001.MP0244_GetPartDefault_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
 import java.util.LinkedList;
 import java.util.List;
 
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.isEmpty;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.toCodeString;
 
 public class PartServiceImpl implements PartService {
@@ -33,6 +36,21 @@ public class PartServiceImpl implements PartService {
 		this.applicationData = applicationData;
 		this.tools = tools;
 		this.inforws = inforWebServicesToolkitClient;
+	}
+
+	public Part readPartDefault(InforContext context, String organization) throws InforException {
+		MP0244_GetPartDefault_001 getPartDefault_001 = new MP0244_GetPartDefault_001();
+		if (isEmpty(organization)) {
+			getPartDefault_001.setORGANIZATIONID(tools.getOrganization(context));
+		} else {
+			getPartDefault_001.setORGANIZATIONID(new ORGANIZATIONID_Type());
+			getPartDefault_001.getORGANIZATIONID().setORGANIZATIONCODE(organization);
+		}
+
+		MP0244_GetPartDefault_001_Result result =
+				tools.performInforOperation(context, inforws::getPartDefaultOp, getPartDefault_001);
+
+		return tools.getInforFieldTools().transformInforObject(new Part(), result.getResultData().getPartDefault());
 	}
 
 	public Part readPart(InforContext context, String partCode) throws InforException {
