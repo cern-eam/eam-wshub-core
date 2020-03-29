@@ -128,6 +128,15 @@ public class FieldDescriptionTools {
 		return getDescription(inforContext, gridRequest, "description");
 	}
 
+	public String readCostCodeDesc(InforContext inforContext, String costCode) {
+		if (isEmpty(costCode)) {
+			return null;
+		}
+		GridRequest gridRequest = new GridRequest("LVCSTC", GridRequest.GRIDTYPE.LOV, 1);
+		gridRequest.addFilter("costcode", costCode, "=");
+		return getDescription(inforContext, gridRequest, "des_text");
+	}
+
 	/**
 	 * Reads the description of a custom field value
 	 * 

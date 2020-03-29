@@ -82,6 +82,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		runnables.add(() -> workOrder.setAssignedToDesc(tools.getFieldDescriptionsTools().readPersonDesc(context, workOrder.getAssignedTo())));
 		runnables.add(() -> workOrder.setDepartmentDesc(tools.getFieldDescriptionsTools().readDepartmentDesc(context, workOrder.getDepartmentCode())));
 		runnables.add(() -> workOrder.setClassDesc(tools.getFieldDescriptionsTools().readClassDesc(context, "EVNT", workOrder.getClassCode())));
+		runnables.add(() -> workOrder.setCostCodeDesc(tools.getFieldDescriptionsTools().readCostCodeDesc(context, workOrder.getCostCode())));
 		tools.processRunnables(runnables);
 
 		return workOrder;
