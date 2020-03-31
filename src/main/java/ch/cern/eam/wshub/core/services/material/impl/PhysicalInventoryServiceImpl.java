@@ -118,13 +118,15 @@ public class PhysicalInventoryServiceImpl implements PhysicalInventoryService {
         return tools.getInforFieldTools().transformInforObject(new PhysicalInventoryRow(), result);
     }
 
-    private PhysicalInventoryLine getLine(InforContext context, String code, BigInteger lineNumber)
+    private PhysicalInventoryLine getLine(InforContext context, String code, Long lineNumber)
             throws InforException {
         TRANSACTIONLINEID transactionLineId = new TRANSACTIONLINEID();
         transactionLineId.setTRANSACTIONID(new TRANSACTIONID_Type());
         transactionLineId.getTRANSACTIONID().setTRANSACTIONCODE(code);
         transactionLineId.getTRANSACTIONID().setORGANIZATIONID(tools.getOrganization(context));
-        transactionLineId.setTRANSACTIONLINENUM(lineNumber.longValue()); // TODO: unsafe?
+
+        // assume there are less than 2^64 lines in a physical inventory
+        transactionLineId.setTRANSACTIONLINENUM(lineNumber);
 
         MP2244_GetPhysicalInventoryLine_001 getPhysicalInventoryLine =
                 new MP2244_GetPhysicalInventoryLine_001();

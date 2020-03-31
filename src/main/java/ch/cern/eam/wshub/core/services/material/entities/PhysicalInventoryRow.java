@@ -16,7 +16,7 @@ public class PhysicalInventoryRow {
     @Id
     @Column(name = "STL_LINE")
     @InforField(xpath = "TRANSACTIONLINEID/TRANSACTIONLINENUM")
-    BigInteger lineNumber;
+    Long lineNumber;
 
     @Column(name = "STL_PART")
     @InforField(xpath = "PARTID/PARTCODE")
@@ -50,11 +50,11 @@ public class PhysicalInventoryRow {
         this.physicalInventoryCode = physicalInventoryCode;
     }
 
-    public BigInteger getLineNumber() {
+    public Long getLineNumber() {
         return lineNumber;
     }
 
-    public void setLineNumber(BigInteger line) {
+    public void setLineNumber(Long line) {
         this.lineNumber = line;
     }
 
