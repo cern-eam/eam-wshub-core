@@ -14,6 +14,10 @@ public interface PhysicalInventoryService {
         throws InforException;
 
     @Operation(logOperation = INFOR_OPERATION.OTHER) // TODO: update
+    PhysicalInventory readPhysicalInventory(InforContext context, String code)
+        throws InforException;
+
+    @Operation(logOperation = INFOR_OPERATION.OTHER) // TODO: update
     PhysicalInventoryRow updatePhysicalInventoryLine(InforContext context, PhysicalInventoryRow row)
         throws InforException;
 }

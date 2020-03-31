@@ -11,6 +11,7 @@ import net.datastream.schemas.mp_entities.inventorytransaction_001.InventoryTran
 import net.datastream.schemas.mp_entities.physicalinventoryline_001.PhysicalInventoryLine;
 import net.datastream.schemas.mp_fields.*;
 import net.datastream.schemas.mp_functions.mp1217_001.MP1217_AddInventoryTransaction_001;
+import net.datastream.schemas.mp_functions.mp1220_001.MP1220_GetInventoryTransaction_001;
 import net.datastream.schemas.mp_functions.mp1294_001.MP1294_SyncPhysicalInventoryLine_001;
 import net.datastream.schemas.mp_functions.mp2244_001.MP2244_GetPhysicalInventoryLine_001;
 import net.datastream.schemas.mp_results.mp1217_001.MP1217_AddInventoryTransaction_001_Result;
@@ -51,6 +52,24 @@ public class PhysicalInventoryServiceImpl implements PhysicalInventoryService {
 
         return tools.getInforFieldTools()
             .transformInforObject(new PhysicalInventory(), result.getResultData().getInventoryTransaction());
+    }
+
+    @Override
+    public PhysicalInventory readPhysicalInventory(InforContext context, String code) throws InforException {
+        ORGANIZATIONID_Type organizationIdType = new ORGANIZATIONID_Type();
+        organizationIdType.setORGANIZATIONCODE("*");
+
+        MP1220_GetInventoryTransaction_001 getInventoryTransaction =
+            new MP1220_GetInventoryTransaction_001();
+        getInventoryTransaction.setTRANSACTIONID(new TRANSACTIONID_Type());
+        getInventoryTransaction.getTRANSACTIONID().setTRANSACTIONCODE(code);
+        getInventoryTransaction.getTRANSACTIONID().setORGANIZATIONID(organizationIdType); // TODO: is this ok?
+
+        InventoryTransaction inventoryTransaction =
+            tools.performInforOperation(context, inforws::getInventoryTransactionOp, getInventoryTransaction)
+                .getResultData().getInventoryTransaction();
+
+        return tools.getInforFieldTools().transformInforObject(new PhysicalInventory(), inventoryTransaction);
     }
 
     @Override
