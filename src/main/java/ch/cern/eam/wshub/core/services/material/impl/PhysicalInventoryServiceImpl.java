@@ -94,6 +94,9 @@ public class PhysicalInventoryServiceImpl implements PhysicalInventoryService {
 
         tools.getInforFieldTools().transformWSHubObject(physicalInventoryLine, row, context);
 
+        physicalInventoryLine.setPHYSICALQUANTITY(
+                tools.getDataTypeTools().encodeQuantity(row.getPhysicalQuantity(), "Physical Quantity"));
+
         MP1294_SyncPhysicalInventoryLine_001 syncPhysicalInventoryLine =
             new MP1294_SyncPhysicalInventoryLine_001();
 
