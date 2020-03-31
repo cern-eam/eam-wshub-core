@@ -82,7 +82,7 @@ public class PhysicalInventoryServiceImpl implements PhysicalInventoryService {
         transactionLineId.setTRANSACTIONID(new TRANSACTIONID_Type());
         transactionLineId.getTRANSACTIONID().setTRANSACTIONCODE(row.getPhysicalInventoryCode());
         transactionLineId.getTRANSACTIONID().setORGANIZATIONID(organizationIdType); // TODO: is this ok?
-        transactionLineId.setTRANSACTIONLINENUM(row.getLine().longValue()); // TODO: unsafe?
+        transactionLineId.setTRANSACTIONLINENUM(row.getLineNumber().longValue()); // TODO: unsafe?
 
         MP2244_GetPhysicalInventoryLine_001 getPhysicalInventoryLine =
             new MP2244_GetPhysicalInventoryLine_001();
