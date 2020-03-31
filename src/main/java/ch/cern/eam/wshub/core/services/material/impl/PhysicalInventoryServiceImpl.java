@@ -37,13 +37,11 @@ public class PhysicalInventoryServiceImpl implements PhysicalInventoryService {
     public PhysicalInventory createPhysicalInventory(InforContext context, PhysicalInventory physicalInventory)
             throws InforException {
         InventoryTransaction inventoryTransaction = new InventoryTransaction();
+
         inventoryTransaction.setTRANSACTIONID(new TRANSACTIONID_Type());
         inventoryTransaction.getTRANSACTIONID().setTRANSACTIONCODE("0");
-        tools.getInforFieldTools().transformWSHubObject(inventoryTransaction, physicalInventory, context);
 
-        // TODO: do not overwrite status
-        inventoryTransaction.setTRANSACTIONSTATUS(new STATUS_Type());
-        inventoryTransaction.getTRANSACTIONSTATUS().setSTATUSCODE("U");
+        tools.getInforFieldTools().transformWSHubObject(inventoryTransaction, physicalInventory, context);
 
         MP1217_AddInventoryTransaction_001 addInventoryTransaction = new MP1217_AddInventoryTransaction_001();
         addInventoryTransaction.setInventoryTransaction(inventoryTransaction);
@@ -57,14 +55,11 @@ public class PhysicalInventoryServiceImpl implements PhysicalInventoryService {
 
     @Override
     public PhysicalInventory readPhysicalInventory(InforContext context, String code) throws InforException {
-        ORGANIZATIONID_Type organizationIdType = new ORGANIZATIONID_Type();
-        organizationIdType.setORGANIZATIONCODE("*");
-
         MP1220_GetInventoryTransaction_001 getInventoryTransaction =
             new MP1220_GetInventoryTransaction_001();
         getInventoryTransaction.setTRANSACTIONID(new TRANSACTIONID_Type());
         getInventoryTransaction.getTRANSACTIONID().setTRANSACTIONCODE(code);
-        getInventoryTransaction.getTRANSACTIONID().setORGANIZATIONID(organizationIdType); // TODO: is this ok?
+        getInventoryTransaction.getTRANSACTIONID().setORGANIZATIONID(tools.getOrganization(context));
 
         InventoryTransaction inventoryTransaction =
             tools.performInforOperation(context, inforws::getInventoryTransactionOp, getInventoryTransaction)
@@ -76,14 +71,11 @@ public class PhysicalInventoryServiceImpl implements PhysicalInventoryService {
     @Override
     public PhysicalInventory updatePhysicalInventory(InforContext context, PhysicalInventory physicalInventory)
             throws InforException {
-        ORGANIZATIONID_Type organizationIdType = new ORGANIZATIONID_Type();
-        organizationIdType.setORGANIZATIONCODE("*");
-
         MP1220_GetInventoryTransaction_001 getInventoryTransaction =
             new MP1220_GetInventoryTransaction_001();
         getInventoryTransaction.setTRANSACTIONID(new TRANSACTIONID_Type());
         getInventoryTransaction.getTRANSACTIONID().setTRANSACTIONCODE(physicalInventory.getCode());
-        getInventoryTransaction.getTRANSACTIONID().setORGANIZATIONID(organizationIdType); // TODO: is this ok?
+        getInventoryTransaction.getTRANSACTIONID().setORGANIZATIONID(tools.getOrganization(context));
         InventoryTransaction inventoryTransaction =
             tools.performInforOperation(context, inforws::getInventoryTransactionOp, getInventoryTransaction)
                 .getResultData().getInventoryTransaction();
@@ -103,13 +95,10 @@ public class PhysicalInventoryServiceImpl implements PhysicalInventoryService {
 
     @Override
     public PhysicalInventoryRow readPhysicalInventoryLine(InforContext context, PhysicalInventoryRow row) throws InforException {
-        ORGANIZATIONID_Type organizationIdType = new ORGANIZATIONID_Type();
-        organizationIdType.setORGANIZATIONCODE("*");
-
         TRANSACTIONLINEID transactionLineId = new TRANSACTIONLINEID();
         transactionLineId.setTRANSACTIONID(new TRANSACTIONID_Type());
         transactionLineId.getTRANSACTIONID().setTRANSACTIONCODE(row.getPhysicalInventoryCode());
-        transactionLineId.getTRANSACTIONID().setORGANIZATIONID(organizationIdType); // TODO: is this ok?
+        transactionLineId.getTRANSACTIONID().setORGANIZATIONID(tools.getOrganization(context));
         transactionLineId.setTRANSACTIONLINENUM(row.getLineNumber().longValue()); // TODO: unsafe?
 
         MP2244_GetPhysicalInventoryLine_001 getPhysicalInventoryLine =
@@ -132,7 +121,7 @@ public class PhysicalInventoryServiceImpl implements PhysicalInventoryService {
         TRANSACTIONLINEID transactionLineId = new TRANSACTIONLINEID();
         transactionLineId.setTRANSACTIONID(new TRANSACTIONID_Type());
         transactionLineId.getTRANSACTIONID().setTRANSACTIONCODE(row.getPhysicalInventoryCode());
-        transactionLineId.getTRANSACTIONID().setORGANIZATIONID(organizationIdType); // TODO: is this ok?
+        transactionLineId.getTRANSACTIONID().setORGANIZATIONID(tools.getOrganization(context));
         transactionLineId.setTRANSACTIONLINENUM(row.getLineNumber().longValue()); // TODO: unsafe?
 
         MP2244_GetPhysicalInventoryLine_001 getPhysicalInventoryLine =
