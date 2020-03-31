@@ -14,6 +14,7 @@ import net.datastream.schemas.mp_functions.mp6043_001.MP6043_AddExtMenus_001;
 import net.datastream.schemas.mp_functions.mp6045_001.MP6045_DeleteExtMenus_001;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
+import javax.swing.tree.MutableTreeNode;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
@@ -159,19 +160,44 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         // Check if path already exists; if so, continue
         List<String> pathList = Arrays.asList(menuSpecification.desiredFinalPath.split("\\/"));
         MenuEntryNode latestMenuEntryNodeFound = this.getLatestMenuEntryByPath(pathList, menuRoot);
+        System.out.println("XXXXX 2 XXXXX");
+
+        // If folder level is equal to path length
+        String func = menuSpecification.desiredFinalFunctionCode;
         if (latestMenuEntryNodeFound.getLevel() == pathList.size()) {
-            return "OK";
+            // If function is not set, do nothing
+            if (func != null && !func.isEmpty()) {
+                return "OK";
+            }
+            // If function is set and child function exists, do nothing
+            for (MenuEntryNode child : latestMenuEntryNodeFound.getChildren()) {
+                if (child.getFunctionId().equals(func)) {
+                    return "OK";
+                }
+            }
+        }
+        // Else, complete path
+        for (int i = latestMenuEntryNodeFound.getLevel() ; i < pathList.size() ; i++) {
+            latestMenuEntryNodeFound.add(this.performAddFolderOperation(context, pathList.get(i)));
         }
 
-        // Else, menu is incomplete; add all missing menu nodes
-        List<String> missingPathList = pathList.subList(latestMenuEntryNodeFound.getLevel(), pathList.size());
-        for (String menuEntryMissing : missingPathList) {
-            latestMenuEntryNodeFound = this.addMenuEntry(menuEntryMissing, latestMenuEntryNodeFound);
+        // Add function if it is set
+        if (func != null && !func.isEmpty()) {
+            latestMenuEntryNodeFound.add(this.performAddFunctionOperation(context, func));
         }
-        // And add also the function, if exists
-        if ( menuSpecification.desiredFinalFunctionCode != null && !menuSpecification.desiredFinalFunctionCode.isEmpty()) {
-            this.addFunctionEntry(menuSpecification.desiredFinalFunctionCode, latestMenuEntryNodeFound);
-        }
+
+        System.out.println("END HERE");
+        return "OK";
+
+//        // Else, menu is incomplete; add all missing menu nodes
+//        List<String> missingPathList = pathList.subList(latestMenuEntryNodeFound.getLevel(), pathList.size());
+//        for (String menuEntryMissing : missingPathList) {
+//            latestMenuEntryNodeFound = this.addMenuEntry(menuEntryMissing, latestMenuEntryNodeFound);
+//        }
+//        // And add also the function, if exists
+//        if ( menuSpecification.desiredFinalFunctionCode != null && !menuSpecification.desiredFinalFunctionCode.isEmpty()) {
+//            this.addFunctionEntry(menuSpecification.desiredFinalFunctionCode, latestMenuEntryNodeFound);
+//        }
 
 
         // Now add leaf item
@@ -181,11 +207,11 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         // With the request object created, perform the add operation
 //       tools.performInforOperation(context, inforws::addExtMenusOp, addExtMenus);
 
-        System.out.println("END HERE");
-//        if(true) return "OK";
-
-
-        return "OK";
+//        System.out.println("END HERE");
+////        if(true) return "OK";
+//
+//
+//        return "OK";
 
 //        // Get menu entries as list
 //        List<GenericMenuEntry> menuEntries = this.getExtMenuHierarchyAsList(context, node);
@@ -245,6 +271,14 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
 //       return "OK";
     }
 
+    private MutableTreeNode performAddFunctionOperation(InforContext context, String func) {
+        return new MenuEntryNode();
+    }
+
+    private MutableTreeNode performAddFolderOperation(InforContext context, String s) {
+        return new MenuEntryNode();
+    }
+
     private void addFunctionEntry(String desiredFinalFunctionCode, MenuEntryNode latestMenuEntryNodeFound) {
     }
 
@@ -253,7 +287,33 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
     }
 
     private MenuEntryNode getLatestMenuEntryByPath(List<String> pathList, MenuEntryNode menuRoot) {
-        return menuRoot;
+        boolean found = false;
+        boolean endReached = false;
+        int depthReached = 0;
+        MenuEntryNode currentNode = menuRoot;
+
+        for (String currentPathEntry : pathList) {
+            for (MenuEntryNode childNode : currentNode.getChildren()) {
+                System.out.println(childNode.getDescription() + " equals? " + currentPathEntry);
+                if (childNode.getDescription().equals(currentPathEntry)) { // Note: assumes identity by description, and paths unique
+                    System.out.println("YES!");
+                    currentNode = childNode;
+                    found = true;
+                    break;
+                }
+            }
+            endReached = !found;
+            if (endReached) {
+                break;
+            }
+            depthReached++;
+            found = false;
+        }
+
+        System.out.println("END REACHED: " + endReached);
+        System.out.println("DEPTH REACHED: " + depthReached);
+
+        return currentNode;
     }
 
 //    private List<MenuEntryNode> generateMenuListFromInforLists(List<MENU_Type> menus, List<FOLDER_Type> folders, List<FUNCTION_Type> functions){
