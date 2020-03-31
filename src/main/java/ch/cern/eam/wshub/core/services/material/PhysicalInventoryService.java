@@ -20,4 +20,8 @@ public interface PhysicalInventoryService {
     @Operation(logOperation = INFOR_OPERATION.OTHER) // TODO: update
     PhysicalInventoryRow updatePhysicalInventoryLine(InforContext context, PhysicalInventoryRow row)
         throws InforException;
+
+    @Operation(logOperation = INFOR_OPERATION.OTHER) // TODO: update
+    PhysicalInventory updatePhysicalInventory(InforContext context, PhysicalInventory physicalInventory)
+        throws InforException;
 }
