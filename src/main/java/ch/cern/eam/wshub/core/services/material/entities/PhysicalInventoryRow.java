@@ -35,11 +35,11 @@ public class PhysicalInventoryRow {
     String lot;
 
     @Column(name = "STL_EXPQTY")
-    @InforField(xpath = "EXPECTEDQUANTITY/VALUE")
+    @InforField(xpath = "EXPECTEDQUANTITY")
     BigDecimal expectedQuantity;
 
     @Column(name = "STL_PHYQTY")
-    @InforField(xpath = "PHYSICALQUANTITY/VALUE")
+    @InforField(xpath = "PHYSICALQUANTITY")
     BigDecimal physicalQuantity;
 
     public String getPhysicalInventoryCode() {

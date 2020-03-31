@@ -102,6 +102,28 @@ public class PhysicalInventoryServiceImpl implements PhysicalInventoryService {
     }
 
     @Override
+    public PhysicalInventoryRow readPhysicalInventoryLine(InforContext context, PhysicalInventoryRow row) throws InforException {
+        ORGANIZATIONID_Type organizationIdType = new ORGANIZATIONID_Type();
+        organizationIdType.setORGANIZATIONCODE("*");
+
+        TRANSACTIONLINEID transactionLineId = new TRANSACTIONLINEID();
+        transactionLineId.setTRANSACTIONID(new TRANSACTIONID_Type());
+        transactionLineId.getTRANSACTIONID().setTRANSACTIONCODE(row.getPhysicalInventoryCode());
+        transactionLineId.getTRANSACTIONID().setORGANIZATIONID(organizationIdType); // TODO: is this ok?
+        transactionLineId.setTRANSACTIONLINENUM(row.getLineNumber().longValue()); // TODO: unsafe?
+
+        MP2244_GetPhysicalInventoryLine_001 getPhysicalInventoryLine =
+                new MP2244_GetPhysicalInventoryLine_001();
+        getPhysicalInventoryLine.setTRANSACTIONLINEID(transactionLineId);
+
+        PhysicalInventoryLine physicalInventoryLine =
+            tools.performInforOperation(context, inforws::getPhysicalInventoryLineOp, getPhysicalInventoryLine)
+                .getResultData().getPhysicalInventoryLine();
+
+        return tools.getInforFieldTools().transformInforObject(new PhysicalInventoryRow(), physicalInventoryLine);
+    }
+
+    @Override
     public PhysicalInventoryRow updatePhysicalInventoryLine(InforContext context, PhysicalInventoryRow row)
             throws InforException {
         ORGANIZATIONID_Type organizationIdType = new ORGANIZATIONID_Type();
