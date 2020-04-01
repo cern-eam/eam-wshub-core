@@ -11,12 +11,10 @@ import net.datastream.schemas.mp_entities.extmenushierarchy_001.ExtMenusHierarch
 import net.datastream.schemas.mp_fields.*;
 import net.datastream.schemas.mp_functions.mp6005_001.MP6005_GetExtMenusHierarchy_001;
 import net.datastream.schemas.mp_functions.mp6043_001.MP6043_AddExtMenus_001;
-import net.datastream.schemas.mp_functions.mp6045_001.MP6045_DeleteExtMenus_001;
+import net.datastream.schemas.mp_results.mp6043_001.MP6043_AddExtMenus_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
-import javax.swing.tree.MutableTreeNode;
-import java.awt.*;
-import java.util.*;
+import java.util.Arrays;
 import java.util.List;
 
 public class UserGroupMenuServiceImpl implements UserGroupMenuService {
@@ -151,9 +149,7 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         System.out.println("1");
         this.validateInputNode(menuSpecification);
         System.out.println("2");
-
-
-
+        
         // Get menu entries as tree
         MenuEntryNode menuRoot = this.getExtMenuHierarchyAsTree(context, menuSpecification);
         System.out.println("XXXXX 1 XXXXX");
@@ -178,12 +174,16 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         }
         // Else, complete path
         for (int i = latestMenuEntryNodeFound.getLevel() ; i < pathList.size() ; i++) {
-            latestMenuEntryNodeFound.add(this.performAddFolderOperation(context, pathList.get(i)));
+            MenuEntryNode addedMenuEntryNode = this.performAddFolderOperation(latestMenuEntryNodeFound, pathList.get(i), menuSpecification.forUserGroup, context);
+            latestMenuEntryNodeFound.add(addedMenuEntryNode);
+            latestMenuEntryNodeFound = addedMenuEntryNode;
         }
 
-        // Add function if it is set
+        // And add function if it is set
         if (func != null && !func.isEmpty()) {
-            latestMenuEntryNodeFound.add(this.performAddFunctionOperation(context, func));
+            MenuEntryNode addedMenuEntryNode = this.performAddFunctionOperation(latestMenuEntryNodeFound, func, menuSpecification.forUserGroup, context);
+            latestMenuEntryNodeFound.add(addedMenuEntryNode);
+            latestMenuEntryNodeFound = addedMenuEntryNode;
         }
 
         System.out.println("END HERE");
@@ -271,12 +271,51 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
 //       return "OK";
     }
 
-    private MutableTreeNode performAddFunctionOperation(InforContext context, String func) {
-        return new MenuEntryNode();
+    private MP6043_AddExtMenus_001 fillExtMenus(MenuEntryNode parent, String folderName, String userGroup, InforContext context, String code, String menuType) {
+        // With the previous ID found and the menu type determined, fill the request object for both menu item or function item
+        String id = parent != null ? parent.getId() : ""; // Which would be the extMenuCode of the parent..
+        MP6043_AddExtMenus_001 addExtMenus = new MP6043_AddExtMenus_001();
+        ExtMenus extMenus = new ExtMenus();
+        addExtMenus.setExtMenus(extMenus);
+        extMenus.setUSERGROUPID(new USERGROUPID_Type());
+        extMenus.getUSERGROUPID().setUSERGROUPCODE(userGroup);
+        extMenus.setFUNCTIONID(new FUNCTIONID_Type());
+        if (!menuType.equals("S")) { // If not function, don't set name
+            extMenus.getFUNCTIONID().setFUNCTIONDESCRIPTION(folderName);
+        }
+        extMenus.getFUNCTIONID().setFUNCTIONCODE(code); // Submenu code
+        extMenus.setEXTMENUPARENT(id);
+        extMenus.setEXTMENUTYPE(menuType);
+        extMenus.setSEQUENCENUMBER(100); // Set by default at the end of newly added menu item, to be moved manually if required
+        extMenus.setMOBILE("false");
+
+        return addExtMenus;
     }
 
-    private MutableTreeNode performAddFolderOperation(InforContext context, String s) {
-        return new MenuEntryNode();
+        private MenuEntryNode performAddFunctionOperation(MenuEntryNode parent, String functionCode, String userGroup, InforContext context) throws InforException {
+        MP6043_AddExtMenus_001 addExtMenus = this.fillExtMenus(parent, "", userGroup, context, functionCode, "S");
+
+        // With the request object created, perform the add operation
+        MP6043_AddExtMenus_001_Result result = tools.performInforOperation(context, inforws::addExtMenusOp, addExtMenus);
+
+        System.out.println("XXXXX 3a XXXXX");
+        return new MenuEntryNode(result.getResultData().getExtMenus());
+    }
+
+    private MenuEntryNode performAddFolderOperation(MenuEntryNode parent, String folderName, String userGroup, InforContext context) throws InforException {
+        // Decide menu type: if function type is not set, then assume it's a menu and not a function
+        String menuType = "F"; // Assume entry is submenu
+        if (parent.getParentMenuEntry().getDescription().equals("ROOT_NODE")) {
+            menuType = "M"; // Entry is main menu
+        }
+
+        MP6043_AddExtMenus_001 addExtMenus = this.fillExtMenus(parent, folderName, userGroup, context, "BSFOLD", menuType);
+
+        // With the request object created, perform the add operation
+        MP6043_AddExtMenus_001_Result result = tools.performInforOperation(context, inforws::addExtMenusOp, addExtMenus);
+
+        System.out.println("XXXXX 3 XXXXX");
+        return new MenuEntryNode(result.getResultData().getExtMenus());
     }
 
     private void addFunctionEntry(String desiredFinalFunctionCode, MenuEntryNode latestMenuEntryNodeFound) {

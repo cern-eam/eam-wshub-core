@@ -1,5 +1,6 @@
 package ch.cern.eam.wshub.core.services.administration.entities;
 
+import net.datastream.schemas.mp_entities.extmenus_001.ExtMenus;
 import net.datastream.schemas.mp_fields.FOLDER_Type;
 import net.datastream.schemas.mp_fields.FUNCTION_Type;
 import net.datastream.schemas.mp_fields.MENU_Type;
@@ -41,6 +42,15 @@ public class MenuEntryNode extends DefaultMutableTreeNode {
 
     public MenuEntryNode() { // For root only
         super();
+        this.description = "ROOT_NODE";
+    }
+
+    public MenuEntryNode(ExtMenus entryAdded) {
+        super();
+        this.id = entryAdded.getEXTMENUID().getEXTMENUCODE();
+        this.description = entryAdded.getFUNCTIONID().getFUNCTIONDESCRIPTION();
+//            this.parent = function.getEXTMENUPARENT();
+        this.functionId = entryAdded.getFUNCTIONID().getFUNCTIONCODE();
     }
 
     public List<MenuEntryNode> getChildren() {
