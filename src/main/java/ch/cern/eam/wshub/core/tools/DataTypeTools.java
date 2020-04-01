@@ -386,4 +386,8 @@ public class DataTypeTools {
     public static String toCodeString(LOCATIONID_Type locationIdType) {
         return locationIdType == null ? null : locationIdType.getLOCATIONCODE();
     }
+
+    public static Long convertBigIntegerToLong(BigInteger value) {
+        return value.longValueExact();
+    }
 }

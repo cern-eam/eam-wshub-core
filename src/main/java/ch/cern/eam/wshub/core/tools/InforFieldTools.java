@@ -140,16 +140,12 @@ public class InforFieldTools {
             } else if (inforValue.getClass().equals(USERDEFINEDAREA.class)) {
                 USERDEFINEDAREA userDefinedAreaValue = (USERDEFINEDAREA) inforValue;
                 wshubField.set(wshubObject, customFieldsTools.readInforCustomFields(userDefinedAreaValue));
-            } else if (wshubField.getType() == BigInteger.class
-                    && (inforValue.getClass().equals(Long.class)
-                        || inforValue.getClass().equals(Long.TYPE))) {
+            } else if (inforValue.getClass().equals(Long.class) || inforValue.getClass().equals(Long.TYPE)) {
                 Long longValue = (Long) inforValue;
                 wshubField.set(wshubObject, BigInteger.valueOf(longValue));
             } else if ("UserDefinedFields".equals(wshubField.getAnnotation(InforField.class).xpath()) ||
                        "StandardUserDefinedFields".equals(wshubField.getAnnotation(InforField.class).xpath())) {
                 wshubField.set(wshubObject, transformInforObject(new UserDefinedFields(), inforValue));
-            } else {
-                wshubField.set(wshubObject, inforValue);
             }
         }
         catch (Exception e) {
