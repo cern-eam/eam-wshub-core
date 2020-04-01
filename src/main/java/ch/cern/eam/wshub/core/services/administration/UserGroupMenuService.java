@@ -22,15 +22,15 @@ public interface UserGroupMenuService {
 //        }
 //    }
     class MenuSpecification {
-        public String desiredFinalPath;
-        public String desiredFinalFunctionCode;
+        public String menuPath;
+        public String functionCode;
         public String forUserGroup;
 
         public MenuSpecification() { }
 
-        public MenuSpecification(String desiredFinalPath, String desiredFinalFunctionCode, String forUserGroup) {
-            this.desiredFinalPath = desiredFinalPath;
-            this.desiredFinalFunctionCode = desiredFinalFunctionCode;
+        public MenuSpecification(String menuPath, String functionCode, String forUserGroup) {
+            this.menuPath = menuPath;
+            this.functionCode = functionCode;
             this.forUserGroup = forUserGroup;
         }
     }
