@@ -3,6 +3,7 @@ package ch.cern.eam.wshub.core.services.administration.impl;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.administration.UserGroupMenuService;
 import ch.cern.eam.wshub.core.services.administration.entities.MenuEntryNode;
+import ch.cern.eam.wshub.core.services.administration.entities.MenuType;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
@@ -17,6 +18,8 @@ import net.datastream.wsdls.inforws.InforWebServicesPT;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.OptionalLong;
 
 public class UserGroupMenuServiceImpl implements UserGroupMenuService {
     private Tools tools;
@@ -32,7 +35,7 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
     private void addFolderToMenuNode(MenuEntryNode currentNode, FOLDER_Type folder) {
         MenuEntryNode newNode = new MenuEntryNode(folder);
         currentNode.add(newNode);
-        for(FOLDER_Type childFolder : folder.getFOLDER()) {
+        for (FOLDER_Type childFolder : folder.getFOLDER()) {
             addFolderToMenuNode(newNode, childFolder);
         }
         for (FUNCTION_Type childFunction : folder.getFUNCTION()) {
@@ -65,17 +68,17 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
      */
     @Override
     public String addToMenuHierarchy(InforContext context, MenuSpecification menuSpecification) throws InforException {
-        this.validateInputNode(menuSpecification);
+        UserGroupMenuService.validateInputNode(menuSpecification);
 
         // Get menu entries as tree
         MenuEntryNode menuRoot = this.getExtMenuHierarchyAsTree(context, menuSpecification);
 
         // Check if path already exists; if so, continue
-        List<String> pathList = Arrays.asList(menuSpecification.menuPath.split("\\/"));
+        List<String> pathList = Arrays.asList(menuSpecification.getMenuPath().split("\\/"));
         MenuEntryNode latestMenuEntryNodeFound = this.getLatestMenuEntryByPath(pathList, menuRoot);
 
         // If level of the folder to be added is last
-        String func = menuSpecification.functionCode;
+        String func = menuSpecification.getFunctionCode();
         if (latestMenuEntryNodeFound.getLevel() == pathList.size()) {
             // If function is not set, do nothing
             if (func == null && func.isEmpty()) {
@@ -91,14 +94,14 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
 
         // Else, complete path
         for (int i = latestMenuEntryNodeFound.getLevel() ; i < pathList.size() ; i++) {
-            MenuEntryNode addedMenuEntryNode = this.performAddFolderOperation(latestMenuEntryNodeFound, pathList.get(i), menuSpecification.forUserGroup, context);
+            MenuEntryNode addedMenuEntryNode = this.performAddFolderOperation(latestMenuEntryNodeFound, pathList.get(i), menuSpecification.getForUserGroup(), context);
             latestMenuEntryNodeFound.add(addedMenuEntryNode);
             latestMenuEntryNodeFound = addedMenuEntryNode;
         }
 
         // And add function if it is set
         if (func != null && !func.isEmpty()) {
-            MenuEntryNode addedMenuEntryNode = this.performAddFunctionOperation(latestMenuEntryNodeFound, func, menuSpecification.forUserGroup, context);
+            MenuEntryNode addedMenuEntryNode = this.performAddFunctionOperation(latestMenuEntryNodeFound, func, menuSpecification.getForUserGroup(), context);
         }
 
         return "OK";
@@ -113,20 +116,21 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         extMenus.setUSERGROUPID(new USERGROUPID_Type());
         extMenus.getUSERGROUPID().setUSERGROUPCODE(userGroup);
         extMenus.setFUNCTIONID(new FUNCTIONID_Type());
-        if (!menuType.equals("S")) { // If not function, don't set name
+        if (!menuType.equals(MenuType.FUNCTION.getType())) { // If not function, don't set name
             extMenus.getFUNCTIONID().setFUNCTIONDESCRIPTION(folderName);
         }
         extMenus.getFUNCTIONID().setFUNCTIONCODE(code); // Submenu code
         extMenus.setEXTMENUPARENT(id);
         extMenus.setEXTMENUTYPE(menuType);
-        extMenus.setSEQUENCENUMBER(100); // Set by default at the end of newly added menu item, to be moved manually if required
+        Long maxSequenceNumber = parent.getChildren().stream().mapToLong(MenuEntryNode::getSequenceNumber).max().orElse(0);
+        extMenus.setSEQUENCENUMBER(maxSequenceNumber + 1); // Set by default at the end of newly added menu item, to be moved manually by local admins if required
         extMenus.setMOBILE("false");
 
         return addExtMenus;
     }
 
     private MenuEntryNode performAddFunctionOperation(MenuEntryNode parent, String functionCode, String userGroup, InforContext context) throws InforException {
-        MP6043_AddExtMenus_001 addExtMenus = this.fillExtMenus(parent, "", userGroup, context, functionCode, "S");
+        MP6043_AddExtMenus_001 addExtMenus = this.fillExtMenus(parent, "", userGroup, context, functionCode, MenuType.FUNCTION.getType());
 
         // With the request object created, perform the add operation
         MP6043_AddExtMenus_001_Result result = tools.performInforOperation(context, inforws::addExtMenusOp, addExtMenus);
@@ -135,12 +139,12 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
     }
 
     private MenuEntryNode performAddFolderOperation(MenuEntryNode parent, String folderName, String userGroup, InforContext context) throws InforException {
-        String menuType = "F"; // Assume entry is submenu
+        String menuType = MenuType.SUBMENU.getType(); // Assume entry is submenu
         if (parent.getDescription().equals("ROOT_NODE")) {
-            menuType = "M"; // Entry is main menu
+            menuType = MenuType.MAIN_MENU.getType(); // Entry is main menu
         }
 
-        MP6043_AddExtMenus_001 addExtMenus = this.fillExtMenus(parent, folderName, userGroup, context, "BSFOLD", menuType);
+        MP6043_AddExtMenus_001 addExtMenus = this.fillExtMenus(parent, folderName, userGroup, context, UserGroupMenuService.MENU_FUNCTION_CODE, menuType);
 
         // With the request object created, perform the add operation
         MP6043_AddExtMenus_001_Result result = tools.performInforOperation(context, inforws::addExtMenusOp, addExtMenus);
@@ -173,7 +177,7 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
 
     private MenuEntryNode getExtMenuHierarchyAsTree(InforContext context, MenuSpecification menuSpecification) throws InforException {
         MenuEntryNode root = new MenuEntryNode();
-        ExtMenusHierarchy result = this.getExtMenuHierarchy(context, menuSpecification.forUserGroup);
+        ExtMenusHierarchy result = this.getExtMenuHierarchy(context, menuSpecification.getForUserGroup());
 
         List<MENU_Type> menus = result.getMENU();
         for (MENU_Type menu : menus) {
@@ -187,31 +191,7 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
     }
 
 
-    private void validateInputNode(MenuSpecification ms) throws InforException {
-        String path = ms.menuPath;
-        String func = ms.functionCode;
-        String userGroup = ms.forUserGroup;
-        if (path == null || func == null || userGroup == null) {
-            throw tools.generateFault("Menu specifications cannot be null");
-        }
-        if (path.isEmpty()) {
-            throw tools.generateFault("Path cannot be empty");
-        }
-        if (path.startsWith("/")) {
-            throw tools.generateFault("Path cannot start with '/'");
-        }
-        if (path.endsWith("/")) {
-            throw tools.generateFault("Path cannot end with '/'");
-        }
-        if (path.contains("//")) {
-            throw tools.generateFault("Path cannot have empty path items");
-        }
-        if (path.contains(" ")) {
-            throw tools.generateFault("Linear Reference ID must be present.");
-        }
 
-        return;
-    }
 
     /**
      * Deletes a function item, or a menu item with all its children.
@@ -221,12 +201,12 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
      */
     @Override
     public String deleteFromMenuHierarchy(InforContext context, MenuSpecification menuSpecification) throws InforException {
-        this.validateInputNode(menuSpecification);
+        UserGroupMenuService.validateInputNode(menuSpecification);
 
         // Get menu entries as tree
         MenuEntryNode menuRoot = this.getExtMenuHierarchyAsTree(context, menuSpecification);
 
-        List<String> pathList = Arrays.asList(menuSpecification.menuPath.split("\\/"));
+        List<String> pathList = Arrays.asList(menuSpecification.getMenuPath().split("\\/"));
         MenuEntryNode latestMenuEntryNodeFound = this.getLatestMenuEntryByPath(pathList, menuRoot);
 
         // If the specified path doesn't exist, we'll assume it's a problem
@@ -235,15 +215,15 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         }
 
         // Else, the path specified exists, so delete function if there is one specified
-        String func = menuSpecification.functionCode;
+        String func = menuSpecification.getFunctionCode();
         if (func != null && !func.isEmpty()) { // Function is specified
             for (MenuEntryNode child : latestMenuEntryNodeFound.getChildren()) {
                 if (child.getFunctionId().equals(func)) { // Find function (allows not finding), also delete all target function children
-                    this.performDeleteFunctionOperation(child, menuSpecification.functionCode, menuSpecification.forUserGroup, context);
+                    this.performDeleteFunctionOperation(child, menuSpecification.getFunctionCode(), menuSpecification.getForUserGroup(), context);
                 }
             }
         } else { // Or delete last element in path if no function specified
-            this.performDeleteFolderOperation(latestMenuEntryNodeFound, menuSpecification.functionCode, menuSpecification.forUserGroup, context);
+            this.performDeleteFolderOperation(latestMenuEntryNodeFound, menuSpecification.getFunctionCode(), menuSpecification.getForUserGroup(), context);
         }
 
         return "OK";
@@ -252,15 +232,15 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
     private void performDeleteFunctionOperation(MenuEntryNode entryToDelete, String functionCode, String userGroup, InforContext context) throws InforException {
         // Find id of the menu item to be removed
         entryToDelete.getFunctionId();
-        this.performDeleteOperation(entryToDelete, functionCode, userGroup, context, "S");
+        this.performDeleteOperation(entryToDelete, functionCode, userGroup, context, MenuType.FUNCTION.getType());
     }
 
     private void performDeleteFolderOperation(MenuEntryNode entryToDelete, String functionCode, String userGroup, InforContext context) throws InforException {
-        String menuType = "F"; // Assume entry is submenu
+        String menuType = MenuType.SUBMENU.getType(); // Assume entry is submenu
         if (entryToDelete.getParentMenuEntry().getDescription().equals("ROOT_NODE")) {
-            menuType = "M"; // Entry is main menu
+            menuType = MenuType.MAIN_MENU.getType(); // Entry is main menu
         }
-        this.performDeleteOperation(entryToDelete, "BSFOLD", userGroup, context, menuType);
+        this.performDeleteOperation(entryToDelete, UserGroupMenuService.MENU_FUNCTION_CODE, userGroup, context, menuType);
     }
 
     private void performDeleteOperation(MenuEntryNode entryToDelete, String functionCode, String userGroup, InforContext context, String menuType) throws InforException {

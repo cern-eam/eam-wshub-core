@@ -7,50 +7,50 @@ import net.datastream.schemas.mp_fields.MENU_Type;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class MenuEntryNode extends DefaultMutableTreeNode {
     private String id;
     private String description;
-//        private String parent;
     private String functionId;
+    private long sequenceNumber;
+
 
     public MenuEntryNode(FOLDER_Type folder) {
         super();
+        Objects.requireNonNull(folder);
         this.id = folder.getEXTMENUCODE();
         this.description = folder.getFOLDERID().getFOLDERDESCRIPTION();
-//            this.parent = folder.getEXTMENUPARENT();
         this.functionId = folder.getFOLDERID().getFOLDERCODE();
+        this.sequenceNumber = folder.getSEQUENCENUMBER();
     }
 
     public MenuEntryNode(MENU_Type menu) {
         super();
+        Objects.requireNonNull(menu);
         this.id = menu.getEXTMENUCODE();
         this.description = menu.getMENUID().getMENUDESCRIPTION();
-//            this.parent = menu.getEXTMENUPARENT();
         this.functionId = menu.getMENUID().getMENUCODE();
+        this.sequenceNumber = menu.getSEQUENCENUMBER();
     }
 
     public MenuEntryNode(FUNCTION_Type function) {
         super();
+        Objects.requireNonNull(function);
         this.id = function.getEXTMENUCODE();
         this.description = function.getFUNCTIONID().getFUNCTIONDESCRIPTION();
-//            this.parent = function.getEXTMENUPARENT();
         this.functionId = function.getFUNCTIONID().getFUNCTIONCODE();
-    }
-
-    public MenuEntryNode() { // For root only
-        super();
-        this.description = "ROOT_NODE";
+        this.sequenceNumber = function.getSEQUENCENUMBER();
     }
 
     public MenuEntryNode(ExtMenus entryAdded) {
         super();
+        Objects.requireNonNull(entryAdded);
         this.id = entryAdded.getEXTMENUID().getEXTMENUCODE();
         this.description = entryAdded.getFUNCTIONID().getFUNCTIONDESCRIPTION();
-//            this.parent = function.getEXTMENUPARENT();
         this.functionId = entryAdded.getFUNCTIONID().getFUNCTIONCODE();
+        this.sequenceNumber = entryAdded.getSEQUENCENUMBER();
     }
 
     public List<MenuEntryNode> getChildren() {
@@ -78,30 +78,19 @@ public class MenuEntryNode extends DefaultMutableTreeNode {
                 this.getParentMenuEntry().equals(other.getParentMenuEntry()); // Also checks path
     }
 
-    public String getId() {
-            return this.id;
-        }
-
-        public String getDescription() {
-            return this.description;
-        }
-
-        public String getFunctionId() {
-            return this.functionId;
-        }
-
-        public MenuEntryNode getParentMenuEntry() { return (MenuEntryNode) this.getParent(); }
-
-    public void generateTreeFromFromMap(HashMap<MenuEntryNode, List<MenuEntryNode>> lookup) {
-
+    public MenuEntryNode() { // For root only
+        super();
+        this.description = "ROOT_NODE";
     }
 
-    public void generateMapFromMenuListFromPopulatedRoot(MenuEntryNode root) {
-        HashMap<MenuEntryNode, List<MenuEntryNode>> map = new HashMap<MenuEntryNode, List<MenuEntryNode>>();
+    public String getId() { return this.id; }
 
-    }
+    public String getDescription() { return this.description; }
 
+    public String getFunctionId() { return this.functionId; }
 
-    public void addAllFoldersAndFunctionsThatAreChildrenRecursively(List<FOLDER_Type> folder, List<FUNCTION_Type> function) {
-    }
+    public long getSequenceNumber() { return this.sequenceNumber; }
+
+    public MenuEntryNode getParentMenuEntry() { return (MenuEntryNode) this.getParent(); }
+
 }
