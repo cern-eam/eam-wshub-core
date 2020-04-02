@@ -563,6 +563,13 @@ public class JPAGrids implements Serializable {
 		
 		if (sqlStatement.contains(":r5user"))
 			q.setParameter("r5user", credentials.getUsername().toUpperCase());
+        //TODO read roles from adequate place
+		if (sqlStatement.contains(":r5role"))
+            q.setParameter("r5role", "*");
+        if (sqlStatement.contains(":bypassorg"))
+            q.setParameter("bypassorg", "true");
+        if (sqlStatement.contains(":bypasstagoption"))
+            q.setParameter("bypasstagoption", "true");
 		if (sqlStatement.contains(":MP5USER"))
 			q.setParameter("MP5USER", credentials.getUsername().toUpperCase());
 		if (sqlStatement.contains(":deptsec"))

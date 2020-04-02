@@ -1,21 +1,15 @@
 package ch.cern.eam.wshub.core.services.workorders.impl;
 
-import javax.xml.ws.Holder;
-
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.entities.BatchResponse;
-import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import ch.cern.eam.wshub.core.services.workorders.EmployeeService;
-import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrder;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
-import static ch.cern.eam.wshub.core.tools.DataTypeTools.encodeBigDecimal;
 import ch.cern.eam.wshub.core.services.workorders.entities.Employee;
 import net.datastream.schemas.mp_fields.CLASSID_Type;
 import net.datastream.schemas.mp_fields.Employee_Type;
 import net.datastream.schemas.mp_fields.StandardUserDefinedFields;
-import net.datastream.schemas.mp_functions.SessionType;
 import net.datastream.schemas.mp_functions.mp7037_001.MP7037_GetEmployee_001;
 import net.datastream.schemas.mp_functions.mp7038_001.MP7038_AddEmployee_001;
 import net.datastream.schemas.mp_functions.mp7039_001.MP7039_SyncEmployee_001;
@@ -24,11 +18,7 @@ import net.datastream.schemas.mp_results.mp7037_001.MP7037_GetEmployee_001_Resul
 import net.datastream.schemas.mp_results.mp7038_001.MP7038_AddEmployee_001_Result;
 import net.datastream.schemas.mp_results.mp7039_001.MP7039_SyncEmployee_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
-
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.stream.Collectors;
-
 
 public class EmployeeServiceImpl implements EmployeeService {
 
@@ -50,64 +40,17 @@ public class EmployeeServiceImpl implements EmployeeService {
 		return tools.batchOperation(context, this::updateEmployee, workOrders);
 	}
 
-
 	public Employee readEmployee(InforContext context, String employeeCode) throws InforException {
-		MP7037_GetEmployee_001 request = new MP7037_GetEmployee_001();
 
+		MP7037_GetEmployee_001 request = new MP7037_GetEmployee_001();
 		request.setEMPLOYEEID(new Employee_Type());
 		request.getEMPLOYEEID().setEMPLOYEECODE(employeeCode);
 
-		MP7037_GetEmployee_001_Result result =
-			tools.performInforOperation(context, inforws::getEmployeeOp, request);
+		MP7037_GetEmployee_001_Result result = tools.performInforOperation(context, inforws::getEmployeeOp, request);
 
-		net.datastream.schemas.mp_entities.employee_001.Employee inforEmployee = result.getResultData().getEmployee();
-
-		Employee employee = new Employee();
-
-		employee.setCode(employeeCode);
-
-		if (inforEmployee.getEMPLOYEEID() != null) {
-			employee.setCode(inforEmployee.getEMPLOYEEID().getEMPLOYEECODE());
-			employee.setDescription(inforEmployee.getEMPLOYEEID().getDESCRIPTION());
-		}
-
-		if (inforEmployee.getPHONE() != null) {
-			employee.setPhone(inforEmployee.getPHONE());
-		}
-
-		if (inforEmployee.getMOBILEPHONENUMBER() != null) {
-			employee.setMobilePhone(inforEmployee.getMOBILEPHONENUMBER());
-		}
-
-		if (inforEmployee.getADDRESS() != null) {
-			employee.setAddress(inforEmployee.getADDRESS());
-		}
-
-		if (inforEmployee.getCLASSID() != null) {
-			employee.setClazz(inforEmployee.getCLASSID().getCLASSCODE());
-		}
-
-		if (inforEmployee.getDEPARTMENTCODE() != null) {
-			employee.setMRC(inforEmployee.getDEPARTMENTCODE());
-		}
-
-		if (inforEmployee.getEMAIL() != null) {
-			employee.setEmail(inforEmployee.getEMAIL());
-		}
-
-		if (inforEmployee.getUSERCODE() != null) {
-			employee.setUserCode(inforEmployee.getUSERCODE());
-		}
-
-		if (inforEmployee.getOUTOFSERVICE() != null) {
-			employee.setOutOfService(inforEmployee.getOUTOFSERVICE());
-		}
-
-		UserDefinedFields userDefinedFields = tools.getUDFTools()
-				.readInforUserDefinedFields(inforEmployee.getStandardUserDefinedFields());
-
-		employee.setSupervisor(encodeBigDecimal(userDefinedFields.getUdfchar01(), "Supervisor"));
-		employee.setPersonID(encodeBigDecimal(userDefinedFields.getUdfchar02(), "PersonId"));
+		Employee employee = tools.getInforFieldTools().transformInforObject(new Employee(), result.getResultData().getEmployee());
+		employee.setSupervisor(employee.getUserDefinedFields().getUdfnum01());
+		employee.setPersonID(employee.getUserDefinedFields().getUdfnum01());
 
 		return employee;
 	}

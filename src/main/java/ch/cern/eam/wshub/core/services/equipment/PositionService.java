@@ -13,4 +13,6 @@ public interface PositionService {
     String deletePosition(InforContext context, String positionCode) throws InforException;
 
     String updatePosition(InforContext context, Equipment positionParam) throws InforException;
+
+    Equipment readPositionDefault(InforContext context, String organizationCode) throws InforException;
 }

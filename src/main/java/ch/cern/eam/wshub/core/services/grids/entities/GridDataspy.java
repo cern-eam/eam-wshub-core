@@ -142,6 +142,12 @@ public class GridDataspy implements Serializable {
 		this.label = label;
 	}
 
+	public GridDataspy(String code, String label, boolean defaultDataspy) {
+		this.code = code;
+		this.label = label;
+		this.defaultDataspy = defaultDataspy;
+	}
+
 	public String getCode() {
 		return code;
 	}

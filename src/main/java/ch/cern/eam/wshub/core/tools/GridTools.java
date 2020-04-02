@@ -45,7 +45,7 @@ public class GridTools {
      * @param <T>
      * @return
      */
-    public <T> Map<String,T> convertGridResultToMap(Class<T> clazz, String key, Map<String, String> columns, GridRequestResult gridRequestResult)
+    public static <T> Map<String,T> convertGridResultToMap(Class<T> clazz, String key, Map<String, String> columns, GridRequestResult gridRequestResult)
     {
         HashMap<String,T> result = new HashMap<>();
         if (gridRequestResult == null || gridRequestResult.getRows() == null) {
@@ -105,7 +105,6 @@ public class GridTools {
             return convertCellListToObjectMap(clazz, columns, gridRequestCellList);
         }
     }
-
 
     /**
      * Converts gridRequestCellList to object using columns map
@@ -220,6 +219,16 @@ public class GridTools {
                 .filter(cell -> cell.getTag().equalsIgnoreCase(cellid) || cell.getCol().equalsIgnoreCase(cellid))
                 .filter(cell -> cell.getContent() != null)
                 .map(GridRequestCell::getContent).findFirst().orElse(null);
+    }
+
+    public static String extractSingleResult(GridRequestResult gridRequestResult, String columnName) {
+        if (gridRequestResult == null ||
+            gridRequestResult.getRows() == null ||
+            gridRequestResult.getRows().length != 1) {
+            return null;
+        }
+
+        return getCellContent(columnName, gridRequestResult.getRows()[0]);
     }
 
 }

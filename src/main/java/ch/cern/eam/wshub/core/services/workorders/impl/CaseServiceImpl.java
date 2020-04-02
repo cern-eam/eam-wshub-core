@@ -47,7 +47,7 @@ public class CaseServiceImpl implements CaseService {
 			tools.performInforOperation(context, inforws::getCaseManagementOp, getCase);
 
 		CaseManagement caseManagement = result.getResultData().getCaseManagement();
-		InforCase caseMT = new InforCase();
+		InforCase caseMT = tools.getInforFieldTools().transformInforObject(new InforCase(), caseManagement);
 		//
 		// DESCRIPTION
 		//
@@ -125,11 +125,7 @@ public class CaseServiceImpl implements CaseService {
 		// CUSTOM FIELDS
 		//
 		caseMT.setCustomFields(tools.getCustomFieldsTools().readInforCustomFields(caseManagement.getUSERDEFINEDAREA()));
-		//
-		//
-		//
-		// UDFS
-		caseMT.setUserDefinedFields(tools.getUDFTools().readInforUserDefinedFields(caseManagement.getStandardUserDefinedFields()));
+
 		//
 		//
 		//
@@ -247,6 +243,8 @@ public class CaseServiceImpl implements CaseService {
 	}
 
 	private void initCaseObject(CaseManagement caseInfor, InforCase caseMT, InforContext context) throws InforException {
+
+		tools.getInforFieldTools().transformWSHubObject(caseInfor, caseMT, context);
 		//
 		// CODE AND DESCRIPTION
 		//
@@ -362,10 +360,6 @@ public class CaseServiceImpl implements CaseService {
 				caseInfor.getCaseDetails().getLOCATIONID().setLOCATIONCODE(caseMT.getLocationCode().trim());
 			}
 		}
-		//
-		// User Defined Fields
-		//
-		tools.getUDFTools().updateInforUserDefinedFields(caseInfor.getStandardUserDefinedFields(), caseMT.getUserDefinedFields());
 		//
 		// SCHEDULING START DATE
 		//

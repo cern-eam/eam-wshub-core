@@ -13,4 +13,6 @@ public interface SystemService {
     String updateSystem(InforContext context, Equipment systemParam) throws InforException;
 
     String deleteSystem(InforContext context, String systemCode) throws InforException;
+
+    Equipment readSystemDefault(InforContext context, String organizationCode) throws InforException;
 }

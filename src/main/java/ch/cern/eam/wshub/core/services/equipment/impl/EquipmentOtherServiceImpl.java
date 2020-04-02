@@ -70,7 +70,7 @@ public class EquipmentOtherServiceImpl implements EquipmentOtherService {
 			tools.performInforOperation(context, inforws::getDepreciationDefaultOp, getdepdef)
 				.getResultData().getDepreciationDefault();
 
-		Depreciation depreciation = new Depreciation();
+		Depreciation depreciation = tools.getInforFieldTools().transformWSHubObject(new Depreciation(), equipmentDepreciation, context);
 
 		// DEPRECIATION PK
 		depreciation.setDEPRECIATIONPK(tools.getDataTypeTools().encodeQuantity(BigDecimal.ZERO, "Depreciation PK"));
@@ -167,11 +167,6 @@ public class EquipmentOtherServiceImpl implements EquipmentOtherService {
 					equipmentDepreciation.getChangeEstimatedLifetimeOutput(), "Change Estimated Lifetime Output"));
 		}
 
-		// USER DEFINED FIELDS
-		depreciation.setStandardUserDefinedFields(new StandardUserDefinedFields());
-		tools.getUDFTools().updateInforUserDefinedFields(depreciation.getStandardUserDefinedFields(),
-				equipmentDepreciation.getUserDefinedFields());
-
 		// ADD DEPRECIATION
 		MP3017_AddDepreciation_001 adddep = new MP3017_AddDepreciation_001();
 		adddep.setDepreciation(depreciation);
@@ -211,7 +206,7 @@ public class EquipmentOtherServiceImpl implements EquipmentOtherService {
 		//
 		// UPDATE DEPRECIATION
 		//
-		Depreciation depreciation = result.getResultData().getDepreciation();
+		Depreciation depreciation = tools.getInforFieldTools().transformWSHubObject(result.getResultData().getDepreciation(), equipmentDepreciation, context);
 
 		// ORIGINAL VALUE
 		if (equipmentDepreciation.getOriginalValue() != null) {
@@ -260,13 +255,6 @@ public class EquipmentOtherServiceImpl implements EquipmentOtherService {
 		if (equipmentDepreciation.getFromDate() != null) {
 			depreciation.setFROMDATE(tools.getDataTypeTools().formatDate(equipmentDepreciation.getFromDate(), "From Date"));
 		}
-
-		// USER DEFINED FIELDS
-		if (depreciation.getStandardUserDefinedFields() == null) {
-			depreciation.setStandardUserDefinedFields(new StandardUserDefinedFields());
-		}
-		tools.getUDFTools().updateInforUserDefinedFields(depreciation.getStandardUserDefinedFields(),
-				equipmentDepreciation.getUserDefinedFields());
 
 		// CHANGE VALUE
 		if (equipmentDepreciation.getChangeValue() != null) {

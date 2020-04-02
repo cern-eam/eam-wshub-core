@@ -5,7 +5,6 @@ import ch.cern.eam.wshub.core.services.grids.entities.*;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
-import net.datastream.schemas.mp_functions.SessionType;
 import net.datastream.schemas.mp_functions.gridrequest.*;
 import net.datastream.schemas.mp_functions.gridrequest.LOV.LOV_PARAMETERS;
 import net.datastream.schemas.mp_functions.gridrequest.LOV.LOV_PARAMETERS.LOV_PARAMETER;
@@ -19,7 +18,6 @@ import net.datastream.schemas.mp_functions.mp0118_getgridheaderdata_001_result.F
 import net.datastream.schemas.mp_functions.mp0118_getgridheaderdata_001_result.MP0118_GetGridHeaderData_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
-import javax.xml.ws.Holder;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Comparator;
@@ -227,12 +225,12 @@ public class InforGrids implements Serializable {
 			for (net.datastream.schemas.mp_functions.mp0118_getgridheaderdata_001_result.DATA.ROW inforRow : result.getGRIDRESULT().getGRID().getDATA().getROW()) {
 
 				//
-				List<GridRequestCell> cells = inforRow.getD().stream().map(inforCell -> {
-					return new GridRequestCell(inforCell.getN().toString(),
+				List<GridRequestCell> cells = inforRow.getD().stream().map(inforCell ->
+					 new GridRequestCell(inforCell.getN().toString(),
 											   decodeCellContent(gridFieldCache.get(gridRequest.getRequestKey()).get(inforCell.getN()), inforCell.getContent()),
 											   Integer.parseInt(gridFieldCache.get(gridRequest.getRequestKey()).get(inforCell.getN()).getOrder()),
-											   gridFieldCache.get(gridRequest.getRequestKey()).get(inforCell.getN()).getName());
-				}).collect(Collectors.toList());
+											   gridFieldCache.get(gridRequest.getRequestKey()).get(inforCell.getN()).getName())
+				).collect(Collectors.toList());
 
 				// Sort using the order
 				cells = cells.stream().sorted(Comparator.comparing(GridRequestCell::getOrder)).collect(Collectors.toList());

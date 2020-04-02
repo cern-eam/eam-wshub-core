@@ -1,6 +1,7 @@
 package ch.cern.eam.wshub.core.services.workorders.entities;
 
 import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
+import ch.cern.eam.wshub.core.adapters.BooleanAdapter;
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
 import ch.cern.eam.wshub.core.annotations.InforField;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
@@ -194,7 +195,7 @@ public class WorkOrder implements Serializable {
 	private UserDefinedFields userDefinedFields;
 
 	@Transient
-	private boolean confirmedIncompleteChecklist;
+	private Boolean confirmedIncompleteChecklist = false;
 
 	@Column(name = "EVT_ORIGWO")
 	private String origWO;
@@ -631,15 +632,14 @@ public class WorkOrder implements Serializable {
 
 	public void setDowntimeHours(BigDecimal downtimeHours) { this.downtimeHours = downtimeHours; }
 
-	public boolean isConfirmedIncompleteChecklist() {
+	@XmlJavaTypeAdapter(BooleanAdapter.class)
+	public Boolean isConfirmedIncompleteChecklist() {
 		return confirmedIncompleteChecklist;
 	}
 
-	public void setConfirmedIncompleteChecklist(boolean confirmedIncompleteChecklist) {
+	public void setConfirmedIncompleteChecklist(Boolean confirmedIncompleteChecklist) {
 		this.confirmedIncompleteChecklist = confirmedIncompleteChecklist;
 	}
-
-
 
 	@Override
 	public String toString() {

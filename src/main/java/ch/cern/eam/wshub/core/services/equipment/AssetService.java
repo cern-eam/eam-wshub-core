@@ -4,7 +4,6 @@ import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.equipment.entities.Equipment;
 import ch.cern.eam.wshub.core.tools.InforException;
 
-
 public interface AssetService {
 
 	Equipment readAsset(InforContext context, String assetCode) throws InforException;
@@ -15,4 +14,5 @@ public interface AssetService {
 
 	String deleteAsset(InforContext context, String assetCode) throws InforException;
 
+	Equipment readAssetDefault(InforContext context, String organizationCode) throws InforException;
 }

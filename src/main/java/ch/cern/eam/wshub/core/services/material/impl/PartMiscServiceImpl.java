@@ -1,15 +1,17 @@
 package ch.cern.eam.wshub.core.services.material.impl;
 
 import ch.cern.eam.wshub.core.client.InforContext;
-import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
+import ch.cern.eam.wshub.core.services.entities.BatchResponse;
 import ch.cern.eam.wshub.core.services.material.entities.IssueReturnPartTransaction;
 import ch.cern.eam.wshub.core.services.material.entities.IssueReturnPartTransactionLine;
 import ch.cern.eam.wshub.core.services.material.PartMiscService;
 import ch.cern.eam.wshub.core.services.material.entities.*;
+import ch.cern.eam.wshub.core.services.workorders.entities.Employee;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
+import ch.cern.eam.wshub.core.tools.DataTypeTools;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
-import ch.cern.eam.wshub.core.tools.UserDefinedFieldsTools;
+import net.datastream.schemas.mp_entities.binstock_001.BinStock;
 import net.datastream.schemas.mp_entities.catalogue_001.Catalogue;
 import net.datastream.schemas.mp_entities.issuereturntransaction_001.IssueReturnTransaction;
 import net.datastream.schemas.mp_entities.issuereturntransactionline_001.IssueReturnTransactionLine;
@@ -18,10 +20,10 @@ import net.datastream.schemas.mp_entities.partsassociated_001.PartsAssociated;
 import net.datastream.schemas.mp_entities.storebin_001.StoreBin;
 import net.datastream.schemas.mp_entities.substitutepart_001.SubstitutePart;
 import net.datastream.schemas.mp_fields.*;
-import net.datastream.schemas.mp_functions.SessionType;
 import net.datastream.schemas.mp_functions.mp0220_001.MP0220_AddIssueReturnTransaction_001;
 import net.datastream.schemas.mp_functions.mp0271_001.MP0271_AddCatalogue_001;
 import net.datastream.schemas.mp_functions.mp0281_001.MP0281_AddStoreBin_001;
+import net.datastream.schemas.mp_functions.mp0286_001.MP0286_Bin2BinTransfer_001;
 import net.datastream.schemas.mp_functions.mp0612_001.MP0612_AddPartsAssociated_001;
 import net.datastream.schemas.mp_functions.mp0614_001.MP0614_DeletePartsAssociated_001;
 import net.datastream.schemas.mp_functions.mp2051_001.MP2051_AddSubstitutePart_001;
@@ -29,11 +31,8 @@ import net.datastream.schemas.mp_results.mp0220_001.MP0220_AddIssueReturnTransac
 import net.datastream.schemas.mp_results.mp0612_001.MP0612_AddPartsAssociated_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.decodeBoolean;
-import static ch.cern.eam.wshub.core.tools.DataTypeTools.encodeQuantity;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.xml.ws.Holder;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -46,13 +45,11 @@ public class PartMiscServiceImpl implements PartMiscService {
 	private Tools tools;
 	private InforWebServicesPT inforws;
 	private ApplicationData applicationData;
-	private UserDefinedFieldsTools userDefinedFieldsTools;
 
 	public PartMiscServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
 		this.applicationData = applicationData;
 		this.tools = tools;
 		this.inforws = inforWebServicesToolkitClient;
-		this.userDefinedFieldsTools = new UserDefinedFieldsTools(tools);
 	}
 
 	public String addPartSupplier(InforContext context, PartSupplier partSupplierParam) throws InforException {
@@ -218,50 +215,13 @@ public class PartMiscServiceImpl implements PartMiscService {
 		//
 		issueReturnTransactionInfor.setIssueReturnTransactionLines(new IssueReturnTransactionLines());
 		for (IssueReturnPartTransactionLine line : issueReturnPartTransaction.getTransactionlines()) {
-			IssueReturnTransactionLine issueReturnTransactionLine = new IssueReturnTransactionLine();
 
-			//USER DEFINED FIELDS
-			if (line.getUserDefinedFields() != null) {
-				UserDefinedFields udfs = line.getUserDefinedFields();
-				StandardUserDefinedFields sudfs = new StandardUserDefinedFields();
-				userDefinedFieldsTools.updateInforUserDefinedFields(sudfs, udfs);
-				issueReturnTransactionLine.setStandardUserDefinedFields(sudfs);
-			}
+			IssueReturnTransactionLine issueReturnTransactionLine = tools.getInforFieldTools().transformWSHubObject(new IssueReturnTransactionLine(), line, context);
 
-
-			// PART
-			if (line.getPartCode() != null) {
-				issueReturnTransactionLine.setPARTID(new PARTID_Type());
-				issueReturnTransactionLine.getPARTID().setORGANIZATIONID(tools.getOrganization(context));
-				issueReturnTransactionLine.getPARTID().setPARTCODE(line.getPartCode().toUpperCase());
-			}
-
-			// BIN
-			if (line.getBin() != null) {
-				issueReturnTransactionLine.setBIN(line.getBin().toUpperCase());
-			}
-
-			// LOT
-			if (line.getLot() != null) {
-				issueReturnTransactionLine.setLOT(line.getLot().toUpperCase());
-			} else {
+			if (issueReturnTransactionLine.getLOT() == null) {
 				issueReturnTransactionLine.setLOT("*");
 			}
 
-			// TRANSACTION QTY
-			if (line.getTransactionQty() != null) {
-				issueReturnTransactionLine
-						.setTRANSACTIONQUANTITY(tools.getDataTypeTools().encodeAmount(line.getTransactionQty(), "Transaction Qty."));
-			}
-
-			// ASSET ID
-			if (line.getAssetIDCode() != null && !"".equals(line.getAssetIDCode().trim())) {
-				issueReturnTransactionLine.setEQUIPMENTID(new EQUIPMENTID_Type());
-				issueReturnTransactionLine.getEQUIPMENTID().setORGANIZATIONID(tools.getOrganization(context));
-				issueReturnTransactionLine.getEQUIPMENTID().setEQUIPMENTCODE(line.getAssetIDCode());
-			}
-
-			//
 			issueReturnTransactionLine.setTRANSACTIONLINEID(new TRANSACTIONLINEID());
 			issueReturnTransactionLine.getTRANSACTIONLINEID().setTRANSACTIONID(new TRANSACTIONID_Type());
 			issueReturnTransactionLine.getTRANSACTIONLINEID().getTRANSACTIONID().setTRANSACTIONCODE("0");
@@ -457,4 +417,55 @@ public class PartMiscServiceImpl implements PartMiscService {
 
 	}
 
+	@Override
+	public String createBin2binTransfer(InforContext context, Bin2BinTransfer bin2BinTransfer) throws InforException {
+		net.datastream.schemas.mp_entities.bin2bintransfer_001.Bin2BinTransfer bin2BinTransferInfor =
+				new net.datastream.schemas.mp_entities.bin2bintransfer_001.Bin2BinTransfer();
+
+		BinStock binStockInfor = new BinStock();
+		bin2BinTransferInfor.setBinStock(binStockInfor);
+		bin2BinTransferInfor.setBIN(bin2BinTransfer.getDestinationBin());
+
+		binStockInfor.setSTOREID(new STOREID_Type());
+		binStockInfor.getSTOREID().setORGANIZATIONID(tools.getOrganization(context));
+		binStockInfor.getSTOREID().setSTORECODE(bin2BinTransfer.getStoreCode());
+
+		IssueReturnPartTransactionLine transactionLine = bin2BinTransfer.getTransactionLine();
+		if (transactionLine != null) {
+			binStockInfor.setPARTID(new PARTID_Type());
+			binStockInfor.getPARTID().setORGANIZATIONID(tools.getOrganization(context));
+			binStockInfor.getPARTID().setPARTCODE(treatCodeSafe(transactionLine.getPartCode()));
+
+			bin2BinTransferInfor.setSTOCKQTY(
+					DataTypeTools.encodeQuantity(transactionLine.getTransactionQty(), "Stock Quantity")
+			);
+
+			binStockInfor.setBIN(transactionLine.getBin());
+			binStockInfor.setLOT(transactionLine.getLot());
+
+			if (DataTypeTools.isNotEmpty(transactionLine.getAssetIDCode())) {
+				bin2BinTransferInfor.setASSETID(new EQUIPMENTID_Type());
+				bin2BinTransferInfor.getASSETID().setEQUIPMENTCODE(transactionLine.getAssetIDCode());
+				bin2BinTransferInfor.getASSETID().setORGANIZATIONID(tools.getOrganization(context));
+			}
+
+			IssueReturnTransactionLine lineInfor = tools.getInforFieldTools().transformWSHubObject(new IssueReturnTransactionLine(), transactionLine, context);
+			bin2BinTransferInfor.getBinStock().setStandardUserDefinedFields(lineInfor.getStandardUserDefinedFields());
+		}
+
+		MP0286_Bin2BinTransfer_001 opBean = new MP0286_Bin2BinTransfer_001();
+		opBean.setBin2BinTransfer(bin2BinTransferInfor);
+		tools.performInforOperation(context, inforws::bin2BinTransferOp, opBean);
+
+		return null;
+	}
+
+	public BatchResponse<String> createBin2binTransferBatch(InforContext context, List<Bin2BinTransfer> bin2BinTransferList) {
+		return tools.batchOperation(context, this::createBin2binTransfer, bin2BinTransferList);
+	}
+
+	private String treatCodeSafe(String code) {
+		if(code == null) return null;
+		return code.trim().toUpperCase();
+	}
 }
