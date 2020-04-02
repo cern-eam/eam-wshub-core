@@ -192,7 +192,7 @@ public class UserDefinedTableQueries {
                 UserDefinedTableQueries::getFilterParameter);
 
         String update = updateColumns.keySet().stream()
-                .map(getParameter(updateColumns, UserDefinedTableQueries::getSetParameter))
+                .map(getParameter(updateColumns, UserDefinedTableQueries::getSetValue))
                 .collect(Collectors.joining())
                 .substring(2)
                 ;
@@ -279,6 +279,14 @@ public class UserDefinedTableQueries {
         return ", \"" + columnName + "\"" +
                 (value == null ?
                         " IS NULL"
+                        : " = :" + getSetParameterName(columnName)
+                );
+    }
+
+    private static <T, R> String getSetValue(R columnName, T value) {
+        return ", \"" + columnName + "\"" +
+                (value == null ?
+                        " = NULL"
                         : " = :" + getSetParameterName(columnName)
                 );
     }
