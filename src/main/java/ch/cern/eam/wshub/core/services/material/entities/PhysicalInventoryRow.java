@@ -42,6 +42,10 @@ public class PhysicalInventoryRow {
     @InforField(xpath = "PHYSICALQUANTITY")
     BigDecimal physicalQuantity;
 
+    // Field missing: description
+
+    // Field missing: error message
+
     public String getPhysicalInventoryCode() {
         return physicalInventoryCode;
     }

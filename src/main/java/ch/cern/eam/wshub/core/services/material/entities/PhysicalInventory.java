@@ -6,7 +6,6 @@ import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Table(name = "R5TRANSACTIONS")
@@ -39,18 +38,43 @@ public class PhysicalInventory implements Serializable {
     private String status;
 
     @Column(name = "TRA_CREATED")
-    //@InforField(xpath = "")
+    @InforField(xpath = "../CREATEDDATE")
     private Date dateCreated;
-
-    //@Column(name = "")
-    @InforField(xpath = "STOCKDATE")
-    private Date physicalInventoryDate;
 
     @Transient
     @InforField(xpath = "StandardUserDefinedFields")
     private UserDefinedFields userDefinedFields;
 
-    List<PhysicalInventoryRow> rows;
+    // the fields below are not stored on the database and are only used for creation
+    @InforField(xpath = "PARTID/PARTCODE")
+    private String part;
+
+    @InforField(xpath = "PARTCLASSID/CLASSCODE")
+    private String partClass;
+
+    @InforField(xpath = "STOCKCLASSID/CLASSCODE")
+    private String stockClass;
+
+    @InforField(xpath = "ABCCODE")
+    private String abcClass;
+
+    @InforField(xpath = "INCLUDECONSIGNMENTITEM")
+    private Boolean includeConsignmentItem;
+
+    @InforField(xpath = "FROMBIN/BIN")
+    private String fromBin;
+
+    @InforField(xpath = "TOBIN/BIN")
+    private String toBin;
+
+    @InforField(xpath = "STOCKDATE")
+    private Date physicalInventoryDate;
+
+    @InforField(xpath = "INCLUDECHILDSTORES")
+    private Boolean includeChildStores;
+
+    @InforField(xpath = "INCLUDEOUTOFSERVICEITEM")
+    private Boolean includeOutOfServiceItem;
 
     public String getCode() {
         return code;
@@ -124,11 +148,75 @@ public class PhysicalInventory implements Serializable {
         this.userDefinedFields = userDefinedFields;
     }
 
-    public List<PhysicalInventoryRow> getRows() {
-        return rows;
+    public String getPart() {
+        return part;
     }
 
-    public void setRows(List<PhysicalInventoryRow> rows) {
-        this.rows = rows;
+    public void setPart(String part) {
+        this.part = part;
+    }
+
+    public String getPartClass() {
+        return partClass;
+    }
+
+    public void setPartClass(String partClass) {
+        this.partClass = partClass;
+    }
+
+    public String getStockClass() {
+        return stockClass;
+    }
+
+    public void setStockClass(String stockClass) {
+        this.stockClass = stockClass;
+    }
+
+    public String getAbcClass() {
+        return abcClass;
+    }
+
+    public void setAbcClass(String abcClass) {
+        this.abcClass = abcClass;
+    }
+
+    public Boolean getIncludeConsignmentItem() {
+        return includeConsignmentItem;
+    }
+
+    public void setIncludeConsignmentItem(Boolean includeConsignmentItem) {
+        this.includeConsignmentItem = includeConsignmentItem;
+    }
+
+    public String getFromBin() {
+        return fromBin;
+    }
+
+    public void setFromBin(String fromBin) {
+        this.fromBin = fromBin;
+    }
+
+    public String getToBin() {
+        return toBin;
+    }
+
+    public void setToBin(String toBin) {
+        this.toBin = toBin;
+    }
+
+    public Boolean getIncludeChildStores() {
+        return includeChildStores;
+    }
+
+    public void setIncludeChildStores(Boolean includeChildStores) {
+        this.includeChildStores = includeChildStores;
+    }
+
+    public Boolean getIncludeOutOfServiceItem() {
+        return includeOutOfServiceItem;
+    }
+
+    public void setIncludeOutOfServiceItem(Boolean includeOutOfServiceItem) {
+        this.includeOutOfServiceItem = includeOutOfServiceItem;
     }
 }
