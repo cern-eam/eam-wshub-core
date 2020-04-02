@@ -8,10 +8,12 @@ import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_entities.inventorytransaction_001.InventoryTransaction;
+import net.datastream.schemas.mp_entities.inventorytransactiondefault_001.InventoryTransactionDefault;
 import net.datastream.schemas.mp_entities.physicalinventoryline_001.PhysicalInventoryLine;
 import net.datastream.schemas.mp_fields.*;
 import net.datastream.schemas.mp_functions.mp1217_001.MP1217_AddInventoryTransaction_001;
 import net.datastream.schemas.mp_functions.mp1218_001.MP1218_SyncInventoryTransaction_001;
+import net.datastream.schemas.mp_functions.mp1219_001.MP1219_GetInventoryTransactionDefault_001;
 import net.datastream.schemas.mp_functions.mp1220_001.MP1220_GetInventoryTransaction_001;
 import net.datastream.schemas.mp_functions.mp1294_001.MP1294_SyncPhysicalInventoryLine_001;
 import net.datastream.schemas.mp_functions.mp2244_001.MP2244_GetPhysicalInventoryLine_001;
@@ -116,6 +118,23 @@ public class PhysicalInventoryServiceImpl implements PhysicalInventoryService {
             .getResultData().getPhysicalInventoryLine();
 
         return tools.getInforFieldTools().transformInforObject(new PhysicalInventoryRow(), result);
+    }
+
+    @Override
+    public PhysicalInventory readDefaultPhysicalInventory(InforContext context, String storeCode) throws InforException {
+        MP1219_GetInventoryTransactionDefault_001 getInventoryTransactionDefault =
+            new MP1219_GetInventoryTransactionDefault_001();
+
+        getInventoryTransactionDefault.setSTOREID(new STOREID_Type());
+        getInventoryTransactionDefault.getSTOREID().setSTORECODE(storeCode);
+        getInventoryTransactionDefault.getSTOREID().setORGANIZATIONID(tools.getOrganization(context));
+
+
+        InventoryTransactionDefault inventoryTransactionDefault =
+            tools.performInforOperation(context, inforws::getInventoryTransactionDefaultOp, getInventoryTransactionDefault)
+                .getResultData().getInventoryTransactionDefault();
+
+        return tools.getInforFieldTools().transformInforObject(new PhysicalInventory(), inventoryTransactionDefault);
     }
 
     private PhysicalInventoryLine getLine(InforContext context, String code, BigInteger lineNumber)

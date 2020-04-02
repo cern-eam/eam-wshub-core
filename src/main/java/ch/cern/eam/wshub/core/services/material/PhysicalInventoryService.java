@@ -8,25 +8,27 @@ import ch.cern.eam.wshub.core.services.material.entities.PhysicalInventoryRow;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 public interface PhysicalInventoryService {
-
-    @Operation(logOperation = INFOR_OPERATION.OTHER) // TODO: update
+    @Operation(logOperation = INFOR_OPERATION.INVENTORY_C)
     PhysicalInventory createPhysicalInventory(InforContext context, PhysicalInventory physicalInventory)
         throws InforException;
 
-    @Operation(logOperation = INFOR_OPERATION.OTHER) // TODO: update
+    @Operation(logOperation = INFOR_OPERATION.INVENTORY_R)
     PhysicalInventory readPhysicalInventory(InforContext context, String code)
         throws InforException;
 
-    @Operation(logOperation = INFOR_OPERATION.OTHER) // TODO: update
+    @Operation(logOperation = INFOR_OPERATION.INVENTORY_U)
     PhysicalInventory updatePhysicalInventory(InforContext context, PhysicalInventory physicalInventory)
         throws InforException;
 
-    @Operation(logOperation = INFOR_OPERATION.OTHER) // TODO: update
+    @Operation(logOperation = INFOR_OPERATION.INVENTORY_R)
     PhysicalInventoryRow readPhysicalInventoryLine(InforContext context, PhysicalInventoryRow row)
         throws InforException;
 
-    @Operation(logOperation = INFOR_OPERATION.OTHER) // TODO: update
+    @Operation(logOperation = INFOR_OPERATION.INVENTORY_U)
     PhysicalInventoryRow updatePhysicalInventoryLine(InforContext context, PhysicalInventoryRow row)
         throws InforException;
 
+    @Operation(logOperation = INFOR_OPERATION.INVENTORY_R)
+    PhysicalInventory readDefaultPhysicalInventory(InforContext context, String storeCode)
+        throws InforException;
 }
