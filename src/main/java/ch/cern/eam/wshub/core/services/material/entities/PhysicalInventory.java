@@ -37,10 +37,6 @@ public class PhysicalInventory implements Serializable {
     @InforField(xpath = "TRANSACTIONSTATUS/STATUSCODE")
     private String status;
 
-    @Column(name = "TRA_CREATED")
-    @InforField(xpath = "../CREATEDDATE")
-    private Date dateCreated;
-
     @Transient
     @InforField(xpath = "StandardUserDefinedFields")
     private UserDefinedFields userDefinedFields;
@@ -122,14 +118,6 @@ public class PhysicalInventory implements Serializable {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public Date getDateCreated() {
-        return dateCreated;
-    }
-
-    public void setDateCreated(Date dateCreated) {
-        this.dateCreated = dateCreated;
     }
 
     public Date getPhysicalInventoryDate() {
