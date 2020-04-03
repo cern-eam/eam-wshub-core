@@ -18,7 +18,14 @@ public class Finding implements Serializable {
 	private String desc;
 	@Column(name="FND_GEN")
 	private String generic;
-	
+
+	public Finding() { }
+
+	public Finding(String code, String desc) {
+		this.code = code;
+		this.desc = desc;
+	}
+
 public String getCode() {
 	return code;
 }

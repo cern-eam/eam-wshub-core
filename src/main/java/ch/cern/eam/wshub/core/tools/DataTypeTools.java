@@ -259,7 +259,7 @@ public class DataTypeTools {
     // BIG DECIMAL
     //
     public static BigDecimal encodeBigDecimal(String stringValue, String valueLabel) throws InforException {
-        if (stringValue == null || stringValue.trim().equals("")) {
+        if (isEmpty(stringValue)) {
             return null;
         }
         // Remove commas used as the thousands separator

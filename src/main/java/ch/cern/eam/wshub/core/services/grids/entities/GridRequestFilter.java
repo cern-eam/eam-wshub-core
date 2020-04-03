@@ -1,7 +1,5 @@
 package ch.cern.eam.wshub.core.services.grids.entities;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
-
 import java.io.Serializable;
 
 public class GridRequestFilter implements Serializable {

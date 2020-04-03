@@ -19,4 +19,6 @@ public interface PartService {
 
     @Operation(logOperation = INFOR_OPERATION.PART_D)
     String deletePart(InforContext context, String partCode) throws InforException;
+
+    Part readPartDefault(InforContext context, String organization) throws InforException;
 }

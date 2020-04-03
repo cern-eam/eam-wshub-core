@@ -1,5 +1,8 @@
 package ch.cern.eam.wshub.core.services.workorders.entities;
 
+import ch.cern.eam.wshub.core.annotations.InforField;
+import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -19,27 +22,35 @@ public class Employee implements Serializable {
 
 	@Id
 	@Column(name = "PER_CODE")
+	@InforField(xpath = "EMPLOYEEID/EMPLOYEECODE")
 	private String code;
 
 	@Column(name = "PER_DESC")
+	@InforField(xpath = "EMPLOYEEID/DESCRIPTION", readOnly = true)
 	private String description;
 	
 	@Column(name = "PER_PHONE")
+	@InforField(xpath = "PHONE")
 	private String phone;
 	
 	@Column(name = "PER_MOBILEPHONENO")
+	@InforField(xpath = "MOBILEPHONENUMBER")
 	private String mobilePhone;
 	
 	@Column(name = "PER_ADDRESS")
+	@InforField(xpath = "ADDRESS")
 	private String address;
 	
 	@Column(name = "PER_CLASS")
+	@InforField(xpath = "CLASSID/CLASSCODE")
 	private String clazz;
 	
 	@Column(name = "PER_MRC")
+	@InforField(xpath = "DEPARTMENTCODE")
 	private String MRC;
 	
 	@Column(name = "PER_EMAILADDRESS")
+	@InforField(xpath = "EMAIL")
 	private String email;
 	
 	@Column(name = "PER_UDFNUM01")
@@ -50,6 +61,7 @@ public class Employee implements Serializable {
 
 
 	@Column(name = "PER_USER")
+	@InforField(xpath = "USERCODE")
 	private String userCode;
 	
 	@Column(name = "PER_TRADE")
@@ -70,7 +82,11 @@ public class Employee implements Serializable {
 	@Column(name = "PER_UDFCHKBOX01")
 	private String accountBlocked;
 
+	@InforField(xpath = "OUTOFSERVICE")
 	private String outOfService;
+
+	@InforField(xpath = "StandardUserDefinedFields")
+	private UserDefinedFields userDefinedFields;
 
 	public String getCode() {
 		return code;
@@ -214,6 +230,14 @@ public class Employee implements Serializable {
 
 	public void setOutOfService(String outOfService) {
 		this.outOfService = outOfService;
+	}
+
+	public UserDefinedFields getUserDefinedFields() {
+		return userDefinedFields;
+	}
+
+	public void setUserDefinedFields(UserDefinedFields userDefinedFields) {
+		this.userDefinedFields = userDefinedFields;
 	}
 
 	@Override

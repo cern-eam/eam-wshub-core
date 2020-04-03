@@ -1,6 +1,7 @@
 package ch.cern.eam.wshub.core.services.equipment.entities;
 
 import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
+import ch.cern.eam.wshub.core.annotations.InforField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 
 import javax.persistence.*;
@@ -35,8 +36,11 @@ public class EquipmentDepreciation implements Serializable {
 	private String fromDate;
 	@Transient
 	private String depreciationCategory;
+
 	@Transient
+	@InforField(xpath = "StandardUserDefinedFields")
 	private UserDefinedFields userDefinedFields;
+
 	@Transient
 	private BigDecimal changeValue;
 	@Transient

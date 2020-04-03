@@ -14,15 +14,20 @@ import net.datastream.schemas.mp_functions.mp0301_001.MP0301_AddAssetEquipment_0
 import net.datastream.schemas.mp_functions.mp0302_001.MP0302_GetAssetEquipment_001;
 import net.datastream.schemas.mp_functions.mp0303_001.MP0303_SyncAssetEquipment_001;
 import net.datastream.schemas.mp_functions.mp0304_001.MP0304_DeleteAssetEquipment_001;
+import net.datastream.schemas.mp_functions.mp0305_001.MP0305_GetAssetEquipmentDefault_001;
 import net.datastream.schemas.mp_functions.mp0327_001.MP0327_GetAssetParentHierarchy_001;
 import net.datastream.schemas.mp_results.mp0301_001.MP0301_AddAssetEquipment_001_Result;
 import net.datastream.schemas.mp_results.mp0302_001.MP0302_GetAssetEquipment_001_Result;
+import net.datastream.schemas.mp_results.mp0305_001.MP0305_GetAssetEquipmentDefault_001_Result;
 import net.datastream.schemas.mp_results.mp0327_001.MP0327_GetAssetParentHierarchy_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.*;
 
 import javax.xml.ws.Holder;
+import java.util.LinkedList;
+import java.util.List;
 
+@SuppressWarnings("Duplicates")
 public class AssetServiceImpl implements AssetService {
 
     private Tools tools;
@@ -35,20 +40,39 @@ public class AssetServiceImpl implements AssetService {
         this.inforws = inforWebServicesToolkitClient;
     }
 
-    // Replace Equipment modes
-    private static final String STANDARD = "Standard";
-    private static final String SWAPPING = "Swapping";
+    public Equipment readAssetDefault(InforContext context, String organization) throws InforException {
 
+        MP0305_GetAssetEquipmentDefault_001 getAssetEquipmentDefault_001 = new MP0305_GetAssetEquipmentDefault_001();
+        if (isEmpty(organization)) {
+            getAssetEquipmentDefault_001.setORGANIZATIONID(tools.getOrganization(context));
+        } else {
+            getAssetEquipmentDefault_001.setORGANIZATIONID(new ORGANIZATIONID_Type());
+            getAssetEquipmentDefault_001.getORGANIZATIONID().setORGANIZATIONCODE(organization);
+        }
+
+        MP0305_GetAssetEquipmentDefault_001_Result result =
+                tools.performInforOperation(context, inforws::getAssetEquipmentDefaultOp, getAssetEquipmentDefault_001);
+
+        return tools.getInforFieldTools().transformInforObject(new Equipment(), result.getResultData().getAssetEquipment());
+    }
 
     public Equipment readAsset(InforContext context, String assetCode) throws InforException {
         AssetEquipment assetEquipment = readInforAsset(context, assetCode);
         //
         Equipment asset = tools.getInforFieldTools().transformInforObject(new Equipment(), assetEquipment);
+        asset.setSystemTypeCode("A");
 
+        // ID
         if (assetEquipment.getASSETID() != null) {
             asset.setCode(assetEquipment.getASSETID().getEQUIPMENTCODE());
             asset.setDescription(assetEquipment.getASSETID().getDESCRIPTION());
         }
+
+        // DESCRIPTIONS
+        List<Runnable> runnables = new LinkedList<>();
+        runnables.add(() -> asset.setManufacturerDesc(tools.getFieldDescriptionsTools().readManufacturerDesc(context, asset.getManufacturerCode())));
+        runnables.add(() -> asset.setBinDesc(tools.getFieldDescriptionsTools().readBinDesc(context, asset.getStoreCode(), asset.getBin())));
+        tools.processRunnables(runnables);
 
         // HIERARCHY
         assetEquipment.setAssetParentHierarchy(readInforAssetHierarchy(context, assetCode));
@@ -232,7 +256,6 @@ public class AssetServiceImpl implements AssetService {
 
     private AssetParentHierarchy readInforAssetHierarchy(InforContext context, String assetCode)
             throws InforException {
-
         MP0327_GetAssetParentHierarchy_001 getassetph = new MP0327_GetAssetParentHierarchy_001();
         getassetph.setASSETID(new EQUIPMENTID_Type());
         getassetph.getASSETID().setORGANIZATIONID(tools.getOrganization(context));
@@ -506,7 +529,7 @@ public class AssetServiceImpl implements AssetService {
         hierarchySystem.setEQUIPMENTCODE(assetParam.getHierarchyPrimarySystemCode());
 
         // Asset dependent
-        if (assetParam.getHierarchyAssetDependent() && tools.getDataTypeTools().isNotEmpty(assetParam.getHierarchyAssetCode())) {
+        if (assetParam.getHierarchyAssetDependent() != null && assetParam.getHierarchyAssetDependent() && tools.getDataTypeTools().isNotEmpty(assetParam.getHierarchyAssetCode())) {
 
             assetParentHierarchy.setAssetDependency(new AssetDependency());
             // Non dependent position
@@ -523,7 +546,7 @@ public class AssetServiceImpl implements AssetService {
             assetParentHierarchy.getAssetDependency().setDEPENDENTASSET(this.createHierarchyAsset(assetParam, hierarchyAsset));
         }
         // Position dependent
-        else if (assetParam.getHierarchyPositionDependent() && tools.getDataTypeTools().isNotEmpty(assetParam.getHierarchyPositionCode())) {
+        else if (assetParam.getHierarchyPositionDependent() != null && assetParam.getHierarchyPositionDependent() && tools.getDataTypeTools().isNotEmpty(assetParam.getHierarchyPositionCode())) {
             assetParentHierarchy.setPositionDependency(new PositionDependency());
 
             // Non dependent asset
@@ -543,7 +566,7 @@ public class AssetServiceImpl implements AssetService {
                     .setDEPENDENTPOSITION(this.createHierarchyPosition(assetParam, hierarchyPosition));
         }
         // System dependent
-        else if (assetParam.getHierarchyPrimarySystemDependent() && tools.getDataTypeTools().isNotEmpty(assetParam.getHierarchyPrimarySystemCode())) {
+        else if (assetParam.getHierarchyPrimarySystemDependent() != null && assetParam.getHierarchyPrimarySystemDependent() && tools.getDataTypeTools().isNotEmpty(assetParam.getHierarchyPrimarySystemCode())) {
 
             assetParentHierarchy.setPrimarySystemDependency(new PrimarySystemDependency());
             // Non dependent position

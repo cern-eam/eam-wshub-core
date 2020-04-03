@@ -5,7 +5,15 @@ import java.util.List;
 import java.util.logging.Level;
 import javax.persistence.EntityManager;
 
+import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
+import ch.cern.eam.wshub.core.services.grids.GridsService;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
+import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
+import net.datastream.wsdls.inforws.InforWebServicesPT;
+import static ch.cern.eam.wshub.core.tools.GridTools.extractSingleResult;
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.isEmpty;
 
 /**
  * Fetch the description of some fields that are missing when reading from
@@ -15,151 +23,118 @@ import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 public class FieldDescriptionTools {
 
 	private Tools tools;
+	private ApplicationData applicationData;
+	private InforWebServicesPT inforws;
+	private GridsService gridsService;
 
-	public FieldDescriptionTools(Tools tools) {
+	public FieldDescriptionTools(Tools tools, ApplicationData applicationData, InforWebServicesPT inforws) {
 		this.tools = tools;
+		this.applicationData = applicationData;
+		this.inforws = inforws;
+		gridsService = new GridsServiceImpl(applicationData, tools, inforws);
+
 	}
 
-	public String readPersonDesc(String personCode) {
-		if (!tools.isDatabaseConnectionConfigured()) {
-			return null;
-		}
-		EntityManager em = tools.getEntityManager();
+	private String getDescription(InforContext context, GridRequest gridRequest, String descriptionKey) {
 		try {
-			Object[] result = (Object[]) em
-					.createNativeQuery("select per_desc, per_code from r5personnel where per_code = :personCode")
-					.setParameter("personCode", personCode).getSingleResult();
-			return result[0].toString();
-		} catch (Exception e) {
-			tools.log(Level.SEVERE, "Error in readPersonDesc for personCode " + personCode);
+			return extractSingleResult(gridsService.executeQuery(context, gridRequest), descriptionKey);
+		} catch (InforException inforException ) {
+			tools.log(Level.WARNING, "Couldn't fetch description for " + descriptionKey);
 			return null;
-		} finally {
-			em.close();
 		}
 	}
 
-	public String readDepartmentDesc(String departmentCode) {
-		if (!tools.isDatabaseConnectionConfigured()) {
+	public String readPersonDesc(InforContext context, String personCode)  {
+		if (isEmpty(personCode)) {
 			return null;
 		}
-		EntityManager em = tools.getEntityManager();
-		try {
-			if (departmentCode != null)
-				return em.createNativeQuery("SELECT MRC_DESC FROM R5MRCS WHERE MRC_CODE = :mrc_code")
-						.setParameter("mrc_code", departmentCode).getSingleResult().toString();
-		} catch (Exception e) {
-			tools.log(Level.SEVERE,"Error in readDepartmentDesc for departmentCode " + departmentCode);
-		} finally {
-			em.close();
-		}
-		return null;
+		GridRequest gridRequest = new GridRequest("LVPERS", GridRequest.GRIDTYPE.LOV, 1);
+		gridRequest.addFilter("personcode", personCode, "=");
+		gridRequest.addParam("parameter.per_type", "");
+		gridRequest.addParam("param.bypassdeptsecurity", "false");
+		gridRequest.addParam("param.sessionid", "");
+		gridRequest.addParam("parameter.noemployees", "");
+		gridRequest.addParam("param.shift", "");
+		return getDescription(context, gridRequest, "description");
 	}
 
-	public String readClassDesc(String entityType, String classCode) {
-		if (!tools.isDatabaseConnectionConfigured()) {
+	public String readDepartmentDesc(InforContext context, String departmentCode)  {
+		if (isEmpty(departmentCode)) {
 			return null;
 		}
-		EntityManager em = tools.getEntityManager();
-		try {
-			if (entityType != null && classCode != null)
-				return em.createNativeQuery(
-						"SELECT CLS_DESC FROM R5CLASSES WHERE CLS_ENTITY= :entityType and CLS_CODE = :classCode")
-						.setParameter("entityType", entityType).setParameter("classCode", classCode).getSingleResult()
-						.toString();
-		} catch (Exception e) {
-			tools.log(Level.SEVERE,"Error in readClassDesc for entityType " + entityType + " and classCode " + classCode);
-		} finally {
-			em.close();
-		}
-		return null;
+		GridRequest gridRequest = new GridRequest("LVMRCS", GridRequest.GRIDTYPE.LOV, 1);
+		gridRequest.addFilter("department", departmentCode, "=");
+		gridRequest.addParam("param.showstardepartment", "true");
+		gridRequest.addParam("param.bypassdeptsecurity", "false");
+		return getDescription(context, gridRequest, "des_text");
 	}
 
-	public String readUOMDesc(String uomCode) {
-		if (!tools.isDatabaseConnectionConfigured()) {
+	public String readClassDesc(InforContext context, String entity, String classCode) {
+		if (isEmpty(classCode)) {
 			return null;
 		}
-		EntityManager em = tools.getEntityManager();
-		try {
-			if (uomCode != null)
-				return em.createNativeQuery("SELECT UOM_DESC FROM R5UOMS WHERE UOM_CODE = :uomCode")
-						.setParameter("uomCode", uomCode).getSingleResult().toString();
-		} catch (Exception e) {
-			tools.log(Level.SEVERE,"Error in readUOMDesc for uomCode " + uomCode);
-		} finally {
-			em.close();
-		}
-		return null;
+		GridRequest gridRequest = new GridRequest("LVCLAS", GridRequest.GRIDTYPE.LOV, 1);
+		gridRequest.addFilter("class", classCode, "=");
+		gridRequest.addParam("parameter.rentity", entity);
+		gridRequest.addParam("parameter.r5role", "");
+		gridRequest.addParam("parameter.bypassorg", "");
+		return getDescription(context, gridRequest, "des_text");
 	}
 
-	public String readCategoryDesc(String categoryCode) {
-		if (!tools.isDatabaseConnectionConfigured()) {
+	public String readUOMDesc(InforContext inforContext, String uomCode) {
+		if (isEmpty(uomCode)) {
 			return null;
 		}
-		EntityManager em = tools.getEntityManager();
-		try {
-			if (categoryCode != null)
-				return em.createNativeQuery("SELECT CAT_DESC FROM R5CATEGORIES where CAT_CODE = :categoryCode")
-						.setParameter("categoryCode", categoryCode).getSingleResult().toString();
-		} catch (Exception e) {
-			tools.log(Level.SEVERE,"Error in readCategoryDesc for categoryCode " + categoryCode);
-		} finally {
-			em.close();
-		}
-		return null;
+		GridRequest gridRequest = new GridRequest("LVUOMS", GridRequest.GRIDTYPE.LOV, 1);
+		gridRequest.addFilter("uomcode", uomCode, "=");
+		gridRequest.addParam("param.aspect", "");
+		return getDescription(inforContext, gridRequest, "description");
 	}
 
-	public String readCommodityDesc(String commodityCode) {
-		if (!tools.isDatabaseConnectionConfigured()) {
+	public String readCategoryDesc(InforContext inforContext, String categoryCode) {
+		if (isEmpty(categoryCode)) {
 			return null;
 		}
-		EntityManager em = tools.getEntityManager();
-		try {
-			if (commodityCode != null)
-				return em.createNativeQuery("SELECT CMD_DESC FROM R5COMMODITIES WHERE CMD_CODE = :commodityCode")
-						.setParameter("commodityCode", commodityCode).getSingleResult().toString();
-		} catch (Exception e) {
-			tools.log(Level.SEVERE,"Error in readCommodityDesc for commodityCode " + commodityCode);
-		} finally {
-			em.close();
-		}
-		return null;
+		GridRequest gridRequest = new GridRequest("LVPARTCAT", GridRequest.GRIDTYPE.LOV, 1);
+		gridRequest.addFilter("category", categoryCode, "=");
+		return getDescription(inforContext, gridRequest, "description");
 	}
 
-	public String readManufacturerDesc(String manufacturerCode) {
-		if (!tools.isDatabaseConnectionConfigured()) {
+	public String readCommodityDesc(InforContext inforContext, String commodityCode) {
+		if (isEmpty(commodityCode)) {
 			return null;
 		}
-		EntityManager em = tools.getEntityManager();
-		try {
-			if (manufacturerCode != null)
-				return em.createNativeQuery("SELECT MFG_DESC FROM R5MANUFACTURERS where MFG_CODE = :manufacturerCode")
-						.setParameter("manufacturerCode", manufacturerCode).getSingleResult().toString();
-		} catch (Exception e) {
-			tools.log(Level.SEVERE,"Error in readManufacturerDesc for manufacturerCode " + manufacturerCode);
-		} finally {
-			em.close();
-		}
-		return null;
+		GridRequest gridRequest = new GridRequest("LVCOMM", GridRequest.GRIDTYPE.LOV, 1);
+		gridRequest.addFilter("commoditycode", commodityCode, "=");
+		return getDescription(inforContext, gridRequest, "des_text");
 	}
 
-	public String readBinDesc(String storeCode, String binCode) {
-		if (!tools.isDatabaseConnectionConfigured()) {
+	public String readManufacturerDesc(InforContext inforContext, String manufacturerCode) {
+		if (isEmpty(manufacturerCode)) {
 			return null;
 		}
-		EntityManager em = tools.getEntityManager();
-		try {
-			if (storeCode != null && binCode != null)
-				return em
-						.createNativeQuery(
-								"SELECT BIN_DESC FROM R5BINS where BIN_STORE = :storeCode and BIN_CODE = :binCode")
-						.setParameter("storeCode", storeCode).setParameter("binCode", binCode).getSingleResult()
-						.toString();
-		} catch (Exception e) {
-			tools.log(Level.SEVERE,"Error in readBinDesc for storeCode " + storeCode + " and binCode " + binCode);
-		} finally {
-			em.close();
+		GridRequest gridRequest = new GridRequest("LVMANU", GridRequest.GRIDTYPE.LOV, 1);
+		gridRequest.addFilter("manufacturercode", manufacturerCode, "=");
+		return getDescription(inforContext, gridRequest, "des_text");
+	}
+
+	public String readBinDesc(InforContext inforContext, String storeCode, String binCode) {
+		if (isEmpty(binCode) || isEmpty(storeCode)) {
+			return null;
 		}
-		return null;
+		GridRequest gridRequest = new GridRequest("LVBINALL", GridRequest.GRIDTYPE.LOV, 1);
+		gridRequest.addFilter("code", binCode, "=", GridRequestFilter.JOINER.AND);
+		gridRequest.addFilter("bis_store", storeCode, "=");
+		return getDescription(inforContext, gridRequest, "description");
+	}
+
+	public String readCostCodeDesc(InforContext inforContext, String costCode) {
+		if (isEmpty(costCode)) {
+			return null;
+		}
+		GridRequest gridRequest = new GridRequest("LVCSTC", GridRequest.GRIDTYPE.LOV, 1);
+		gridRequest.addFilter("costcode", costCode, "=");
+		return getDescription(inforContext, gridRequest, "des_text");
 	}
 
 	/**

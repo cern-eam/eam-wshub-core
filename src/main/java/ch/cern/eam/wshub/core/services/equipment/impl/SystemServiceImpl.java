@@ -11,13 +11,17 @@ import net.datastream.schemas.mp_entities.systemequipment_001.*;
 import net.datastream.schemas.mp_entities.systemequipment_001.SystemEquipment.DORMANT;
 import net.datastream.schemas.mp_fields.*;
 import net.datastream.schemas.mp_functions.SessionType;
+import net.datastream.schemas.mp_functions.mp0310_001.MP0310_GetPositionEquipmentDefault_001;
 import net.datastream.schemas.mp_functions.mp0311_001.MP0311_AddSystemEquipment_001;
 import net.datastream.schemas.mp_functions.mp0312_001.MP0312_GetSystemEquipment_001;
 import net.datastream.schemas.mp_functions.mp0313_001.MP0313_SyncSystemEquipment_001;
 import net.datastream.schemas.mp_functions.mp0314_001.MP0314_DeleteSystemEquipment_001;
+import net.datastream.schemas.mp_functions.mp0315_001.MP0315_GetSystemEquipmentDefault_001;
 import net.datastream.schemas.mp_functions.mp0329_001.MP0329_GetSystemParentHierarchy_001;
+import net.datastream.schemas.mp_results.mp0310_001.MP0310_GetPositionEquipmentDefault_001_Result;
 import net.datastream.schemas.mp_results.mp0311_001.MP0311_AddSystemEquipment_001_Result;
 import net.datastream.schemas.mp_results.mp0312_001.MP0312_GetSystemEquipment_001_Result;
+import net.datastream.schemas.mp_results.mp0315_001.MP0315_GetSystemEquipmentDefault_001_Result;
 import net.datastream.schemas.mp_results.mp0329_001.MP0329_GetSystemParentHierarchy_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 import javax.xml.ws.Holder;
@@ -36,11 +40,28 @@ public class SystemServiceImpl implements SystemService {
 		this.inforws = inforWebServicesToolkitClient;
 	}
 
+	public Equipment readSystemDefault(InforContext context, String organization) throws InforException {
+
+		MP0315_GetSystemEquipmentDefault_001 getSystemEquipmentDefault_001 = new MP0315_GetSystemEquipmentDefault_001();
+		if (isEmpty(organization)) {
+			getSystemEquipmentDefault_001.setORGANIZATIONID(tools.getOrganization(context));
+		} else {
+			getSystemEquipmentDefault_001.setORGANIZATIONID(new ORGANIZATIONID_Type());
+			getSystemEquipmentDefault_001.getORGANIZATIONID().setORGANIZATIONCODE(organization);
+		}
+
+		MP0315_GetSystemEquipmentDefault_001_Result result =
+				tools.performInforOperation(context, inforws::getSystemEquipmentDefaultOp, getSystemEquipmentDefault_001);
+
+		return tools.getInforFieldTools().transformInforObject(new Equipment(), result.getResultData().getSystemEquipment());
+	}
+
 	public Equipment readSystem(InforContext context, String systemCode) throws InforException {
 
 		SystemEquipment systemEquipment = readSystemInfor(context, systemCode);
 
 		Equipment system = tools.getInforFieldTools().transformInforObject(new Equipment(), systemEquipment);
+		system.setSystemTypeCode("S");
 
 		if (systemEquipment.getSYSTEMID() != null) {
 			system.setCode(systemEquipment.getSYSTEMID().getEQUIPMENTCODE());
@@ -286,7 +307,7 @@ public class SystemServiceImpl implements SystemService {
 		// HIERARCHY - PRIMARY SYSTEM
 		if (tools.getDataTypeTools().isNotEmpty(systemParam.getHierarchyPrimarySystemCode())) {
 
-			if (!systemParam.getHierarchyPrimarySystemDependent()) {
+			if (systemParam.getHierarchyPrimarySystemDependent() == null || !systemParam.getHierarchyPrimarySystemDependent()) {
 				systemParam.setHierarchyAssetDependent(false);
 			}
 			// System
@@ -294,7 +315,7 @@ public class SystemServiceImpl implements SystemService {
 			hierarchySystem.setORGANIZATIONID(tools.getOrganization(context));
 			hierarchySystem.setEQUIPMENTCODE(systemParam.getHierarchyPrimarySystemCode());
 			// System dependent
-			if (systemParam.getHierarchyPrimarySystemDependent()) {
+			if (systemParam.getHierarchyPrimarySystemDependent() != null && systemParam.getHierarchyPrimarySystemDependent()) {
 				SYSTEMPARENT_Type systemType = new SYSTEMPARENT_Type();
 				systemType.setSYSTEMID(hierarchySystem);
 				systemType.setCOSTROLLUP(encodeBoolean(systemParam.getHierarchyPrimarySystemCostRollUp(), BooleanType.TRUE_FALSE));

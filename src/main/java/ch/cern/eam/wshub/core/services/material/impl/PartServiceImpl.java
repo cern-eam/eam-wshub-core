@@ -1,28 +1,29 @@
 package ch.cern.eam.wshub.core.services.material.impl;
 
-
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.material.PartService;
 import ch.cern.eam.wshub.core.services.material.entities.Part;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.annotations.BooleanType;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
-import net.datastream.schemas.mp_entities.part_001.UserDefinedFields;
 import net.datastream.schemas.mp_fields.*;
-import net.datastream.schemas.mp_functions.SessionType;
 import net.datastream.schemas.mp_functions.mp0240_001.MP0240_AddPart_001;
 import net.datastream.schemas.mp_functions.mp0241_001.MP0241_GetPart_001;
 import net.datastream.schemas.mp_functions.mp0242_001.MP0242_SyncPart_001;
 import net.datastream.schemas.mp_functions.mp0243_001.MP0243_DeletePart_001;
+import net.datastream.schemas.mp_functions.mp0244_001.MP0244_GetPartDefault_001;
 import net.datastream.schemas.mp_functions.mp2072_001.ChangePartNumber;
 import net.datastream.schemas.mp_functions.mp2072_001.MP2072_ChangePartNumber_001;
 import net.datastream.schemas.mp_results.mp0240_001.MP0240_AddPart_001_Result;
 import net.datastream.schemas.mp_results.mp0241_001.MP0241_GetPart_001_Result;
 import net.datastream.schemas.mp_results.mp0242_001.MP0242_SyncPart_001_Result;
+import net.datastream.schemas.mp_results.mp0244_001.MP0244_GetPartDefault_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
-import javax.xml.ws.Holder;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.isEmpty;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.toCodeString;
 
 public class PartServiceImpl implements PartService {
@@ -37,8 +38,32 @@ public class PartServiceImpl implements PartService {
 		this.inforws = inforWebServicesToolkitClient;
 	}
 
+	public Part readPartDefault(InforContext context, String organization) throws InforException {
+		MP0244_GetPartDefault_001 getPartDefault_001 = new MP0244_GetPartDefault_001();
+		if (isEmpty(organization)) {
+			getPartDefault_001.setORGANIZATIONID(tools.getOrganization(context));
+		} else {
+			getPartDefault_001.setORGANIZATIONID(new ORGANIZATIONID_Type());
+			getPartDefault_001.getORGANIZATIONID().setORGANIZATIONCODE(organization);
+		}
+
+		MP0244_GetPartDefault_001_Result result =
+				tools.performInforOperation(context, inforws::getPartDefaultOp, getPartDefault_001);
+
+		return tools.getInforFieldTools().transformInforObject(new Part(), result.getResultData().getPartDefault());
+	}
+
 	public Part readPart(InforContext context, String partCode) throws InforException {
-		return tools.getInforFieldTools().transformInforObject(new Part(), readPartInfor(context, partCode));
+		Part part = tools.getInforFieldTools().transformInforObject(new Part(), readPartInfor(context, partCode));
+
+		List<Runnable> runnables = new LinkedList<>();
+		runnables.add(() -> part.setClassDesc(tools.getFieldDescriptionsTools().readClassDesc(context, "PART", part.getClassCode())));
+		runnables.add(() -> part.setCategoryDesc(tools.getFieldDescriptionsTools().readCategoryDesc(context, part.getCategoryCode())));
+		runnables.add(() -> part.setUOMDesc(tools.getFieldDescriptionsTools().readUOMDesc(context, part.getUOM())));
+		runnables.add(() -> part.setCommodityDesc(tools.getFieldDescriptionsTools().readCommodityDesc(context,  part.getCommodityCode())));
+		tools.processRunnables(runnables);
+
+		return part;
 	}
 
 	private net.datastream.schemas.mp_entities.part_001.Part readPartInfor(InforContext context, String partCode) throws InforException {

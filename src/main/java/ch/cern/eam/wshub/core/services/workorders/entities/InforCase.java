@@ -1,6 +1,7 @@
 package ch.cern.eam.wshub.core.services.workorders.entities;
 
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
+import ch.cern.eam.wshub.core.annotations.InforField;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 
@@ -116,7 +117,9 @@ public class InforCase implements Serializable, Cloneable {
 	
 	@Transient
 	private CustomField[] customFields;
+
 	@Transient
+	@InforField(xpath = "StandardUserDefinedFields")
 	private UserDefinedFields userDefinedFields;
 
 	//

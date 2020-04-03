@@ -5,6 +5,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.List;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class WorkOrderActivityCheckList implements Serializable {
@@ -65,7 +66,7 @@ public class WorkOrderActivityCheckList implements Serializable {
 
 	private String newCheckListCode;
 	private String newWorkOrderCode;
-	private Finding[] possibleFindings;
+	private List<Finding> possibleFindings;
 
 	public String getCheckListCode() {
 		return checkListCode;
@@ -266,11 +267,11 @@ public class WorkOrderActivityCheckList implements Serializable {
 		return "COMPLETED".equalsIgnoreCase(result);
 	}
 
-	public Finding[] getPossibleFindings() {
+	public List<Finding> getPossibleFindings() {
 		return possibleFindings;
 	}
 
-	public void setPossibleFindings(Finding[] possibleFindings) {
+	public void setPossibleFindings(List<Finding> possibleFindings) {
 		this.possibleFindings = possibleFindings;
 	}
 
@@ -330,7 +331,7 @@ public class WorkOrderActivityCheckList implements Serializable {
 				", requiredToClose='" + requiredToClose + '\'' +
 				", newCheckListCode='" + newCheckListCode + '\'' +
 				", newWorkOrderCode='" + newWorkOrderCode + '\'' +
-				", possibleFindings=" + Arrays.toString(possibleFindings) +
+				", possibleFindings=" + possibleFindings +
 				'}';
 	}
 }
