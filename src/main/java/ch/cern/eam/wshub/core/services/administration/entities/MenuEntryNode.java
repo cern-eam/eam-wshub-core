@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class MenuEntryNode extends DefaultMutableTreeNode {
+    private static final String ROOT_NODE = "ROOT_NODE";
     private String id;
     private String description;
     private String functionId;
@@ -53,9 +54,14 @@ public class MenuEntryNode extends DefaultMutableTreeNode {
         this.sequenceNumber = entryAdded.getSEQUENCENUMBER();
     }
 
+    public MenuEntryNode() { // For root only
+        super();
+        this.description = this.ROOT_NODE;
+    }
+
     public List<MenuEntryNode> getChildren() {
         List<MenuEntryNode> children = new ArrayList<MenuEntryNode>();
-        for (int i = 0 ; i < this.getChildCount() ; i++) {
+        for (int i = 0; i < this.getChildCount(); i++) {
             children.add((MenuEntryNode) this.getChildAt(i));
         }
 
@@ -78,19 +84,24 @@ public class MenuEntryNode extends DefaultMutableTreeNode {
                 this.getParentMenuEntry().equals(other.getParentMenuEntry()); // Also checks path
     }
 
-    public MenuEntryNode() { // For root only
-        super();
-        this.description = "ROOT_NODE";
+    public String getId() {
+        return this.id;
     }
 
-    public String getId() { return this.id; }
+    public String getDescription() {
+        return this.description;
+    }
 
-    public String getDescription() { return this.description; }
+    public String getFunctionId() {
+        return this.functionId;
+    }
 
-    public String getFunctionId() { return this.functionId; }
+    public long getSequenceNumber() {
+        return this.sequenceNumber;
+    }
 
-    public long getSequenceNumber() { return this.sequenceNumber; }
-
-    public MenuEntryNode getParentMenuEntry() { return (MenuEntryNode) this.getParent(); }
+    public MenuEntryNode getParentMenuEntry() {
+        return (MenuEntryNode) this.getParent();
+    }
 
 }

@@ -4,8 +4,7 @@ public enum MenuType {
     // WORK ORDERS
     MAIN_MENU("M"),
     SUBMENU("F"),
-    FUNCTION("S")
-    ;
+    FUNCTION("S");
 
     private String type;
 

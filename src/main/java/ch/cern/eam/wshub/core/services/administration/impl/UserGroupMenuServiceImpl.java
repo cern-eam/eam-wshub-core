@@ -16,10 +16,7 @@ import net.datastream.schemas.mp_functions.mp6045_001.MP6045_DeleteExtMenus_001;
 import net.datastream.schemas.mp_results.mp6043_001.MP6043_AddExtMenus_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.OptionalLong;
 
 public class UserGroupMenuServiceImpl implements UserGroupMenuService {
     private Tools tools;
@@ -32,37 +29,10 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         this.inforws = inforWebServicesToolkitClient;
     }
 
-    private void addFolderToMenuNode(MenuEntryNode currentNode, FOLDER_Type folder) {
-        MenuEntryNode newNode = new MenuEntryNode(folder);
-        currentNode.add(newNode);
-        for (FOLDER_Type childFolder : folder.getFOLDER()) {
-            addFolderToMenuNode(newNode, childFolder);
-        }
-        for (FUNCTION_Type childFunction : folder.getFUNCTION()) {
-            addFunctionToMenuNode(newNode, childFunction);
-        }
-    }
-
-    private void addFunctionToMenuNode(MenuEntryNode currentNode, FUNCTION_Type function) {
-        MenuEntryNode newNode = new MenuEntryNode(function);
-        currentNode.add(newNode);
-    }
-
-    private ExtMenusHierarchy getExtMenuHierarchy(InforContext context, String userGroup) throws InforException {
-        MP6005_GetExtMenusHierarchy_001 getExtMenusHierarchy = new MP6005_GetExtMenusHierarchy_001();
-        getExtMenusHierarchy.setUSERGROUPID(new USERGROUPID_Type());
-        getExtMenusHierarchy.getUSERGROUPID().setUSERGROUPCODE(userGroup);
-
-        ExtMenusHierarchy result =
-                tools.performInforOperation(context, inforws::getExtMenusHierarchyOp, getExtMenusHierarchy)
-                        .getResultData().getExtMenusHierarchy();
-
-        return result;
-    }
-
     /**
-     * Adds a full menu/submenu/function path to the menu hierarchy.
-     * @param context the user credentials
+     * Adds a full menu/submenu/function path to the menu hierarchy. If the path specified is not complete, it will be completed.
+     *
+     * @param context           the user credentials
      * @param menuSpecification the specified full path and function to add, for a specific user group
      * @return
      */
@@ -74,7 +44,7 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         MenuEntryNode menuRoot = this.getExtMenuHierarchyAsTree(context, menuSpecification);
 
         // Check if path already exists; if so, continue
-        List<String> pathList = Arrays.asList(menuSpecification.getMenuPath().split("\\/"));
+        List<String> pathList = menuSpecification.getMenuPath();
         MenuEntryNode latestMenuEntryNodeFound = this.getLatestMenuEntryByPath(pathList, menuRoot);
 
         // If level of the folder to be added is last
@@ -93,7 +63,7 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         }
 
         // Else, complete path
-        for (int i = latestMenuEntryNodeFound.getLevel() ; i < pathList.size() ; i++) {
+        for (int i = latestMenuEntryNodeFound.getLevel(); i < pathList.size(); i++) {
             MenuEntryNode addedMenuEntryNode = this.performAddFolderOperation(latestMenuEntryNodeFound, pathList.get(i), menuSpecification.getForUserGroup(), context);
             latestMenuEntryNodeFound.add(addedMenuEntryNode);
             latestMenuEntryNodeFound = addedMenuEntryNode;
@@ -105,6 +75,49 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         }
 
         return "OK";
+    }
+
+    private ExtMenusHierarchy getExtMenuHierarchy(InforContext context, String userGroup) throws InforException {
+        MP6005_GetExtMenusHierarchy_001 getExtMenusHierarchy = new MP6005_GetExtMenusHierarchy_001();
+        getExtMenusHierarchy.setUSERGROUPID(new USERGROUPID_Type());
+        getExtMenusHierarchy.getUSERGROUPID().setUSERGROUPCODE(userGroup);
+
+        ExtMenusHierarchy result =
+                tools.performInforOperation(context, inforws::getExtMenusHierarchyOp, getExtMenusHierarchy)
+                        .getResultData().getExtMenusHierarchy();
+
+        return result;
+    }
+
+    private MenuEntryNode getExtMenuHierarchyAsTree(InforContext context, MenuSpecification menuSpecification) throws InforException {
+        MenuEntryNode root = new MenuEntryNode();
+        ExtMenusHierarchy result = this.getExtMenuHierarchy(context, menuSpecification.getForUserGroup());
+
+        List<MENU_Type> menus = result.getMENU();
+        for (MENU_Type menu : menus) {
+            MenuEntryNode mainMenuEntry = new MenuEntryNode(menu);
+            root.add(mainMenuEntry);
+            menu.getFOLDER().stream().forEach(childFolder -> this.addFolderToMenuNode(mainMenuEntry, childFolder));
+            menu.getFUNCTION().stream().forEach(childFunction -> this.addFunctionToMenuNode(mainMenuEntry, childFunction));
+        }
+
+        return root;
+    }
+
+    private void addFolderToMenuNode(MenuEntryNode currentNode, FOLDER_Type folder) {
+        MenuEntryNode newNode = new MenuEntryNode(folder);
+        currentNode.add(newNode);
+        for (FOLDER_Type childFolder : folder.getFOLDER()) {
+            addFolderToMenuNode(newNode, childFolder);
+        }
+        for (FUNCTION_Type childFunction : folder.getFUNCTION()) {
+            addFunctionToMenuNode(newNode, childFunction);
+        }
+    }
+
+    private void addFunctionToMenuNode(MenuEntryNode currentNode, FUNCTION_Type function) {
+        MenuEntryNode newNode = new MenuEntryNode(function);
+        currentNode.add(newNode);
     }
 
     private MP6043_AddExtMenus_001 fillExtMenus(MenuEntryNode parent, String folderName, String userGroup, InforContext context, String code, String menuType) {
@@ -175,27 +188,12 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         return currentNode;
     }
 
-    private MenuEntryNode getExtMenuHierarchyAsTree(InforContext context, MenuSpecification menuSpecification) throws InforException {
-        MenuEntryNode root = new MenuEntryNode();
-        ExtMenusHierarchy result = this.getExtMenuHierarchy(context, menuSpecification.getForUserGroup());
-
-        List<MENU_Type> menus = result.getMENU();
-        for (MENU_Type menu : menus) {
-            MenuEntryNode mainMenuEntry = new MenuEntryNode(menu);
-            root.add(mainMenuEntry);
-            menu.getFOLDER().stream().forEach(childFolder -> this.addFolderToMenuNode(mainMenuEntry, childFolder));
-            menu.getFUNCTION().stream().forEach(childFunction -> this.addFunctionToMenuNode(mainMenuEntry, childFunction));
-        }
-
-        return root;
-    }
-
-
-
-
     /**
-     * Deletes a function item, or a menu item with all its children.
-     * @param context the user credentials
+     * If a function code is specified in menuSpecification, deletes all children functions with that function code from
+     * the specified path. If the function code provided is an empty string, deletes the last menu item with all its
+     * children from the path specified.
+     *
+     * @param context           the user credentials
      * @param menuSpecification the specified path and function to delete, for a specific user group
      * @return
      */
@@ -206,12 +204,12 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         // Get menu entries as tree
         MenuEntryNode menuRoot = this.getExtMenuHierarchyAsTree(context, menuSpecification);
 
-        List<String> pathList = Arrays.asList(menuSpecification.getMenuPath().split("\\/"));
+        List<String> pathList = menuSpecification.getMenuPath();
         MenuEntryNode latestMenuEntryNodeFound = this.getLatestMenuEntryByPath(pathList, menuRoot);
 
         // If the specified path doesn't exist, we'll assume it's a problem
         if (latestMenuEntryNodeFound.getLevel() != pathList.size()) {
-            throw tools.generateFault("Path doesn't exist");
+            throw Tools.generateFault("Path doesn't exist");
         }
 
         // Else, the path specified exists, so delete function if there is one specified
