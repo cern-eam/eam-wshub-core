@@ -26,8 +26,10 @@ public class PhysicalInventory implements Serializable {
     private String store;
 
     @Column(name = "TRA_AUTH")
-    //@InforField(xpath = "")
-    private String approvedBy;
+    private String createdBy;
+
+    @Column(name = "TRA_DATE")
+    private Date createdDate;
 
     @Column(name = "TRA_PERS")
     @InforField(xpath = "ASSIGNEDTO/PERSONCODE")
@@ -96,12 +98,12 @@ public class PhysicalInventory implements Serializable {
         this.store = store;
     }
 
-    public String getApprovedBy() {
-        return approvedBy;
+    public String getCreatedBy() {
+        return createdBy;
     }
 
-    public void setApprovedBy(String approvedBy) {
-        this.approvedBy = approvedBy;
+    public void setCreatedBy(String approvedBy) {
+        this.createdBy = approvedBy;
     }
 
     public String getAssignedTo() {
@@ -206,5 +208,36 @@ public class PhysicalInventory implements Serializable {
 
     public void setIncludeOutOfServiceItem(Boolean includeOutOfServiceItem) {
         this.includeOutOfServiceItem = includeOutOfServiceItem;
+    }
+
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
+    }
+    @Override
+    public String toString() {
+        return "PhysicalInventory ["
+            + (code != null ? "code=" + code + ", " : "")
+            + (description != null ? "description=" + description + ", " : "")
+            + (store != null ? "store=" + store + ", " : "")
+            + (createdBy != null ? "createdBy=" + createdBy + ", " : "")
+            + (createdDate != null ? "createdDate=" + createdDate + ", " : "")
+            + (assignedTo != null ? "assignedTo=" + assignedTo + ", " : "")
+            + (status != null ? "status=" + status + ", " : "")
+            + (userDefinedFields != null ? "userDefinedFields=" + userDefinedFields + ", " : "")
+            + (part != null ? "part=" + part + ", " : "")
+            + (partClass != null ? "partClass=" + partClass + ", " : "")
+            + (stockClass != null ? "stockClass=" + stockClass + ", " : "")
+            + (abcClass != null ? "abcClass=" + abcClass + ", " : "")
+            + (includeConsignmentItem != null ? "includeConsignmentItem=" + includeConsignmentItem + ", " : "")
+            + (fromBin != null ? "fromBin=" + fromBin + ", " : "")
+            + (toBin != null ? "toBin=" + toBin + ", " : "")
+            + (physicalInventoryDate != null ? "physicalInventoryDate=" + physicalInventoryDate + ", " : "")
+            + (includeChildStores != null ? "includeChildStores=" + includeChildStores + ", " : "")
+            + (includeOutOfServiceItem != null ? "includeOutOfServiceItem=" + includeOutOfServiceItem : "")
+            + "]";
     }
 }

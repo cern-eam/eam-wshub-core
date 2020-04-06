@@ -109,4 +109,18 @@ public class PhysicalInventoryRow {
     public void setPhysicalQuantity(BigDecimal physicalQuantity) {
         this.physicalQuantity = physicalQuantity;
     }
+
+    @Override
+    public String toString() {
+        return "PhysicalInventoryRow ["
+            + (physicalInventoryCode != null ? "physicalInventoryCode=" + physicalInventoryCode + ", " : "")
+            + (lineNumber != null ? "lineNumber=" + lineNumber + ", " : "")
+            + (part != null ? "part=" + part + ", " : "")
+            + (store != null ? "store=" + store + ", " : "")
+            + (bin != null ? "bin=" + bin + ", " : "")
+            + (lot != null ? "lot=" + lot + ", " : "")
+            + (expectedQuantity != null ? "expectedQuantity=" + expectedQuantity + ", " : "")
+            + (physicalQuantity != null ? "physicalQuantity=" + physicalQuantity : "")
+            + "]";
+    }
 }

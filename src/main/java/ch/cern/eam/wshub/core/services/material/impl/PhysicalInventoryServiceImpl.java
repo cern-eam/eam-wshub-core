@@ -22,7 +22,6 @@ import net.datastream.schemas.mp_results.mp1220_001.ResultData;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
 import java.math.BigInteger;
-import java.util.Date;
 
 public class PhysicalInventoryServiceImpl implements PhysicalInventoryService {
 
@@ -66,8 +65,11 @@ public class PhysicalInventoryServiceImpl implements PhysicalInventoryService {
             new PhysicalInventory(),
             resultData.getInventoryTransaction());
 
-        physicalInventory.setCreatedBy(resultData.getCREATEDBY().getUSERCODE());
-        physicalInventory.setCreatedDate(tools.getDataTypeTools().decodeInforDate(resultData.getCREATEDDATE()));
+        if(resultData.getCREATEDBY() != null)
+            physicalInventory.setCreatedBy(resultData.getCREATEDBY().getUSERCODE());
+
+        if(resultData.getCREATEDDATE() != null)
+            physicalInventory.setCreatedDate(tools.getDataTypeTools().decodeInforDate(resultData.getCREATEDDATE()));
 
         return physicalInventory;
     }
@@ -152,7 +154,6 @@ public class PhysicalInventoryServiceImpl implements PhysicalInventoryService {
         transactionLineId.setTRANSACTIONID(new TRANSACTIONID_Type());
         transactionLineId.getTRANSACTIONID().setTRANSACTIONCODE(code);
         transactionLineId.getTRANSACTIONID().setORGANIZATIONID(tools.getOrganization(context));
-
         transactionLineId.setTRANSACTIONLINENUM(tools.getDataTypeTools().convertBigIntegerToLong(lineNumber));
 
         MP2244_GetPhysicalInventoryLine_001 getPhysicalInventoryLine =
