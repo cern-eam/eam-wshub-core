@@ -18,9 +18,11 @@ import net.datastream.schemas.mp_functions.mp1220_001.MP1220_GetInventoryTransac
 import net.datastream.schemas.mp_functions.mp1294_001.MP1294_SyncPhysicalInventoryLine_001;
 import net.datastream.schemas.mp_functions.mp2244_001.MP2244_GetPhysicalInventoryLine_001;
 import net.datastream.schemas.mp_results.mp1217_001.MP1217_AddInventoryTransaction_001_Result;
+import net.datastream.schemas.mp_results.mp1220_001.ResultData;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
 import java.math.BigInteger;
+import java.util.Date;
 
 public class PhysicalInventoryServiceImpl implements PhysicalInventoryService {
 
@@ -59,15 +61,22 @@ public class PhysicalInventoryServiceImpl implements PhysicalInventoryService {
 
     @Override
     public PhysicalInventory readPhysicalInventory(InforContext context, String code) throws InforException {
-        return tools.getInforFieldTools().transformInforObject(
+        ResultData resultData = getInventoryResultData(context, code);
+        PhysicalInventory physicalInventory = tools.getInforFieldTools().transformInforObject(
             new PhysicalInventory(),
-            getInventory(context, code));
+            resultData.getInventoryTransaction());
+
+        physicalInventory.setCreatedBy(resultData.getCREATEDBY().getUSERCODE());
+        physicalInventory.setCreatedDate(tools.getDataTypeTools().decodeInforDate(resultData.getCREATEDDATE()));
+
+        return physicalInventory;
     }
 
     @Override
     public PhysicalInventory updatePhysicalInventory(InforContext context, PhysicalInventory physicalInventory)
             throws InforException {
-        InventoryTransaction inventoryTransaction = getInventory(context, physicalInventory.getCode());
+        InventoryTransaction inventoryTransaction = getInventoryResultData(context, physicalInventory.getCode())
+            .getInventoryTransaction();
         tools.getInforFieldTools().transformWSHubObject(inventoryTransaction, physicalInventory, context);
 
         MP1218_SyncInventoryTransaction_001 syncInventoryTransaction =
@@ -81,15 +90,15 @@ public class PhysicalInventoryServiceImpl implements PhysicalInventoryService {
         return tools.getInforFieldTools().transformInforObject(new PhysicalInventory(), result);
     }
 
-    private InventoryTransaction getInventory(InforContext context, String code) throws InforException {
+    private ResultData getInventoryResultData(InforContext context, String code) throws InforException {
         MP1220_GetInventoryTransaction_001 getInventoryTransaction =
-                new MP1220_GetInventoryTransaction_001();
+            new MP1220_GetInventoryTransaction_001();
         getInventoryTransaction.setTRANSACTIONID(new TRANSACTIONID_Type());
         getInventoryTransaction.getTRANSACTIONID().setTRANSACTIONCODE(code);
         getInventoryTransaction.getTRANSACTIONID().setORGANIZATIONID(tools.getOrganization(context));
 
         return tools.performInforOperation(context, inforws::getInventoryTransactionOp, getInventoryTransaction)
-            .getResultData().getInventoryTransaction();
+            .getResultData();
     }
 
     @Override
