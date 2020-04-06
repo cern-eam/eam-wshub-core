@@ -3,10 +3,14 @@ package ch.cern.eam.wshub.core.services.material.entities;
 import ch.cern.eam.wshub.core.annotations.InforField;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+@Entity
+@Table(name = "R5STOCKLINES")
 public class PhysicalInventoryRow {
     @Id
     @Column(name = "STL_TRANS")
