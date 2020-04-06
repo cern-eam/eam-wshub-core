@@ -131,23 +131,6 @@ public class PhysicalInventoryServiceImpl implements PhysicalInventoryService {
         return tools.getInforFieldTools().transformInforObject(new PhysicalInventoryRow(), result);
     }
 
-    @Override
-    public PhysicalInventory readDefaultPhysicalInventory(InforContext context, String storeCode) throws InforException {
-        MP1219_GetInventoryTransactionDefault_001 getInventoryTransactionDefault =
-            new MP1219_GetInventoryTransactionDefault_001();
-
-        getInventoryTransactionDefault.setSTOREID(new STOREID_Type());
-        getInventoryTransactionDefault.getSTOREID().setSTORECODE(storeCode);
-        getInventoryTransactionDefault.getSTOREID().setORGANIZATIONID(tools.getOrganization(context));
-
-
-        InventoryTransactionDefault inventoryTransactionDefault =
-            tools.performInforOperation(context, inforws::getInventoryTransactionDefaultOp, getInventoryTransactionDefault)
-                .getResultData().getInventoryTransactionDefault();
-
-        return tools.getInforFieldTools().transformInforObject(new PhysicalInventory(), inventoryTransactionDefault);
-    }
-
     private PhysicalInventoryLine getLine(InforContext context, String code, BigInteger lineNumber)
             throws InforException {
         TRANSACTIONLINEID transactionLineId = new TRANSACTIONLINEID();
@@ -162,5 +145,22 @@ public class PhysicalInventoryServiceImpl implements PhysicalInventoryService {
 
         return tools.performInforOperation(context, inforws::getPhysicalInventoryLineOp, getPhysicalInventoryLine)
             .getResultData().getPhysicalInventoryLine();
+    }
+
+    @Override
+    public PhysicalInventory readDefaultPhysicalInventory(InforContext context, String storeCode) throws InforException {
+        MP1219_GetInventoryTransactionDefault_001 getInventoryTransactionDefault =
+                new MP1219_GetInventoryTransactionDefault_001();
+
+        getInventoryTransactionDefault.setSTOREID(new STOREID_Type());
+        getInventoryTransactionDefault.getSTOREID().setSTORECODE(storeCode);
+        getInventoryTransactionDefault.getSTOREID().setORGANIZATIONID(tools.getOrganization(context));
+
+
+        InventoryTransactionDefault inventoryTransactionDefault =
+                tools.performInforOperation(context, inforws::getInventoryTransactionDefaultOp, getInventoryTransactionDefault)
+                        .getResultData().getInventoryTransactionDefault();
+
+        return tools.getInforFieldTools().transformInforObject(new PhysicalInventory(), inventoryTransactionDefault);
     }
 }
