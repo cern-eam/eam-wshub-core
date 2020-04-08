@@ -200,6 +200,9 @@ public class WorkOrder implements Serializable {
 	@Column(name = "EVT_ORIGWO")
 	private String origWO;
 
+	@Transient
+	private String copyFrom;
+
 	public String getNumber() {
 		return number;
 	}
@@ -641,6 +644,14 @@ public class WorkOrder implements Serializable {
 		this.confirmedIncompleteChecklist = confirmedIncompleteChecklist;
 	}
 
+	public String getCopyFrom() {
+		return copyFrom;
+	}
+
+	public void setCopyFrom(String copyFrom) {
+		this.copyFrom = copyFrom;
+	}
+
 	@Override
 	public String toString() {
 		return "WorkOrder [" + (number != null ? "number=" + number + ", " : "")
@@ -693,6 +704,7 @@ public class WorkOrder implements Serializable {
 				+ (targetValue != null ? "targetValue=" + targetValue + ", " : "")
 				+ (downtimeHours != null ? "downtimeHours=" + downtimeHours + ", " : "")
 				+ (userDefinedFields != null ? "userDefinedFields=" + userDefinedFields + ", " : "")
-				+ (origWO != null ? "origWO=" + origWO : "") + "]";
+				+ (origWO != null ? "origWO=" + origWO + ", ": "")
+				+ (copyFrom != null ? "copyFrom=" + copyFrom : "")  + "]";
 	}
 }
