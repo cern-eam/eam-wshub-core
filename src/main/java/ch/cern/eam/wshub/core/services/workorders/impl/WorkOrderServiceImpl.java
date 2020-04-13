@@ -5,10 +5,8 @@ import ch.cern.eam.wshub.core.services.comments.CommentService;
 import ch.cern.eam.wshub.core.services.comments.impl.CommentServiceImpl;
 import ch.cern.eam.wshub.core.services.entities.BatchResponse;
 import ch.cern.eam.wshub.core.services.comments.entities.Comment;
-import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.grids.GridsService;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
-import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
 import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.services.workorders.StandardWorkOrderService;
 import ch.cern.eam.wshub.core.services.workorders.WorkOrderService;
@@ -18,8 +16,6 @@ import ch.cern.eam.wshub.core.tools.GridTools;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrder;
-import net.datastream.schemas.mp_entities.activity_001.Activity;
-import net.datastream.schemas.mp_entities.workorder_001.Activities;
 import net.datastream.schemas.mp_fields.*;
 import net.datastream.schemas.mp_functions.mp0023_001.MP0023_AddWorkOrder_001;
 import net.datastream.schemas.mp_functions.mp0024_001.MP0024_GetWorkOrder_001;
@@ -32,10 +28,8 @@ import net.datastream.schemas.mp_results.mp0024_001.MP0024_GetWorkOrder_001_Resu
 import net.datastream.schemas.mp_results.mp0026_001.MP0026_GetWorkOrderDefault_001_Result;
 import net.datastream.schemas.mp_results.mp0026_001.ResultData;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
-
 import java.util.LinkedList;
 import java.util.List;
-
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.toCodeString;
 
 
@@ -238,7 +232,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		// and thus there is no need for a null check
 		workOrder.getWORKORDERID().setJOBNUM("0");
 
-		if(isClearingActivitiesRequired(context, workOrder)) {
+		if (isClearingActivitiesRequired(context, workOrder)) {
 			workOrder.setActivities(null);
 		}
 
@@ -247,14 +241,14 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
 	private boolean isClearingActivitiesRequired(InforContext context, net.datastream.schemas.mp_entities.workorder_001.WorkOrder workOrder) throws InforException {
 		// we only need to clear the activities if there is a standard work order present
-		if(workOrder.getSTANDARDWO() == null || workOrder.getSTANDARDWO().getSTDWOCODE() == null) {
+		if (workOrder.getSTANDARDWO() == null || workOrder.getSTANDARDWO().getSTDWOCODE() == null) {
 			return false;
 		}
 
-		Activities activities = workOrder.getActivities();
-
 		// if the activities are already null, there is no need to clear them, as they are already cleared
-		if(activities == null || activities.getActivity() == null || activities.getActivity().size() == 0) {
+		if (workOrder.getActivities() == null ||
+				workOrder.getActivities().getActivity() == null ||
+				workOrder.getActivities().getActivity().size() == 0) {
 			return false;
 		}
 
