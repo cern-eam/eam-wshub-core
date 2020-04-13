@@ -6,13 +6,20 @@ import ch.cern.eam.wshub.core.services.comments.impl.CommentServiceImpl;
 import ch.cern.eam.wshub.core.services.entities.BatchResponse;
 import ch.cern.eam.wshub.core.services.comments.entities.Comment;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
+import ch.cern.eam.wshub.core.services.grids.GridsService;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
+import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.services.workorders.StandardWorkOrderService;
 import ch.cern.eam.wshub.core.services.workorders.WorkOrderService;
 import ch.cern.eam.wshub.core.services.workorders.entities.StandardWorkOrder;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
+import ch.cern.eam.wshub.core.tools.GridTools;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrder;
+import net.datastream.schemas.mp_entities.activity_001.Activity;
+import net.datastream.schemas.mp_entities.workorder_001.Activities;
 import net.datastream.schemas.mp_fields.*;
 import net.datastream.schemas.mp_functions.mp0023_001.MP0023_AddWorkOrder_001;
 import net.datastream.schemas.mp_functions.mp0024_001.MP0024_GetWorkOrder_001;
@@ -39,6 +46,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 	private ApplicationData applicationData;
 	private CommentService comments;
 	private StandardWorkOrderService standardWorkOrderService;
+	private GridsService gridsService;
 
 	public WorkOrderServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
 		this.applicationData = applicationData;
@@ -46,6 +54,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		this.inforws = inforWebServicesToolkitClient;
 		this.comments = new CommentServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
 		this.standardWorkOrderService = new StandardWorkOrderServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
+		this.gridsService = new GridsServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
 	}
 
 	//
@@ -143,11 +152,39 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		return workOrder;
 	}
 
+	/*
+		This method creates a work order based on workorderParam
+		There is an additional field, workOrderParam.copyFrom, which signals this method to copy from this work order
+		Currently, with the exception of the default values, the behavior of Infor EAM Extended is matched.
+
+		DEFAULT VALUE IMPLEMENTATION NOTES
+		Take note when implementing the default values that there is an install parameter that determines whether
+		defaults should be applied before or after the fields from workorderParam are applied. The behavior at CERN is
+		to apply the defaults after the fields from workorderParam are applied.
+
+		For work orders, when the default values are applied after the fields from workorderParam the values set in
+		Infor ("final values") work as follows, depending on the default value of the corresponding field:
+			- default value cleared: final value is the workorderParam value
+			- default value is a concrete value: final value is the default value
+			- default value is "NULL": final value is empty
+
+		EAM Light implements this default value logic in its frontend.
+		END OF DEFAULT VALUE IMPLEMENTATION NOTES
+	 */
 	public String createWorkOrder(InforContext context, WorkOrder workorderParam) throws InforException {
-		net.datastream.schemas.mp_entities.workorder_001.WorkOrder inforWorkOrder = new net.datastream.schemas.mp_entities.workorder_001.WorkOrder();
+		net.datastream.schemas.mp_entities.workorder_001.WorkOrder inforWorkOrder;
+
+		if(workorderParam.getCopyFrom() == null) {
+			inforWorkOrder = new net.datastream.schemas.mp_entities.workorder_001.WorkOrder();
+		} else {
+			inforWorkOrder = duplicateWorkOrder(context, workorderParam.getCopyFrom());
+		}
 
 		// REQUIRED
-		inforWorkOrder.setWORKORDERID(new WOID_Type());
+		if(inforWorkOrder.getWORKORDERID() == null) {
+			inforWorkOrder.setWORKORDERID(new WOID_Type());
+		}
+
 		inforWorkOrder.getWORKORDERID().setORGANIZATIONID(tools.getOrganization(context));
 		inforWorkOrder.getWORKORDERID().setJOBNUM("0");
 		inforWorkOrder.setFIXED("V");
@@ -188,6 +225,43 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			comments.createComment(context, comment);
 		}
 		return result.getResultData().getJOBNUM();
+	}
+
+	private net.datastream.schemas.mp_entities.workorder_001.WorkOrder duplicateWorkOrder(
+			InforContext context,
+			String workOrderCode)
+				throws InforException {
+		net.datastream.schemas.mp_entities.workorder_001.WorkOrder workOrder =
+			readWorkOrderInfor(context, workOrderCode);
+
+		// As this work order is read directly from Infor, we can assume that workOrder.getWORKORDERID is not null,
+		// and thus there is no need for a null check
+		workOrder.getWORKORDERID().setJOBNUM("0");
+
+		if(isClearingActivitiesRequired(context, workOrder)) {
+			workOrder.setActivities(null);
+		}
+
+		return workOrder;
+	}
+
+	private boolean isClearingActivitiesRequired(InforContext context, net.datastream.schemas.mp_entities.workorder_001.WorkOrder workOrder) throws InforException {
+		// we only need to clear the activities if there is a standard work order present
+		if(workOrder.getSTANDARDWO() == null || workOrder.getSTANDARDWO().getSTDWOCODE() == null) {
+			return false;
+		}
+
+		Activities activities = workOrder.getActivities();
+
+		// if the activities are already null, there is no need to clear them, as they are already cleared
+		if(activities == null || activities.getActivity() == null || activities.getActivity().size() == 0) {
+			return false;
+		}
+
+		// otherwise, we want to clear the activities if the standard work order has more than 0 activities
+		GridRequest gridRequest = new GridRequest("WSSTWO_ACT", GridRequest.GRIDTYPE.LIST, 1);
+		gridRequest.addParam("param.stwocode", workOrder.getSTANDARDWO().getSTDWOCODE());
+		return GridTools.isNotEmpty(gridsService.executeQuery(context, gridRequest));
 	}
 
 	public String updateWorkOrder(InforContext context, WorkOrder workorderParam) throws InforException {
@@ -237,5 +311,4 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		tools.performInforOperation(context, inforws::changeWorkOrderStatusOp, changeWOStatus);
 		return workOrderNumber;
 	}
-
 }

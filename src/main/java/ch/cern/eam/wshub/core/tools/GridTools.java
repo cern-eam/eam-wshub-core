@@ -231,4 +231,11 @@ public class GridTools {
         return getCellContent(columnName, gridRequestResult.getRows()[0]);
     }
 
+    public static boolean isEmpty(GridRequestResult gridRequestResult) {
+        return gridRequestResult.getRows().length == 0;
+    }
+
+    public static boolean isNotEmpty(GridRequestResult gridRequestResult) {
+        return !isEmpty(gridRequestResult);
+    }
 }
