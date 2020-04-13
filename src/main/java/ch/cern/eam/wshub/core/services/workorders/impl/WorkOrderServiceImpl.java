@@ -186,13 +186,36 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		// STANDARD WORK ORDER
 		if (workorderParam.getStandardWO() != null && !workorderParam.getStandardWO().trim().equals("")) {
 			StandardWorkOrder standardWorkOrder = standardWorkOrderService.readStandardWorkOrder(context, workorderParam.getStandardWO());
-			workorderParam.setDescription(standardWorkOrder.getDesc());
-			workorderParam.setClassCode(standardWorkOrder.getWoClassCode());
-			workorderParam.setPriorityCode(standardWorkOrder.getPriorityCode());
-			workorderParam.setTypeCode(standardWorkOrder.getWorkOrderTypeCode());
-			workorderParam.setProblemCode(standardWorkOrder.getProblemCode());
-			workorderParam.setCustomFields(standardWorkOrder.getCustomFields());
-			workorderParam.setUserDefinedFields(standardWorkOrder.getUserDefinedFields());
+
+			if (workorderParam.getDescription() == null) {
+				workorderParam.setDescription(standardWorkOrder.getDesc());
+			}
+
+			if (workorderParam.getClassCode() == null) {
+				workorderParam.setClassCode(standardWorkOrder.getWoClassCode());
+			}
+
+			if (workorderParam.getPriorityCode() == null) {
+				workorderParam.setPriorityCode(standardWorkOrder.getPriorityCode());
+			}
+
+			if (workorderParam.getTypeCode() == null) {
+				workorderParam.setTypeCode(standardWorkOrder.getWorkOrderTypeCode());
+			}
+
+			if (workorderParam.getProblemCode() == null) {
+				workorderParam.setProblemCode(standardWorkOrder.getProblemCode());
+			}
+
+			//TODO more intelligent merge required
+			if (workorderParam.getCustomFields() == null) {
+				workorderParam.setCustomFields(standardWorkOrder.getCustomFields());
+			}
+
+			//TODO more intelligent merge required
+			if (workorderParam.getUserDefinedFields() == null) {
+				workorderParam.setUserDefinedFields(standardWorkOrder.getUserDefinedFields());
+			}
 		}
 
 		inforWorkOrder.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(
