@@ -25,6 +25,7 @@ public interface GridsService {
 
 	@Operation(logOperation = INFOR_OPERATION.DDSPYFIELD_R)
 	GridDataspy getDefaultDataspy(InforContext context, String gridCode, String viewType) throws InforException;
-	
+
+	String getGridCsvData(InforContext context, GridRequest gridRequest) throws InforException;
 }
 
