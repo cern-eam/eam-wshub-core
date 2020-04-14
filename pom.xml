@@ -16,12 +16,11 @@
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <https://www.gnu.org/licenses />.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>ch.cern.eam</groupId>
     <artifactId>eam-wshub-core</artifactId>
-    <version>11.4-86-SNAPSHOT</version>
+    <version>11.4-86</version>
     <name>EAM WS Hub Core</name>
     <description>High-level Java SE library that provides all core functionalities of EAM WS Hub.</description>
     <url>https://github.com/cern-eam/eam-wshub-core</url>
@@ -123,7 +122,7 @@
 
     <scm>
         <connection>scm:git:ssh://git@github.com/cern-eam/eam-wshub-core.git</connection>
-        <tag>HEAD</tag>
+        <tag>eam-wshub-core-11.4-86</tag>
         <url>https://github.com/cern-eam/eam-wshub-core</url>
     </scm>
 
