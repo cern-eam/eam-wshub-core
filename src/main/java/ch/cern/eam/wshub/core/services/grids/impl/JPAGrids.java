@@ -517,7 +517,8 @@ public class JPAGrids implements Serializable {
 			grr.setDataSpyId(gridRequest.getDataspyID());
 			grr.setGridName(gridRequest.getGridName());
 			if (gridRequest.getIncludeMetadata() != null && gridRequest.getIncludeMetadata()) {
-				GridMetadataRequestResult gridMetadata = getGridMetadata(context, gridRequest.getGridID(), gridRequest.getGridType().name(), gridRequest.getDataspyID());
+				GridMetadataRequestResult gridMetadata = getGridMetadata(context, gridRequest.getGridID(),
+						gridRequest.getGridType().name(), gridRequest.getLang(), gridRequest.getDataspyID());
 				grr.setGridFields(Arrays.asList(gridMetadata.getGridFields()));
 				grr.setGridDataspies(Arrays.asList(gridMetadata.getGridDataspies()));
 			}
