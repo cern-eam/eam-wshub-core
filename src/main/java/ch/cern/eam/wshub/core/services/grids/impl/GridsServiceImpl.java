@@ -8,6 +8,8 @@ import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.isEmpty;
+
+import java.util.stream.Collectors;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
 import java.util.Arrays;
@@ -15,6 +17,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static ch.cern.eam.wshub.core.tools.GridTools.getCellContent;
+import static org.apache.commons.text.StringEscapeUtils.escapeCsv;
 
 public class GridsServiceImpl implements GridsService {
 
@@ -105,6 +108,26 @@ public class GridsServiceImpl implements GridsService {
 		tools.demandDatabaseConnection();
 		return jpaGrids.getDefaultDataspy(context, gridCode, viewType);
 	}
+
+    public static String gridToCSV(GridRequestResult gridRequestResult, String separator) {
+        String title = gridRequestResult.getGridName() + " \n ";
+
+        String header = gridRequestResult.getGridFields().stream()
+            .map(GridField::getLabel)
+            .map(text -> escapeCsv(text))
+            .collect(Collectors.joining(separator)) + " \n ";
+
+        String result = Arrays.stream(gridRequestResult.getRows())
+            .map(row -> Arrays.stream(row.getCell())
+                .filter(cell -> cell.getOrder() >= 0)
+                .map(GridRequestCell::getContent)
+                .map(text ->  escapeCsv(text) )
+                .collect(Collectors.joining(separator)))
+            .collect(Collectors.joining(" \n "));
+
+        return title + header + result;
+    }
+
 
 }
 
