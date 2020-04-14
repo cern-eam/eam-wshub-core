@@ -65,11 +65,13 @@ public class PhysicalInventoryServiceImpl implements PhysicalInventoryService {
             new PhysicalInventory(),
             resultData.getInventoryTransaction());
 
-        if(resultData.getCREATEDBY() != null)
+        if (resultData.getCREATEDBY() != null) {
             physicalInventory.setCreatedBy(resultData.getCREATEDBY().getUSERCODE());
+        }
 
-        if(resultData.getCREATEDDATE() != null)
+        if (resultData.getCREATEDDATE() != null) {
             physicalInventory.setCreatedDate(tools.getDataTypeTools().decodeInforDate(resultData.getCREATEDDATE()));
+        }
 
         return physicalInventory;
     }

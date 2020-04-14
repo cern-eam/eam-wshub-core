@@ -20,15 +20,15 @@ public interface PhysicalInventoryService {
     PhysicalInventory updatePhysicalInventory(InforContext context, PhysicalInventory physicalInventory)
         throws InforException;
 
-    @Operation(logOperation = INFOR_OPERATION.INVENTORY_R)
+    @Operation(logOperation = INFOR_OPERATION.INVENTORY_RL)
     PhysicalInventoryRow readPhysicalInventoryLine(InforContext context, PhysicalInventoryRow row)
         throws InforException;
 
-    @Operation(logOperation = INFOR_OPERATION.INVENTORY_U)
+    @Operation(logOperation = INFOR_OPERATION.INVENTORY_UL)
     PhysicalInventoryRow updatePhysicalInventoryLine(InforContext context, PhysicalInventoryRow row)
         throws InforException;
 
-    @Operation(logOperation = INFOR_OPERATION.INVENTORY_R)
+    @Operation(logOperation = INFOR_OPERATION.INVENTORY_RD)
     PhysicalInventory readDefaultPhysicalInventory(InforContext context, String storeCode)
         throws InforException;
 }

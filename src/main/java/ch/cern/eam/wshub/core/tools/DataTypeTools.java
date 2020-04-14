@@ -388,6 +388,6 @@ public class DataTypeTools {
     }
 
     public static Long convertBigIntegerToLong(BigInteger value) {
-        return value.longValueExact();
+        return value == null ? null : value.longValueExact();
     }
 }
