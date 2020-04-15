@@ -317,7 +317,8 @@ public class Equipment implements Serializable {
 	@Transient
 	private String cernFonc;
 
-
+	@Transient
+	private String copyFrom;
 
 	public String getDescription() {
 		return description;
@@ -1171,6 +1172,14 @@ public class Equipment implements Serializable {
 		this.hierarchySystemCostRollUp = hierarchySystemCostRollUp;
 	}
 
+	public String getCopyFrom() {
+		return copyFrom;
+	}
+
+	public void setCopyFrom(String copyFrom) {
+		this.copyFrom = copyFrom;
+	}
+
 	@Override
 	public String toString() {
 		return "Equipment [" + (description != null ? "description=" + description + ", " : "")
@@ -1270,7 +1279,7 @@ public class Equipment implements Serializable {
 				+ (cernCao != null ? "cernCao=" + cernCao + ", " : "") + (cernX != null ? "cernX=" + cernX + ", " : "")
 				+ (cernY != null ? "cernY=" + cernY + ", " : "") + (cernZ != null ? "cernZ=" + cernZ + ", " : "")
 				+ (cernPos != null ? "cernPos=" + cernPos + ", " : "")
-				+ (cernFonc != null ? "cernFonc=" + cernFonc : "") + "]";
+				+ (cernFonc != null ? "cernFonc=" + cernFonc + ", ": "")
+				+ (copyFrom != null ? "copyFrom=" + copyFrom : "") + "]";
 	}
-
 }

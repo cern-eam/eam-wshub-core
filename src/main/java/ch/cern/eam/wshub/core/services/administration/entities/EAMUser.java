@@ -62,7 +62,10 @@ public class EAMUser implements Serializable {
 	@InforField(xpath = "CLASSID/CLASSCODE")
 	private String classCode;
 
+	@Transient
 	private String employeeCode;
+
+	@Transient
 	private String employeeDesc;
 
 	@Transient
@@ -73,6 +76,7 @@ public class EAMUser implements Serializable {
 	@InforField(xpath = "StandardUserDefinedFields")
 	private UserDefinedFields userDefinedFields;
 
+	@Transient
 	private Map<String, Department> departmentalSecurity;
 
 	public String getUserCode() {

@@ -63,6 +63,9 @@ public class Location implements Serializable {
 	@Transient
 	private String hierarchyLocationCode;
 
+	@Transient
+	private String copyFrom;
+
 	public String getCode() {
 		return code;
 	}
@@ -140,6 +143,14 @@ public class Location implements Serializable {
 		this.hierarchyLocationCode = hierarchyLocationCode;
 	}
 
+	public String getCopyFrom() {
+		return copyFrom;
+	}
+
+	public void setCopyFrom(String copyFrom) {
+		this.copyFrom = copyFrom;
+	}
+
 	@Override
 	public String toString() {
 		return "Location ["
@@ -154,7 +165,7 @@ public class Location implements Serializable {
 				+ (safety != null ? "safety=" + safety + ", " : "")
 				+ (outOfService != null ? "outOfService=" + outOfService + ", " : "")
 				+ (costCode != null ? "costCode=" + costCode + ", " : "")
-				+ (userDefinedFields != null ? "userDefinedFields=" + userDefinedFields : "")
-				+ "]";
+				+ (userDefinedFields != null ? "userDefinedFields=" + userDefinedFields + ", " : "")
+				+ (copyFrom != null ? "copyFrom=" + copyFrom : "") + "]";
 	}
 }

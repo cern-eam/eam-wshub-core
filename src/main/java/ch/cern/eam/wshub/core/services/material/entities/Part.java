@@ -115,6 +115,9 @@ public class Part implements Serializable {
 	@InforField(xpath = "UserDefinedFields")
 	private UserDefinedFields userDefinedFields;
 
+	@Transient
+	private String copyFrom;
+
 	public String getCode() {
 		return code;
 	}
@@ -349,6 +352,14 @@ public class Part implements Serializable {
 		this.preventReorders = preventReorders;
 	}
 
+	public String getCopyFrom() {
+		return copyFrom;
+	}
+
+	public void setCopyFrom(String copyFrom) {
+		this.copyFrom = copyFrom;
+	}
+
 	@Override
 	public String toString() {
 		return "Part{" +
@@ -380,6 +391,7 @@ public class Part implements Serializable {
 				", longDescription='" + longDescription + '\'' +
 				", customFields=" + Arrays.toString(customFields) +
 				", userDefinedFields=" + userDefinedFields +
+				", copyFrom='" + copyFrom + '\'' +
 				'}';
 	}
 }
