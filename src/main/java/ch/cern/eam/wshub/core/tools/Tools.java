@@ -193,7 +193,7 @@ public class Tools {
 		List<BatchSingleResponse<T>> responseList = null;
 
 		try {
-			List<Future<T>> result = executorService.invokeAll(mylist);
+			List<Future<T>> result = executorService.invokeAll(mylist, 2, TimeUnit.MINUTES);
 			responseList = (List<BatchSingleResponse<T>>) result.stream().<BatchSingleResponse<T>>map(future -> {
 				try {
 					return new BatchSingleResponse(future.get(), null);
@@ -222,7 +222,7 @@ public class Tools {
 
 	public void processRunnables(List<Runnable> mylist) throws InforException {
 		try {
-			executorService.invokeAll(mylist.stream().map(runnable -> Executors.callable(runnable)).collect(Collectors.toList()));
+			executorService.invokeAll(mylist.stream().map(runnable -> Executors.callable(runnable)).collect(Collectors.toList()), 2, TimeUnit.MINUTES);
 		} catch (Exception exception) {
 			log(Level.SEVERE, "Error during Tools.processRunnables() execution: " + exception.getMessage());
 		}
