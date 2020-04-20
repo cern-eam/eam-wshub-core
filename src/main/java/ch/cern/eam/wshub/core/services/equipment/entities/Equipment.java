@@ -45,7 +45,7 @@ public class Equipment implements Serializable {
 	private String alias;
 
 	@Transient
-	@InforField(xpath = "CLASSID/CLASSCODE")
+	@InforField(xpath = "CLASSID/CLASSCODE", nullifyParentLevel = 1)
 	private String classCode;
 	@Transient
 	@InforField(xpath = "CLASSID/DESCRIPTION", readOnly = true)
@@ -124,27 +124,27 @@ public class Equipment implements Serializable {
 	private String stateDesc;
 
 	@Transient
-	@InforField(xpath = "ManufacturerInfo/MANUFACTURERCODE", readOnly = true)
+	@InforField(xpath = "ManufacturerInfo/MANUFACTURERCODE")
 	private String manufacturerCode;
 	@Transient
 	private String manufacturerDesc;
 	@Transient
-	@InforField(xpath = "ManufacturerInfo/SERIALNUMBER", readOnly = true)
+	@InforField(xpath = "ManufacturerInfo/SERIALNUMBER")
 	private String serialNumber;
 	@Transient
-	@InforField(xpath = "ManufacturerInfo/MODEL", readOnly = true)
+	@InforField(xpath = "ManufacturerInfo/MODEL")
 	private String model;
 	@Transient
-	@InforField(xpath = "ManufacturerInfo/MODELREVISION", readOnly = true)
+	@InforField(xpath = "ManufacturerInfo/MODELREVISION")
 	private String revision;
 	@Transient
-	@InforField(xpath = "ManufacturerInfo/XCOORDINATE", readOnly = true)
+	@InforField(xpath = "ManufacturerInfo/XCOORDINATE")
 	private BigDecimal xCoordinate;
 	@Transient
-	@InforField(xpath = "ManufacturerInfo/YCOORDINATE", readOnly = true)
+	@InforField(xpath = "ManufacturerInfo/YCOORDINATE")
 	private BigDecimal yCoordinate;
 	@Transient
-	@InforField(xpath = "ManufacturerInfo/ZCOORDINATE", readOnly = true)
+	@InforField(xpath = "ManufacturerInfo/ZCOORDINATE")
 	private BigDecimal zCoordinate;
 
 	@Transient
@@ -208,7 +208,7 @@ public class Equipment implements Serializable {
 
 	// Part Association
 	@Transient
-	@InforField(xpath = "PartAssociation/PARTID/PARTCODE", readOnly = true)
+	@InforField(xpath = "PartAssociation/PARTID/PARTCODE")
 	private String partCode;
 	@Transient
 	@InforField(xpath = "PartAssociation/PARTID/DESCRIPTION", readOnly = true)
@@ -230,39 +230,39 @@ public class Equipment implements Serializable {
 
 	// Linear Reference
 	@Transient
-	@InforField(xpath = "LINEARREFERENCEDETAILS/LINEARREFPRECISION", readOnly = true)
+	@InforField(xpath = "LINEARREFERENCEDETAILS/LINEARREFPRECISION")
 	private String linearRefPrecision;
 	@Transient
-	@InforField(xpath = "LINEARREFERENCEDETAILS/LINEARREFUOM", readOnly = true)
+	@InforField(xpath = "LINEARREFERENCEDETAILS/LINEARREFUOM")
 	private String linearRefUOM;
 	@Transient
-	@InforField(xpath = "LINEARREFERENCEDETAILS/EQUIPMENTLENGTH", readOnly = true)
+	@InforField(xpath = "LINEARREFERENCEDETAILS/EQUIPMENTLENGTH")
 	private BigDecimal linearRefEquipmentLength;
 	@Transient
-	@InforField(xpath = "LINEARREFERENCEDETAILS/EQUIPMENTLENGTHUOM", readOnly = true)
+	@InforField(xpath = "LINEARREFERENCEDETAILS/EQUIPMENTLENGTHUOM")
 	private String linearRefEquipmentLengthUOM;
 	@Transient
-	@InforField(xpath = "LINEARREFERENCEDETAILS/GEOGRAPHICALREFERENCE", readOnly = true)
+	@InforField(xpath = "LINEARREFERENCEDETAILS/GEOGRAPHICALREFERENCE")
 	private String linearRefGeographicalRef;
 
 	// Variables
 	@Transient
-	@InforField(xpath = "Variables/VARIABLE1", readOnly = true)
+	@InforField(xpath = "Variables/VARIABLE1")
 	private String variable1;
 	@Transient
-	@InforField(xpath = "Variables/VARIABLE2", readOnly = true)
+	@InforField(xpath = "Variables/VARIABLE2")
 	private String variable2;
 	@Transient
-	@InforField(xpath = "Variables/VARIABLE3", readOnly = true)
+	@InforField(xpath = "Variables/VARIABLE3")
 	private String variable3;
 	@Transient
-	@InforField(xpath = "Variables/VARIABLE4", readOnly = true)
+	@InforField(xpath = "Variables/VARIABLE4")
 	private String variable4;
 	@Transient
-	@InforField(xpath = "Variables/VARIABLE5", readOnly = true)
+	@InforField(xpath = "Variables/VARIABLE5")
 	private String variable5;
 	@Transient
-	@InforField(xpath = "Variables/VARIABLE6", readOnly = true)
+	@InforField(xpath = "Variables/VARIABLE6")
 	private String variable6;
 
 	// Dormant

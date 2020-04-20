@@ -1,6 +1,5 @@
 package ch.cern.eam.wshub.core.tools;
 
-import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
 import ch.cern.eam.wshub.core.annotations.InforField;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
@@ -16,10 +15,7 @@ import javax.xml.bind.annotation.XmlElement;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.*;
 import static ch.cern.eam.wshub.core.tools.Tools.generateFault;
@@ -49,6 +45,7 @@ public class InforFieldTools {
         Arrays.stream(wshubObject.getClass().getDeclaredFields())
                 .filter(wshubField -> wshubField.getAnnotation(InforField.class) != null)
                 .filter(wshubField -> !wshubField.getAnnotation(InforField.class).readOnly())
+                .sorted(Comparator.comparing(field -> field.getAnnotation(InforField.class).nullifyParentLevel()))
                 .forEach(wshubField -> setInforValue(wshubObject, wshubField, inforObject, context));
         return inforObject;
     }
@@ -85,15 +82,16 @@ public class InforFieldTools {
             wshubField.setAccessible(true);
             Object wshubFieldValue = wshubField.get(wshubObject);
             // If null simply ignore the property
-            if (wshubFieldValue == null) {
-                return;
-            }
-            if (fieldNamePath.size() == 1) {
-                setSingleField(inforObject, fieldNamePath.get(0), wshubFieldValue, wshubField, context);
-            }
-            if (fieldNamePath.size() == 2) {
-                setComplexField(inforObject, fieldNamePath.get(0), fieldNamePath.get(1), wshubFieldValue, wshubField, context);
-            }
+//            if (wshubFieldValue == null) {
+//                return;
+//            }
+//            if (fieldNamePath.size() == 1) {
+//                setSingleField(inforObject, fieldNamePath.get(0), wshubFieldValue, wshubField, context);
+//            }
+//            if (fieldNamePath.size() == 2) {
+//                setComplexField(inforObject, fieldNamePath.get(0), fieldNamePath.get(1), wshubFieldValue, wshubField, context);
+//            }
+            setInforFieldByPath(inforObject, fieldNamePath, wshubFieldValue, wshubField, context);
         } catch (Exception exception ) {
             exception.printStackTrace();
             System.out.println("Problem: " + exception.getMessage());
@@ -329,6 +327,37 @@ public class InforFieldTools {
                 setOrganizationField(inforObject, context);
                 setSingleField(inforField.get(inforObject), fieldNameValue, wshubFieldValue, wshubField, context);
             }
+        } catch (Exception exception) {
+            // Error not allowed here
+        }
+    }
+
+    private void setInforFieldByPath(Object inforObject, List<String> path,
+                                     Object wshubFieldValue, Field wshubField, InforContext context) {
+        try {
+            String fieldName = path.get(0);
+            Field inforField = inforObject.getClass().getDeclaredField(fieldName);
+            inforField.setAccessible(true);
+
+            if (wshubFieldValue == null) {
+                return;
+            }
+
+            if (path.size() == 1) {
+                setSingleField(inforObject, fieldName, wshubFieldValue, wshubField, context);
+                return;
+            } else if (wshubFieldValue.equals("")) {
+                if (path.size() == wshubField.getAnnotation(InforField.class).nullifyParentLevel() + 1) {
+                    inforField.set(inforObject, null);
+                }
+                if (inforField.get(inforObject) == null) return;
+            }
+
+            if (inforField.get(inforObject) == null) {
+                inforField.set(inforObject, inforField.getType().newInstance());
+            }
+            setOrganizationField(inforObject, context);
+            setInforFieldByPath(inforField.get(inforObject), path.subList(1, path.size()), wshubFieldValue, wshubField, context);
         } catch (Exception exception) {
             // Error not allowed here
         }
