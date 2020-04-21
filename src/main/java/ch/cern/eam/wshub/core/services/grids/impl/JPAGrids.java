@@ -513,6 +513,7 @@ public class JPAGrids implements Serializable {
 				grr.setRows(new GridRequestRow[0]);
 			}
 
+			grr.setCursorPosition(gridRequest.getCursorPosition() + grr.getRows().length);
 			grr.setGridCode(gridRequest.getGridID());
 			grr.setDataSpyId(gridRequest.getDataspyID());
 			grr.setGridName(gridRequest.getGridName());
