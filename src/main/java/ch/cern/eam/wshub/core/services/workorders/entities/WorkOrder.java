@@ -1,6 +1,7 @@
 package ch.cern.eam.wshub.core.services.workorders.entities;
 
 import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
+import ch.cern.eam.wshub.core.adapters.BigIntegerAdapter;
 import ch.cern.eam.wshub.core.adapters.BooleanAdapter;
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
 import ch.cern.eam.wshub.core.annotations.InforField;
@@ -182,6 +183,8 @@ public class WorkOrder implements Serializable {
 	@Transient
 	@InforField(xpath = "ROUTE/ROUTECODE")
 	private String route;
+	@InforField(xpath = "ROUTE/ROUTEREVISION")
+	private BigInteger routeRevision;
 	@Transient
 	private String comment;
 	@Transient
@@ -634,6 +637,15 @@ public class WorkOrder implements Serializable {
 	public BigDecimal getDowntimeHours() { return downtimeHours; }
 
 	public void setDowntimeHours(BigDecimal downtimeHours) { this.downtimeHours = downtimeHours; }
+
+	@XmlJavaTypeAdapter(BigIntegerAdapter.class)
+	public BigInteger getRouteRevision() {
+		return routeRevision;
+	}
+
+	public void setRouteRevision(BigInteger routeRevision) {
+		this.routeRevision = routeRevision;
+	}
 
 	@XmlJavaTypeAdapter(BooleanAdapter.class)
 	public Boolean isConfirmedIncompleteChecklist() {
