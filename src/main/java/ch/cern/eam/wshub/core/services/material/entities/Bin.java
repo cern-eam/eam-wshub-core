@@ -7,13 +7,13 @@ import java.io.Serializable;
 
 public class Bin implements Serializable {
 
-	@InforField(xpath = "STOREBINID/STOREID/STORECODE")
+	@InforField(xpath = "STOREBINID/STOREID/STORECODE", nullifyParentLevel = 1)
 	private String storeCode;
 
-	@InforField(xpath = "STOREBINID/BINID/BIN")
+	@InforField(xpath = "STOREBINID/BINID/BIN", nullifyParentLevel = 1)
 	private String binCode;
 
-	@InforField(xpath = "STOREBINID/BINID/DESCRIPTION")
+	@InforField(xpath = "STOREBINID/BINID/DESCRIPTION", nullifyParentLevel = 0)
 	private String binDesc;
 
 	@InforField(xpath = "OUTOFSERVICE", booleanType = BooleanType.PLUS_MINUS)

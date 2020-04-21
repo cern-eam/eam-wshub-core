@@ -12,5 +12,5 @@ public @interface InforField {
     boolean enforceValidXpath() default true;
     boolean readOnly() default false;
     BooleanType booleanType() default BooleanType.TRUE_FALSE;
-    int nullifyParentLevel() default 0;
+    int nullifyParentLevel() default 1;
 }

@@ -36,7 +36,7 @@ public class WorkOrder implements Serializable {
 	@InforField(xpath = "WORKORDERID/DESCRIPTION")
 	private String description;
 	@Transient
-	@InforField(xpath = "CLASSID/CLASSCODE")
+	@InforField(xpath = "CLASSID/CLASSCODE", nullifyParentLevel = 1)
 	private String classCode;
 	@Transient
 	@InforField(xpath = "CLASSID/DESCRIPTION", readOnly = true)
