@@ -86,7 +86,7 @@
         <dependency>
             <groupId>ch.cern.eam</groupId>
             <artifactId>eam-wshub-proxyclient</artifactId>
-            <version>11.4-13</version>
+            <version>11.4-14</version>
         </dependency>
         <dependency>
             <groupId>commons-beanutils</groupId>

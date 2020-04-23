@@ -33,6 +33,15 @@ public interface PartMiscService {
     @Operation(logOperation = INFOR_OPERATION.STOREBIN_C)
     String addStoreBin(InforContext context, Bin binParam) throws InforException;
 
+    @Operation(logOperation = INFOR_OPERATION.STOREBIN_R)
+    Bin readStoreBin(InforContext context, Bin binParam) throws InforException;
+
+    @Operation(logOperation = INFOR_OPERATION.STOREBIN_U)
+    String updateStoreBin(InforContext context, Bin binParam) throws InforException;
+
+    @Operation(logOperation = INFOR_OPERATION.STOREBIN_D)
+    String deleteStoreBin(InforContext context, Bin binParam) throws InforException;
+
     @Operation(logOperation = INFOR_OPERATION.PARTMAN_R)
     public PartManufacturer[] getPartManufacturers(InforContext context, String partCode) throws InforException;
 
