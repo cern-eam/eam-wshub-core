@@ -80,7 +80,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		//
 		WorkOrder workOrder = tools.getInforFieldTools().transformInforObject(new WorkOrder(), inforWorkOrder);
 
-		// Fetching various descriptions not returned by Infor web service
+		// Fetching misc descriptions not returned by Infor web service
 		List<Runnable> runnables = new LinkedList<>();
 		runnables.add(() -> workOrder.setAssignedToDesc(tools.getFieldDescriptionsTools().readPersonDesc(context, workOrder.getAssignedTo())));
 		runnables.add(() -> workOrder.setDepartmentDesc(tools.getFieldDescriptionsTools().readDepartmentDesc(context, workOrder.getDepartmentCode())));

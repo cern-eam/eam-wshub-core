@@ -183,6 +183,7 @@ public class WorkOrder implements Serializable {
 	@Transient
 	@InforField(xpath = "ROUTE/ROUTECODE")
 	private String route;
+	@Transient
 	@InforField(xpath = "ROUTE/ROUTEREVISION")
 	private BigInteger routeRevision;
 	@Transient
