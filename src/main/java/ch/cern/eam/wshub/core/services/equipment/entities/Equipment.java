@@ -208,24 +208,24 @@ public class Equipment implements Serializable {
 
 	// Part Association
 	@Transient
-	@InforField(xpath = "PartAssociation/PARTID/PARTCODE", nullifyParentLevel = 0)
+	@InforField(xpath = "PartAssociation/PARTID/PARTCODE", enforceValidXpath = false, nullifyParentLevel = 0)
 	private String partCode;
 	@Transient
-	@InforField(xpath = "PartAssociation/PARTID/DESCRIPTION", readOnly = true)
+	@InforField(xpath = "PartAssociation/PARTID/DESCRIPTION", enforceValidXpath = false, readOnly = true)
 	private String partDesc;
 	@Transient
-	@InforField(xpath = "PartAssociation/STORELOCATION/STOREID/STORECODE", readOnly = true)
+	@InforField(xpath = "PartAssociation/STORELOCATION/STOREID/STORECODE", enforceValidXpath = false, nullifyParentLevel = 0)
 	private String storeCode;
 	@Transient
-	@InforField(xpath = "PartAssociation/STORELOCATION/STOREID/DESCRIPTION", readOnly = true)
+	@InforField(xpath = "PartAssociation/STORELOCATION/STOREID/DESCRIPTION", enforceValidXpath = false, readOnly = true)
 	private String storeDesc;
 	@Transient
-	@InforField(xpath = "PartAssociation/STORELOCATION/BIN", readOnly = true)
+	@InforField(xpath = "PartAssociation/STORELOCATION/BIN", enforceValidXpath = false, nullifyParentLevel = 0)
 	private String bin;
 	@Transient
 	private String binDesc;
 	@Transient
-	@InforField(xpath = "PartAssociation/STORELOCATION/LOT", readOnly = true)
+	@InforField(xpath = "PartAssociation/STORELOCATION/LOT", enforceValidXpath = false, nullifyParentLevel = 0)
 	private String lot;
 
 	// Linear Reference
