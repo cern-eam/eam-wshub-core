@@ -5,13 +5,13 @@ import ch.cern.eam.wshub.core.annotations.GridField;
 public class Department {
 
     @GridField(name = "departmentcode")
-    public String code;
+    private String code;
 
     @GridField(name = "deptdescription")
-    public String description;
+    private String description;
 
     @GridField(name = "deptreadonly")
-    public Boolean readOnly;
+    private Boolean readOnly;
 
     public String getCode() {
         return code;

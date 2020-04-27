@@ -1,6 +1,7 @@
 package ch.cern.eam.wshub.core.services.workorders.entities;
 
 import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
+import ch.cern.eam.wshub.core.adapters.BigIntegerAdapter;
 import ch.cern.eam.wshub.core.adapters.BooleanAdapter;
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
 import ch.cern.eam.wshub.core.annotations.InforField;
@@ -36,7 +37,7 @@ public class WorkOrder implements Serializable {
 	@InforField(xpath = "WORKORDERID/DESCRIPTION")
 	private String description;
 	@Transient
-	@InforField(xpath = "CLASSID/CLASSCODE")
+	@InforField(xpath = "CLASSID/CLASSCODE", nullifyParentLevel = 1)
 	private String classCode;
 	@Transient
 	@InforField(xpath = "CLASSID/DESCRIPTION", readOnly = true)
@@ -183,6 +184,9 @@ public class WorkOrder implements Serializable {
 	@InforField(xpath = "ROUTE/ROUTECODE")
 	private String route;
 	@Transient
+	@InforField(xpath = "ROUTE/ROUTEREVISION")
+	private BigInteger routeRevision;
+	@Transient
 	private String comment;
 	@Transient
 	@InforField(xpath = "TARGETVALUE")
@@ -199,6 +203,9 @@ public class WorkOrder implements Serializable {
 
 	@Column(name = "EVT_ORIGWO")
 	private String origWO;
+
+	@Transient
+	private String copyFrom;
 
 	public String getNumber() {
 		return number;
@@ -632,6 +639,15 @@ public class WorkOrder implements Serializable {
 
 	public void setDowntimeHours(BigDecimal downtimeHours) { this.downtimeHours = downtimeHours; }
 
+	@XmlJavaTypeAdapter(BigIntegerAdapter.class)
+	public BigInteger getRouteRevision() {
+		return routeRevision;
+	}
+
+	public void setRouteRevision(BigInteger routeRevision) {
+		this.routeRevision = routeRevision;
+	}
+
 	@XmlJavaTypeAdapter(BooleanAdapter.class)
 	public Boolean isConfirmedIncompleteChecklist() {
 		return confirmedIncompleteChecklist;
@@ -639,6 +655,14 @@ public class WorkOrder implements Serializable {
 
 	public void setConfirmedIncompleteChecklist(Boolean confirmedIncompleteChecklist) {
 		this.confirmedIncompleteChecklist = confirmedIncompleteChecklist;
+	}
+
+	public String getCopyFrom() {
+		return copyFrom;
+	}
+
+	public void setCopyFrom(String copyFrom) {
+		this.copyFrom = copyFrom;
 	}
 
 	@Override
@@ -693,6 +717,7 @@ public class WorkOrder implements Serializable {
 				+ (targetValue != null ? "targetValue=" + targetValue + ", " : "")
 				+ (downtimeHours != null ? "downtimeHours=" + downtimeHours + ", " : "")
 				+ (userDefinedFields != null ? "userDefinedFields=" + userDefinedFields + ", " : "")
-				+ (origWO != null ? "origWO=" + origWO : "") + "]";
+				+ (origWO != null ? "origWO=" + origWO + ", ": "")
+				+ (copyFrom != null ? "copyFrom=" + copyFrom : "")  + "]";
 	}
 }

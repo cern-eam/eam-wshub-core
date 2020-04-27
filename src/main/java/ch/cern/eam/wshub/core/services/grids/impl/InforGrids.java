@@ -122,7 +122,7 @@ public class InforGrids implements Serializable {
 					GridField gridField = gridFieldCache.get(gridRequest.getRequestKey()).get(inforCell.getN());
 					return new GridRequestCell(inforCell.getN().toString(),
 							decodeCellContent(gridField, inforCell.getContent()),
-							Integer.parseInt(gridField.getOrder()),
+							gridField.getOrder(),
 							gridField.getName());
 
 				}).collect(Collectors.toList());
@@ -228,7 +228,7 @@ public class InforGrids implements Serializable {
 				List<GridRequestCell> cells = inforRow.getD().stream().map(inforCell ->
 					 new GridRequestCell(inforCell.getN().toString(),
 											   decodeCellContent(gridFieldCache.get(gridRequest.getRequestKey()).get(inforCell.getN()), inforCell.getContent()),
-											   Integer.parseInt(gridFieldCache.get(gridRequest.getRequestKey()).get(inforCell.getN()).getOrder()),
+											   gridFieldCache.get(gridRequest.getRequestKey()).get(inforCell.getN()).getOrder(),
 											   gridFieldCache.get(gridRequest.getRequestKey()).get(inforCell.getN()).getName())
 				).collect(Collectors.toList());
 
@@ -397,7 +397,7 @@ public class InforGrids implements Serializable {
 		}
 		gridField.setId(field.getAliasnum().toString());
 		gridField.setName(field.getName());
-		gridField.setOrder(field.getOrder());
+		gridField.setOrder(Integer.parseInt(field.getOrder()));
 		gridField.setWidth(field.getWidth());
 		gridField.setLabel(field.getLabel());
 		return gridField;

@@ -12,12 +12,9 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.MathContext;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class DataTypeTools {
 
@@ -385,5 +382,9 @@ public class DataTypeTools {
 
     public static String toCodeString(LOCATIONID_Type locationIdType) {
         return locationIdType == null ? null : locationIdType.getLOCATIONCODE();
+    }
+
+    public static Long convertBigIntegerToLong(BigInteger value) {
+        return value == null ? null : value.longValueExact();
     }
 }

@@ -8,7 +8,11 @@ import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.isEmpty;
+
+import java.util.stream.Collectors;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
+
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -38,31 +42,45 @@ public class GridsServiceImpl implements GridsService {
 			return inforGrids.executeQuery(context, gridRequest);
 		} else {
 			tools.demandDatabaseConnection();
-			if (isEmpty(gridRequest.getDataspyID()) || isEmpty(gridRequest.getGridID())) {
-				gridRequest.setDataspyID(getGridMetadataInfor(context, gridRequest.getGridName()).getDataSpyId());
-				gridRequest.setGridID(getGridMetadataInfor(context, gridRequest.getGridName()).getGridCode());
+			if (isEmpty(gridRequest.getDataspyID()) || isEmpty(gridRequest.getGridID()) || isEmpty(gridRequest.getGridName())) {
+				GridMetadataRequestResult gridMetadataInfor = getGridMetadataInfor(context, gridRequest.getGridName(), gridRequest.getGridID());
+				gridRequest.setGridID(gridMetadataInfor.getGridCode());
+				gridRequest.setGridName(gridMetadataInfor.getGridName());
+				if (gridRequest.getDataspyID() == null) gridRequest.setDataspyID(gridMetadataInfor.getDataSpyId());
+				if (gridRequest.getUserFunctionName() == null) gridRequest.setUserFunctionName(gridMetadataInfor.getGridName());
 			}
-			return jpaGrids.executeQuery(context, gridRequest);
+			GridRequestResult gridRequestResult = jpaGrids.executeQuery(context, gridRequest);
+			return gridRequestResult;
 		}
 	}
 
 	public GridMetadataRequestResult getGridMetadataInfor(InforContext context, String gridName) {
+		return getGridMetadataInfor(context, gridName, null);
+	}
+
+	public GridMetadataRequestResult getGridMetadataInfor(InforContext context, String gridName, String gridId) {
 		try {
-			if (gridIdCache.containsKey(gridName)) {
-				return gridIdCache.get(gridName);
+			String cacheName = gridName + "#" + gridId;
+			if (gridIdCache.containsKey(cacheName)) {
+				return gridIdCache.get(cacheName);
 			}
 			GridRequest gridRequest = new GridRequest("BEWSGR");
 			gridRequest.setIncludeMetadata(true);
 			gridRequest.setRowCount(1);
-			gridRequest.getGridRequestFilters().add(new GridRequestFilter("grd_gridname", gridName, "="));
+			if (gridName != null) {
+				gridRequest.getGridRequestFilters().add(new GridRequestFilter("grd_gridname", gridName, "=", GridRequestFilter.JOINER.OR));
+			}
+			if (gridId != null) {
+				gridRequest.getGridRequestFilters().add(new GridRequestFilter("grd_gridid", gridId, "="));
+			}
 			GridRequestResult result = inforGrids.executeQuery(context, gridRequest);
 
 			GridMetadataRequestResult gridData = new GridMetadataRequestResult();
-			gridData.setGridName(gridName);
+			gridData.setGridName(getCellContent("grd_gridname", result.getRows()[0]));
 			gridData.setGridCode(getCellContent("grd_gridid", result.getRows()[0]));
 			gridData.setDataSpyId(getCellContent("dds_ddspyid", result.getRows()[0]).replaceAll(",", ""));
 			// Store the gridId in the cache
-			gridIdCache.put(gridName, gridData);
+			gridIdCache.put(cacheName, gridData);
 			//
 			return gridData;
 		} catch (Exception e) {
@@ -89,6 +107,13 @@ public class GridsServiceImpl implements GridsService {
 		tools.demandDatabaseConnection();
 		return jpaGrids.getDefaultDataspy(context, gridCode, viewType);
 	}
-	
+
+    public String getGridCsvData(InforContext context, GridRequest gridRequest) throws InforException {
+		// Always fetch the meta data to ensure that the grid fields will be included
+		gridRequest.setIncludeMetadata(true);
+        GridRequestResult gridRequestResult = inforGrids.executeQuery(context, gridRequest);
+        return CSVUtils.convertGridRequestResultToCsv(gridRequestResult);
+    }
+
 }
 

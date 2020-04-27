@@ -214,7 +214,7 @@ public class GridCustomFieldHandler implements Serializable {
             gridField.setWidth(customField.getWidth());
             gridField.setDataType("VARCHAR");
             gridField.setDdSpyId(customField.getDataspyID());
-            gridField.setOrder(customField.getOrder());
+            gridField.setOrder(Integer.parseInt(customField.getOrder()));
 
             return gridField;
         }).collect(Collectors.toList()).toArray(new GridField[customFields.size()]);

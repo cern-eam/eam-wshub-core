@@ -297,10 +297,18 @@ public class AssetServiceImpl implements AssetService {
             toCodeString(assetEquipment.getCLASSID()),
             assetEquipment.getUSERDEFINEDAREA(),
             assetParam.getClassCode(),
-            "OBJ"));
+            "OBJ")
+        );
 
         initializeAssetObject(assetEquipment, assetParam, context);
         tools.getInforFieldTools().transformWSHubObject(assetEquipment, assetParam, context);
+
+        // PART ASSOCIATION
+        if (assetParam.getPartCode() != null && assetParam.getPartCode().equals("")
+                    && assetEquipment.getPartAssociation() != null) {
+            assetEquipment.getPartAssociation().setSTORELOCATION(null);
+            assetEquipment.getPartAssociation().getPARTID().getORGANIZATIONID().setORGANIZATIONCODE("");
+        }
         //
         // UPDATE EQUIPMENT
         //
@@ -352,147 +360,6 @@ public class AssetServiceImpl implements AssetService {
 
         if (assetParam.getDescription() != null) {
             assetInfor.getASSETID().setDESCRIPTION(assetParam.getDescription());
-        }
-
-        if (assetParam.getManufacturerCode() != null || assetParam.getSerialNumber() != null
-                || assetParam.getModel() != null || assetParam.getRevision() != null
-                || assetParam.getxCoordinate() != null || assetParam.getyCoordinate() != null
-                || assetParam.getzCoordinate() != null) {
-            if (assetInfor.getManufacturerInfo() == null) {
-                assetInfor.setManufacturerInfo(new ManufacturerInfo());
-            }
-
-            if (assetParam.getManufacturerCode() != null) {
-                assetInfor.getManufacturerInfo().setMANUFACTURERCODE(assetParam.getManufacturerCode().toUpperCase());
-            }
-            if (assetParam.getModel() != null) {
-                assetInfor.getManufacturerInfo().setMODEL(assetParam.getModel());
-            }
-            if (assetParam.getRevision() != null) {
-                assetInfor.getManufacturerInfo().setMODELREVISION(assetParam.getRevision());
-            }
-            if (assetParam.getSerialNumber() != null) {
-                assetInfor.getManufacturerInfo().setSERIALNUMBER(assetParam.getSerialNumber());
-            }
-            if (assetParam.getxCoordinate() != null) {
-                assetInfor.getManufacturerInfo()
-                        .setXCOORDINATE(tools.getDataTypeTools().encodeQuantity(assetParam.getxCoordinate(), "X-Coordinate"));
-            }
-            if (assetParam.getyCoordinate() != null) {
-                assetInfor.getManufacturerInfo()
-                        .setYCOORDINATE(tools.getDataTypeTools().encodeQuantity(assetParam.getyCoordinate(), "Y-Coordinate"));
-            }
-            if (assetParam.getzCoordinate() != null) {
-                assetInfor.getManufacturerInfo()
-                        .setZCOORDINATE(tools.getDataTypeTools().encodeQuantity(assetParam.getzCoordinate(), "Z-Coordiante"));
-            }
-        }
-
-        // PART ASSOCIATION
-        if (assetParam.getPartCode() != null) {
-            if (assetParam.getPartCode().equals("") && assetInfor.getPartAssociation() == null) {
-                // TODO: do nothing for new, refactor it later ...
-            } else if (assetParam.getPartCode().equals("") && assetInfor.getPartAssociation() != null
-                    && assetInfor.getPartAssociation().getPARTID() != null) {
-                assetInfor.getPartAssociation().getPARTID().setPARTCODE("");
-                assetInfor.getPartAssociation().getPARTID().getORGANIZATIONID().setORGANIZATIONCODE("");
-                assetInfor.getPartAssociation().getPARTID().setDESCRIPTION(null);
-                assetInfor.getPartAssociation().setSTORELOCATION(null);
-            } else {
-                assetInfor.setPartAssociation(new PartAssociation());
-                assetInfor.getPartAssociation().setPARTID(new PARTID_Type());
-                assetInfor.getPartAssociation().getPARTID().setORGANIZATIONID(tools.getOrganization(context));
-                assetInfor.getPartAssociation().getPARTID().setPARTCODE(assetParam.getPartCode().toUpperCase().trim());
-
-                if (assetParam.getStoreCode() != null || assetParam.getLot() != null || assetParam.getBin() != null) {
-                    assetInfor.getPartAssociation().setSTORELOCATION(new STORELOCATION());
-                    
-                    if (assetParam.getStoreCode() != null) {
-                        assetInfor.getPartAssociation().getSTORELOCATION().setSTOREID(new STOREID_Type());
-                        assetInfor.getPartAssociation().getSTORELOCATION().getSTOREID().setORGANIZATIONID(tools.getOrganization(context));
-                        assetInfor.getPartAssociation().getSTORELOCATION().getSTOREID().setSTORECODE(assetParam.getStoreCode().trim().toUpperCase());
-                    }
-                    if (assetParam.getBin() != null) {
-                        assetInfor.getPartAssociation().getSTORELOCATION().setBIN(assetParam.getBin());
-                    }
-                    if (assetParam.getLot() != null) {
-                        assetInfor.getPartAssociation().getSTORELOCATION().setLOT(assetParam.getLot());
-                    }
-                }
-            }
-        }
-
-        // LINEAR REFERENCE
-        if (assetParam.getLinearRefGeographicalRef() != null || assetParam.getLinearRefEquipmentLength() != null
-                || assetParam.getLinearRefEquipmentLengthUOM() != null || assetParam.getLinearRefPrecision() != null
-                || assetParam.getLinearRefUOM() != null) {
-            assetInfor.setLINEARREFERENCEDETAILS(new LINEARREFERENCEDETAILS_Type());
-            assetInfor.getLINEARREFERENCEDETAILS().setEQUIPMENTLENGTH(
-                    tools.getDataTypeTools().encodeQuantity(assetParam.getLinearRefEquipmentLength(), "Linear Ref. Equipment Length"));
-            assetInfor.getLINEARREFERENCEDETAILS().setEQUIPMENTLENGTHUOM(assetParam.getLinearRefEquipmentLengthUOM());
-            assetInfor.getLINEARREFERENCEDETAILS().setGEOGRAPHICALREFERENCE(assetParam.getLinearRefGeographicalRef());
-            assetInfor.getLINEARREFERENCEDETAILS().setLINEARREFPRECISION(
-                    tools.getDataTypeTools().encodeBigInteger(assetParam.getLinearRefPrecision(), "Linear Ref. Precision"));
-            assetInfor.getLINEARREFERENCEDETAILS().setLINEARREFUOM(assetParam.getLinearRefUOM());
-
-        }
-
-        // VARIABLES
-        if (assetInfor.getVariables() == null) {
-            assetInfor.setVariables(new Variables());
-        }
-
-        if (assetParam.getVariable1() != null) {
-            assetInfor.getVariables().setVARIABLE1(assetParam.getVariable1());
-        }
-        if (assetParam.getVariable2() != null) {
-            assetInfor.getVariables().setVARIABLE2(assetParam.getVariable2());
-        }
-        if (assetParam.getVariable3() != null) {
-            assetInfor.getVariables().setVARIABLE3(assetParam.getVariable3());
-        }
-        if (assetParam.getVariable4() != null) {
-            assetInfor.getVariables().setVARIABLE4(assetParam.getVariable4());
-        }
-        if (assetParam.getVariable5() != null) {
-            assetInfor.getVariables().setVARIABLE5(assetParam.getVariable5());
-        }
-        if (assetParam.getVariable6() != null) {
-            assetInfor.getVariables().setVARIABLE6(assetParam.getVariable6());
-        }
-
-        // FACILITY DETAILS
-        if (assetParam.getCostOfNeededRepairs() != null || assetParam.getReplacementValue() != null
-                || assetParam.getFacilityConditionIndex() != null || assetParam.getServiceLifetime() != null
-                || assetParam.getYearBuilt() != null) {
-            if (assetInfor.getFacilityConditionIndex() == null) {
-                assetInfor.setFacilityConditionIndex(new FacilityConditionIndex());
-            }
-
-            if (assetParam.getCostOfNeededRepairs() != null) {
-                assetInfor.getFacilityConditionIndex().setCOSTOFNEEDEDREPAIRS(
-                        tools.getDataTypeTools().encodeAmount(assetParam.getCostOfNeededRepairs(), "Cost of Needed Repairs"));
-            }
-
-            if (assetParam.getReplacementValue() != null) {
-                assetInfor.getFacilityConditionIndex()
-                        .setREPLACEMENTVALUE(tools.getDataTypeTools().encodeAmount(assetParam.getReplacementValue(), "Replacement Value"));
-            }
-
-            if (assetParam.getFacilityConditionIndex() != null) {
-                assetInfor.getFacilityConditionIndex().setFACILITYCONDITIONINDEX(
-                        tools.getDataTypeTools().encodeAmount(assetParam.getFacilityConditionIndex(), "Facility Condition Index"));
-            }
-
-            if (assetParam.getServiceLifetime() != null) {
-                assetInfor.getFacilityConditionIndex()
-                        .setSERVICELIFE(tools.getDataTypeTools().encodeQuantity(assetParam.getServiceLifetime(), "Service Life Time"));
-            }
-
-            if (assetParam.getYearBuilt() != null) {
-                assetInfor.getFacilityConditionIndex()
-                        .setYEARBUILT(tools.getDataTypeTools().encodeQuantity(assetParam.getYearBuilt(), "Service Life Time"));
-            }
         }
 
         // HIERARCHY

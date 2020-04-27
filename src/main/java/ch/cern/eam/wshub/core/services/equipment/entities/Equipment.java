@@ -45,13 +45,13 @@ public class Equipment implements Serializable {
 	private String alias;
 
 	@Transient
-	@InforField(xpath = "CLASSID/CLASSCODE")
+	@InforField(xpath = "CLASSID/CLASSCODE", nullifyParentLevel = 1)
 	private String classCode;
 	@Transient
 	@InforField(xpath = "CLASSID/DESCRIPTION", readOnly = true)
 	private String classDesc;
 	@Transient
-	@InforField(xpath = "CATEGORYID/CATEGORYCODE")
+	@InforField(xpath = "CATEGORYID/CATEGORYCODE", nullifyParentLevel = 1)
 	private String categoryCode;
 	@Transient
 	@InforField(xpath = "CATEGORYID/DESCRIPTION", readOnly = true)
@@ -70,21 +70,21 @@ public class Equipment implements Serializable {
 	private String profileCode;
 	//
 	@Transient
-	@InforField(xpath = "STATUS/STATUSCODE")
+	@InforField(xpath = "STATUS/STATUSCODE", nullifyParentLevel = 1)
 	private String statusCode;
 	@Transient
 	@InforField(xpath = "STATUS/DESCRIPTION", readOnly = true)
 	private String statusDesc;
 	//
 	@Transient
-	@InforField(xpath = "COSTCODEID/COSTCODE")
+	@InforField(xpath = "COSTCODEID/COSTCODE", nullifyParentLevel = 1)
 	private String costCode;
 
 	@Transient
-	@InforField(xpath = "DEPARTMENTID/DEPARTMENTCODE")
+	@InforField(xpath = "DEPARTMENTID/DEPARTMENTCODE", nullifyParentLevel = 1)
 	private String departmentCode;
 	@Transient
-	@InforField(xpath = "DEPARTMENTID/DESCRIPTION")
+	@InforField(xpath = "DEPARTMENTID/DESCRIPTION", nullifyParentLevel = 0)
 	private String departmentDesc;
 	//
 	@Transient
@@ -99,7 +99,7 @@ public class Equipment implements Serializable {
 	@InforField(xpath = "ASSETVALUE")
 	private BigDecimal equipmentValue;
 	@Transient
-	@InforField(xpath = "ASSIGNEDTO/PERSONCODE")
+	@InforField(xpath = "ASSIGNEDTO/PERSONCODE", nullifyParentLevel = 1)
 	private String assignedTo;
 	@Transient
 	@InforField(xpath = "ASSIGNEDTO/DESCRIPTION", readOnly = true)
@@ -108,7 +108,7 @@ public class Equipment implements Serializable {
 	@InforField(xpath = "METERUNIT")
 	private String meterUnit;
 	@Transient
-	@InforField(xpath = "CRITICALITYID/CRITICALITY")
+	@InforField(xpath = "CRITICALITYID/CRITICALITY", nullifyParentLevel = 1)
 	private String criticality;
 	@Transient
 	@InforField(xpath = "CGMP")
@@ -117,50 +117,50 @@ public class Equipment implements Serializable {
 	@InforField(xpath = "ORIGINALRECEIPTDATE")
 	private Date originalReceiptDate;
 	@Transient
-	@InforField(xpath = "EQUIPMENTSTATEID/STATECODE", enforceValidXpath = false)
+	@InforField(xpath = "EQUIPMENTSTATEID/STATECODE", enforceValidXpath = false, nullifyParentLevel = 1)
 	private String stateCode;
 	@Transient
 	@InforField(xpath = "EQUIPMENTSTATEID/DESCRIPTION", readOnly = true)
 	private String stateDesc;
 
 	@Transient
-	@InforField(xpath = "ManufacturerInfo/MANUFACTURERCODE", readOnly = true)
+	@InforField(xpath = "ManufacturerInfo/MANUFACTURERCODE", nullifyParentLevel = 0)
 	private String manufacturerCode;
 	@Transient
 	private String manufacturerDesc;
 	@Transient
-	@InforField(xpath = "ManufacturerInfo/SERIALNUMBER", readOnly = true)
+	@InforField(xpath = "ManufacturerInfo/SERIALNUMBER", nullifyParentLevel = 0)
 	private String serialNumber;
 	@Transient
-	@InforField(xpath = "ManufacturerInfo/MODEL", readOnly = true)
+	@InforField(xpath = "ManufacturerInfo/MODEL", nullifyParentLevel = 0)
 	private String model;
 	@Transient
-	@InforField(xpath = "ManufacturerInfo/MODELREVISION", readOnly = true)
+	@InforField(xpath = "ManufacturerInfo/MODELREVISION", nullifyParentLevel = 0)
 	private String revision;
 	@Transient
-	@InforField(xpath = "ManufacturerInfo/XCOORDINATE", readOnly = true)
+	@InforField(xpath = "ManufacturerInfo/XCOORDINATE", nullifyParentLevel = 0)
 	private BigDecimal xCoordinate;
 	@Transient
-	@InforField(xpath = "ManufacturerInfo/YCOORDINATE", readOnly = true)
+	@InforField(xpath = "ManufacturerInfo/YCOORDINATE", nullifyParentLevel = 0)
 	private BigDecimal yCoordinate;
 	@Transient
-	@InforField(xpath = "ManufacturerInfo/ZCOORDINATE", readOnly = true)
+	@InforField(xpath = "ManufacturerInfo/ZCOORDINATE", nullifyParentLevel = 0)
 	private BigDecimal zCoordinate;
 
 	@Transient
-	@InforField(xpath = "FacilityConditionIndex/COSTOFNEEDEDREPAIRS", readOnly = true)
+	@InforField(xpath = "FacilityConditionIndex/COSTOFNEEDEDREPAIRS", nullifyParentLevel = 0)
 	private BigDecimal costOfNeededRepairs;
 	@Transient
-	@InforField(xpath = "FacilityConditionIndex/REPLACEMENTVALUE", readOnly = true)
+	@InforField(xpath = "FacilityConditionIndex/REPLACEMENTVALUE", nullifyParentLevel = 0)
 	private BigDecimal replacementValue;
 	@Transient
-	@InforField(xpath = "FacilityConditionIndex/FACILITYCONDITIONINDEX", readOnly = true)
+	@InforField(xpath = "FacilityConditionIndex/FACILITYCONDITIONINDEX", nullifyParentLevel = 0)
 	private BigDecimal facilityConditionIndex;
 	@Transient
-	@InforField(xpath = "FacilityConditionIndex/YEARBUILT", readOnly = true)
+	@InforField(xpath = "FacilityConditionIndex/YEARBUILT", nullifyParentLevel = 0)
 	private BigDecimal yearBuilt;
 	@Transient
-	@InforField(xpath = "FacilityConditionIndex/SERVICELIFE", readOnly = true)
+	@InforField(xpath = "FacilityConditionIndex/SERVICELIFE", nullifyParentLevel = 0)
 	private BigDecimal serviceLifetime;
 
 	// Hierarchy
@@ -208,7 +208,7 @@ public class Equipment implements Serializable {
 
 	// Part Association
 	@Transient
-	@InforField(xpath = "PartAssociation/PARTID/PARTCODE", readOnly = true)
+	@InforField(xpath = "PartAssociation/PARTID/PARTCODE", nullifyParentLevel = 0)
 	private String partCode;
 	@Transient
 	@InforField(xpath = "PartAssociation/PARTID/DESCRIPTION", readOnly = true)
@@ -230,39 +230,39 @@ public class Equipment implements Serializable {
 
 	// Linear Reference
 	@Transient
-	@InforField(xpath = "LINEARREFERENCEDETAILS/LINEARREFPRECISION", readOnly = true)
+	@InforField(xpath = "LINEARREFERENCEDETAILS/LINEARREFPRECISION", nullifyParentLevel = 0)
 	private String linearRefPrecision;
 	@Transient
-	@InforField(xpath = "LINEARREFERENCEDETAILS/LINEARREFUOM", readOnly = true)
+	@InforField(xpath = "LINEARREFERENCEDETAILS/LINEARREFUOM", nullifyParentLevel = 0)
 	private String linearRefUOM;
 	@Transient
-	@InforField(xpath = "LINEARREFERENCEDETAILS/EQUIPMENTLENGTH", readOnly = true)
+	@InforField(xpath = "LINEARREFERENCEDETAILS/EQUIPMENTLENGTH", nullifyParentLevel = 0)
 	private BigDecimal linearRefEquipmentLength;
 	@Transient
-	@InforField(xpath = "LINEARREFERENCEDETAILS/EQUIPMENTLENGTHUOM", readOnly = true)
+	@InforField(xpath = "LINEARREFERENCEDETAILS/EQUIPMENTLENGTHUOM", nullifyParentLevel = 0)
 	private String linearRefEquipmentLengthUOM;
 	@Transient
-	@InforField(xpath = "LINEARREFERENCEDETAILS/GEOGRAPHICALREFERENCE", readOnly = true)
+	@InforField(xpath = "LINEARREFERENCEDETAILS/GEOGRAPHICALREFERENCE", nullifyParentLevel = 0)
 	private String linearRefGeographicalRef;
 
 	// Variables
 	@Transient
-	@InforField(xpath = "Variables/VARIABLE1", readOnly = true)
+	@InforField(xpath = "Variables/VARIABLE1", nullifyParentLevel = 0)
 	private String variable1;
 	@Transient
-	@InforField(xpath = "Variables/VARIABLE2", readOnly = true)
+	@InforField(xpath = "Variables/VARIABLE2", nullifyParentLevel = 0)
 	private String variable2;
 	@Transient
-	@InforField(xpath = "Variables/VARIABLE3", readOnly = true)
+	@InforField(xpath = "Variables/VARIABLE3", nullifyParentLevel = 0)
 	private String variable3;
 	@Transient
-	@InforField(xpath = "Variables/VARIABLE4", readOnly = true)
+	@InforField(xpath = "Variables/VARIABLE4", nullifyParentLevel = 0)
 	private String variable4;
 	@Transient
-	@InforField(xpath = "Variables/VARIABLE5", readOnly = true)
+	@InforField(xpath = "Variables/VARIABLE5", nullifyParentLevel = 0)
 	private String variable5;
 	@Transient
-	@InforField(xpath = "Variables/VARIABLE6", readOnly = true)
+	@InforField(xpath = "Variables/VARIABLE6", nullifyParentLevel = 0)
 	private String variable6;
 
 	// Dormant
@@ -317,7 +317,8 @@ public class Equipment implements Serializable {
 	@Transient
 	private String cernFonc;
 
-
+	@Transient
+	private String copyFrom;
 
 	public String getDescription() {
 		return description;
@@ -1171,6 +1172,14 @@ public class Equipment implements Serializable {
 		this.hierarchySystemCostRollUp = hierarchySystemCostRollUp;
 	}
 
+	public String getCopyFrom() {
+		return copyFrom;
+	}
+
+	public void setCopyFrom(String copyFrom) {
+		this.copyFrom = copyFrom;
+	}
+
 	@Override
 	public String toString() {
 		return "Equipment [" + (description != null ? "description=" + description + ", " : "")
@@ -1270,7 +1279,7 @@ public class Equipment implements Serializable {
 				+ (cernCao != null ? "cernCao=" + cernCao + ", " : "") + (cernX != null ? "cernX=" + cernX + ", " : "")
 				+ (cernY != null ? "cernY=" + cernY + ", " : "") + (cernZ != null ? "cernZ=" + cernZ + ", " : "")
 				+ (cernPos != null ? "cernPos=" + cernPos + ", " : "")
-				+ (cernFonc != null ? "cernFonc=" + cernFonc : "") + "]";
+				+ (cernFonc != null ? "cernFonc=" + cernFonc + ", ": "")
+				+ (copyFrom != null ? "copyFrom=" + copyFrom : "") + "]";
 	}
-
 }

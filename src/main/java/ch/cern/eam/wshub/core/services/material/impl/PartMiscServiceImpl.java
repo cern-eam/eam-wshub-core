@@ -23,16 +23,25 @@ import net.datastream.schemas.mp_fields.*;
 import net.datastream.schemas.mp_functions.mp0220_001.MP0220_AddIssueReturnTransaction_001;
 import net.datastream.schemas.mp_functions.mp0271_001.MP0271_AddCatalogue_001;
 import net.datastream.schemas.mp_functions.mp0281_001.MP0281_AddStoreBin_001;
+import net.datastream.schemas.mp_functions.mp0282_001.MP0282_GetStoreBin_001;
+import net.datastream.schemas.mp_functions.mp0283_001.MP0283_SyncStoreBin_001;
+import net.datastream.schemas.mp_functions.mp0284_001.MP0284_DeleteStoreBin_001;
 import net.datastream.schemas.mp_functions.mp0286_001.MP0286_Bin2BinTransfer_001;
 import net.datastream.schemas.mp_functions.mp0612_001.MP0612_AddPartsAssociated_001;
 import net.datastream.schemas.mp_functions.mp0614_001.MP0614_DeletePartsAssociated_001;
 import net.datastream.schemas.mp_functions.mp2051_001.MP2051_AddSubstitutePart_001;
 import net.datastream.schemas.mp_results.mp0220_001.MP0220_AddIssueReturnTransaction_001_Result;
+import net.datastream.schemas.mp_results.mp0281_001.MP0281_AddStoreBin_001_Result;
+import net.datastream.schemas.mp_results.mp0282_001.MP0282_GetStoreBin_001_Result;
+import net.datastream.schemas.mp_results.mp0282_001.ResultData;
+import net.datastream.schemas.mp_results.mp0283_001.MP0283_SyncStoreBin_001_Result;
+import net.datastream.schemas.mp_results.mp0284_001.MP0284_DeleteStoreBin_001_Result;
 import net.datastream.schemas.mp_results.mp0612_001.MP0612_AddPartsAssociated_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.decodeBoolean;
 
 import javax.persistence.EntityManager;
+import javax.xml.ws.BindingProvider;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -348,31 +357,65 @@ public class PartMiscServiceImpl implements PartMiscService {
 	}
 
 	public String addStoreBin(InforContext context, Bin binParam) throws InforException {
+		StoreBin storeBin = tools.getInforFieldTools().transformWSHubObject(new StoreBin(), binParam, context);
 
-		StoreBin bin = new StoreBin();
-		bin.setSTOREBINID(new STOREBINID());
+		MP0281_AddStoreBin_001 addStoreBin = new MP0281_AddStoreBin_001();
+		addStoreBin.setStoreBin(storeBin);
 
-		if (binParam.getBinCode() != null && !binParam.getBinCode().trim().equals("") && binParam.getBinDesc() != null
-				&& !binParam.getBinDesc().trim().equals("")) {
-			bin.getSTOREBINID().setBINID(new BINID_Type());
-			bin.getSTOREBINID().getBINID().setBIN(binParam.getBinCode().toUpperCase().trim());
-			bin.getSTOREBINID().getBINID().setDESCRIPTION(binParam.getBinDesc().toUpperCase().trim());
-		}
-
-		if (binParam.getStoreCode() != null && !binParam.getStoreCode().trim().equals("")) {
-			bin.getSTOREBINID().setSTOREID(new STOREID_Type());
-			bin.getSTOREBINID().getSTOREID().setORGANIZATIONID(tools.getOrganization(context));
-			bin.getSTOREBINID().getSTOREID().setSTORECODE(binParam.getStoreCode().toUpperCase().trim());
-		}
-
-		bin.setOUTOFSERVICE(binParam.getOutOfService());
-
-		MP0281_AddStoreBin_001 storeBin = new MP0281_AddStoreBin_001();
-		storeBin.setStoreBin(bin);
-
-		tools.performInforOperation(context, inforws::addStoreBinOp, storeBin);
+		tools.performInforOperation(context, inforws::addStoreBinOp, addStoreBin);
 		return null;
 	}
+
+	@Override
+	public Bin readStoreBin(InforContext context, Bin binParam) throws InforException {
+		StoreBin storeBin = tools.getInforFieldTools().transformWSHubObject(new StoreBin(), binParam, context);
+
+		MP0282_GetStoreBin_001 getStoreBin = new MP0282_GetStoreBin_001();
+			getStoreBin.setSTOREBINID(storeBin.getSTOREBINID());
+
+		MP0282_GetStoreBin_001_Result mp0282_getStoreBin_001_result
+				= tools.performInforOperation(context, inforws::getStoreBinOp, getStoreBin);
+
+		StoreBin result = mp0282_getStoreBin_001_result.getResultData().getStoreBin();
+
+		return tools.getInforFieldTools().transformInforObject(new Bin(), result);
+	}
+
+	@Override
+	public String updateStoreBin(InforContext context, Bin binParam) throws InforException {
+		//Read bin
+		StoreBin storeBin = tools.getInforFieldTools().transformWSHubObject(new StoreBin(), binParam, context);
+		MP0282_GetStoreBin_001 getStoreBin = new MP0282_GetStoreBin_001();
+		getStoreBin.setSTOREBINID(storeBin.getSTOREBINID());
+		MP0282_GetStoreBin_001_Result mp0282_getStoreBin_001_result
+				= tools.performInforOperation(context, inforws::getStoreBinOp, getStoreBin);
+		StoreBin result = mp0282_getStoreBin_001_result.getResultData().getStoreBin();
+
+		//Update storeBin
+		StoreBin storeBin2
+				= tools.getInforFieldTools().transformWSHubObject(result, binParam, context);
+
+		MP0283_SyncStoreBin_001 syncStoreBin = new MP0283_SyncStoreBin_001();
+		syncStoreBin.setStoreBin(storeBin2);
+
+		MP0283_SyncStoreBin_001_Result syncResult
+				= tools.performInforOperation(context, inforws::syncStoreBinOp, syncStoreBin);
+
+		return null;
+	}
+
+	@Override
+	public String deleteStoreBin(InforContext context, Bin binParam) throws InforException {
+		StoreBin storeBin = tools.getInforFieldTools().transformWSHubObject(new StoreBin(), binParam, context);
+		MP0284_DeleteStoreBin_001 deleteBinOp = new MP0284_DeleteStoreBin_001();
+		deleteBinOp.setSTOREBINID(storeBin.getSTOREBINID());
+
+		MP0284_DeleteStoreBin_001_Result deleteStoreBin_001_Result
+				= tools.performInforOperation(context, inforws::deleteStoreBinOp, deleteBinOp);
+
+		return null;
+	}
+
 
 	public PartManufacturer[] getPartManufacturers(InforContext context, String partCode) throws InforException {
 

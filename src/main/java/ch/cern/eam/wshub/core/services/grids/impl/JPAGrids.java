@@ -349,6 +349,7 @@ public class JPAGrids implements Serializable {
 			}
 
 			GridRequestResult grr = new GridRequestResult();
+
 			Number records = 0;
 			
 			// To check wether fetching all possible results
@@ -510,6 +511,17 @@ public class JPAGrids implements Serializable {
 				grr.setRows(rows.toArray(new GridRequestRow[0]));
 			} else {
 				grr.setRows(new GridRequestRow[0]);
+			}
+
+			grr.setCursorPosition(gridRequest.getCursorPosition() + grr.getRows().length);
+			grr.setGridCode(gridRequest.getGridID());
+			grr.setDataSpyId(gridRequest.getDataspyID());
+			grr.setGridName(gridRequest.getGridName());
+			if (gridRequest.getIncludeMetadata() != null && gridRequest.getIncludeMetadata()) {
+				GridMetadataRequestResult gridMetadata = getGridMetadata(context, gridRequest.getGridID(),
+						gridRequest.getGridType().name(), gridRequest.getLang(), gridRequest.getDataspyID());
+				grr.setGridFields(Arrays.asList(gridMetadata.getGridFields()));
+				grr.setGridDataspies(Arrays.asList(gridMetadata.getGridDataspies()));
 			}
 			return grr;
 
@@ -1007,8 +1019,11 @@ public class JPAGrids implements Serializable {
 		return tagNames.get(filter.getFieldName()).getDatatype().toString().equals("MIXVARCHAR");
 	}
 
+	public GridMetadataRequestResult getGridMetadata(InforContext context, String gridCode, String viewType, String language) throws InforException {
+		return getGridMetadata(context, gridCode, viewType, language, null);
+	}
 
-    public GridMetadataRequestResult getGridMetadata(InforContext context, String gridCode, String viewType, String language) throws InforException {
+    public GridMetadataRequestResult getGridMetadata(InforContext context, String gridCode, String viewType, String language, String dataspyId) throws InforException {
         tools.demandDatabaseConnection();
         if (gridCode == null || gridCode.trim().equals("")) {
             throw tools.generateFault("Grid code is a mandatory field.");
@@ -1031,26 +1046,30 @@ public class JPAGrids implements Serializable {
                     .setParameter("userid", context.getCredentials().getUsername()).getResultList().toArray(new GridDataspy[0]);
 
             // select default dataspy
-            List<GridDataspy> selectedDataSpyList = Arrays.stream(gridDataspies).filter(ds -> ds.isDefaultDataspy()).collect(Collectors.toList());
-            GridDataspy selectedDataSpy = gridDataspies[0];
-            if(!selectedDataSpyList.isEmpty())
-                selectedDataSpy = selectedDataSpyList.get(0);
+			if (dataspyId == null) {
+				List<GridDataspy> selectedDataSpyList = Arrays.stream(gridDataspies).filter(ds -> ds.isDefaultDataspy()).collect(Collectors.toList());
+				dataspyId = gridDataspies[0].getCode();
+				if(!selectedDataSpyList.isEmpty()) {
+					dataspyId = selectedDataSpyList.get(0).getCode();
+				}
+			}
+
 
             result.setGridCode(gridCode);
             result.setGridDataspies(gridDataspies);
-            result.setDataSpyId(selectedDataSpy.getCode());
+            result.setDataSpyId(dataspyId);
 
             // This code is fetching all fields for the dataspy
             GridField[] gridFields = em.createNamedQuery(GridField.GETDDSPYFIELDS, GridField.class)
                     .setParameter("gridid", gridCode)
-                    .setParameter("ddspyid", selectedDataSpy.getCode())
+                    .setParameter("ddspyid", dataspyId)
                     .setParameter("viewtype", viewType)
                     .setParameter("language", language != null ? language.toUpperCase() : "EN")
                     .getResultList().toArray(new GridField[0]);
 
             // Concat with custom fields
             if (JPAGrids.USE_CUSTOM_FIELDS) {
-                gridFields = Stream.of(gridFields, gridCustomFieldHandler.getCustomFieldsAsGridFields(selectedDataSpy.getCode())).flatMap(Stream::of).toArray(GridField[]::new);
+                gridFields = Stream.of(gridFields, gridCustomFieldHandler.getCustomFieldsAsGridFields(dataspyId)).flatMap(Stream::of).toArray(GridField[]::new);
             }
 
             result.setGridFields(gridFields);

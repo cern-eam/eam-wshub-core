@@ -46,7 +46,7 @@ public class GridField implements Serializable {
 	@Column(name = "DQF_DDSPYID")
 	private String ddSpyId;
 	@Column(name = "dqf_columnorder")
-	private String order;
+	private Integer order;
 
 	public String getId() {
 		return id;
@@ -104,11 +104,11 @@ public class GridField implements Serializable {
 		this.ddSpyId = ddSpyId;
 	}
 
-	public String getOrder() {
+	public Integer getOrder() {
 		return order;
 	}
 
-	public void setOrder(String order) {
+	public void setOrder(Integer order) {
 		this.order = order;
 	}
 
