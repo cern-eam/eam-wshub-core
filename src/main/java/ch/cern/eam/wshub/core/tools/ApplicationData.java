@@ -54,4 +54,8 @@ public class ApplicationData {
 		return 1000L;
 	}
 
+	public boolean isEncodeGridFilter() {
+		return "true".equals(System.getProperty("ENCODE_GRID_FILTERS"));
+	}
+
 }

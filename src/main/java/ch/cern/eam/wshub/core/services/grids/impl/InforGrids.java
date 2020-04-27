@@ -312,7 +312,10 @@ public class InforGrids implements Serializable {
 				inforFilter.setOPERATOR(filter.getOperator());
 				inforFilter.setALIAS_NAME(filter.getFieldName());
 				try {
-					inforFilter.setVALUE(filter.getFieldValue() != null ? java.net.URLEncoder.encode(filter.getFieldValue(), "UTF-8") : null);
+					String fieldValue = applicationData.isEncodeGridFilter() && filter.getFieldValue() != null ?
+							java.net.URLEncoder.encode(filter.getFieldValue(), "UTF-8")
+							: filter.getFieldValue();
+					inforFilter.setVALUE(fieldValue);
 				} catch (UnsupportedEncodingException e) {
 					tools.log(Level.WARNING, e.getMessage());
 				}
