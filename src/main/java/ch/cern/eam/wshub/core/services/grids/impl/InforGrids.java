@@ -19,12 +19,14 @@ import net.datastream.schemas.mp_functions.mp0118_getgridheaderdata_001_result.M
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class InforGrids implements Serializable {
@@ -309,7 +311,11 @@ public class InforGrids implements Serializable {
 				//
 				inforFilter.setOPERATOR(filter.getOperator());
 				inforFilter.setALIAS_NAME(filter.getFieldName());
-				inforFilter.setVALUE(filter.getFieldValue());
+				try {
+					inforFilter.setVALUE(filter.getFieldValue() != null ? java.net.URLEncoder.encode(filter.getFieldValue(), "UTF-8") : null);
+				} catch (UnsupportedEncodingException e) {
+					tools.log(Level.WARNING, e.getMessage());
+				}
 				inforFilter.setLPAREN(tools.getDataTypeTools().decodeBoolean(filter.getLeftParenthesis()));
 				inforFilter.setRPAREN(tools.getDataTypeTools().decodeBoolean(filter.getRightParenthesis()));
 				switch(inforFilter.getOPERATOR()) {
