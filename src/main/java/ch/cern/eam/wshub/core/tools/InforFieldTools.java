@@ -18,7 +18,6 @@ import java.math.BigInteger;
 import java.util.*;
 
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.*;
-import static ch.cern.eam.wshub.core.tools.Tools.generateFault;
 
 public class InforFieldTools {
 
