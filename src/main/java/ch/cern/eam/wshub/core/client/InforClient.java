@@ -18,6 +18,8 @@ import ch.cern.eam.wshub.core.services.grids.GridsService;
 import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.services.material.*;
 import ch.cern.eam.wshub.core.services.material.impl.*;
+import ch.cern.eam.wshub.core.services.safety.SafetyService;
+import ch.cern.eam.wshub.core.services.safety.impl.SafetyServiceImpl;
 import ch.cern.eam.wshub.core.services.workorders.*;
 import ch.cern.eam.wshub.core.services.workorders.impl.*;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedTableService;
@@ -115,6 +117,8 @@ public class InforClient implements Serializable {
     private EquipmentConfigurationService equipmentConfigurationService;
 
     private UserDefinedTableService userDefinedTableServices;
+
+    private SafetyService safetyService;
 
     // Prevent initializing the class without the builder
     private InforClient() {}
@@ -254,6 +258,7 @@ public class InforClient implements Serializable {
             inforClient.userDefinedTableServices = proxy(UserDefinedTableService.class, new UserDefinedTableServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.routeService = proxy(RouteService.class, new RouteServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.inforWebServicesToolkitClient = inforWebServicesToolkitClient;
+            inforClient.safetyService = proxy(SafetyService.class, new SafetyServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             if (!tools.isDatabaseConnectionConfigured()) {
                 logger.log(Level.WARNING, "Some of the services might require a database connection.");
             }
@@ -412,5 +417,8 @@ public class InforClient implements Serializable {
     public UserGroupMenuService getUserGroupMenuService() { return userGroupMenuService; }
 
     public BindingProvider getBindingProvider() { return bindingProvider; }
+
+    public SafetyService getSafetyService() { return safetyService; }
+
 
 }
