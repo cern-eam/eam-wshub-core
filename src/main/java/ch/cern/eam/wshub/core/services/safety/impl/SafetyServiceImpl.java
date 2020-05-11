@@ -7,16 +7,16 @@ import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_entities.entitysafety_001.EntitySafety;
-import net.datastream.schemas.mp_fields.HAZARDID_Type;
-import net.datastream.schemas.mp_fields.PRECAUTIONID_Type;
 import net.datastream.schemas.mp_functions.mp3219_001.MP3219_AddEntitySafety_001;
+import net.datastream.schemas.mp_functions.mp3220_001.MP3220_SyncEntitySafety_001;
+import net.datastream.schemas.mp_functions.mp3221_001.MP3221_DeleteEntitySafety_001;
 import net.datastream.schemas.mp_functions.mp3222_001.MP3222_GetEntitySafety_001;
+import net.datastream.schemas.mp_results.mp3219_001.MP3219_AddEntitySafety_001_Result;
+import net.datastream.schemas.mp_results.mp3220_001.MP3220_SyncEntitySafety_001_Result;
 import net.datastream.schemas.mp_results.mp3222_001.MP3222_GetEntitySafety_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
-import org.openapplications.oagis_segments.QUANTITY;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
+import java.util.List;
 
 public class SafetyServiceImpl implements SafetyService {
     private Tools tools;
@@ -34,33 +34,76 @@ public class SafetyServiceImpl implements SafetyService {
 //    }
 
     @Override
-    public String addSafety(InforContext context, EntitySafetyWSHub entitySafetywshubX) throws InforException {
-        System.out.println("Safety here");
-
-        //TODO comes from object, remove these
-        EntitySafetyWSHub entitySafetywshub = new EntitySafetyWSHub();
-        entitySafetywshub.setENTITYSAFETYCODE("PR-A-001#*");
-//        entitySafetywshub.setENTITYSAFETYCODE("20030821000150#*");
-        entitySafetywshub.setHAZARDID("100");
-        entitySafetywshub.setPRECAUTIONID("PPE");
-        entitySafetywshub.setEntity("OBJ");
-        entitySafetywshub.setHazardrevision(BigDecimal.valueOf(0)); //revision
-        entitySafetywshub.setPrecautionrevision(BigDecimal.valueOf(0)); //revision
-
-
+    public String addSafety(InforContext context, EntitySafetyWSHub entitySafetywshub) throws InforException {
         EntitySafety entitySafetyInfor = new EntitySafety();
-        entitySafetyInfor.setSAFETYCODE("0");
+        entitySafetyInfor.setSAFETYCODE("0"); // Safety code must be set to any value (infor will assign an internal one later)
 
         tools.getInforFieldTools().transformWSHubObject(entitySafetyInfor, entitySafetywshub, context);
 
+        MP3219_AddEntitySafety_001 addEntitySafety = new MP3219_AddEntitySafety_001();
+        addEntitySafety.getEntitySafety().add(entitySafetyInfor);
 
-        MP3219_AddEntitySafety_001 addEntitySafety_001 = new MP3219_AddEntitySafety_001();
-        addEntitySafety_001.getEntitySafety().add(entitySafetyInfor);
+        MP3219_AddEntitySafety_001_Result res = tools.performInforOperation(context, inforws::addEntitySafetyOp, addEntitySafety);
 
-        tools.performInforOperation(context, inforws::addEntitySafetyOp, addEntitySafety_001);
-        System.out.println("End of createEntitySafety");
+        return res.getResultData().getSAFETYCODE().get(0);
+    }
+
+    @Override
+    public List<String> addSafeties(InforContext context, List<EntitySafetyWSHub> listOfSafeties) throws InforException {
+        //TODO test
+        MP3219_AddEntitySafety_001 addEntitySafety = new MP3219_AddEntitySafety_001();
+        for (EntitySafetyWSHub entity : listOfSafeties) {
+            EntitySafety entitySafetyInfor = new EntitySafety();
+            entitySafetyInfor.setSAFETYCODE("0"); // Safety code must be set to any value (infor will assign an internal one later)
+            tools.getInforFieldTools().transformWSHubObject(entitySafetyInfor, entity, context);
+            addEntitySafety.getEntitySafety().add(entitySafetyInfor);
+        }
+
+        MP3219_AddEntitySafety_001_Result res = tools.performInforOperation(context, inforws::addEntitySafetyOp, addEntitySafety);
+
+        return res.getResultData().getSAFETYCODE();
+    }
+
+    @Override
+    public String deleteSafety(InforContext context, String safetyCode) throws InforException {
+        //TODO
+        MP3221_DeleteEntitySafety_001 deleteEntitySafety = new MP3221_DeleteEntitySafety_001();
+        deleteEntitySafety.setSAFETYCODE(safetyCode);
+
+        tools.performInforOperation(context, inforws::deleteEntitySafetyOp, deleteEntitySafety);
         return "OK";
     }
+
+    @Override
+    public EntitySafety getEntitySafety(InforContext context, String safetyCode) throws InforException {
+
+        MP3222_GetEntitySafety_001 getEntitySafety = new MP3222_GetEntitySafety_001();
+        getEntitySafety.setSAFETYCODE(safetyCode);
+
+        MP3222_GetEntitySafety_001_Result res = tools.performInforOperation(context, inforws::getEntitySafetyOp, getEntitySafety);
+
+        return res.getResultData().getEntitySafety();
+    }
+
+    @Override
+    public String syncEntitySafety(InforContext context, EntitySafetyWSHub entitySafetywshub) throws InforException {
+        MP3222_GetEntitySafety_001 getEntitySafety = new MP3222_GetEntitySafety_001();
+        getEntitySafety.setSAFETYCODE(entitySafetywshub.getSafetyCode());
+        MP3222_GetEntitySafety_001_Result resGet = tools.performInforOperation(context, inforws::getEntitySafetyOp, getEntitySafety);
+        EntitySafety entitySafetyInfor = resGet.getResultData().getEntitySafety();
+
+        tools.getInforFieldTools().transformWSHubObject(entitySafetyInfor, entitySafetywshub, context);
+
+        MP3220_SyncEntitySafety_001 syncEntitySafety = new MP3220_SyncEntitySafety_001();
+
+        syncEntitySafety.setEntitySafety(entitySafetyInfor);
+        MP3220_SyncEntitySafety_001_Result resSync = tools.performInforOperation(context, inforws::syncEntitySafetyOp, syncEntitySafety);
+
+        return resSync.getResultData().getSAFETYCODE();
+    }
+
+//    public String addListOfSafetiesToAsset
+
 }
 
 

@@ -24,40 +24,61 @@ public class EntitySafetyWSHub {
     @InforField(xpath = "PRECAUTIONID/REVISIONNUM")
     private BigDecimal precautionrevision;
 
+    @InforField(xpath = "SAFETYCODE")
+    private String safetycode;
 
-    public void setENTITYSAFETYCODE(String entitysafetycode) {
+    @InforField(xpath = "DELETEPENDING")
+    private String deletepending;
+
+    public void setEntitySafetyCode(String entitysafetycode) {
         this.entitysafetycode = entitysafetycode;
     }
 
-    public void setHAZARDID(String hazardid) {
+    public void setHazardID(String hazardid) {
         this.hazardid = hazardid;
     }
 
-    public void setPRECAUTIONID(String precautionid) {
+    public void setPrecautionID(String precautionid) {
         this.precautionid = precautionid;
-    }
-
-    public String getEntity() {
-        return entity;
     }
 
     public void setEntity(String entity) {
         this.entity = entity;
     }
 
-    public BigDecimal getHazardrevision() {
-        return hazardrevision;
-    }
-
-    public void setHazardrevision(BigDecimal hazardrevision) {
+    public void setHazardRevision(BigDecimal hazardrevision) {
         this.hazardrevision = hazardrevision;
     }
 
-    public BigDecimal getPrecautionrevision() {
+    public void setPrecautionRevision(BigDecimal precautionrevision) { this.precautionrevision = precautionrevision; }
+
+    public void setSafetyCode(String safetycode) { this.safetycode = safetycode; }
+
+    public String getEntity() {
+        return entity;
+    }
+
+    public BigDecimal getHazardRevision() {
+        return hazardrevision;
+    }
+
+    public BigDecimal getPrecautionRevision() {
         return precautionrevision;
     }
 
-    public void setPrecautionrevision(BigDecimal precautionrevision) {
-        this.precautionrevision = precautionrevision;
+    public String getEntitySafetyCode() { return entitysafetycode; }
+
+    public String getHazardID() { return hazardid; }
+
+    public String getPrecautionID() { return precautionid; }
+
+    public String getSafetyCode() { return safetycode; }
+
+    public String getDeletePending() {
+        return deletepending;
+    }
+
+    public void setDeletePending(String deletepending) {
+        this.deletepending = deletepending;
     }
 }

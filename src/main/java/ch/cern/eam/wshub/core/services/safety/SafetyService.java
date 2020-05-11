@@ -6,6 +6,9 @@ import ch.cern.eam.wshub.core.interceptors.LogDataReferenceType;
 import ch.cern.eam.wshub.core.services.INFOR_OPERATION;
 import ch.cern.eam.wshub.core.services.safety.entities.EntitySafetyWSHub;
 import ch.cern.eam.wshub.core.tools.InforException;
+import net.datastream.schemas.mp_entities.entitysafety_001.EntitySafety;
+
+import java.util.List;
 
 
 public interface SafetyService {
@@ -16,6 +19,18 @@ public interface SafetyService {
 
     @Operation(logOperation = INFOR_OPERATION.MENU_HIERARCHY_ADD, logDataReference1 = LogDataReferenceType.RESULT)
     String addSafety(InforContext context, EntitySafetyWSHub safety) throws InforException;
+
+    @Operation(logOperation = INFOR_OPERATION.MENU_HIERARCHY_ADD, logDataReference1 = LogDataReferenceType.RESULT)
+    List<String> addSafeties(InforContext context, List<EntitySafetyWSHub> listOfSafeties) throws InforException;
+
+    @Operation(logOperation = INFOR_OPERATION.MENU_HIERARCHY_ADD, logDataReference1 = LogDataReferenceType.RESULT)
+    String deleteSafety(InforContext context, String safetyCode) throws InforException;
+
+    @Operation(logOperation = INFOR_OPERATION.MENU_HIERARCHY_ADD, logDataReference1 = LogDataReferenceType.RESULT)
+    EntitySafety getEntitySafety(InforContext context, String safetyCode) throws InforException;
+
+    @Operation(logOperation = INFOR_OPERATION.MENU_HIERARCHY_ADD, logDataReference1 = LogDataReferenceType.RESULT)
+    String syncEntitySafety(InforContext context, EntitySafetyWSHub entitySafetywshub) throws InforException;
 
 //    @Operation(logOperation = INFOR_OPERATION.MENU_HIERARCHY_DELETE, logDataReference1 = LogDataReferenceType.RESULT)
 //    String deleteFromMenuHierarchy(InforContext context, MenuSpecification node) throws InforException;
