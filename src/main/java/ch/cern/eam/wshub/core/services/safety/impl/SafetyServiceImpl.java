@@ -29,12 +29,10 @@ public class SafetyServiceImpl implements SafetyService {
         this.inforws = inforWebServicesToolkitClient;
     }
 
-//    public String createEntitySafety(InforContext context, EntitySafetyWSHub entitySafetywshub) throws InforException {
-//
-//    }
-
     @Override
     public String addSafety(InforContext context, EntitySafetyWSHub entitySafetywshub) throws InforException {
+        SafetyService.validateInput(entitySafetywshub);
+
         EntitySafety entitySafetyInfor = new EntitySafety();
         entitySafetyInfor.setSAFETYCODE("0"); // Safety code must be set to any value (infor will assign an internal one later)
 
@@ -50,7 +48,8 @@ public class SafetyServiceImpl implements SafetyService {
 
     @Override
     public List<String> addSafeties(InforContext context, List<EntitySafetyWSHub> listOfSafeties) throws InforException {
-        //TODO test
+        SafetyService.validateInput(listOfSafeties);
+
         MP3219_AddEntitySafety_001 addEntitySafety = new MP3219_AddEntitySafety_001();
         for (EntitySafetyWSHub entity : listOfSafeties) {
             EntitySafety entitySafetyInfor = new EntitySafety();
@@ -66,7 +65,8 @@ public class SafetyServiceImpl implements SafetyService {
 
     @Override
     public String deleteSafety(InforContext context, String safetyCode) throws InforException {
-        //TODO
+        SafetyService.validateInput(safetyCode);
+
         MP3221_DeleteEntitySafety_001 deleteEntitySafety = new MP3221_DeleteEntitySafety_001();
         deleteEntitySafety.setSAFETYCODE(safetyCode);
 
@@ -76,6 +76,7 @@ public class SafetyServiceImpl implements SafetyService {
 
     @Override
     public EntitySafety getEntitySafety(InforContext context, String safetyCode) throws InforException {
+        SafetyService.validateInput(safetyCode);
 
         MP3222_GetEntitySafety_001 getEntitySafety = new MP3222_GetEntitySafety_001();
         getEntitySafety.setSAFETYCODE(safetyCode);
@@ -87,6 +88,8 @@ public class SafetyServiceImpl implements SafetyService {
 
     @Override
     public String syncEntitySafety(InforContext context, EntitySafetyWSHub entitySafetywshub) throws InforException {
+        SafetyService.validateInput(entitySafetywshub);
+
         MP3222_GetEntitySafety_001 getEntitySafety = new MP3222_GetEntitySafety_001();
         getEntitySafety.setSAFETYCODE(entitySafetywshub.getSafetyCode());
         MP3222_GetEntitySafety_001_Result resGet = tools.performInforOperation(context, inforws::getEntitySafetyOp, getEntitySafety);
@@ -101,29 +104,4 @@ public class SafetyServiceImpl implements SafetyService {
 
         return resSync.getResultData().getSAFETYCODE();
     }
-
-//    public String addListOfSafetiesToAsset
-
 }
-
-
-//
-//        EntitySafetyWSHub entitySafetyWSHub = new EntitySafetyWSHub();
-//        this.createEntitySafety(context, entitySafetyWSHub);
-//
-
-
-// init this object with something that might be required (maybe the ID?)
-//        entitySafetyInfor.setENTITYSAFETYCODE("PR-A-001");
-//        MP3222_GetEntitySafety_001 mp3222_getEntitySafety_001 = new MP3222_GetEntitySafety_001();
-//        mp3222_getEntitySafety_001.setSAFETYCODE("10010");
-//        MP3222_GetEntitySafety_001_Result RES = tools.performInforOperation(context, inforws::getEntitySafetyOp, mp3222_getEntitySafety_001);
-
-
-
-//        MP6043_AddExtMenus_001 addExtMenus = this.fillExtMenus(parent, folderName, userGroup, context, UserGroupMenuService.MENU_FUNCTION_CODE, menuType);
-
-//        MP3219_AddEntitySafety_001 addSafety = new MP3219_AddEntitySafety_001();
-//
-//        EntitySafety es;
-//        addSafety.getEntitySafety().get(0).

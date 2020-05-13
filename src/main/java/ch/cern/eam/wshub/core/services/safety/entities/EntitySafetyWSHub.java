@@ -1,9 +1,9 @@
 package ch.cern.eam.wshub.core.services.safety.entities;
 
 import ch.cern.eam.wshub.core.annotations.InforField;
+import net.datastream.schemas.mp_fields.USERDEFINEDCODEID_Type;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 
 public class EntitySafetyWSHub {
     @InforField(xpath = "ENTITY")
@@ -30,6 +30,13 @@ public class EntitySafetyWSHub {
     @InforField(xpath = "DELETEPENDING")
     private String deletepending;
 
+    @InforField(xpath = "TIMINGID")
+    private USERDEFINEDCODEID_Type timingid;
+
+    @InforField(xpath = "APPLYTOCHILDREN")
+    private String applytochildren;
+
+
     public void setEntitySafetyCode(String entitysafetycode) {
         this.entitysafetycode = entitysafetycode;
     }
@@ -54,6 +61,13 @@ public class EntitySafetyWSHub {
 
     public void setSafetyCode(String safetycode) { this.safetycode = safetycode; }
 
+    public void setDeletePending(String deletepending) { this.deletepending = deletepending; }
+
+    public void setTimingID(USERDEFINEDCODEID_Type timingid) { this.timingid = timingid; }
+
+    public void setApplyToChildren(String applytochildren) { this.applytochildren = applytochildren; }
+
+
     public String getEntity() {
         return entity;
     }
@@ -74,11 +88,11 @@ public class EntitySafetyWSHub {
 
     public String getSafetyCode() { return safetycode; }
 
-    public String getDeletePending() {
-        return deletepending;
-    }
+    public String getDeletePending() { return deletepending; }
 
-    public void setDeletePending(String deletepending) {
-        this.deletepending = deletepending;
-    }
+    public USERDEFINEDCODEID_Type getTimingID() { return timingid; }
+
+    public String getApplyToChildren() { return applytochildren; }
+
+
 }
