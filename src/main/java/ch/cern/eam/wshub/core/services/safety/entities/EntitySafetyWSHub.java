@@ -37,6 +37,22 @@ public class EntitySafetyWSHub {
     private String applytochildren;
 
 
+    public EntitySafetyWSHub() {};
+
+    // Shallow copy constructor
+    public EntitySafetyWSHub(EntitySafetyWSHub other) {
+        this.setEntitySafetyCode(other.getEntitySafetyCode());
+        this.setEntity(other.getEntity());
+        this.setDeletePending(other.getDeletePending());
+        this.setApplyToChildren(other.getApplyToChildren());
+        this.setHazardID(other.getHazardID());
+        this.setHazardRevision(other.getHazardRevision());
+        this.setPrecautionID(other.getPrecautionID());
+        this.setPrecautionRevision(other.getPrecautionRevision());
+        this.setTimingID(other.getTimingID());
+        this.setSafetyCode(other.getSafetyCode());
+    }
+
     public void setEntitySafetyCode(String entitysafetycode) {
         this.entitysafetycode = entitysafetycode;
     }
