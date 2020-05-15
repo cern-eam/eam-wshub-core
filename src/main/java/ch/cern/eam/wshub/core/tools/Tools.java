@@ -321,6 +321,11 @@ public class Tools {
 			holder = new Holder<>(createInforSession(context));
 		}
 
+		// Every MP class extending BaseSchemaRequestElement has ESIGNATURE property
+		if (argument instanceof BaseSchemaRequestElement && context.getSignature() != null) {
+			((BaseSchemaRequestElement) argument).setESIGNATURE(inforFieldTools.transformWSHubObject(new ESIGNATURE(), context.getSignature(), context));
+		}
+
 		String tenant = getTenant(context);
 
 		return operation.apply(argument, organization, security, unknown2, holder, messageConfigType, tenant);

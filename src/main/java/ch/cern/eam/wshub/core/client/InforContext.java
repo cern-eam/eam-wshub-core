@@ -1,6 +1,7 @@
 package ch.cern.eam.wshub.core.client;
 
 import ch.cern.eam.wshub.core.services.entities.Credentials;
+import ch.cern.eam.wshub.core.services.entities.Signature;
 
 import java.io.Serializable;
 
@@ -13,7 +14,7 @@ public class InforContext implements Serializable {
     private String sessionID;
     private String organizationCode;
     private String tenant;
-
+    private Signature signature;
 
     public InforContext () { }
 
@@ -50,4 +51,12 @@ public class InforContext implements Serializable {
     public String getTenant() { return tenant; }
 
     public void setTenant(String tenant) { this.tenant = tenant; }
+
+    public Signature getSignature() {
+        return signature;
+    }
+
+    public void setSignature(Signature signature) {
+        this.signature = signature;
+    }
 }
