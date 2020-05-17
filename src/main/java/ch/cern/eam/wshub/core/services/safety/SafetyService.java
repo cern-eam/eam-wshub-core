@@ -14,27 +14,32 @@ import java.util.List;
 
 
 public interface SafetyService {
-    @Operation(logOperation = INFOR_OPERATION.MENU_HIERARCHY_ADD, logDataReference1 = LogDataReferenceType.RESULT)
-    String addSafety(InforContext context, EntitySafetyWSHub safety) throws InforException;
-
-    @Operation(logOperation = INFOR_OPERATION.MENU_HIERARCHY_ADD, logDataReference1 = LogDataReferenceType.RESULT)
-    List<String> addSafeties(InforContext context, List<EntitySafetyWSHub> listOfSafeties) throws InforException;
-
-    @Operation(logOperation = INFOR_OPERATION.MENU_HIERARCHY_ADD, logDataReference1 = LogDataReferenceType.RESULT)
-    String deleteSafety(InforContext context, String safetyCode) throws InforException;
-
-    @Operation(logOperation = INFOR_OPERATION.MENU_HIERARCHY_ADD, logDataReference1 = LogDataReferenceType.RESULT)
+    @Operation(logOperation = INFOR_OPERATION.SAFETY_GET, logDataReference1 = LogDataReferenceType.RESULT)
     EntitySafety getEntitySafety(InforContext context, String safetyCode) throws InforException;
 
-    @Operation(logOperation = INFOR_OPERATION.MENU_HIERARCHY_ADD, logDataReference1 = LogDataReferenceType.RESULT)
+    @Operation(logOperation = INFOR_OPERATION.SAFETY_GET_BATCH, logDataReference1 = LogDataReferenceType.RESULT)
+    BatchResponse<EntitySafety> getEntitySafetiesBatch(InforContext context, List<String> safetyCodes) throws InforException;
+
+    @Operation(logOperation = INFOR_OPERATION.SAFETY_ADD, logDataReference1 = LogDataReferenceType.RESULT)
+    String addSafety(InforContext context, EntitySafetyWSHub safety) throws InforException;
+
+    @Operation(logOperation = INFOR_OPERATION.SAFETY_ADD_MULTIPLE, logDataReference1 = LogDataReferenceType.RESULT)
+    List<String> addSafeties(InforContext context, List<EntitySafetyWSHub> listOfSafeties) throws InforException;
+
+    @Operation(logOperation = INFOR_OPERATION.SAFETY_ADD, logDataReference1 = LogDataReferenceType.RESULT)
+    String addSafetyToEntity(InforContext context, EntitySafetyWSHub entitySafetywshub, String parentID, String entity) throws InforException;
+
+    @Operation(logOperation = INFOR_OPERATION.SAFETY_ADD_BATCH, logDataReference1 = LogDataReferenceType.RESULT)
+    BatchResponse<String> addSafetyToEntitiesBatch(InforContext context, EntitySafetyWSHub entitySafetywshub, List<String> parentIDs, String entity) throws InforException;
+
+    @Operation(logOperation = INFOR_OPERATION.SAFETY_DELETE, logDataReference1 = LogDataReferenceType.RESULT)
+    String deleteSafety(InforContext context, String safetyCode) throws InforException;
+
+    @Operation(logOperation = INFOR_OPERATION.SAFETY_DELETE_BATCH, logDataReference1 = LogDataReferenceType.RESULT)
+    BatchResponse<String> deleteSafetiesBatch(InforContext context, List<String> safetyCodes) throws InforException;
+
+    @Operation(logOperation = INFOR_OPERATION.SAFETY_SYNC, logDataReference1 = LogDataReferenceType.RESULT)
     String syncEntitySafety(InforContext context, EntitySafetyWSHub entitySafetywshub) throws InforException;
-
-    @Operation(logOperation = INFOR_OPERATION.MENU_HIERARCHY_ADD, logDataReference1 = LogDataReferenceType.RESULT)
-    String addSafety(InforContext context, EntitySafetyWSHub entitySafetywshub, String parentID, String entity) throws InforException;
-
-    @Operation(logOperation = INFOR_OPERATION.MENU_HIERARCHY_ADD, logDataReference1 = LogDataReferenceType.RESULT)
-    BatchResponse<String> addSafetiesBatch(InforContext context, EntitySafetyWSHub entitySafetywshub, List<String> parentIDs, String entity) throws InforException;
-
 
         static void validateInput(EntitySafetyWSHub input) throws InforException {
         if (input == null) {

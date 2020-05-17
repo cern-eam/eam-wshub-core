@@ -32,6 +32,49 @@ public class SafetyServiceImpl implements SafetyService {
         this.inforws = inforWebServicesToolkitClient;
     }
 
+    /**
+     * Returns a safety object given its safety code.
+     *
+     * @param context the user credentials
+     * @param safetyCode the safety code to get
+     * @return the safety object
+     * @throws InforException
+     */
+    @Override
+    public EntitySafety getEntitySafety(InforContext context, String safetyCode) throws InforException {
+        SafetyService.validateInput(safetyCode);
+
+        MP3222_GetEntitySafety_001 getEntitySafety = new MP3222_GetEntitySafety_001();
+        getEntitySafety.setSAFETYCODE(safetyCode);
+
+        MP3222_GetEntitySafety_001_Result res = tools.performInforOperation(context, inforws::getEntitySafetyOp, getEntitySafety);
+
+        return res.getResultData().getEntitySafety();
+    }
+
+    /**
+     * Returns a list of safety object given their safety code.
+     *
+     * @param context the user credentials
+     * @param safetyCodes the list of safety codes
+     * @return the list of safety objects
+     * @throws InforException
+     */
+    @Override
+    public BatchResponse<EntitySafety> getEntitySafetiesBatch(InforContext context, List<String> safetyCodes) throws InforException {
+        // Validate not needed now, since performed at .deleteSafety
+
+        return tools.batchOperation(context, this::getEntitySafety, safetyCodes);
+    }
+
+    /**
+     * Adds a safety (given a hazard and a precaution measure) to a specified entity.
+     *
+     * @param context the user credentials
+     * @param entitySafetywshub the safety to add
+     * @return the ID of the added safety
+     * @throws InforException
+     */
     @Override
     public String addSafety(InforContext context, EntitySafetyWSHub entitySafetywshub) throws InforException {
         SafetyService.validateInput(entitySafetywshub);
@@ -49,6 +92,14 @@ public class SafetyServiceImpl implements SafetyService {
         return res.getResultData().getSAFETYCODE().get(0);
     }
 
+    /**
+     * Adds a list safeties (given their hazard and a precaution measures).
+     *
+     * @param context the user credentials
+     * @param listOfSafeties a list of the safeties to be added
+     * @return a list of the safety ids added
+     * @throws InforException
+     */
     @Override
     public List<String> addSafeties(InforContext context, List<EntitySafetyWSHub> listOfSafeties) throws InforException {
         SafetyService.validateInput(listOfSafeties);
@@ -66,6 +117,65 @@ public class SafetyServiceImpl implements SafetyService {
         return res.getResultData().getSAFETYCODE();
     }
 
+    /**
+     * Adds a safety (given a hazard and a precaution measure) to a specified entity. The parentID and entity values
+     * must be passed as arguments, and not inside the entitySafetywshub object. The rest of the safety values should
+     * be set in the entitySafetywshub object.
+     *
+     * @param context the user credentials
+     * @param entitySafetywshub the safety to add
+     * @param parentID the parent id of the safety
+     * @param entity the entity of the safety
+     * @return the added safety id
+     * @throws InforException
+     */
+    @Override
+    public String addSafetyToEntity(InforContext context, EntitySafetyWSHub entitySafetywshub, String parentID, String entity) throws InforException {
+        // Validate not needed now, since performed at .addSafety
+
+        EntitySafetyWSHub cloned = new EntitySafetyWSHub(entitySafetywshub);
+
+        cloned.setEntity(entity);
+        cloned.setEntitySafetyCode(parentID);
+
+        return this.addSafety(context,  cloned);
+    }
+
+    /**
+     * Adds a safety (given a hazard and a precaution measure) to list of entities. The parentID list and entity value
+     * must be passed as arguments, and not inside the entitySafetywshub object. The rest of the safety values should
+     * be set in the entitySafetywshub object.
+     *
+     * @param context the user credentials
+     * @param entitySafetywshub the safety to add
+     * @param parentIDs the list of parent ids of the safety
+     * @param entity the entity of the safety
+     * @return a list of the added safety ids
+     * @throws InforException
+     */
+    @Override
+    public BatchResponse<String> addSafetyToEntitiesBatch(InforContext context, EntitySafetyWSHub entitySafetywshub, List<String> parentIDs, String entity) throws InforException {
+        // Validate not needed now, since performed at .addSafety
+
+        List<EntitySafetyWSHub> safetiesToAdd = new ArrayList<EntitySafetyWSHub>();
+        parentIDs.stream().forEach(parentID -> {
+            EntitySafetyWSHub cloned = new EntitySafetyWSHub(entitySafetywshub);
+            cloned.setEntity(entity);
+            cloned.setEntitySafetyCode(parentID);
+            safetiesToAdd.add(cloned);
+        });
+
+        return tools.batchOperation(context, this::addSafety, safetiesToAdd);
+    }
+
+    /**
+     * Deletes a safety given its id (safety code).
+     *
+     * @param context the user credentials
+     * @param safetyCode the safety code of the safety to delete
+     * @return
+     * @throws InforException
+     */
     @Override
     public String deleteSafety(InforContext context, String safetyCode) throws InforException {
         SafetyService.validateInput(safetyCode);
@@ -77,18 +187,29 @@ public class SafetyServiceImpl implements SafetyService {
         return "OK";
     }
 
+    /**
+     * Deletes safeties given their ids (safety codes).
+     *
+     * @param context the user credentials
+     * @param safetyCodes a list of the safety codes of the safeties to delete
+     * @return
+     * @throws InforException
+     */
     @Override
-    public EntitySafety getEntitySafety(InforContext context, String safetyCode) throws InforException {
-        SafetyService.validateInput(safetyCode);
+    public BatchResponse<String> deleteSafetiesBatch(InforContext context, List<String> safetyCodes) throws InforException {
+        // Validate not needed now, since performed at .deleteSafety
 
-        MP3222_GetEntitySafety_001 getEntitySafety = new MP3222_GetEntitySafety_001();
-        getEntitySafety.setSAFETYCODE(safetyCode);
-
-        MP3222_GetEntitySafety_001_Result res = tools.performInforOperation(context, inforws::getEntitySafetyOp, getEntitySafety);
-
-        return res.getResultData().getEntitySafety();
+        return tools.batchOperation(context, this::deleteSafety, safetyCodes);
     }
 
+    /**
+     * Updates the specified safety with the given values of the safety object.
+     *
+     * @param context the user credentials
+     * @param entitySafetywshub the safety to be updated, with its updated values
+     * @return the updated safety object
+     * @throws InforException
+     */
     @Override
     public String syncEntitySafety(InforContext context, EntitySafetyWSHub entitySafetywshub) throws InforException {
         SafetyService.validateInput(entitySafetywshub);
@@ -109,49 +230,5 @@ public class SafetyServiceImpl implements SafetyService {
     }
 
 
-    /**
-     * If a function code is specified in menuSpecification, deletes all children functions with that function code from
-     * the specified path. If the function code provided is an empty string, deletes the last menu item with all its
-     * children from the path specified.
-     *
-     * @param context           the user credentials
-     * @param menuSpecification the specified path and function to delete, for a specific user group
-     * @return
-     */
-    @Override
-    public String addSafety(InforContext context, EntitySafetyWSHub entitySafetywshub, String parentID, String entity) throws InforException {
-        // Validate not needed now, since performed at .addSafety
-
-        EntitySafetyWSHub cloned = new EntitySafetyWSHub(entitySafetywshub);
-
-        cloned.setEntity(entity);
-        cloned.setEntitySafetyCode(parentID);
-
-        return this.addSafety(context,  cloned);
-    }
-
-    @Override
-    public BatchResponse<String> addSafetiesBatch(InforContext context, EntitySafetyWSHub entitySafetywshub, List<String> parentIDs, String entity) throws InforException {
-        // Validate not needed now, since performed at .addSafety
-
-        List<EntitySafetyWSHub> safetiesToAdd = new ArrayList<EntitySafetyWSHub>();
-        parentIDs.stream().forEach(parentID -> {
-            EntitySafetyWSHub cloned = new EntitySafetyWSHub(entitySafetywshub);
-            cloned.setEntity(entity);
-            cloned.setEntitySafetyCode(parentID);
-            safetiesToAdd.add(cloned);
-            System.out.println("ADD ONE");
-        });
-
-//        for (String parentID : parentIDs){
-//            EntitySafetyWSHub cloned = new EntitySafetyWSHub(entitySafetywshub);
-//            cloned.setEntity(entity);
-//            cloned.setEntitySafetyCode(parentID);
-//        }
-
-//        return this.addSafety(context,  entitySafetywshub);
-
-        return tools.batchOperation(context, this::addSafety, safetiesToAdd);
-    }
 
 }
