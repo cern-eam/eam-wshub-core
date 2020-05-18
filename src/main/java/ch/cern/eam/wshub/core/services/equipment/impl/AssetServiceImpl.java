@@ -9,7 +9,6 @@ import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_entities.assetequipment_001.*;
 import net.datastream.schemas.mp_fields.*;
-import net.datastream.schemas.mp_functions.SessionType;
 import net.datastream.schemas.mp_functions.mp0301_001.MP0301_AddAssetEquipment_001;
 import net.datastream.schemas.mp_functions.mp0302_001.MP0302_GetAssetEquipment_001;
 import net.datastream.schemas.mp_functions.mp0303_001.MP0303_SyncAssetEquipment_001;
@@ -22,10 +21,6 @@ import net.datastream.schemas.mp_results.mp0305_001.MP0305_GetAssetEquipmentDefa
 import net.datastream.schemas.mp_results.mp0327_001.MP0327_GetAssetParentHierarchy_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.*;
-
-import javax.xml.ws.Holder;
-import java.util.LinkedList;
-import java.util.List;
 
 @SuppressWarnings("Duplicates")
 public class AssetServiceImpl implements AssetService {
@@ -69,10 +64,10 @@ public class AssetServiceImpl implements AssetService {
         }
 
         // DESCRIPTIONS
-        List<Runnable> runnables = new LinkedList<>();
-        runnables.add(() -> asset.setManufacturerDesc(tools.getFieldDescriptionsTools().readManufacturerDesc(context, asset.getManufacturerCode())));
-        runnables.add(() -> asset.setBinDesc(tools.getFieldDescriptionsTools().readBinDesc(context, asset.getStoreCode(), asset.getBin())));
-        tools.processRunnables(runnables);
+        tools.processRunnables(
+                () -> asset.setManufacturerDesc(tools.getFieldDescriptionsTools().readManufacturerDesc(context, asset.getManufacturerCode())),
+                () -> asset.setBinDesc(tools.getFieldDescriptionsTools().readBinDesc(context, asset.getStoreCode(), asset.getBin()))
+        );
 
         // HIERARCHY
         assetEquipment.setAssetParentHierarchy(readInforAssetHierarchy(context, assetCode));

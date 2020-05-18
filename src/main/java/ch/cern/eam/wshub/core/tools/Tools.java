@@ -219,6 +219,9 @@ public class Tools {
 		return response;
 	}
 
+	public void processRunnables(Runnable... runnables) throws InforException {
+		processRunnables(Arrays.asList(runnables));
+	}
 
 	public void processRunnables(List<Runnable> mylist) throws InforException {
 		try {

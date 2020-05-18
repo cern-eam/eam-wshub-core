@@ -20,9 +20,6 @@ import net.datastream.schemas.mp_results.mp0242_001.MP0242_SyncPart_001_Result;
 import net.datastream.schemas.mp_results.mp0244_001.MP0244_GetPartDefault_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.isEmpty;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.toCodeString;
 
@@ -56,12 +53,13 @@ public class PartServiceImpl implements PartService {
 	public Part readPart(InforContext context, String partCode) throws InforException {
 		Part part = tools.getInforFieldTools().transformInforObject(new Part(), readPartInfor(context, partCode));
 
-		List<Runnable> runnables = new LinkedList<>();
-		runnables.add(() -> part.setClassDesc(tools.getFieldDescriptionsTools().readClassDesc(context, "PART", part.getClassCode())));
-		runnables.add(() -> part.setCategoryDesc(tools.getFieldDescriptionsTools().readCategoryDesc(context, part.getCategoryCode())));
-		runnables.add(() -> part.setUOMDesc(tools.getFieldDescriptionsTools().readUOMDesc(context, part.getUOM())));
-		runnables.add(() -> part.setCommodityDesc(tools.getFieldDescriptionsTools().readCommodityDesc(context,  part.getCommodityCode())));
-		tools.processRunnables(runnables);
+		// Fetched missing descriptions not returned by Infor web service
+		tools.processRunnables(
+			() -> part.setClassDesc(tools.getFieldDescriptionsTools().readClassDesc(context, "PART", part.getClassCode())),
+			() -> part.setCategoryDesc(tools.getFieldDescriptionsTools().readCategoryDesc(context, part.getCategoryCode())),
+			() -> part.setUOMDesc(tools.getFieldDescriptionsTools().readUOMDesc(context, part.getUOM())),
+			() -> part.setCommodityDesc(tools.getFieldDescriptionsTools().readCommodityDesc(context,  part.getCommodityCode()))
+		);
 
 		return part;
 	}
