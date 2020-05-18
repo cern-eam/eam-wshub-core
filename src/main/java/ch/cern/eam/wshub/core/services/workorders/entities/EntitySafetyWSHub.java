@@ -1,4 +1,4 @@
-package ch.cern.eam.wshub.core.services.safety.entities;
+package ch.cern.eam.wshub.core.services.workorders.entities;
 
 import ch.cern.eam.wshub.core.annotations.InforField;
 import net.datastream.schemas.mp_fields.USERDEFINEDCODEID_Type;

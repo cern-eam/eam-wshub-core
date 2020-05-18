@@ -1,9 +1,9 @@
-package ch.cern.eam.wshub.core.services.safety.impl;
+package ch.cern.eam.wshub.core.services.workorders.impl;
 
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.entities.BatchResponse;
-import ch.cern.eam.wshub.core.services.safety.SafetyService;
-import ch.cern.eam.wshub.core.services.safety.entities.EntitySafetyWSHub;
+import ch.cern.eam.wshub.core.services.workorders.SafetyService;
+import ch.cern.eam.wshub.core.services.workorders.entities.EntitySafetyWSHub;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
@@ -19,7 +19,6 @@ import net.datastream.wsdls.inforws.InforWebServicesPT;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class SafetyServiceImpl implements SafetyService {
     private Tools tools;

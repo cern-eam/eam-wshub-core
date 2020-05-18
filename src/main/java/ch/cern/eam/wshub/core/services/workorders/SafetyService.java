@@ -1,11 +1,11 @@
-package ch.cern.eam.wshub.core.services.safety;
+package ch.cern.eam.wshub.core.services.workorders;
 
 import ch.cern.eam.wshub.core.annotations.Operation;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.interceptors.LogDataReferenceType;
 import ch.cern.eam.wshub.core.services.INFOR_OPERATION;
 import ch.cern.eam.wshub.core.services.entities.BatchResponse;
-import ch.cern.eam.wshub.core.services.safety.entities.EntitySafetyWSHub;
+import ch.cern.eam.wshub.core.services.workorders.entities.EntitySafetyWSHub;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_entities.entitysafety_001.EntitySafety;
