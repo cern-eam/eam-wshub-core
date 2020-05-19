@@ -5,6 +5,7 @@ import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.interceptors.LogDataReferenceType;
 import ch.cern.eam.wshub.core.services.INFOR_OPERATION;
 import ch.cern.eam.wshub.core.services.administration.entities.MenuSpecification;
+import ch.cern.eam.wshub.core.services.workorders.entities.MEC;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 
@@ -19,10 +20,10 @@ public interface MECService {
     String getWorkOrderEquipmentOfWorkorder(InforContext context, String equipmentID) throws InforException;
 
     @Operation(logOperation = INFOR_OPERATION.MENU_HIERARCHY_ADD, logDataReference1 = LogDataReferenceType.RESULT)
-    String addWorkOrderEquipment(InforContext context, String equipmentID) throws InforException;
+    String addWorkOrderEquipment(InforContext context, String equipmentID, MEC mecDetails) throws InforException;
 
     @Operation(logOperation = INFOR_OPERATION.MENU_HIERARCHY_ADD, logDataReference1 = LogDataReferenceType.RESULT)
-    String deleteWorkOrderEquipment(InforContext context, String equipmentID) throws InforException;
+    String deleteWorkOrderEquipment(InforContext context, String parentWorkorderID, String equipmentID) throws InforException;
 
     @Operation(logOperation = INFOR_OPERATION.MENU_HIERARCHY_ADD, logDataReference1 = LogDataReferenceType.RESULT)
     String syncWorkOrderEquipment(InforContext context, String equipmentID) throws InforException;

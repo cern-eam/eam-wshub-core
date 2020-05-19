@@ -1,14 +1,14 @@
 package ch.cern.eam.wshub.core.services.workorders.entities;
 
 import ch.cern.eam.wshub.core.annotations.InforField;
-import net.datastream.schemas.mp_entities.depreciation_001.AdditionalDetails;
+import net.datastream.schemas.mp_entities.workorderequipment_001.AdditionalDetails;
 import net.datastream.schemas.mp_fields.EQUIPMENTID_Type;
 import net.datastream.schemas.mp_fields.USERDEFINEDCODEID_Type;
 import net.datastream.schemas.mp_fields.WOID_Type;
 
 import java.math.BigDecimal;
 
-public class Equipment {
+public class MEC {
     @InforField(xpath = "WORKORDERID")
     private WOID_Type workorderid;
 
