@@ -3,23 +3,25 @@ package ch.cern.eam.wshub.core.services.workorders.impl;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.grids.GridsService;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestCell;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestRow;
 import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.services.workorders.MECService;
 import ch.cern.eam.wshub.core.services.workorders.entities.MEC;
-import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrder;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
-import net.datastream.schemas.mp_entities.workorderequipment_001.WorkOrderEquipment;
-import net.datastream.schemas.mp_fields.EQUIPMENTID_Type;
 import net.datastream.schemas.mp_fields.ORGANIZATIONID_Type;
 import net.datastream.schemas.mp_fields.WOID_Type;
 import net.datastream.schemas.mp_functions.mp7394_001.MP7394_AddWorkOrderEquipment_001;
-import net.datastream.schemas.mp_functions.mp7395_001.MP7395_SyncWorkOrderEquipment_001;
 import net.datastream.schemas.mp_functions.mp7396_001.MP7396_RemoveWorkOrderEquipment_001;
 import net.datastream.schemas.mp_results.mp7394_001.MP7394_AddWorkOrderEquipment_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class MECServiceImpl implements MECService {
     private Tools tools;
@@ -34,18 +36,10 @@ public class MECServiceImpl implements MECService {
         this.gridsService = new GridsServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
     }
 
-//    @Override
-//    public String getWorkOrderEquipment(InforContext context, String equipmentID) throws InforException {
-//        return null;
-//    }
-
-    @Override
-    public String getWorkOrderEquipmentOfWorkorder(InforContext context, String equipmentID) throws InforException {
-        return null;
-    }
-
     @Override
     public String addWorkOrderEquipment(InforContext context, String workOrderID, MEC mecProperties) throws InforException {
+        MECService.validateInput(workOrderID, mecProperties);
+
         WOID_Type woID = new WOID_Type();
         woID.setJOBNUM(workOrderID);
         mecProperties.setWorkorderid(woID);
@@ -72,6 +66,8 @@ public class MECServiceImpl implements MECService {
 
     @Override
     public String deleteWorkOrderEquipment(InforContext context, String parentWorkorderID, String equipmentID) throws InforException {
+        MECService.validateInput(parentWorkorderID, equipmentID);
+
         MP7396_RemoveWorkOrderEquipment_001 mp7396_removeWorkOrderEquipment_001 = new MP7396_RemoveWorkOrderEquipment_001();
 
         ORGANIZATIONID_Type organizationid_type = new ORGANIZATIONID_Type();
@@ -93,23 +89,35 @@ public class MECServiceImpl implements MECService {
         return "OK";
     }
 
-    public String getWorkOrderEquipment(InforContext context, String equipmentID) throws InforException {
+    @Override
+    public GridRequestResult getWorkOrderEquipmentsOfWorkorder(InforContext context, String workorderID) throws InforException {
+        MECService.validateInput(workorderID);
+
         GridRequest gridRequest = new GridRequest("WSJOBS_MEC", GridRequest.GRIDTYPE.LIST, 50);
-        gridRequest.addParam("param.workordernum", "28021934");
+        gridRequest.addParam("param.workordernum", workorderID);
         gridRequest.addParam("param.organization", tools.getOrganizationCode(context));
         gridRequest.addParam("param.workorderrtype", "BR");
         gridRequest.addParam("param.tenant", tools.getTenant(context));
-//        gridRequest.addParam("control.org", applicationData.getc);
 
-        GridRequestResult res = gridsService.executeQuery(context, gridRequest);
-
-        System.out.println("HI PEDRINHO");
-
-        return "res";
+        return gridsService.executeQuery(context, gridRequest);
     }
 
     @Override
-    public String syncWorkOrderEquipment(InforContext context, String equipmentID) throws InforException {
+    public String syncWorkOrderEquipment(InforContext context, String parentWorkorderID, String equipmentID, MEC mecProperties) throws InforException {
+        MECService.validateInput(parentWorkorderID, equipmentID, mecProperties);
+
+        GridRequestResult woList = this.getWorkOrderEquipmentsOfWorkorder(context, parentWorkorderID);
+        GridRequestCell[] relatedWO = Arrays.stream(woList.getRows()).
+                filter(eq -> eq.getCell()[4].getContent().equals(equipmentID)).
+                collect(Collectors.toList()).get(0).getCell();
+
+        System.out.println(relatedWO);
+
+        net.datastream.schemas.mp_entities.workorderequipment_001.WorkOrderEquipment workOrderEquipment = new net.datastream.schemas.mp_entities.workorderequipment_001.WorkOrderEquipment();
+        tools.getInforFieldTools().transformWSHubObject(workOrderEquipment, entitySafetywshub, context);
+
+
+        // eqorg, eqname, eqdescri, eqtype, id
 
 //        SafetyService.validateInput(entitySafetywshub);
 //
