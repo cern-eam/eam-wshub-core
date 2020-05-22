@@ -48,23 +48,11 @@ public class MECServiceImpl implements MECService {
     @Override
     public String addWorkOrderEquipment(InforContext context, String workOrderID, MEC mecProperties) throws InforException {
         MECService.validateInput(workOrderID, mecProperties);
-
-        WOID_Type woID = new WOID_Type();
-        woID.setJOBNUM(workOrderID);
-        mecProperties.setWorkorderid(woID);
+        
+        mecProperties.setWorkorderID(workOrderID);
 
         MP7394_AddWorkOrderEquipment_001 mp7394_addWorkOrderEquipment_001 = new MP7394_AddWorkOrderEquipment_001();
         net.datastream.schemas.mp_entities.workorderequipment_001.WorkOrderEquipment workOrderEquipment = new net.datastream.schemas.mp_entities.workorderequipment_001.WorkOrderEquipment();
-
-        WOID_Type woid_type = new WOID_Type();
-        woid_type.setJOBNUM(workOrderID);
-
-        // Inject organization
-        ORGANIZATIONID_Type organizationid_type = new ORGANIZATIONID_Type();
-        organizationid_type.setORGANIZATIONCODE("*");
-        woid_type.setORGANIZATIONID(organizationid_type);
-        mecProperties.setWorkorderid(woid_type);
-        mecProperties.getEquipmentid().setORGANIZATIONID(organizationid_type);
 
         tools.getInforFieldTools().transformWSHubObject(workOrderEquipment, mecProperties, context);
         mp7394_addWorkOrderEquipment_001.getWorkOrderEquipment().add(workOrderEquipment);
@@ -142,12 +130,14 @@ public class MECServiceImpl implements MECService {
     public String syncWorkOrderEquipment(InforContext context, String parentWorkorderID, String equipmentID, MEC mecProperties) throws InforException {
         MECService.validateInput(parentWorkorderID, equipmentID, mecProperties);
 
+//        MP73
+
         GridRequestResult woList = this.getWorkOrderEquipmentsOfWorkorder(context, parentWorkorderID);
         GridRequestCell[] relatedWO = Arrays.stream(woList.getRows()).
                 filter(eq -> eq.getCell()[4].getContent().equals(equipmentID)).
                 collect(Collectors.toList()).get(0).getCell();
 //
-        System.out.println(relatedWO);
+//        System.out.println(relatedWO);
 //
 //        net.datastream.schemas.mp_entities.workorderequipment_001.WorkOrderEquipment workOrderEquipment = new net.datastream.schemas.mp_entities.workorderequipment_001.WorkOrderEquipment();
 //        tools.getInforFieldTools().transformWSHubObject(workOrderEquipment, entitySafetywshub, context);

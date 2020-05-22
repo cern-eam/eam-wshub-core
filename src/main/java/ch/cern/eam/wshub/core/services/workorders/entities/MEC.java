@@ -9,36 +9,70 @@ import net.datastream.schemas.mp_fields.WOID_Type;
 import java.math.BigDecimal;
 
 public class MEC {
-    @InforField(xpath = "WORKORDERID")
-    private WOID_Type workorderid;
+    @InforField(xpath = "WORKORDERID/JOBNUM")
+    private String workorderID;
 
-    @InforField(xpath = "EQUIPMENTID")
-    private EQUIPMENTID_Type equipmentid;
+    @InforField(xpath = "EQUIPMENTID/EQUIPMENTCODE")
+    private String equipmentCode;
 
-    @InforField(xpath = "AdditionalDetails")
-    private AdditionalDetails additionalDetails;
+    @InforField(xpath = "AdditionalDetails/RELATEDWORKORDERID/JOBNUM")
+    private String relatedWorkorderID;
 
-    public WOID_Type getWorkorderid() {
-        return workorderid;
+    @InforField(xpath = "AdditionalDetails/LOCATIONID/LOCATIONCODE")
+    private String locationID;
+
+    @InforField(xpath = "AdditionalDetails/COSTCODEID/COSTCODE")
+    private String costCode;
+
+    @InforField(xpath = "AdditionalDetails/SAFETY")
+    private String safety;
+
+
+    public String getWorkorderID() {
+        return workorderID;
     }
 
-    public void setWorkorderid(WOID_Type workorderid) {
-        this.workorderid = workorderid;
+    public void setWorkorderID(String workorderID) {
+        this.workorderID = workorderID;
     }
 
-    public EQUIPMENTID_Type getEquipmentid() {
-        return equipmentid;
+    public String getEquipmentCode() {
+        return equipmentCode;
     }
 
-    public void setEquipmentid(EQUIPMENTID_Type equipmentid) {
-        this.equipmentid = equipmentid;
+    public void setEquipmentCode(String equipmentCode) {
+        this.equipmentCode = equipmentCode;
     }
 
-    public AdditionalDetails getAdditionalDetails() {
-        return additionalDetails;
+    public String getRelatedWorkorderID() {
+        return relatedWorkorderID;
     }
 
-    public void setAdditionalDetails(AdditionalDetails additionalDetails) {
-        this.additionalDetails = additionalDetails;
+    public void setRelatedWorkorderID(String relatedWorkorderID) {
+        this.relatedWorkorderID = relatedWorkorderID;
+    }
+
+    public String getLocationID() {
+        return locationID;
+    }
+
+    public void setLocationID(String locationID) {
+        this.locationID = locationID;
+    }
+
+    public String getCostCode() {
+        return costCode;
+    }
+
+    public void setCostCode(String costCode) {
+        this.costCode = costCode;
+    }
+
+    public String getSafety() {
+        return safety;
+    }
+
+    public void setSafety(String safety) {
+        this.safety = safety;
     }
 }
