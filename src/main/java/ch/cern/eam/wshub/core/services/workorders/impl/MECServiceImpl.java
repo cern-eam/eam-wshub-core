@@ -36,6 +36,15 @@ public class MECServiceImpl implements MECService {
         this.gridsService = new GridsServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
     }
 
+    /**
+     * Adds an equipment with the specified properties to the specified workorder.
+     *
+     * @param context       the user credentials
+     * @param workOrderID   the parent workorder ID
+     * @param mecProperties the properties of the equipment
+     * @return              the ID of the added equipment
+     * @throws InforException
+     */
     @Override
     public String addWorkOrderEquipment(InforContext context, String workOrderID, MEC mecProperties) throws InforException {
         MECService.validateInput(workOrderID, mecProperties);
@@ -64,6 +73,15 @@ public class MECServiceImpl implements MECService {
         return res.getResultData().getRELATEDWORKORDERID().get(0).getJOBNUM();
     }
 
+    /**
+     * Deletes an equipment from the specified parent workorder.
+     *
+     * @param context           the user credentials
+     * @param parentWorkorderID the ID of the parent workorder
+     * @param equipmentID       the ID of the equipment to delete
+     * @return
+     * @throws InforException
+     */
     @Override
     public String deleteWorkOrderEquipment(InforContext context, String parentWorkorderID, String equipmentID) throws InforException {
         MECService.validateInput(parentWorkorderID, equipmentID);
@@ -89,6 +107,14 @@ public class MECServiceImpl implements MECService {
         return "OK";
     }
 
+    /**
+     * Returns a list of all the equipments of the target workorder.
+     *
+     * @param context     the user credentials
+     * @param workorderID the ID of the parent workorder
+     * @return            the list of equipments
+     * @throws InforException
+     */
     @Override
     public GridRequestResult getWorkOrderEquipmentsOfWorkorder(InforContext context, String workorderID) throws InforException {
         MECService.validateInput(workorderID);
@@ -102,16 +128,26 @@ public class MECServiceImpl implements MECService {
         return gridsService.executeQuery(context, gridRequest);
     }
 
+    /**
+     * Updates the target workorder with the specified properties.
+     *
+     * @param context           the user credentials
+     * @param parentWorkorderID the ID of the parent workorder
+     * @param equipmentID       the ID of the equipment to update
+     * @param mecProperties     the new properties of the equipment to update
+     * @return
+     * @throws InforException
+     */
     @Override
     public String syncWorkOrderEquipment(InforContext context, String parentWorkorderID, String equipmentID, MEC mecProperties) throws InforException {
-//        MECService.validateInput(parentWorkorderID, equipmentID, mecProperties);
+        MECService.validateInput(parentWorkorderID, equipmentID, mecProperties);
+
+        GridRequestResult woList = this.getWorkOrderEquipmentsOfWorkorder(context, parentWorkorderID);
+        GridRequestCell[] relatedWO = Arrays.stream(woList.getRows()).
+                filter(eq -> eq.getCell()[4].getContent().equals(equipmentID)).
+                collect(Collectors.toList()).get(0).getCell();
 //
-//        GridRequestResult woList = this.getWorkOrderEquipmentsOfWorkorder(context, parentWorkorderID);
-//        GridRequestCell[] relatedWO = Arrays.stream(woList.getRows()).
-//                filter(eq -> eq.getCell()[4].getContent().equals(equipmentID)).
-//                collect(Collectors.toList()).get(0).getCell();
-//
-//        System.out.println(relatedWO);
+        System.out.println(relatedWO);
 //
 //        net.datastream.schemas.mp_entities.workorderequipment_001.WorkOrderEquipment workOrderEquipment = new net.datastream.schemas.mp_entities.workorderequipment_001.WorkOrderEquipment();
 //        tools.getInforFieldTools().transformWSHubObject(workOrderEquipment, entitySafetywshub, context);
