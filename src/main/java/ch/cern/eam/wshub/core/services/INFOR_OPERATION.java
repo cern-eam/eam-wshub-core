@@ -180,6 +180,12 @@ public enum INFOR_OPERATION {
     INVENTORY_RL("INVENTORY_RL"),
     INVENTORY_UL("INVENTORY_UL"),
 
+    // MEC
+    MEC_GET("MEC_GET"),
+    MEC_ADD("MEC_ADD"),
+    MEC_DELETE("MEC_DELETE"),
+    MEC_SYNC("MEC_SYNC"),
+
     OTHER("OTHER")
     ;
 

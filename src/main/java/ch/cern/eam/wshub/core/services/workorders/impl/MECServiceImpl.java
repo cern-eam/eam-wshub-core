@@ -104,17 +104,17 @@ public class MECServiceImpl implements MECService {
 
     @Override
     public String syncWorkOrderEquipment(InforContext context, String parentWorkorderID, String equipmentID, MEC mecProperties) throws InforException {
-        MECService.validateInput(parentWorkorderID, equipmentID, mecProperties);
-
-        GridRequestResult woList = this.getWorkOrderEquipmentsOfWorkorder(context, parentWorkorderID);
-        GridRequestCell[] relatedWO = Arrays.stream(woList.getRows()).
-                filter(eq -> eq.getCell()[4].getContent().equals(equipmentID)).
-                collect(Collectors.toList()).get(0).getCell();
-
-        System.out.println(relatedWO);
-
-        net.datastream.schemas.mp_entities.workorderequipment_001.WorkOrderEquipment workOrderEquipment = new net.datastream.schemas.mp_entities.workorderequipment_001.WorkOrderEquipment();
-        tools.getInforFieldTools().transformWSHubObject(workOrderEquipment, entitySafetywshub, context);
+//        MECService.validateInput(parentWorkorderID, equipmentID, mecProperties);
+//
+//        GridRequestResult woList = this.getWorkOrderEquipmentsOfWorkorder(context, parentWorkorderID);
+//        GridRequestCell[] relatedWO = Arrays.stream(woList.getRows()).
+//                filter(eq -> eq.getCell()[4].getContent().equals(equipmentID)).
+//                collect(Collectors.toList()).get(0).getCell();
+//
+//        System.out.println(relatedWO);
+//
+//        net.datastream.schemas.mp_entities.workorderequipment_001.WorkOrderEquipment workOrderEquipment = new net.datastream.schemas.mp_entities.workorderequipment_001.WorkOrderEquipment();
+//        tools.getInforFieldTools().transformWSHubObject(workOrderEquipment, entitySafetywshub, context);
 
 
         // eqorg, eqname, eqdescri, eqtype, id

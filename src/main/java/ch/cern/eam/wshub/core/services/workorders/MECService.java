@@ -11,18 +11,23 @@ import ch.cern.eam.wshub.core.tools.Tools;
 
 public interface MECService {
 
-    @Operation(logOperation = INFOR_OPERATION.MENU_HIERARCHY_ADD, logDataReference1 = LogDataReferenceType.RESULT)
+    @Operation(logOperation = INFOR_OPERATION.MEC_GET, logDataReference1 = LogDataReferenceType.RESULT)
     GridRequestResult getWorkOrderEquipmentsOfWorkorder(InforContext context, String workorderID) throws InforException;
 
-    @Operation(logOperation = INFOR_OPERATION.MENU_HIERARCHY_ADD, logDataReference1 = LogDataReferenceType.RESULT)
+    @Operation(logOperation = INFOR_OPERATION.MEC_ADD, logDataReference1 = LogDataReferenceType.RESULT)
     String addWorkOrderEquipment(InforContext context, String equipmentID, MEC mecDetails) throws InforException;
 
-    @Operation(logOperation = INFOR_OPERATION.MENU_HIERARCHY_ADD, logDataReference1 = LogDataReferenceType.RESULT)
+    @Operation(logOperation = INFOR_OPERATION.MEC_DELETE, logDataReference1 = LogDataReferenceType.RESULT)
     String deleteWorkOrderEquipment(InforContext context, String parentWorkorderID, String equipmentID) throws InforException;
 
-    @Operation(logOperation = INFOR_OPERATION.MENU_HIERARCHY_ADD, logDataReference1 = LogDataReferenceType.RESULT)
+    @Operation(logOperation = INFOR_OPERATION.MEC_SYNC, logDataReference1 = LogDataReferenceType.RESULT)
     String syncWorkOrderEquipment(InforContext context, String parentWorkorderID, String equipmentID, MEC mecProperties) throws InforException;
 
+    static void validateInput(String workOrderID) throws InforException {
+        if (workOrderID == null) {
+            throw Tools.generateFault("workOrderID or mecProperties cannot be null");
+        }
+    }
 
     static void validateInput(String workOrderID, MEC mecProperties) throws InforException {
         if (workOrderID == null || mecProperties == null) {
