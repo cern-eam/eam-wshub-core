@@ -36,9 +36,9 @@ public interface MECService {
         }
     }
 
-    static void validateInput(String workOrderID, MEC mecProperties) throws InforException {
-        if (workOrderID == null || mecProperties == null) {
-            throw Tools.generateFault("workOrderID or mecProperties cannot be null");
+    static void validateInput(MEC mecToAdd) throws InforException {
+        if (mecToAdd == null) {
+            throw Tools.generateFault("mecToAdd cannot be null");
         }
     }
 

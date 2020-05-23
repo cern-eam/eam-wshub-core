@@ -37,21 +37,18 @@ public class MECServiceImpl implements MECService {
      * Adds an equipment with the specified properties to the specified workorder.
      *
      * @param context       the user credentials
-     * @param workOrderID   the parent workorder ID
-     * @param mecProperties the properties of the equipment
+     * @param mecToAdd      the MEC object to add
      * @return              the ID of the added equipment
      * @throws InforException
      */
     @Override
-    public String addWorkOrderEquipment(InforContext context, String workOrderID, MEC mecProperties) throws InforException {
-        MECService.validateInput(workOrderID, mecProperties);
-
-        mecProperties.setWorkorderID(workOrderID);
+    public String addWorkOrderEquipment(InforContext context, MEC mecToAdd) throws InforException {
+        MECService.validateInput(mecToAdd);
 
         MP7394_AddWorkOrderEquipment_001 mp7394_addWorkOrderEquipment_001 = new MP7394_AddWorkOrderEquipment_001();
         net.datastream.schemas.mp_entities.workorderequipment_001.WorkOrderEquipment workOrderEquipment = new net.datastream.schemas.mp_entities.workorderequipment_001.WorkOrderEquipment();
 
-        tools.getInforFieldTools().transformWSHubObject(workOrderEquipment, mecProperties, context);
+        tools.getInforFieldTools().transformWSHubObject(workOrderEquipment, mecToAdd, context);
         mp7394_addWorkOrderEquipment_001.getWorkOrderEquipment().add(workOrderEquipment);
         MP7394_AddWorkOrderEquipment_001_Result res = tools.performInforOperation(context, inforws::addWorkOrderEquipmentOp, mp7394_addWorkOrderEquipment_001);
 
@@ -63,7 +60,7 @@ public class MECServiceImpl implements MECService {
      *
      * @param context           the user credentials
      * @param parentWorkorderID the ID of the parent workorder
-     * @param mecID       the ID of the MEC to delete
+     * @param mecID             the ID of the MEC to delete
      * @return
      * @throws InforException
      */
@@ -131,16 +128,14 @@ public class MECServiceImpl implements MECService {
     /**
      * Updates the target workorder with the specified properties.
      *
-     * @param context           the user credentials
-     * @param parentWorkorderID the ID of the parent workorder
-     * @param mecID       the ID of the equipment to update
-     * @param mecProperties     the new properties of the equipment to update
+     * @param context    the user credentials
+     * @param updatedMEC the updated mec object
      * @return
      * @throws InforException
      */
     @Override
-    public String syncWorkOrderEquipment(InforContext context, String parentWorkorderID, String mecID, MEC mecProperties) throws InforException {
-        MECService.validateInput(parentWorkorderID, mecID, mecProperties);
+    public String syncWorkOrderEquipment(InforContext context, MEC updatedMEC) throws InforException {
+//        MECService.validateInput(parentWorkorderID, mecID, mecProperties);
         //TODO WIP
 //        MP73
 
