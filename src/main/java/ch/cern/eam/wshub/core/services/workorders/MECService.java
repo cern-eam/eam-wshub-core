@@ -9,16 +9,23 @@ import ch.cern.eam.wshub.core.services.workorders.entities.MEC;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 
+import java.util.List;
+
 public interface MECService {
 
+    String EQUIPMENT_COLUMN_NAME = "equipment";
+    String MEC_ID_COLUMN_NAME = "relatedwo";
+    String GRID_ID = "WSJOBS_MEC";
+    String GRID_WO_TYPE = "BR";
+
     @Operation(logOperation = INFOR_OPERATION.MEC_GET, logDataReference1 = LogDataReferenceType.RESULT)
-    GridRequestResult getWorkOrderEquipmentsOfWorkorder(InforContext context, String workorderID) throws InforException;
+    List<String> GetWorkOrderMecIDList(InforContext context, String workorderID) throws InforException;
 
     @Operation(logOperation = INFOR_OPERATION.MEC_ADD, logDataReference1 = LogDataReferenceType.RESULT)
     String addWorkOrderEquipment(InforContext context, String equipmentID, MEC mecDetails) throws InforException;
 
     @Operation(logOperation = INFOR_OPERATION.MEC_DELETE, logDataReference1 = LogDataReferenceType.RESULT)
-    String deleteWorkOrderEquipment(InforContext context, String parentWorkorderID, String equipmentID) throws InforException;
+    String deleteWorkOrderMEC(InforContext context, String parentWorkorderID, String equipmentID) throws InforException;
 
     @Operation(logOperation = INFOR_OPERATION.MEC_SYNC, logDataReference1 = LogDataReferenceType.RESULT)
     String syncWorkOrderEquipment(InforContext context, String parentWorkorderID, String equipmentID, MEC mecProperties) throws InforException;

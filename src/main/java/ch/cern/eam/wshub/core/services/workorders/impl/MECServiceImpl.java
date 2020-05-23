@@ -2,10 +2,7 @@ package ch.cern.eam.wshub.core.services.workorders.impl;
 
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.grids.GridsService;
-import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
-import ch.cern.eam.wshub.core.services.grids.entities.GridRequestCell;
-import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
-import ch.cern.eam.wshub.core.services.grids.entities.GridRequestRow;
+import ch.cern.eam.wshub.core.services.grids.entities.*;
 import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.services.workorders.MECService;
 import ch.cern.eam.wshub.core.services.workorders.entities.MEC;
@@ -48,7 +45,7 @@ public class MECServiceImpl implements MECService {
     @Override
     public String addWorkOrderEquipment(InforContext context, String workOrderID, MEC mecProperties) throws InforException {
         MECService.validateInput(workOrderID, mecProperties);
-        
+
         mecProperties.setWorkorderID(workOrderID);
 
         MP7394_AddWorkOrderEquipment_001 mp7394_addWorkOrderEquipment_001 = new MP7394_AddWorkOrderEquipment_001();
@@ -62,17 +59,17 @@ public class MECServiceImpl implements MECService {
     }
 
     /**
-     * Deletes an equipment from the specified parent workorder.
+     * Deletes a MEC from the specified parent workorder.
      *
      * @param context           the user credentials
      * @param parentWorkorderID the ID of the parent workorder
-     * @param equipmentID       the ID of the equipment to delete
+     * @param mecID       the ID of the MEC to delete
      * @return
      * @throws InforException
      */
     @Override
-    public String deleteWorkOrderEquipment(InforContext context, String parentWorkorderID, String equipmentID) throws InforException {
-        MECService.validateInput(parentWorkorderID, equipmentID);
+    public String deleteWorkOrderMEC(InforContext context, String parentWorkorderID, String mecID) throws InforException {
+        MECService.validateInput(parentWorkorderID, mecID);
 
         MP7396_RemoveWorkOrderEquipment_001 mp7396_removeWorkOrderEquipment_001 = new MP7396_RemoveWorkOrderEquipment_001();
 
@@ -84,7 +81,7 @@ public class MECServiceImpl implements MECService {
         woid_typeParent.setORGANIZATIONID(organizationid_type);
 
         WOID_Type woid_typeEquipment = new WOID_Type();
-        woid_typeEquipment.setJOBNUM(equipmentID);
+        woid_typeEquipment.setJOBNUM(mecID);
         woid_typeEquipment.setORGANIZATIONID(organizationid_type);
 
         mp7396_removeWorkOrderEquipment_001.setWORKORDERID(woid_typeParent);
@@ -96,24 +93,39 @@ public class MECServiceImpl implements MECService {
     }
 
     /**
-     * Returns a list of all the equipments of the target workorder.
+     * Returns a list of all the MECs of the target workorder.
      *
      * @param context     the user credentials
      * @param workorderID the ID of the parent workorder
-     * @return            the list of equipments
+     * @return            the list of MEC ids
      * @throws InforException
      */
-    @Override
-    public GridRequestResult getWorkOrderEquipmentsOfWorkorder(InforContext context, String workorderID) throws InforException {
+    public List<String> GetWorkOrderMecIDList(InforContext context, String workorderID) throws InforException {
         MECService.validateInput(workorderID);
 
-        GridRequest gridRequest = new GridRequest("WSJOBS_MEC", GridRequest.GRIDTYPE.LIST, 50);
+        GridRequest gridRequest = new GridRequest(MECService.GRID_ID, GridRequest.GRIDTYPE.LIST, 50);
         gridRequest.addParam("param.workordernum", workorderID);
         gridRequest.addParam("param.organization", tools.getOrganizationCode(context));
-        gridRequest.addParam("param.workorderrtype", "BR");
+        gridRequest.addParam("param.workorderrtype", MECService.GRID_WO_TYPE);
         gridRequest.addParam("param.tenant", tools.getTenant(context));
 
-        return gridsService.executeQuery(context, gridRequest);
+        GridRequestResult res = gridsService.executeQuery(context, gridRequest);
+
+        List<GridField> targetColumn = res.getGridFields().stream()
+                .filter(gridField -> gridField.getName().equals(MECService.MEC_ID_COLUMN_NAME))
+                .collect(Collectors.toList());
+
+        if (targetColumn.isEmpty()) {
+            throw Tools.generateFault("Column with relatedWorkorderID (ID of the MEC) is not in dataspy");
+        }
+
+        int targetIndex = targetColumn.get(0).getOrder();
+
+        List<String> listOfIDs = Arrays.stream(res.getRows())
+                .map(gridRequestRow -> gridRequestRow.getCell()[targetIndex].getContent())
+                .collect(Collectors.toList());
+
+        return listOfIDs;
     }
 
     /**
@@ -121,21 +133,21 @@ public class MECServiceImpl implements MECService {
      *
      * @param context           the user credentials
      * @param parentWorkorderID the ID of the parent workorder
-     * @param equipmentID       the ID of the equipment to update
+     * @param mecID       the ID of the equipment to update
      * @param mecProperties     the new properties of the equipment to update
      * @return
      * @throws InforException
      */
     @Override
-    public String syncWorkOrderEquipment(InforContext context, String parentWorkorderID, String equipmentID, MEC mecProperties) throws InforException {
-        MECService.validateInput(parentWorkorderID, equipmentID, mecProperties);
-
+    public String syncWorkOrderEquipment(InforContext context, String parentWorkorderID, String mecID, MEC mecProperties) throws InforException {
+        MECService.validateInput(parentWorkorderID, mecID, mecProperties);
+        //TODO WIP
 //        MP73
 
-        GridRequestResult woList = this.getWorkOrderEquipmentsOfWorkorder(context, parentWorkorderID);
-        GridRequestCell[] relatedWO = Arrays.stream(woList.getRows()).
-                filter(eq -> eq.getCell()[4].getContent().equals(equipmentID)).
-                collect(Collectors.toList()).get(0).getCell();
+//        GridRequestResult woList = this.GetWorkorderMecIDs(context, parentWorkorderID);
+//        GridRequestCell[] relatedWO = Arrays.stream(woList.getRows()).
+//                filter(eq -> eq.getCell()[4].getContent().equals(equipmentID)).
+//                collect(Collectors.toList()).get(0).getCell();
 //
 //        System.out.println(relatedWO);
 //
