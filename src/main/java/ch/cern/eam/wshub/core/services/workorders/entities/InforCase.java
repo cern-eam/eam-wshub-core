@@ -114,8 +114,9 @@ public class InforCase implements Serializable, Cloneable {
 
 	@Transient
 	private Date eventenddate;
-	
+
 	@Transient
+	@InforField(xpath = "USERDEFINEDAREA")
 	private CustomField[] customFields;
 
 	@Transient

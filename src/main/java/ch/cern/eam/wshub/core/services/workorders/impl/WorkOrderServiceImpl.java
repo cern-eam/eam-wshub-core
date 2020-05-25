@@ -28,7 +28,6 @@ import net.datastream.schemas.mp_results.mp0024_001.MP0024_GetWorkOrder_001_Resu
 import net.datastream.schemas.mp_results.mp0026_001.MP0026_GetWorkOrderDefault_001_Result;
 import net.datastream.schemas.mp_results.mp0026_001.ResultData;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
-import java.util.LinkedList;
 import java.util.List;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.toCodeString;
 
@@ -80,13 +79,13 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		//
 		WorkOrder workOrder = tools.getInforFieldTools().transformInforObject(new WorkOrder(), inforWorkOrder);
 
-		// Fetching misc descriptions not returned by Infor web service
-		List<Runnable> runnables = new LinkedList<>();
-		runnables.add(() -> workOrder.setAssignedToDesc(tools.getFieldDescriptionsTools().readPersonDesc(context, workOrder.getAssignedTo())));
-		runnables.add(() -> workOrder.setDepartmentDesc(tools.getFieldDescriptionsTools().readDepartmentDesc(context, workOrder.getDepartmentCode())));
-		runnables.add(() -> workOrder.setClassDesc(tools.getFieldDescriptionsTools().readClassDesc(context, "EVNT", workOrder.getClassCode())));
-		runnables.add(() -> workOrder.setCostCodeDesc(tools.getFieldDescriptionsTools().readCostCodeDesc(context, workOrder.getCostCode())));
-		tools.processRunnables(runnables);
+		// Fetching missing descriptions not returned by Infor web service
+		tools.processRunnables(
+			() -> workOrder.setAssignedToDesc(tools.getFieldDescriptionsTools().readPersonDesc(context, workOrder.getAssignedTo())),
+			() -> workOrder.setDepartmentDesc(tools.getFieldDescriptionsTools().readDepartmentDesc(context, workOrder.getDepartmentCode())),
+			() -> workOrder.setClassDesc(tools.getFieldDescriptionsTools().readClassDesc(context, "EVNT", workOrder.getClassCode())),
+			() -> workOrder.setCostCodeDesc(tools.getFieldDescriptionsTools().readCostCodeDesc(context, workOrder.getCostCode()))
+		);
 
 		return workOrder;
 	}
