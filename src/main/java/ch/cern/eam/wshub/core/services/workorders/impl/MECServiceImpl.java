@@ -97,7 +97,7 @@ public class MECServiceImpl implements MECService {
      * @return            the list of MEC ids
      * @throws InforException
      */
-    public List<String> GetWorkOrderMecIDList(InforContext context, String workorderID) throws InforException {
+    public List<String> getWorkOrderMecIDList(InforContext context, String workorderID) throws InforException {
         MECService.validateInput(workorderID);
 
         GridRequest gridRequest = new GridRequest(MECService.GRID_ID, GridRequest.GRIDTYPE.LIST, 50);

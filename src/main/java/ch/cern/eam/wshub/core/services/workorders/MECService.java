@@ -19,16 +19,16 @@ public interface MECService {
     String GRID_WO_TYPE = "BR";
 
     @Operation(logOperation = INFOR_OPERATION.MEC_GET, logDataReference1 = LogDataReferenceType.RESULT)
-    List<String> GetWorkOrderMecIDList(InforContext context, String workorderID) throws InforException;
+    List<String> getWorkOrderMecIDList(InforContext context, String workorderID) throws InforException;
 
     @Operation(logOperation = INFOR_OPERATION.MEC_ADD, logDataReference1 = LogDataReferenceType.RESULT)
-    String addWorkOrderEquipment(InforContext context, String equipmentID, MEC mecDetails) throws InforException;
+    String addWorkOrderEquipment(InforContext context, MEC mecToAdd) throws InforException;
 
     @Operation(logOperation = INFOR_OPERATION.MEC_DELETE, logDataReference1 = LogDataReferenceType.RESULT)
     String deleteWorkOrderMEC(InforContext context, String parentWorkorderID, String equipmentID) throws InforException;
 
     @Operation(logOperation = INFOR_OPERATION.MEC_SYNC, logDataReference1 = LogDataReferenceType.RESULT)
-    String syncWorkOrderEquipment(InforContext context, String parentWorkorderID, String equipmentID, MEC mecProperties) throws InforException;
+    String syncWorkOrderEquipment(InforContext context, MEC updatedMEC) throws InforException;
 
     static void validateInput(String workOrderID) throws InforException {
         if (workOrderID == null) {
