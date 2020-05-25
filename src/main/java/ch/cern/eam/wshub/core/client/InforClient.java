@@ -116,6 +116,8 @@ public class InforClient implements Serializable {
 
     private UserDefinedTableService userDefinedTableServices;
 
+    private MECService mecService;
+
     // Prevent initializing the class without the builder
     private InforClient() {}
 
@@ -253,6 +255,7 @@ public class InforClient implements Serializable {
             inforClient.userGroupMenuService = proxy(UserGroupMenuService.class, new UserGroupMenuServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.userDefinedTableServices = proxy(UserDefinedTableService.class, new UserDefinedTableServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.routeService = proxy(RouteService.class, new RouteServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
+            inforClient.mecService = proxy(MECService.class, new MECServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.inforWebServicesToolkitClient = inforWebServicesToolkitClient;
             if (!tools.isDatabaseConnectionConfigured()) {
                 logger.log(Level.WARNING, "Some of the services might require a database connection.");
@@ -412,5 +415,7 @@ public class InforClient implements Serializable {
     public UserGroupMenuService getUserGroupMenuService() { return userGroupMenuService; }
 
     public BindingProvider getBindingProvider() { return bindingProvider; }
+
+    public MECService getMECService() { return mecService; }
 
 }
