@@ -9,11 +9,15 @@ import ch.cern.eam.wshub.core.services.workorders.entities.MEC;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
+import net.datastream.schemas.mp_entities.workorderequipment_001.AdditionalDetails;
+import net.datastream.schemas.mp_entities.workorderequipment_001.WorkOrderEquipment;
 import net.datastream.schemas.mp_fields.ORGANIZATIONID_Type;
 import net.datastream.schemas.mp_fields.WOID_Type;
 import net.datastream.schemas.mp_functions.mp7394_001.MP7394_AddWorkOrderEquipment_001;
+import net.datastream.schemas.mp_functions.mp7395_001.MP7395_SyncWorkOrderEquipment_001;
 import net.datastream.schemas.mp_functions.mp7396_001.MP7396_RemoveWorkOrderEquipment_001;
 import net.datastream.schemas.mp_results.mp7394_001.MP7394_AddWorkOrderEquipment_001_Result;
+import net.datastream.schemas.mp_results.mp7395_001.MP7395_SyncWorkOrderEquipment_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
 import java.util.Arrays;
@@ -125,6 +129,29 @@ public class MECServiceImpl implements MECService {
         return listOfIDs;
     }
 
+    @Override
+    public WorkOrderEquipment getWorkOrderMecInfor(InforContext context, String workorderID) throws InforException{
+        WorkOrderServiceImpl wos = new WorkOrderServiceImpl(applicationData, tools, this.inforws); // Creating service here so it is easily removed when infor ws is implemented later
+        net.datastream.schemas.mp_entities.workorder_001.WorkOrder res = wos.readWorkOrderInfor(context, workorderID);
+        WorkOrderEquipment woeq = new WorkOrderEquipment();
+        woeq.setWORKORDERID(res.getWORKORDERID());
+        woeq.setEQUIPMENTID(res.getEQUIPMENTID());
+        AdditionalDetails additionalDetails = new AdditionalDetails();
+        additionalDetails.setWARRANTY(res.getWARRANTY());
+        additionalDetails.setSAFETY(res.getSAFETY());
+        additionalDetails.setDEPARTMENTID(res.getDEPARTMENTID());
+        additionalDetails.setCOSTCODEID(res.getCOSTCODEID());
+//        additionalDetails.setLinearReferenceInfo(res.getLINEARREFERENCEEVENT()); //TODO remove?
+        additionalDetails.setLOCATIONID(res.getLOCATIONID());
+        additionalDetails.setOBJTYPE(res.getOBJTYPE());
+        //TODO and the revision number?
+        woeq.setAdditionalDetails(additionalDetails);
+
+
+        return woeq;
+    }
+
+
     /**
      * Updates the target workorder with the specified properties.
      *
@@ -152,22 +179,18 @@ public class MECServiceImpl implements MECService {
 
         // eqorg, eqname, eqdescri, eqtype, id
 
-//        SafetyService.validateInput(entitySafetywshub);
-//
-//        MP3222_GetEntitySafety_001 getEntitySafety = new MP3222_GetEntitySafety_001();
-//        getEntitySafety.setSAFETYCODE(entitySafetywshub.getSafetyCode());
-//        MP3222_GetEntitySafety_001_Result resGet = tools.performInforOperation(context, inforws::getEntitySafetyOp, getEntitySafety);
-//        EntitySafety entitySafetyInfor = resGet.getResultData().getEntitySafety();
-//
-//        tools.getInforFieldTools().transformWSHubObject(entitySafetyInfor, entitySafetywshub, context);
-//
-//        MP3220_SyncEntitySafety_001 syncEntitySafety = new MP3220_SyncEntitySafety_001();
-//
-//        syncEntitySafety.setEntitySafety(entitySafetyInfor);
-//        MP3220_SyncEntitySafety_001_Result resSync = tools.performInforOperation(context, inforws::syncEntitySafetyOp, syncEntitySafety);
-//
-//        return resSync.getResultData().getSAFETYCODE();
-        return "res";
+
+
+        //here
+        WorkOrderEquipment originalMecInfor = this.getWorkOrderMecInfor(context, updatedMEC.getRelatedWorkorderID());
+        tools.getInforFieldTools().transformWSHubObject(originalMecInfor, updatedMEC, context);
+
+        MP7395_SyncWorkOrderEquipment_001 mp7395_syncWorkOrderEquipment_001 = new MP7395_SyncWorkOrderEquipment_001();
+        mp7395_syncWorkOrderEquipment_001.setWorkOrderEquipment(originalMecInfor);
+
+        MP7395_SyncWorkOrderEquipment_001_Result res = tools.performInforOperation(context, inforws::syncWorkOrderEquipmentOp, mp7395_syncWorkOrderEquipment_001);
+
+        return res.getResultData().getRELATEDWORKORDERID().getJOBNUM();
     }
 }
 

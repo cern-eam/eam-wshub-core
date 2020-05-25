@@ -185,6 +185,7 @@ public enum INFOR_OPERATION {
     MEC_ADD("MEC_ADD"),
     MEC_DELETE("MEC_DELETE"),
     MEC_SYNC("MEC_SYNC"),
+    MEC_GET_INFOR("MEC_GET_INFOR"),
 
     OTHER("OTHER")
     ;
