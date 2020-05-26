@@ -3,6 +3,8 @@ package ch.cern.eam.wshub.core.services.material.impl;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.material.PartService;
 import ch.cern.eam.wshub.core.services.material.entities.Part;
+import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedListService;
+import ch.cern.eam.wshub.core.services.userdefinedscreens.impl.UserDefinedListServiceImpl;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
@@ -20,6 +22,7 @@ import net.datastream.schemas.mp_results.mp0242_001.MP0242_SyncPart_001_Result;
 import net.datastream.schemas.mp_results.mp0244_001.MP0244_GetPartDefault_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
+import java.util.Arrays;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.isEmpty;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.toCodeString;
 
@@ -28,11 +31,13 @@ public class PartServiceImpl implements PartService {
 	private Tools tools;
 	private InforWebServicesPT inforws;
 	private ApplicationData applicationData;
+	private UserDefinedListService userDefinedListService;
 
 	public PartServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
 		this.applicationData = applicationData;
 		this.tools = tools;
 		this.inforws = inforWebServicesToolkitClient;
+		this.userDefinedListService = new UserDefinedListServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
 	}
 
 	public Part readPartDefault(InforContext context, String organization) throws InforException {
@@ -47,7 +52,9 @@ public class PartServiceImpl implements PartService {
 		MP0244_GetPartDefault_001_Result result =
 				tools.performInforOperation(context, inforws::getPartDefaultOp, getPartDefault_001);
 
-		return tools.getInforFieldTools().transformInforObject(new Part(), result.getResultData().getPartDefault());
+		Part part = tools.getInforFieldTools().transformInforObject(new Part(), result.getResultData().getPartDefault());
+		part.setUserDefinedList(Arrays.asList());
+		return part;
 	}
 
 	public Part readPart(InforContext context, String partCode) throws InforException {
@@ -58,7 +65,8 @@ public class PartServiceImpl implements PartService {
 			() -> part.setClassDesc(tools.getFieldDescriptionsTools().readClassDesc(context, "PART", part.getClassCode())),
 			() -> part.setCategoryDesc(tools.getFieldDescriptionsTools().readCategoryDesc(context, part.getCategoryCode())),
 			() -> part.setUOMDesc(tools.getFieldDescriptionsTools().readUOMDesc(context, part.getUOM())),
-			() -> part.setCommodityDesc(tools.getFieldDescriptionsTools().readCommodityDesc(context,  part.getCommodityCode()))
+			() -> part.setCommodityDesc(tools.getFieldDescriptionsTools().readCommodityDesc(context,  part.getCommodityCode())),
+			() -> userDefinedListService.readUDLToEntity(context, part, "PART", partCode)
 		);
 
 		return part;
@@ -97,7 +105,9 @@ public class PartServiceImpl implements PartService {
 		MP0240_AddPart_001_Result result =
 			tools.performInforOperation(context, inforws::addPartOp, addPart);
 
-		return result.getPARTID().getPARTCODE();
+		String partCode = result.getPARTID().getPARTCODE();
+		userDefinedListService.writeUDLToEntityCopyFrom(context, partParam, "PART", partCode);
+		return partCode;
 	}
 
 	public String updatePart(InforContext context, Part partParam) throws InforException {
@@ -141,7 +151,9 @@ public class PartServiceImpl implements PartService {
 		MP0242_SyncPart_001_Result result =
 			tools.performInforOperation(context, inforws::syncPartOp, syncPart);
 
-		return result.getResultData().getPart().getPARTID().getPARTCODE();
+		String partCode = result.getResultData().getPart().getPARTID().getPARTCODE();
+		userDefinedListService.writeUDLToEntity(context, partParam, "PART", partCode);
+		return partCode;
 
 	}
 
@@ -152,6 +164,7 @@ public class PartServiceImpl implements PartService {
 		deletePart.getPARTID().setPARTCODE(partCode);
 
 		tools.performInforOperation(context, inforws::deletePartOp, deletePart);
+		userDefinedListService.deleteUDLFromEntity(context, "PART", partCode);
 		return partCode;
 	}
 

@@ -155,12 +155,15 @@ public class UserDefinedTableServiceImpl implements UserDefinedTableService {
     // HELPERS
 
     private static Map<String, Object> getDefaultInsertColumns(String username) {
+        Date currentDate = new Date();
+
         Map<String, Object> mapa = new TreeMap<>();
         mapa.put("CREATEDBY", username);
-        mapa.put("CREATED", new Date());
+        mapa.put("CREATED", currentDate);
         mapa.put("UPDATEDBY", null);
         mapa.put("UPDATED", null);
         mapa.put("UPDATECOUNT", new BigInteger("0"));
+        mapa.put("LASTSAVED", currentDate.clone()); // cloned so that editing last saved date does not alter created one
         return mapa;
     }
 
