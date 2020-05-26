@@ -2,6 +2,11 @@ package ch.cern.eam.wshub.core.services.workorders.impl;
 
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.entities.BatchResponse;
+import ch.cern.eam.wshub.core.services.grids.GridsService;
+import ch.cern.eam.wshub.core.services.grids.entities.GridField;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
+import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.services.workorders.SafetyService;
 import ch.cern.eam.wshub.core.services.workorders.entities.EntitySafetyWSHub;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
@@ -24,11 +29,64 @@ public class SafetyServiceImpl implements SafetyService {
     private Tools tools;
     private InforWebServicesPT inforws;
     private ApplicationData applicationData;
+    private GridsService gridsService;
 
     public SafetyServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
         this.applicationData = applicationData;
         this.tools = tools;
         this.inforws = inforWebServicesToolkitClient;
+        this.gridsService = new GridsServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
+    }
+
+    @Override
+    public List<String> getSafetiesIDList(InforContext context, String entityID, ENTITY_TYPE entityType) throws InforException {
+        SafetyService.validateInput(entityID, entityType);
+
+        String gridID, gridSpecialParam1, gridSpecialParam2, gridSpecialArg2;
+        switch (entityType) { // If comma-separated initialization was here, a simple yield would make it clearer
+            case Equipment:
+                gridID = GRID_EQUIPMENT.ID.getCode();
+                gridSpecialParam1 = GRID_EQUIPMENT.PARAM1.getCode();
+                gridSpecialParam2 = GRID_EQUIPMENT.PARAM2.getCode();
+                gridSpecialArg2 = GRID_EQUIPMENT.ARG2.getCode();
+                break;
+            case Workorder:
+                gridID = GRID_WORKORDER.ID.getCode();
+                gridSpecialParam1 = GRID_WORKORDER.PARAM1.getCode();
+                gridSpecialParam2 = GRID_WORKORDER.PARAM2.getCode();
+                gridSpecialArg2 = GRID_WORKORDER.ARG2.getCode();
+                break;
+            default:
+                throw Tools.generateFault("Invalid entityType");
+        }
+
+        if (entityType.equals(ENTITY_TYPE.Workorder)) {
+
+        }
+
+        GridRequest gridRequest = new GridRequest(gridID, gridID, SafetyService.GRID_ROW_COUNT;
+        gridRequest.addParam("param." + gridSpecialParam1, entityID);
+        gridRequest.addParam("param." + gridSpecialParam2, gridSpecialArg2);
+        gridRequest.addParam("param.organization", tools.getOrganizationCode(context));
+        gridRequest.addParam("param.tenant", tools.getTenant(context));
+
+        GridRequestResult res = gridsService.executeQuery(context, gridRequest);
+
+        List<GridField> targetColumn = res.getGridFields().stream()
+                .filter(gridField -> gridField.getName().equals(MECService.MEC_ID_COLUMN_NAME))
+                .collect(Collectors.toList());
+
+        if (targetColumn.isEmpty()) {
+            throw Tools.generateFault("Column with relatedWorkorderID (ID of the MEC) is not in dataspy");
+        }
+
+        int targetIndex = targetColumn.get(0).getOrder();
+
+        List<String> listOfIDs = Arrays.stream(res.getRows())
+                .map(gridRequestRow -> gridRequestRow.getCell()[targetIndex].getContent())
+                .collect(Collectors.toList());
+
+        return listOfIDs;
     }
 
     /**
