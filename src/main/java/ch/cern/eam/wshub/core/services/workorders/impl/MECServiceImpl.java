@@ -1,6 +1,7 @@
 package ch.cern.eam.wshub.core.services.workorders.impl;
 
 import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.services.entities.BatchResponse;
 import ch.cern.eam.wshub.core.services.grids.GridsService;
 import ch.cern.eam.wshub.core.services.grids.entities.*;
 import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
@@ -10,6 +11,7 @@ import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_entities.workorderequipment_001.AdditionalDetails;
+import net.datastream.schemas.mp_entities.workorderequipment_001.LinearReferenceInfo;
 import net.datastream.schemas.mp_entities.workorderequipment_001.WorkOrderEquipment;
 import net.datastream.schemas.mp_fields.ORGANIZATIONID_Type;
 import net.datastream.schemas.mp_fields.WOID_Type;
@@ -59,6 +61,11 @@ public class MECServiceImpl implements MECService {
         return res.getResultData().getRELATEDWORKORDERID().get(0).getJOBNUM();
     }
 
+    @Override
+    public BatchResponse<String> addWorkOrderEquipmentBatch(InforContext context, List<MEC> mecsToAdd) throws InforException {
+        return tools.batchOperation(context, this::addWorkOrderEquipment, mecsToAdd);
+    }
+
     /**
      * Deletes a MEC from the specified parent workorder.
      *
@@ -75,7 +82,7 @@ public class MECServiceImpl implements MECService {
         MP7396_RemoveWorkOrderEquipment_001 mp7396_removeWorkOrderEquipment_001 = new MP7396_RemoveWorkOrderEquipment_001();
 
         ORGANIZATIONID_Type organizationid_type = new ORGANIZATIONID_Type();
-        organizationid_type.setORGANIZATIONCODE("*");
+        organizationid_type.setORGANIZATIONCODE(context.getOrganizationCode());
 
         WOID_Type woid_typeParent = new WOID_Type();
         woid_typeParent.setJOBNUM(parentWorkorderID);
@@ -134,23 +141,25 @@ public class MECServiceImpl implements MECService {
         WorkOrderServiceImpl wos = new WorkOrderServiceImpl(applicationData, tools, this.inforws); // Creating service here so it is easily removed when infor ws is implemented later
         net.datastream.schemas.mp_entities.workorder_001.WorkOrder res = wos.readWorkOrderInfor(context, workorderID);
         WorkOrderEquipment woeq = new WorkOrderEquipment();
-        woeq.setWORKORDERID(res.getWORKORDERID());
+        woeq.setWORKORDERID(res.getPARENTWO());
         woeq.setEQUIPMENTID(res.getEQUIPMENTID());
         AdditionalDetails additionalDetails = new AdditionalDetails();
         additionalDetails.setWARRANTY(res.getWARRANTY());
         additionalDetails.setSAFETY(res.getSAFETY());
         additionalDetails.setDEPARTMENTID(res.getDEPARTMENTID());
         additionalDetails.setCOSTCODEID(res.getCOSTCODEID());
-//        additionalDetails.setLinearReferenceInfo(res.getLINEARREFERENCEEVENT()); //TODO remove?
+        if (res.getLINEARREFERENCEEVENT() != null) {
+            additionalDetails.setLinearReferenceInfo(new LinearReferenceInfo());
+            additionalDetails.getLinearReferenceInfo().setLINEARREFERENCEEVENT(res.getLINEARREFERENCEEVENT());
+        }
         additionalDetails.setLOCATIONID(res.getLOCATIONID());
         additionalDetails.setOBJTYPE(res.getOBJTYPE());
-        //TODO and the revision number?
+        additionalDetails.setRecordid(res.getRecordid());
+        additionalDetails.setRELATEDWORKORDERID(res.getWORKORDERID());
         woeq.setAdditionalDetails(additionalDetails);
-
 
         return woeq;
     }
-
 
     /**
      * Updates the target workorder with the specified properties.
@@ -162,26 +171,8 @@ public class MECServiceImpl implements MECService {
      */
     @Override
     public String syncWorkOrderEquipment(InforContext context, MEC updatedMEC) throws InforException {
-//        MECService.validateInput(parentWorkorderID, mecID, mecProperties);
-        //TODO WIP
-//        MP73
+        MECService.validateInput(updatedMEC);
 
-//        GridRequestResult woList = this.GetWorkorderMecIDs(context, parentWorkorderID);
-//        GridRequestCell[] relatedWO = Arrays.stream(woList.getRows()).
-//                filter(eq -> eq.getCell()[4].getContent().equals(equipmentID)).
-//                collect(Collectors.toList()).get(0).getCell();
-//
-//        System.out.println(relatedWO);
-//
-//        net.datastream.schemas.mp_entities.workorderequipment_001.WorkOrderEquipment workOrderEquipment = new net.datastream.schemas.mp_entities.workorderequipment_001.WorkOrderEquipment();
-//        tools.getInforFieldTools().transformWSHubObject(workOrderEquipment, entitySafetywshub, context);
-
-
-        // eqorg, eqname, eqdescri, eqtype, id
-
-
-
-        //here
         WorkOrderEquipment originalMecInfor = this.getWorkOrderMecInfor(context, updatedMEC.getRelatedWorkorderID());
         tools.getInforFieldTools().transformWSHubObject(originalMecInfor, updatedMEC, context);
 
@@ -193,4 +184,3 @@ public class MECServiceImpl implements MECService {
         return res.getResultData().getRELATEDWORKORDERID().getJOBNUM();
     }
 }
-
