@@ -82,7 +82,7 @@ public class MECServiceImpl implements MECService {
         MP7396_RemoveWorkOrderEquipment_001 mp7396_removeWorkOrderEquipment_001 = new MP7396_RemoveWorkOrderEquipment_001();
 
         ORGANIZATIONID_Type organizationid_type = new ORGANIZATIONID_Type();
-        organizationid_type.setORGANIZATIONCODE(context.getOrganizationCode());
+        organizationid_type.setORGANIZATIONCODE(tools.getOrganizationCode(context));
 
         WOID_Type woid_typeParent = new WOID_Type();
         woid_typeParent.setJOBNUM(parentWorkorderID);
