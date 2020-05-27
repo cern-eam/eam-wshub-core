@@ -3,16 +3,14 @@ package ch.cern.eam.wshub.core.services.workorders.impl;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.entities.BatchResponse;
 import ch.cern.eam.wshub.core.services.grids.GridsService;
-import ch.cern.eam.wshub.core.services.grids.entities.GridField;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
 import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.services.workorders.SafetyService;
-import ch.cern.eam.wshub.core.services.workorders.entities.EntitySafetyWSHub;
+import ch.cern.eam.wshub.core.services.workorders.entities.EntitySafety;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
-import net.datastream.schemas.mp_entities.entitysafety_001.EntitySafety;
 import net.datastream.schemas.mp_functions.mp3219_001.MP3219_AddEntitySafety_001;
 import net.datastream.schemas.mp_functions.mp3220_001.MP3220_SyncEntitySafety_001;
 import net.datastream.schemas.mp_functions.mp3221_001.MP3221_DeleteEntitySafety_001;
@@ -23,7 +21,9 @@ import net.datastream.schemas.mp_results.mp3222_001.MP3222_GetEntitySafety_001_R
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class SafetyServiceImpl implements SafetyService {
     private Tools tools;
@@ -42,48 +42,29 @@ public class SafetyServiceImpl implements SafetyService {
     public List<String> getSafetiesIDList(InforContext context, String entityID, ENTITY_TYPE entityType) throws InforException {
         SafetyService.validateInput(entityID, entityType);
 
+        GridRequest gridRequest;
         String gridID, gridSpecialParam1, gridSpecialParam2, gridSpecialArg2;
         switch (entityType) { // If comma-separated initialization was here, a simple yield would make it clearer
             case Equipment:
-                gridID = GRID_EQUIPMENT.ID.getCode();
-                gridSpecialParam1 = GRID_EQUIPMENT.PARAM1.getCode();
-                gridSpecialParam2 = GRID_EQUIPMENT.PARAM2.getCode();
-                gridSpecialArg2 = GRID_EQUIPMENT.ARG2.getCode();
+                gridRequest = new GridRequest(SafetyService.GRID_EQUIPMENT, GridRequest.GRIDTYPE.LIST, SafetyService.GRID_ROW_COUNT);
+                gridRequest.addParam("parameter.object", entityID);
+                gridRequest.addParam("parameter.objorganization", tools.getOrganizationCode(context));
                 break;
             case Workorder:
-                gridID = GRID_WORKORDER.ID.getCode();
-                gridSpecialParam1 = GRID_WORKORDER.PARAM1.getCode();
-                gridSpecialParam2 = GRID_WORKORDER.PARAM2.getCode();
-                gridSpecialArg2 = GRID_WORKORDER.ARG2.getCode();
+                gridRequest = new GridRequest(SafetyService.GRID_WORKORDER, GridRequest.GRIDTYPE.LIST, SafetyService.GRID_ROW_COUNT);
+                gridRequest.addParam("parameter.workordernum", entityID);
+//                gridRequest.addParam("param.workorderrtype", SafetyService.GRID_WO_TYPE);
+//                gridRequest.addParam("param.tenant", tools.getTenant(context));
+//                gridRequest.addParam("parameter.r5role", tool);
                 break;
             default:
                 throw Tools.generateFault("Invalid entityType");
         }
 
-        if (entityType.equals(ENTITY_TYPE.Workorder)) {
-
-        }
-
-        GridRequest gridRequest = new GridRequest(gridID, gridID, SafetyService.GRID_ROW_COUNT;
-        gridRequest.addParam("param." + gridSpecialParam1, entityID);
-        gridRequest.addParam("param." + gridSpecialParam2, gridSpecialArg2);
-        gridRequest.addParam("param.organization", tools.getOrganizationCode(context));
-        gridRequest.addParam("param.tenant", tools.getTenant(context));
-
         GridRequestResult res = gridsService.executeQuery(context, gridRequest);
 
-        List<GridField> targetColumn = res.getGridFields().stream()
-                .filter(gridField -> gridField.getName().equals(MECService.MEC_ID_COLUMN_NAME))
-                .collect(Collectors.toList());
-
-        if (targetColumn.isEmpty()) {
-            throw Tools.generateFault("Column with relatedWorkorderID (ID of the MEC) is not in dataspy");
-        }
-
-        int targetIndex = targetColumn.get(0).getOrder();
-
         List<String> listOfIDs = Arrays.stream(res.getRows())
-                .map(gridRequestRow -> gridRequestRow.getCell()[targetIndex].getContent())
+                .map(gridRequestRow -> gridRequestRow.getCell()[0].getContent()) // Assuming 0 is always the indes of the PK (order -1)
                 .collect(Collectors.toList());
 
         return listOfIDs;
@@ -98,7 +79,7 @@ public class SafetyServiceImpl implements SafetyService {
      * @throws InforException
      */
     @Override
-    public EntitySafety getEntitySafety(InforContext context, String safetyCode) throws InforException {
+    public net.datastream.schemas.mp_entities.entitysafety_001.EntitySafety getEntitySafety(InforContext context, String safetyCode) throws InforException {
         SafetyService.validateInput(safetyCode);
 
         MP3222_GetEntitySafety_001 getEntitySafety = new MP3222_GetEntitySafety_001();
@@ -118,7 +99,7 @@ public class SafetyServiceImpl implements SafetyService {
      * @throws InforException
      */
     @Override
-    public BatchResponse<EntitySafety> getEntitySafetiesBatch(InforContext context, List<String> safetyCodes) throws InforException {
+    public BatchResponse<net.datastream.schemas.mp_entities.entitysafety_001.EntitySafety> getEntitySafetiesBatch(InforContext context, List<String> safetyCodes) throws InforException {
         // Validate not needed now, since performed at .deleteSafety
 
         return tools.batchOperation(context, this::getEntitySafety, safetyCodes);
@@ -133,10 +114,10 @@ public class SafetyServiceImpl implements SafetyService {
      * @throws InforException
      */
     @Override
-    public String addSafety(InforContext context, EntitySafetyWSHub entitySafetywshub) throws InforException {
+    public String addSafety(InforContext context, EntitySafety entitySafetywshub) throws InforException {
         SafetyService.validateInput(entitySafetywshub);
 
-        EntitySafety entitySafetyInfor = new EntitySafety();
+        net.datastream.schemas.mp_entities.entitysafety_001.EntitySafety entitySafetyInfor = new net.datastream.schemas.mp_entities.entitysafety_001.EntitySafety();
         entitySafetyInfor.setSAFETYCODE("0"); // Safety code must be set to any value (infor will assign an internal one later)
 
         tools.getInforFieldTools().transformWSHubObject(entitySafetyInfor, entitySafetywshub, context);
@@ -158,12 +139,12 @@ public class SafetyServiceImpl implements SafetyService {
      * @throws InforException
      */
     @Override
-    public List<String> addSafeties(InforContext context, List<EntitySafetyWSHub> listOfSafeties) throws InforException {
+    public List<String> addSafeties(InforContext context, List<EntitySafety> listOfSafeties) throws InforException {
         SafetyService.validateInput(listOfSafeties);
 
         MP3219_AddEntitySafety_001 addEntitySafety = new MP3219_AddEntitySafety_001();
-        for (EntitySafetyWSHub entity : listOfSafeties) {
-            EntitySafety entitySafetyInfor = new EntitySafety();
+        for (EntitySafety entity : listOfSafeties) {
+            net.datastream.schemas.mp_entities.entitysafety_001.EntitySafety entitySafetyInfor = new net.datastream.schemas.mp_entities.entitysafety_001.EntitySafety();
             entitySafetyInfor.setSAFETYCODE("0"); // Safety code must be set to any value (infor will assign an internal one later)
             tools.getInforFieldTools().transformWSHubObject(entitySafetyInfor, entity, context);
             addEntitySafety.getEntitySafety().add(entitySafetyInfor);
@@ -187,10 +168,10 @@ public class SafetyServiceImpl implements SafetyService {
      * @throws InforException
      */
     @Override
-    public String addSafetyToEntity(InforContext context, EntitySafetyWSHub entitySafetywshub, String parentID, String entity) throws InforException {
+    public String addSafetyToEntity(InforContext context, EntitySafety entitySafetywshub, String parentID, String entity) throws InforException {
         // Validate not needed now, since performed at .addSafety
 
-        EntitySafetyWSHub cloned = new EntitySafetyWSHub(entitySafetywshub);
+        EntitySafety cloned = new EntitySafety(entitySafetywshub);
 
         cloned.setEntity(entity);
         cloned.setEntitySafetyCode(parentID);
@@ -211,12 +192,12 @@ public class SafetyServiceImpl implements SafetyService {
      * @throws InforException
      */
     @Override
-    public BatchResponse<String> addSafetyToEntitiesBatch(InforContext context, EntitySafetyWSHub entitySafetywshub, List<String> parentIDs, String entity) throws InforException {
+    public BatchResponse<String> addSafetyToEntitiesBatch(InforContext context, EntitySafety entitySafetywshub, List<String> parentIDs, String entity) throws InforException {
         // Validate not needed now, since performed at .addSafety
 
-        List<EntitySafetyWSHub> safetiesToAdd = new ArrayList<EntitySafetyWSHub>();
+        List<EntitySafety> safetiesToAdd = new ArrayList<EntitySafety>();
         parentIDs.stream().forEach(parentID -> {
-            EntitySafetyWSHub cloned = new EntitySafetyWSHub(entitySafetywshub);
+            EntitySafety cloned = new EntitySafety(entitySafetywshub);
             cloned.setEntity(entity);
             cloned.setEntitySafetyCode(parentID);
             safetiesToAdd.add(cloned);
@@ -268,13 +249,13 @@ public class SafetyServiceImpl implements SafetyService {
      * @throws InforException
      */
     @Override
-    public String syncEntitySafety(InforContext context, EntitySafetyWSHub entitySafetywshub) throws InforException {
+    public String syncEntitySafety(InforContext context, EntitySafety entitySafetywshub) throws InforException {
         SafetyService.validateInput(entitySafetywshub);
 
         MP3222_GetEntitySafety_001 getEntitySafety = new MP3222_GetEntitySafety_001();
         getEntitySafety.setSAFETYCODE(entitySafetywshub.getSafetyCode());
         MP3222_GetEntitySafety_001_Result resGet = tools.performInforOperation(context, inforws::getEntitySafetyOp, getEntitySafety);
-        EntitySafety entitySafetyInfor = resGet.getResultData().getEntitySafety();
+        net.datastream.schemas.mp_entities.entitysafety_001.EntitySafety entitySafetyInfor = resGet.getResultData().getEntitySafety();
 
         tools.getInforFieldTools().transformWSHubObject(entitySafetyInfor, entitySafetywshub, context);
 
@@ -285,7 +266,4 @@ public class SafetyServiceImpl implements SafetyService {
 
         return resSync.getResultData().getSAFETYCODE();
     }
-
-
-
 }
