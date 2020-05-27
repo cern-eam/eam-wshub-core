@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface UserDefinedTableService {
-
+    
     @Operation(logOperation = INFOR_OPERATION.USERDEFINEDTABLE_C, logDataReference1 = LogDataReferenceType.INPUT)
     String createUserDefinedTableRows(InforContext context, String tableName, List<UDTRow> rows) throws InforException;
 
