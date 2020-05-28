@@ -52,10 +52,11 @@ public class SafetyServiceImpl implements SafetyService {
                 break;
             case Workorder:
                 gridRequest = new GridRequest(SafetyService.GRID_WORKORDER, GridRequest.GRIDTYPE.LIST, SafetyService.GRID_ROW_COUNT);
-                gridRequest.addParam("parameter.workordernum", entityID);
+                gridRequest.addParam("param.workordernum", entityID);
 //                gridRequest.addParam("param.workorderrtype", SafetyService.GRID_WO_TYPE);
 //                gridRequest.addParam("param.tenant", tools.getTenant(context));
-//                gridRequest.addParam("parameter.r5role", tool);
+                gridRequest.addParam("parameter.r5role", "");
+                gridRequest.setUserFunctionName("WSJOBS");
                 break;
             default:
                 throw Tools.generateFault("Invalid entityType");
@@ -64,7 +65,7 @@ public class SafetyServiceImpl implements SafetyService {
         GridRequestResult res = gridsService.executeQuery(context, gridRequest);
 
         List<String> listOfIDs = Arrays.stream(res.getRows())
-                .map(gridRequestRow -> gridRequestRow.getCell()[0].getContent()) // Assuming 0 is always the indes of the PK (order -1)
+                .map(gridRequestRow -> gridRequestRow.getCell()[0].getContent()) // Assuming 0 is always the index of the PK (order -1)
                 .collect(Collectors.toList());
 
         return listOfIDs;
@@ -109,7 +110,7 @@ public class SafetyServiceImpl implements SafetyService {
      * Adds a safety (given a hazard and a precaution measure) to a specified entity.
      *
      * @param context the user credentials
-     * @param entitySafetywshub the safety to add
+     * @param entitySafetywshub the safety to add, with its entitySafetyCode in hashtag organization format (#*)
      * @return the ID of the added safety
      * @throws InforException
      */
@@ -162,7 +163,7 @@ public class SafetyServiceImpl implements SafetyService {
      *
      * @param context the user credentials
      * @param entitySafetywshub the safety to add
-     * @param parentID the parent id of the safety
+     * @param parentID the parent id of the safety, in hashtag organization format (#*)
      * @param entity the entity of the safety
      * @return the added safety id
      * @throws InforException
@@ -185,7 +186,7 @@ public class SafetyServiceImpl implements SafetyService {
      * be set in the entitySafetywshub object.
      *
      * @param context the user credentials
-     * @param entitySafetywshub the safety to add
+     * @param entitySafetywshub the safety to add, with its entitySafetyCode in hashtag organization format (#*)
      * @param parentIDs the list of parent ids of the safety
      * @param entity the entity of the safety
      * @return a list of the added safety ids
