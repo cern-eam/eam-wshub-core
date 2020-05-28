@@ -6,6 +6,8 @@ import ch.cern.eam.wshub.core.adapters.DateAdapter;
 import ch.cern.eam.wshub.core.annotations.InforField;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
+import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedListHelpable;
+import ch.cern.eam.wshub.core.services.userdefinedscreens.entities.UDLEntry;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlElement;
@@ -16,10 +18,11 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "R5OBJECTS")
-public class Equipment implements Serializable {
+public class Equipment implements Serializable, UserDefinedListHelpable {
 
 	/**
 	 * 
@@ -319,6 +322,9 @@ public class Equipment implements Serializable {
 
 	@Transient
 	private String copyFrom;
+
+	@Transient
+	private List<UDLEntry> userDefinedList;
 
 	public String getDescription() {
 		return description;
@@ -1172,12 +1178,23 @@ public class Equipment implements Serializable {
 		this.hierarchySystemCostRollUp = hierarchySystemCostRollUp;
 	}
 
+	@Override
 	public String getCopyFrom() {
 		return copyFrom;
 	}
 
 	public void setCopyFrom(String copyFrom) {
 		this.copyFrom = copyFrom;
+	}
+
+	@Override
+	public List<UDLEntry> getUserDefinedList() {
+		return userDefinedList;
+	}
+
+	@Override
+	public void setUserDefinedList(List<UDLEntry> userDefinedList) {
+		this.userDefinedList = userDefinedList;
 	}
 
 	@Override
@@ -1280,6 +1297,8 @@ public class Equipment implements Serializable {
 				+ (cernY != null ? "cernY=" + cernY + ", " : "") + (cernZ != null ? "cernZ=" + cernZ + ", " : "")
 				+ (cernPos != null ? "cernPos=" + cernPos + ", " : "")
 				+ (cernFonc != null ? "cernFonc=" + cernFonc + ", ": "")
-				+ (copyFrom != null ? "copyFrom=" + copyFrom : "") + "]";
+				+ (copyFrom != null ? "copyFrom=" + copyFrom + ", " : "")
+				+ (userDefinedList != null ? "userDefinedList=" + userDefinedList : "")
+				+ "]";
 	}
 }

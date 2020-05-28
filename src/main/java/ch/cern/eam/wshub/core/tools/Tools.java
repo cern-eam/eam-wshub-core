@@ -219,6 +219,9 @@ public class Tools {
 		return response;
 	}
 
+	public void processRunnables(Runnable... runnables) throws InforException {
+		processRunnables(Arrays.asList(runnables));
+	}
 
 	public void processRunnables(List<Runnable> mylist) throws InforException {
 		try {
@@ -319,6 +322,11 @@ public class Tools {
 			unknown2 = null;
 		} else {
 			holder = new Holder<>(createInforSession(context));
+		}
+
+		// Every MP class extending BaseSchemaRequestElement has ESIGNATURE property
+		if (argument instanceof BaseSchemaRequestElement && context.getSignature() != null) {
+			((BaseSchemaRequestElement) argument).setESIGNATURE(inforFieldTools.transformWSHubObject(new ESIGNATURE(), context.getSignature(), context));
 		}
 
 		String tenant = getTenant(context);

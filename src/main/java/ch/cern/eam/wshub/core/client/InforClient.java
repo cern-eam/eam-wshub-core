@@ -20,6 +20,8 @@ import ch.cern.eam.wshub.core.services.material.*;
 import ch.cern.eam.wshub.core.services.material.impl.*;
 import ch.cern.eam.wshub.core.services.workorders.SafetyService;
 import ch.cern.eam.wshub.core.services.workorders.impl.SafetyServiceImpl;
+import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedListService;
+import ch.cern.eam.wshub.core.services.userdefinedscreens.impl.UserDefinedListServiceImpl;
 import ch.cern.eam.wshub.core.services.workorders.*;
 import ch.cern.eam.wshub.core.services.workorders.impl.*;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedTableService;
@@ -117,6 +119,9 @@ public class InforClient implements Serializable {
     private EquipmentConfigurationService equipmentConfigurationService;
 
     private UserDefinedTableService userDefinedTableServices;
+    private UserDefinedListService userDefinedListService;
+
+    private MECService mecService;
 
     private SafetyService safetyService;
 
@@ -256,7 +261,9 @@ public class InforClient implements Serializable {
             inforClient.dataspyService = proxy(DataspyService.class, new DataspyServiceImpl(applicationData, tools, inforWebServicesToolkitClient),inforInterceptor, tools);
             inforClient.userGroupMenuService = proxy(UserGroupMenuService.class, new UserGroupMenuServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.userDefinedTableServices = proxy(UserDefinedTableService.class, new UserDefinedTableServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
+            inforClient.userDefinedListService = proxy(UserDefinedListService.class, new UserDefinedListServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.routeService = proxy(RouteService.class, new RouteServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
+            inforClient.mecService = proxy(MECService.class, new MECServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.inforWebServicesToolkitClient = inforWebServicesToolkitClient;
             inforClient.safetyService = proxy(SafetyService.class, new SafetyServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             if (!tools.isDatabaseConnectionConfigured()) {
@@ -394,6 +401,8 @@ public class InforClient implements Serializable {
         return userDefinedTableServices;
     }
 
+    public UserDefinedListService getUserDefinedListService() { return userDefinedListService; }
+
     public InforWebServicesPT getInforWebServicesToolkitClient() {return inforWebServicesToolkitClient; }
 
     public Tools getTools() {
@@ -420,5 +429,6 @@ public class InforClient implements Serializable {
 
     public SafetyService getSafetyService() { return safetyService; }
 
+    public MECService getMECService() { return mecService; }
 
 }

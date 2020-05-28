@@ -4,30 +4,27 @@ import ch.cern.eam.wshub.core.annotations.BooleanType;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.equipment.PositionService;
 import ch.cern.eam.wshub.core.services.equipment.entities.Equipment;
+import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedListService;
+import ch.cern.eam.wshub.core.services.userdefinedscreens.impl.UserDefinedListServiceImpl;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
-import net.datastream.schemas.mp_entities.positionequipment_001.ManufacturerInfo;
 import net.datastream.schemas.mp_entities.positionequipment_001.PositionEquipment;
-import net.datastream.schemas.mp_entities.positionequipment_001.PositionEquipment.DORMANT;
-import net.datastream.schemas.mp_entities.positionequipment_001.Variables;
 import net.datastream.schemas.mp_entities.positionhierarchy_002.*;
 import net.datastream.schemas.mp_fields.*;
-import net.datastream.schemas.mp_functions.SessionType;
-import net.datastream.schemas.mp_functions.mp0305_001.MP0305_GetAssetEquipmentDefault_001;
 import net.datastream.schemas.mp_functions.mp0306_001.MP0306_AddPositionEquipment_001;
 import net.datastream.schemas.mp_functions.mp0307_001.MP0307_GetPositionEquipment_001;
 import net.datastream.schemas.mp_functions.mp0308_001.MP0308_SyncPositionEquipment_001;
 import net.datastream.schemas.mp_functions.mp0309_001.MP0309_DeletePositionEquipment_001;
 import net.datastream.schemas.mp_functions.mp0310_001.MP0310_GetPositionEquipmentDefault_001;
 import net.datastream.schemas.mp_functions.mp0328_002.MP0328_GetPositionParentHierarchy_002;
-import net.datastream.schemas.mp_results.mp0305_001.MP0305_GetAssetEquipmentDefault_001_Result;
 import net.datastream.schemas.mp_results.mp0306_001.MP0306_AddPositionEquipment_001_Result;
 import net.datastream.schemas.mp_results.mp0307_001.MP0307_GetPositionEquipment_001_Result;
 import net.datastream.schemas.mp_results.mp0310_001.MP0310_GetPositionEquipmentDefault_001_Result;
 import net.datastream.schemas.mp_results.mp0328_002.MP0328_GetPositionParentHierarchy_002_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
-import javax.xml.ws.Holder;
+
+import java.util.Arrays;
 
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.*;
 
@@ -37,11 +34,13 @@ public class PositionServiceImpl implements PositionService {
 	private Tools tools;
 	private InforWebServicesPT inforws;
 	private ApplicationData applicationData;
+	private UserDefinedListService userDefinedListService;
 
 	public PositionServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
 		this.applicationData = applicationData;
 		this.tools = tools;
 		this.inforws = inforWebServicesToolkitClient;
+		this.userDefinedListService = new UserDefinedListServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
 	}
 
 	public String createPosition(InforContext context, Equipment positionParam) throws InforException {
@@ -63,9 +62,11 @@ public class PositionServiceImpl implements PositionService {
 		addPosition.setPositionEquipment(positionEquipment);
 		MP0306_AddPositionEquipment_001_Result result =
 			tools.performInforOperation(context, inforws::addPositionEquipmentOp, addPosition);
+		String equipmentCode = result.getResultData().getPOSITIONID().getEQUIPMENTCODE();
+		userDefinedListService.writeUDLToEntityCopyFrom(context, positionParam, "OBJ", equipmentCode);
 		//TODO Update CERN properties
 		//equipmentOther.updateEquipmentCERNProperties(positionParam);
-		return result.getResultData().getPOSITIONID().getEQUIPMENTCODE();
+		return equipmentCode;
 	}
 
 	public String deletePosition(InforContext context, String positionCode) throws InforException {
@@ -76,7 +77,7 @@ public class PositionServiceImpl implements PositionService {
 		deletePosition.getPOSITIONID().setEQUIPMENTCODE(positionCode);
 
 		tools.performInforOperation(context, inforws::deletePositionEquipmentOp, deletePosition);
-
+		userDefinedListService.deleteUDLFromEntity(context, "OBJ", positionCode);
 		return positionCode;
 	}
 
@@ -106,7 +107,9 @@ public class PositionServiceImpl implements PositionService {
 		MP0310_GetPositionEquipmentDefault_001_Result result =
 				tools.performInforOperation(context, inforws::getPositionEquipmentDefaultOp, getPositionEquipmentDefault_001);
 
-		return tools.getInforFieldTools().transformInforObject(new Equipment(), result.getResultData().getPositionEquipment());
+		Equipment equipment = tools.getInforFieldTools().transformInforObject(new Equipment(), result.getResultData().getPositionEquipment());
+		equipment.setUserDefinedList(Arrays.asList());
+		return equipment;
 	}
 
 	public Equipment readPosition(InforContext context, String positionCode) throws InforException {
@@ -286,6 +289,7 @@ public class PositionServiceImpl implements PositionService {
 			}
 		}
 
+		userDefinedListService.readUDLToEntity(context, position, "OBJ", positionCode);
 		return position;
 	}
 
@@ -319,6 +323,7 @@ public class PositionServiceImpl implements PositionService {
 		MP0308_SyncPositionEquipment_001 syncPosition = new MP0308_SyncPositionEquipment_001();
 		syncPosition.setPositionEquipment(positionEquipment);
 		tools.performInforOperation(context, inforws::syncPositionEquipmentOp, syncPosition);
+		userDefinedListService.writeUDLToEntity(context, positionParam, "OBJ", positionParam.getCode());
 		//TODO Update CERN properties
 		//equipmentOther.updateEquipmentCERNProperties(positionParam);
 		return positionParam.getCode();

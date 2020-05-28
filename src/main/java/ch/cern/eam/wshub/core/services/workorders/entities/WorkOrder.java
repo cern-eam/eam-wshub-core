@@ -7,6 +7,8 @@ import ch.cern.eam.wshub.core.adapters.DateAdapter;
 import ch.cern.eam.wshub.core.annotations.InforField;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
+import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedListHelpable;
+import ch.cern.eam.wshub.core.services.userdefinedscreens.entities.UDLEntry;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -19,12 +21,12 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.StringJoiner;
+import java.util.List;
 
 @XmlAccessorType(XmlAccessType.PROPERTY)
 @Entity
 @Table(name = "R5EVENTS")
-public class WorkOrder implements Serializable {
+public class WorkOrder implements Serializable, UserDefinedListHelpable {
 	/**
 	 * 
 	 */
@@ -206,6 +208,9 @@ public class WorkOrder implements Serializable {
 
 	@Transient
 	private String copyFrom;
+
+	@Transient
+	private List<UDLEntry> userDefinedList;
 
 	public String getNumber() {
 		return number;
@@ -657,12 +662,23 @@ public class WorkOrder implements Serializable {
 		this.confirmedIncompleteChecklist = confirmedIncompleteChecklist;
 	}
 
+	@Override
 	public String getCopyFrom() {
 		return copyFrom;
 	}
 
 	public void setCopyFrom(String copyFrom) {
 		this.copyFrom = copyFrom;
+	}
+
+	@XmlElementWrapper(name = "userDefinedList")
+	@XmlElement(name = "userDefinedListEntry")
+	@Override
+	public List<UDLEntry> getUserDefinedList() { return userDefinedList; }
+
+	@Override
+	public void setUserDefinedList(List<UDLEntry> userDefinedList) {
+		this.userDefinedList = userDefinedList;
 	}
 
 	@Override
@@ -718,6 +734,8 @@ public class WorkOrder implements Serializable {
 				+ (downtimeHours != null ? "downtimeHours=" + downtimeHours + ", " : "")
 				+ (userDefinedFields != null ? "userDefinedFields=" + userDefinedFields + ", " : "")
 				+ (origWO != null ? "origWO=" + origWO + ", ": "")
-				+ (copyFrom != null ? "copyFrom=" + copyFrom : "")  + "]";
+				+ (copyFrom != null ? "copyFrom=" + copyFrom + ", " : "")
+				+ (userDefinedList != null ? "userDefinedList=" + userDefinedList : "")
+				+ "]";
 	}
 }
