@@ -4,6 +4,7 @@ import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.equipment.AssetService;
 import ch.cern.eam.wshub.core.services.equipment.entities.Equipment;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedListService;
+import ch.cern.eam.wshub.core.services.userdefinedscreens.entities.EntityId;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.impl.UserDefinedListServiceImpl;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.annotations.BooleanType;
@@ -25,6 +26,7 @@ import net.datastream.wsdls.inforws.InforWebServicesPT;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.*;
 
 import java.util.Arrays;
+import java.util.HashMap;
 
 @SuppressWarnings("Duplicates")
 public class AssetServiceImpl implements AssetService {
@@ -55,7 +57,7 @@ public class AssetServiceImpl implements AssetService {
                 tools.performInforOperation(context, inforws::getAssetEquipmentDefaultOp, getAssetEquipmentDefault_001);
 
         Equipment equipment = tools.getInforFieldTools().transformInforObject(new Equipment(), result.getResultData().getAssetEquipment());
-        equipment.setUserDefinedList(Arrays.asList());
+        equipment.setUserDefinedList(new HashMap<>());
         return equipment;
     }
 
@@ -75,7 +77,7 @@ public class AssetServiceImpl implements AssetService {
         tools.processRunnables(
                 () -> asset.setManufacturerDesc(tools.getFieldDescriptionsTools().readManufacturerDesc(context, asset.getManufacturerCode())),
                 () -> asset.setBinDesc(tools.getFieldDescriptionsTools().readBinDesc(context, asset.getStoreCode(), asset.getBin())),
-                () -> userDefinedListService.readUDLToEntity(context, asset, "OBJ", assetCode)
+                () -> userDefinedListService.readUDLToEntity(context, asset, new EntityId("OBJ", assetCode))
         );
 
         // HIERARCHY
@@ -317,7 +319,7 @@ public class AssetServiceImpl implements AssetService {
         // UPDATE EQUIPMENT
         //
         this.updateInforAsset(context, assetEquipment);
-        userDefinedListService.writeUDLToEntity(context, assetParam, "OBJ", assetParam.getCode());
+        userDefinedListService.writeUDLToEntity(context, assetParam, new EntityId("OBJ", assetParam.getCode()));
 
         return assetParam.getCode();
     }
@@ -342,7 +344,7 @@ public class AssetServiceImpl implements AssetService {
         MP0301_AddAssetEquipment_001_Result addAssetResult =
             tools.performInforOperation(context, inforws::addAssetEquipmentOp, addAsset);
         String equipmentCode = addAssetResult.getResultData().getASSETID().getEQUIPMENTCODE();
-        userDefinedListService.writeUDLToEntityCopyFrom(context, assetParam, "OBJ", equipmentCode);
+        userDefinedListService.writeUDLToEntityCopyFrom(context, assetParam, new EntityId("OBJ", equipmentCode));
         return equipmentCode;
     }
 
@@ -353,7 +355,7 @@ public class AssetServiceImpl implements AssetService {
         deleteAsset.getASSETID().setEQUIPMENTCODE(assetCode);
 
         tools.performInforOperation(context, inforws::deleteAssetEquipmentOp, deleteAsset);
-        userDefinedListService.deleteUDLFromEntity(context, "OBJ", assetCode);
+        userDefinedListService.deleteUDLFromEntity(context, new EntityId("OBJ", assetCode));
         return assetCode;
     }
 

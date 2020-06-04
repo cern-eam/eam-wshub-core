@@ -5,6 +5,7 @@ import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.equipment.SystemService;
 import ch.cern.eam.wshub.core.services.equipment.entities.Equipment;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedListService;
+import ch.cern.eam.wshub.core.services.userdefinedscreens.entities.EntityId;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.impl.UserDefinedListServiceImpl;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
@@ -24,6 +25,7 @@ import net.datastream.schemas.mp_results.mp0329_001.MP0329_GetSystemParentHierar
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
 import java.util.Arrays;
+import java.util.HashMap;
 
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.*;
 
@@ -55,7 +57,7 @@ public class SystemServiceImpl implements SystemService {
 				tools.performInforOperation(context, inforws::getSystemEquipmentDefaultOp, getSystemEquipmentDefault_001);
 
 		Equipment equipment = tools.getInforFieldTools().transformInforObject(new Equipment(), result.getResultData().getSystemEquipment());
-		equipment.setUserDefinedList(Arrays.asList());
+		equipment.setUserDefinedList(new HashMap<>());
 		return equipment;
 	}
 
@@ -107,7 +109,7 @@ public class SystemServiceImpl implements SystemService {
 					systemEquipment.getSystemParentHierarchy().getNONDEPENDENTPRIMARYSYSTEM().getCOSTROLLUP()));
 		}
 
-		userDefinedListService.readUDLToEntity(context, system, "OBJ", systemCode);
+		userDefinedListService.readUDLToEntity(context, system, new EntityId("OBJ", systemCode));
 		return system;
 	}
 
@@ -139,7 +141,8 @@ public class SystemServiceImpl implements SystemService {
 			MP0313_SyncSystemEquipment_001 syncPosition = new MP0313_SyncSystemEquipment_001();
 			syncPosition.setSystemEquipment(systemEquipment);
 			tools.performInforOperation(context, inforws::syncSystemEquipmentOp, syncPosition);
-			userDefinedListService.writeUDLToEntity(context, systemParam, "OBJ", systemParam.getCode());
+			userDefinedListService.writeUDLToEntity(context,
+				systemParam, new EntityId("OBJ", systemParam.getCode()));
 			return systemParam.getCode();
 
 	}
@@ -163,9 +166,10 @@ public class SystemServiceImpl implements SystemService {
 		addPosition.setSystemEquipment(systemEquipment);
 		MP0311_AddSystemEquipment_001_Result result =
 			tools.performInforOperation(context, inforws::addSystemEquipmentOp, addPosition);
-		String equipmentCode = result.getResultData().getSYSTEMID().getEQUIPMENTCODE();
-		userDefinedListService.writeUDLToEntityCopyFrom(context, systemParam, "OBJ", equipmentCode);
-		return equipmentCode;
+		String systemCode = result.getResultData().getSYSTEMID().getEQUIPMENTCODE();
+		userDefinedListService.writeUDLToEntityCopyFrom(context,
+			systemParam, new EntityId("OBJ", systemCode));
+		return systemCode;
 
 	}
 
@@ -177,7 +181,7 @@ public class SystemServiceImpl implements SystemService {
 		deleteSystem.getSYSTEMID().setEQUIPMENTCODE(systemCode);
 
 		tools.performInforOperation(context, inforws::deleteSystemEquipmentOp, deleteSystem);
-		userDefinedListService.deleteUDLFromEntity(context, "OBJ", systemCode);
+		userDefinedListService.deleteUDLFromEntity(context, new EntityId("OBJ", systemCode));
 		return systemCode;
 	}
 

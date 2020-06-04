@@ -43,10 +43,9 @@ public interface UserDefinedListService {
      * the read will still suceed with all other fields.
      * @param context infor context
      * @param entity the entity that you are reading
-     * @param entityType the entity type that you are reading
-     * @param code the code of the entity that you are reading
+     * @param entityId the id of the entity that you are reading
      */
-    void readUDLToEntity(InforContext context, UserDefinedListHelpable entity, String entityType, String code);
+    void readUDLToEntity(InforContext context, UserDefinedListHelpable entity, EntityId entityId);
 
     /**
      * This method should be used after you create an entity in Infor. It will insert the UDL in the database.
@@ -54,10 +53,9 @@ public interface UserDefinedListService {
      * If this does not happen, a SEVERE log level message will be logged and no exception will be thrown.
      * @param context infor context
      * @param entity the entity that you are creating
-     * @param entityType the entity type that you are creating
-     * @param code the code of the entity that you are creating
+     * @param entityId the id of the entity that you are reading
      */
-    void writeUDLToEntityCopyFrom(InforContext context, UserDefinedListHelpable entity, String entityType, String code);
+    void writeUDLToEntityCopyFrom(InforContext context, UserDefinedListHelpable entity, EntityId entityId);
 
     /**
      * This method should be used after you update an entity in Infor. It will update the UDL in the database.
@@ -65,18 +63,16 @@ public interface UserDefinedListService {
      * If this does not happen, a SEVERE log level message will be logged and no exception will be thrown.
      * @param context infor context
      * @param entity the entity that you are updating
-     * @param entityType the entity type that you are updating
-     * @param code the code of the entity that you are updating
+     * @param entityId the id of the entity that you are reading
      */
-    void writeUDLToEntity(InforContext context, UserDefinedListHelpable entity, String entityType, String code);
+    void writeUDLToEntity(InforContext context, UserDefinedListHelpable entity, EntityId entityId);
 
     /**
      * This method should be used after you delete an entity in Infor. It will clear its UDL in the database.
      * As it is impossible/difficult to rollback the Infor entity deletion, this method is always assumed to succeed.
      * If this does not happen, a SEVERE log level message will be logged and no exception will be thrown.
      * @param context infor context
-     * @param entityType the entity type that you are deleting
-     * @param code the code of the entity that you are deleting
+     * @param entityId the id of the entity that you are reading
      */
-    void deleteUDLFromEntity(InforContext context, String entityType, String code);
+    void deleteUDLFromEntity(InforContext context, EntityId entityId);
 }

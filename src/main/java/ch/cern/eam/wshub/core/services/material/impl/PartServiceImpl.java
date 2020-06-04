@@ -4,6 +4,7 @@ import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.material.PartService;
 import ch.cern.eam.wshub.core.services.material.entities.Part;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedListService;
+import ch.cern.eam.wshub.core.services.userdefinedscreens.entities.EntityId;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.impl.UserDefinedListServiceImpl;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
@@ -23,6 +24,8 @@ import net.datastream.schemas.mp_results.mp0244_001.MP0244_GetPartDefault_001_Re
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
 import java.util.Arrays;
+import java.util.HashMap;
+
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.isEmpty;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.toCodeString;
 
@@ -53,7 +56,7 @@ public class PartServiceImpl implements PartService {
 				tools.performInforOperation(context, inforws::getPartDefaultOp, getPartDefault_001);
 
 		Part part = tools.getInforFieldTools().transformInforObject(new Part(), result.getResultData().getPartDefault());
-		part.setUserDefinedList(Arrays.asList());
+		part.setUserDefinedList(new HashMap<>());
 		return part;
 	}
 
@@ -66,7 +69,7 @@ public class PartServiceImpl implements PartService {
 			() -> part.setCategoryDesc(tools.getFieldDescriptionsTools().readCategoryDesc(context, part.getCategoryCode())),
 			() -> part.setUOMDesc(tools.getFieldDescriptionsTools().readUOMDesc(context, part.getUOM())),
 			() -> part.setCommodityDesc(tools.getFieldDescriptionsTools().readCommodityDesc(context,  part.getCommodityCode())),
-			() -> userDefinedListService.readUDLToEntity(context, part, "PART", partCode)
+			() -> userDefinedListService.readUDLToEntity(context, part, new EntityId("PART", partCode))
 		);
 
 		return part;
@@ -106,7 +109,7 @@ public class PartServiceImpl implements PartService {
 			tools.performInforOperation(context, inforws::addPartOp, addPart);
 
 		String partCode = result.getPARTID().getPARTCODE();
-		userDefinedListService.writeUDLToEntityCopyFrom(context, partParam, "PART", partCode);
+		userDefinedListService.writeUDLToEntityCopyFrom(context, partParam, new EntityId("PART", partCode));
 		return partCode;
 	}
 
@@ -152,7 +155,7 @@ public class PartServiceImpl implements PartService {
 			tools.performInforOperation(context, inforws::syncPartOp, syncPart);
 
 		String partCode = result.getResultData().getPart().getPARTID().getPARTCODE();
-		userDefinedListService.writeUDLToEntity(context, partParam, "PART", partCode);
+		userDefinedListService.writeUDLToEntity(context, partParam, new EntityId("PART", partCode));
 		return partCode;
 
 	}
@@ -164,7 +167,7 @@ public class PartServiceImpl implements PartService {
 		deletePart.getPARTID().setPARTCODE(partCode);
 
 		tools.performInforOperation(context, inforws::deletePartOp, deletePart);
-		userDefinedListService.deleteUDLFromEntity(context, "PART", partCode);
+		userDefinedListService.deleteUDLFromEntity(context, new EntityId("PART", partCode));
 		return partCode;
 	}
 
