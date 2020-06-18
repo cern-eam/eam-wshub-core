@@ -114,7 +114,6 @@ public class EquipmentConfigurationEntity implements Serializable {
     private BigDecimal equipmentValue;
 
 
-
     // Equipment Generation Details
     @Transient
     @InforField(xpath = "EquipmentGenerationDetails/EQUIPMENTPREFIX")
@@ -155,6 +154,21 @@ public class EquipmentConfigurationEntity implements Serializable {
     @Transient
     @InforField(xpath = "EquipmentGenerationDetails/COMMISSIONINGWORKORDERID/DESCRIPTION", readOnly = true)
     private String commissioningWODesc;
+
+
+    // Tracking Details
+    @Transient
+    @InforField(xpath = "TrackingDetails/MANUFACTURERCODE")
+    private String manufacturerCode;
+
+    @Transient
+    @InforField(xpath = "TrackingDetails/MODEL")
+    private String model;
+
+    @Transient
+    @InforField(xpath = "TrackingDetails/MODELREVISION")
+    private String modelRevision;
+
 
     public String getEquipmentConfigCode() {
         return equipmentConfigCode;
@@ -428,6 +442,30 @@ public class EquipmentConfigurationEntity implements Serializable {
         this.commissioningWODesc = commissioningWODesc;
     }
 
+    public String getManufacturerCode() {
+        return manufacturerCode;
+    }
+
+    public void setManufacturerCode(String manufacturerCode) {
+        this.manufacturerCode = manufacturerCode;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
+    }
+
+    public String getModelRevision() {
+        return modelRevision;
+    }
+
+    public void setModelRevision(String modelRevision) {
+        this.modelRevision = modelRevision;
+    }
+
     @Override
     public String toString() {
         return "EquipmentConfigurationEntity{" +
@@ -465,6 +503,9 @@ public class EquipmentConfigurationEntity implements Serializable {
                 ", sampleCode='" + sampleCode + '\'' +
                 ", commissioningWONum='" + commissioningWONum + '\'' +
                 ", commissioningWODesc='" + commissioningWODesc + '\'' +
+                ", manufacturerCode='" + manufacturerCode + '\'' +
+                ", model='" + model + '\'' +
+                ", modelRevision='" + modelRevision + '\'' +
                 '}';
     }
 }
