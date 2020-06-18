@@ -73,7 +73,7 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
 	private String profileCode;
 	//
 	@Transient
-	@InforField(xpath = "STATUS/STATUSCODE", nullifyParentLevel = 1)
+	@InforField(xpath = "STATUS/STATUSCODE")
 	private String statusCode;
 	@Transient
 	@InforField(xpath = "STATUS/DESCRIPTION", readOnly = true)

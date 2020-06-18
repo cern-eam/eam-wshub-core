@@ -2,6 +2,7 @@ package ch.cern.eam.wshub.core.services.equipment.impl;
 
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.equipment.EquipmentConfigurationService;
+import ch.cern.eam.wshub.core.services.equipment.entities.Equipment;
 import ch.cern.eam.wshub.core.services.equipment.entities.EquipmentConfigurationEntity;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
@@ -53,108 +54,8 @@ public class EquipmentConfigurationServiceImpl implements EquipmentConfiguration
 
     @Override
     public EquipmentConfigurationEntity readEquipmentConfiguration(InforContext context, String equipmentConfigurationCode, BigDecimal revisionNum) throws InforException {
-
         EquipmentConfiguration inforEquipmentConfiguration = readInforEquipmentConfiguration(context, equipmentConfigurationCode, revisionNum);
-        EquipmentConfigurationEntity equipmentConfiguration = new EquipmentConfigurationEntity();
-
-
-        if(inforEquipmentConfiguration.getEQUIPMENTCONFIGURATIONID() != null){
-            equipmentConfiguration.setEquipmentConfigCode(inforEquipmentConfiguration.getEQUIPMENTCONFIGURATIONID().getEQUIPMENTCONFIGURATIONCODE());
-            equipmentConfiguration.setEquipmentConfigDesc(inforEquipmentConfiguration.getEQUIPMENTCONFIGURATIONID().getDESCRIPTION());
-        }
-
-        if(inforEquipmentConfiguration.getEQUIPMENTCONFIGSTATUS() != null){
-            equipmentConfiguration.setEquipmentConfigStatusCode(inforEquipmentConfiguration.getEQUIPMENTCONFIGSTATUS().getSTATUSCODE());
-            equipmentConfiguration.setEquipmentConfigStatusDesc(inforEquipmentConfiguration.getEQUIPMENTCONFIGSTATUS().getDESCRIPTION());
-        }
-
-        if(inforEquipmentConfiguration.getEQUIPMENTCONFIGURATIONID() != null){
-            equipmentConfiguration.setRevisionNum(tools.getDataTypeTools().decodeQuantity(inforEquipmentConfiguration.getEQUIPMENTCONFIGURATIONID().getREVISIONNUM()));
-        }
-
-        if(inforEquipmentConfiguration.getDEPARTMENTID() != null){
-            equipmentConfiguration.setConfigurationDepartmentCode(inforEquipmentConfiguration.getDEPARTMENTID().getDEPARTMENTCODE());
-            equipmentConfiguration.setConfigurationDepartmentDesc(inforEquipmentConfiguration.getDEPARTMENTID().getDESCRIPTION());
-        }
-
-        if(inforEquipmentConfiguration.getConfigurationDetails() != null) {
-
-            if(inforEquipmentConfiguration.getConfigurationDetails().getCLASSID() != null){
-                equipmentConfiguration.setConfigurationClassCode(inforEquipmentConfiguration.getConfigurationDetails().getCLASSID().getCLASSCODE());
-                equipmentConfiguration.setConfigurationClassDesc(inforEquipmentConfiguration.getConfigurationDetails().getCLASSID().getDESCRIPTION());
-            }
-
-            if(inforEquipmentConfiguration.getConfigurationDetails().getCATEGORYID() != null){
-                equipmentConfiguration.setConfigurationCategoryCode(inforEquipmentConfiguration.getConfigurationDetails().getCATEGORYID().getCATEGORYCODE());
-                equipmentConfiguration.setConfigurationCategoryDesc(inforEquipmentConfiguration.getConfigurationDetails().getCATEGORYID().getDESCRIPTION());
-            }
-
-            if(inforEquipmentConfiguration.getConfigurationDetails().getCREATEDDATE() != null){
-                equipmentConfiguration.setDateCreated(tools.getDataTypeTools().decodeInforDate(inforEquipmentConfiguration.getConfigurationDetails().getCREATEDDATE()));
-            }
-
-            if(inforEquipmentConfiguration.getConfigurationDetails().getCREATEDBY() != null){
-                equipmentConfiguration.setCreatedBy(inforEquipmentConfiguration.getConfigurationDetails().getCREATEDBY().getUSERCODE());
-            }
-
-            if(inforEquipmentConfiguration.getConfigurationDetails().getUPDATEDBY() != null){
-                equipmentConfiguration.setUpdatedBy(inforEquipmentConfiguration.getConfigurationDetails().getUPDATEDBY().getUSERCODE());
-            }
-
-            if(inforEquipmentConfiguration.getConfigurationDetails().getDATEUPDATED() != null){
-                equipmentConfiguration.setDateUpdated(tools.getDataTypeTools().decodeInforDate(inforEquipmentConfiguration.getConfigurationDetails().getDATEUPDATED()));
-            }
-
-        }
-
-        if(inforEquipmentConfiguration.getEQUIPMENTCONFIGURATIONID() != null){
-            equipmentConfiguration.setEquipmentConfigCode(inforEquipmentConfiguration.getEQUIPMENTCONFIGURATIONID().getEQUIPMENTCONFIGURATIONCODE());
-            equipmentConfiguration.setEquipmentConfigDesc(inforEquipmentConfiguration.getEQUIPMENTCONFIGURATIONID().getDESCRIPTION());
-
-            if (inforEquipmentConfiguration.getEQUIPMENTCONFIGURATIONID().getORGANIZATIONID() != null) {
-                equipmentConfiguration.setOrganizationCode(inforEquipmentConfiguration.getEQUIPMENTCONFIGURATIONID().getORGANIZATIONID().getORGANIZATIONCODE());
-                equipmentConfiguration.setOrganizationDesc(inforEquipmentConfiguration.getEQUIPMENTCONFIGURATIONID().getORGANIZATIONID().getDESCRIPTION());
-            }
-        }
-
-        if(inforEquipmentConfiguration.getEquipmentGenerationDetails() != null) {
-
-            if(inforEquipmentConfiguration.getEquipmentGenerationDetails().getEQUIPMENTSUFFIX() != null){
-                equipmentConfiguration.setEquipmentSuffix(inforEquipmentConfiguration.getEquipmentGenerationDetails().getEQUIPMENTSUFFIX());
-            }
-
-            if(inforEquipmentConfiguration.getEquipmentGenerationDetails().getEQUIPMENTPREFIX() != null){
-                equipmentConfiguration.setEquipmentPrefix(inforEquipmentConfiguration.getEquipmentGenerationDetails().getEQUIPMENTPREFIX());
-            }
-
-            if(inforEquipmentConfiguration.getEquipmentGenerationDetails().getSTATUS() != null){
-                equipmentConfiguration.setEquipmentStatusCode(inforEquipmentConfiguration.getEquipmentGenerationDetails().getSTATUS().getSTATUSCODE());
-                equipmentConfiguration.setEquipmentStatusDesc(inforEquipmentConfiguration.getEquipmentGenerationDetails().getSTATUS().getDESCRIPTION());
-            }
-
-            if(inforEquipmentConfiguration.getEquipmentGenerationDetails().getCREATEASSPECIFIC() != null){
-                equipmentConfiguration.setCreateAsSpecific(inforEquipmentConfiguration.getEquipmentGenerationDetails().getCREATEASSPECIFIC());
-            }
-
-            if(inforEquipmentConfiguration.getEquipmentGenerationDetails().getSEQUENCELENGTH() != null){
-                equipmentConfiguration.setSequenceLength(inforEquipmentConfiguration.getEquipmentGenerationDetails().getSEQUENCELENGTH());
-            }
-
-            if(inforEquipmentConfiguration.getEquipmentGenerationDetails().getSAMPLECODE() != null){
-                equipmentConfiguration.setSampleCode(inforEquipmentConfiguration.getEquipmentGenerationDetails().getSAMPLECODE());
-            }
-
-            if(inforEquipmentConfiguration.getEquipmentGenerationDetails().getCOMMISSIONINGWORKORDERID() != null){
-                equipmentConfiguration.setCommissioningWONum(inforEquipmentConfiguration.getEquipmentGenerationDetails().getCOMMISSIONINGWORKORDERID().getJOBNUM());
-                equipmentConfiguration.setCommissioningWODesc(inforEquipmentConfiguration.getEquipmentGenerationDetails().getCOMMISSIONINGWORKORDERID().getDESCRIPTION());
-            }
-
-
-            if(inforEquipmentConfiguration.getEquipmentGenerationDetails().getAUTONUMBER() != null){
-                equipmentConfiguration.setAutoNumber(inforEquipmentConfiguration.getEquipmentGenerationDetails().getAUTONUMBER());
-            }
-        }
-
+        EquipmentConfigurationEntity equipmentConfiguration = tools.getInforFieldTools().transformInforObject(new EquipmentConfigurationEntity(), inforEquipmentConfiguration);
         return equipmentConfiguration;
     }
 

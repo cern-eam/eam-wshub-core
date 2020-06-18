@@ -1,73 +1,192 @@
 package ch.cern.eam.wshub.core.services.equipment.entities;
 
 import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
+import ch.cern.eam.wshub.core.annotations.InforField;
+import ch.cern.eam.wshub.core.services.entities.CustomField;
 
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Date;
 
 @Entity
 public class EquipmentConfigurationEntity implements Serializable {
 
     @Transient
-    private String equipmentConfigStatusCode;
-    @Transient
-    private String equipmentConfigStatusDesc;
-    @Transient
-    private String configurationDepartmentCode;
-    @Transient
-    private String configurationDepartmentDesc;
-    @Transient
-    private String configurationClassCode;
-    @Transient
-    private String configurationClassDesc;
-    @Transient
-    private String configurationCategoryCode;
-    @Transient
-    private String configurationCategoryDesc;
-    @Transient
-    private BigDecimal revisionNum;
-    @Transient
-    private String equipmentPrefix;
-    @Transient
-    private String equipmentSuffix;
-    @Transient
-    private Date dateCreated;
-    @Transient
-    private Date dateUpdated;
-    @Transient
-    private String createdBy;
-    @Transient
-    private String updatedBy;
-    @Transient
-    private String equipmentStatusCode;
-    @Transient
-    private String equipmentStatusDesc;
-    @Transient
-    private String createAsSpecific;
-    @Transient
-    private String equipmentType;
-    @Transient
-    private Long sequenceLength;
-    @Transient
-    private String sampleCode;
-    @Transient
-    private String commissioningWONum;
-    @Transient
-    private String commissioningWODesc;
-    @Transient
-    private String autoNumber;
-    @Transient
+    @InforField(xpath = "EQUIPMENTCONFIGURATIONID/EQUIPMENTCONFIGURATIONCODE")
     private String equipmentConfigCode;
     @Transient
+    @InforField(xpath = "EQUIPMENTCONFIGURATIONID/DESCRIPTION")
     private String equipmentConfigDesc;
+
     @Transient
+    @InforField(xpath = "EQUIPMENTCONFIGURATIONID/ORGANIZATIONID/ORGANIZATIONCODE")
     private String organizationCode;
+
     @Transient
+    @InforField(xpath = "EQUIPMENTCONFIGURATIONID/ORGANIZATIONID/DESCRIPTION", readOnly = true)
     private String organizationDesc;
+
+    @Transient
+    @InforField(xpath = "EQUIPMENTCONFIGSTATUS/STATUSCODE")
+    private String equipmentConfigStatusCode;
+
+    @Transient
+    @InforField(xpath = "EQUIPMENTCONFIGSTATUS/DESCRIPTION", readOnly = true)
+    private String equipmentConfigStatusDesc;
+
+    @Transient
+    @InforField(xpath = "DEPARTMENTID/DEPARTMENTCODE", nullifyParentLevel = 1)
+    private String configurationDepartmentCode;
+
+    @Transient
+    @InforField(xpath = "DEPARTMENTID/DESCRIPTION", nullifyParentLevel = 0)
+    private String configurationDepartmentDesc;
+
+    @Transient
+    @InforField(xpath = "EQUIPMENTCONFIGURATIONID/REVISIONNUM")
+    private BigDecimal revisionNum;
+
+    @Transient
+    @InforField(xpath = "TYPE/TYPECODE")
+    private String equipmentType;
+
+    @Transient
+    @InforField(xpath = "USERDEFINEDAREA")
+    private CustomField[] customFields;
+
+
+    // Configuration Details
+    @Transient
+    @InforField(xpath = "ConfigurationDetails/CLASSID/CLASSCODE")
+    private String configurationClassCode;
+
+    @Transient
+    @InforField(xpath = "ConfigurationDetails/CLASSID/DESCRIPTION", readOnly = true)
+    private String configurationClassDesc;
+
+    @Transient
+    @InforField(xpath = "ConfigurationDetails/CATEGORYID/CATEGORYCODE")
+    private String configurationCategoryCode;
+
+    @Transient
+    @InforField(xpath = "ConfigurationDetails/CATEGORYID/DESCRIPTION", readOnly = true)
+    private String configurationCategoryDesc;
+
+    @Transient
+    @InforField(xpath = "ConfigurationDetails/CREATEDDATE")
+    private Date dateCreated;
+
+    @Transient
+    @InforField(xpath = "ConfigurationDetails/DATEUPDATED")
+    private Date dateUpdated;
+
+    @Transient
+    @InforField(xpath = "ConfigurationDetails/CREATEDBY/USERCODE")
+    private String createdBy;
+
+    @Transient
+    @InforField(xpath = "ConfigurationDetails/UPDATEDBY/USERCODE")
+    private String updatedBy;
+
+    @Transient
+    @InforField(xpath = "ConfigurationDetails/CLASSID/ORGANIZATIONID/ORGANIZATIONCODE")
+    private String classOrganizationCode;
+
+    @Transient
+    @InforField(xpath = "ConfigurationDetails/CLASSID/ORGANIZATIONID/DESCRIPTION")
+    private String getClassOrganizationDesc;
+
+    @Transient
+    @InforField(xpath = "ConfigurationDetails/COSTCODEID/COSTCODE")
+    private String costCode;
+
+    @Transient
+    @InforField(xpath = "ConfigurationDetails/COSTCODEID/DESCRIPTION")
+    private String costCodeDesc;
+
+    @Transient
+    @InforField(xpath = "ConfigurationDetails/ASSETVALUE")
+    private BigDecimal equipmentValue;
+
+
+
+    // Equipment Generation Details
+    @Transient
+    @InforField(xpath = "EquipmentGenerationDetails/EQUIPMENTPREFIX")
+    private String equipmentPrefix;
+
+    @Transient
+    @InforField(xpath = "EquipmentGenerationDetails/EQUIPMENTSUFFIX")
+    private String equipmentSuffix;
+
+    @Transient
+    @InforField(xpath = "EquipmentGenerationDetails/CREATEASSPECIFIC")
+    private Boolean createAsSpecific;
+
+    @Transient
+    @InforField(xpath = "EquipmentGenerationDetails/STATUS/STATUSCODE")
+    private String equipmentStatusCode;
+
+    @Transient
+    @InforField(xpath = "EquipmentGenerationDetails/STATUS/DESCRIPTION", readOnly = true)
+    private String equipmentStatusDesc;
+
+    @Transient
+    @InforField(xpath = "EquipmentGenerationDetails/SEQUENCELENGTH")
+    private BigInteger equipmentSequenceLength;
+
+    @Transient
+    @InforField(xpath = "EquipmentGenerationDetails/AUTONUMBER")
+    private Boolean autoNumber;
+
+    @Transient
+    @InforField(xpath = "EquipmentGenerationDetails/SAMPLECODE")
+    private String sampleCode;
+
+    @Transient
+    @InforField(xpath = "EquipmentGenerationDetails/COMMISSIONINGWORKORDERID/JOBNUM")
+    private String commissioningWONum;
+
+    @Transient
+    @InforField(xpath = "EquipmentGenerationDetails/COMMISSIONINGWORKORDERID/DESCRIPTION", readOnly = true)
+    private String commissioningWODesc;
+
+    public String getEquipmentConfigCode() {
+        return equipmentConfigCode;
+    }
+
+    public void setEquipmentConfigCode(String equipmentConfigCode) {
+        this.equipmentConfigCode = equipmentConfigCode;
+    }
+
+    public String getEquipmentConfigDesc() {
+        return equipmentConfigDesc;
+    }
+
+    public void setEquipmentConfigDesc(String equipmentConfigDesc) {
+        this.equipmentConfigDesc = equipmentConfigDesc;
+    }
+
+    public String getOrganizationCode() {
+        return organizationCode;
+    }
+
+    public void setOrganizationCode(String organizationCode) {
+        this.organizationCode = organizationCode;
+    }
+
+    public String getOrganizationDesc() {
+        return organizationDesc;
+    }
+
+    public void setOrganizationDesc(String organizationDesc) {
+        this.organizationDesc = organizationDesc;
+    }
 
     public String getEquipmentConfigStatusCode() {
         return equipmentConfigStatusCode;
@@ -101,6 +220,30 @@ public class EquipmentConfigurationEntity implements Serializable {
         this.configurationDepartmentDesc = configurationDepartmentDesc;
     }
 
+    public BigDecimal getRevisionNum() {
+        return revisionNum;
+    }
+
+    public void setRevisionNum(BigDecimal revisionNum) {
+        this.revisionNum = revisionNum;
+    }
+
+    public String getEquipmentType() {
+        return equipmentType;
+    }
+
+    public void setEquipmentType(String equipmentType) {
+        this.equipmentType = equipmentType;
+    }
+
+    public CustomField[] getCustomFields() {
+        return customFields;
+    }
+
+    public void setCustomFields(CustomField[] customFields) {
+        this.customFields = customFields;
+    }
+
     public String getConfigurationClassCode() {
         return configurationClassCode;
     }
@@ -117,20 +260,20 @@ public class EquipmentConfigurationEntity implements Serializable {
         this.configurationClassDesc = configurationClassDesc;
     }
 
-    public String getEquipmentPrefix() {
-        return equipmentPrefix;
+    public String getConfigurationCategoryCode() {
+        return configurationCategoryCode;
     }
 
-    public void setEquipmentPrefix(String equipmentPrefix) {
-        this.equipmentPrefix = equipmentPrefix;
+    public void setConfigurationCategoryCode(String configurationCategoryCode) {
+        this.configurationCategoryCode = configurationCategoryCode;
     }
 
-    public String getEquipmentSuffix() {
-        return equipmentSuffix;
+    public String getConfigurationCategoryDesc() {
+        return configurationCategoryDesc;
     }
 
-    public void setEquipmentSuffix(String equipmentSuffix) {
-        this.equipmentSuffix = equipmentSuffix;
+    public void setConfigurationCategoryDesc(String configurationCategoryDesc) {
+        this.configurationCategoryDesc = configurationCategoryDesc;
     }
 
     public Date getDateCreated() {
@@ -165,6 +308,70 @@ public class EquipmentConfigurationEntity implements Serializable {
         this.updatedBy = updatedBy;
     }
 
+    public String getClassOrganizationCode() {
+        return classOrganizationCode;
+    }
+
+    public void setClassOrganizationCode(String classOrganizationCode) {
+        this.classOrganizationCode = classOrganizationCode;
+    }
+
+    public String getGetClassOrganizationDesc() {
+        return getClassOrganizationDesc;
+    }
+
+    public void setGetClassOrganizationDesc(String getClassOrganizationDesc) {
+        this.getClassOrganizationDesc = getClassOrganizationDesc;
+    }
+
+    public String getCostCode() {
+        return costCode;
+    }
+
+    public void setCostCode(String costCode) {
+        this.costCode = costCode;
+    }
+
+    public String getCostCodeDesc() {
+        return costCodeDesc;
+    }
+
+    public void setCostCodeDesc(String costCodeDesc) {
+        this.costCodeDesc = costCodeDesc;
+    }
+
+    public BigDecimal getEquipmentValue() {
+        return equipmentValue;
+    }
+
+    public void setEquipmentValue(BigDecimal equipmentValue) {
+        this.equipmentValue = equipmentValue;
+    }
+
+    public String getEquipmentPrefix() {
+        return equipmentPrefix;
+    }
+
+    public void setEquipmentPrefix(String equipmentPrefix) {
+        this.equipmentPrefix = equipmentPrefix;
+    }
+
+    public String getEquipmentSuffix() {
+        return equipmentSuffix;
+    }
+
+    public void setEquipmentSuffix(String equipmentSuffix) {
+        this.equipmentSuffix = equipmentSuffix;
+    }
+
+    public Boolean getCreateAsSpecific() {
+        return createAsSpecific;
+    }
+
+    public void setCreateAsSpecific(Boolean createAsSpecific) {
+        this.createAsSpecific = createAsSpecific;
+    }
+
     public String getEquipmentStatusCode() {
         return equipmentStatusCode;
     }
@@ -181,28 +388,20 @@ public class EquipmentConfigurationEntity implements Serializable {
         this.equipmentStatusDesc = equipmentStatusDesc;
     }
 
-    public String getCreateAsSpecific() {
-        return createAsSpecific;
+    public BigInteger getEquipmentSequenceLength() {
+        return equipmentSequenceLength;
     }
 
-    public void setCreateAsSpecific(String createAsSpecific) {
-        this.createAsSpecific = createAsSpecific;
+    public void setEquipmentSequenceLength(BigInteger equipmentSequenceLength) {
+        this.equipmentSequenceLength = equipmentSequenceLength;
     }
 
-    public String getEquipmentType() {
-        return equipmentType;
+    public Boolean getAutoNumber() {
+        return autoNumber;
     }
 
-    public void setEquipmentType(String equipmentType) {
-        this.equipmentType = equipmentType;
-    }
-
-    public Long getSequenceLength() {
-        return sequenceLength;
-    }
-
-    public void setSequenceLength(Long sequenceLength) {
-        this.sequenceLength = sequenceLength;
+    public void setAutoNumber(Boolean autoNumber) {
+        this.autoNumber = autoNumber;
     }
 
     public String getSampleCode() {
@@ -229,102 +428,43 @@ public class EquipmentConfigurationEntity implements Serializable {
         this.commissioningWODesc = commissioningWODesc;
     }
 
-    public String getAutoNumber() {
-        return autoNumber;
-    }
-
-    public void setAutoNumber(String autoNumber) {
-        this.autoNumber = autoNumber;
-    }
-
-    public String getEquipmentConfigCode() {
-        return equipmentConfigCode;
-    }
-
-    public void setEquipmentConfigCode(String equipmentConfigCode) {
-        this.equipmentConfigCode = equipmentConfigCode;
-    }
-
-    public String getEquipmentConfigDesc() {
-        return equipmentConfigDesc;
-    }
-
-    public void setEquipmentConfigDesc(String equipmentConfigDesc) {
-        this.equipmentConfigDesc = equipmentConfigDesc;
-    }
-
-    public String getOrganizationCode() {
-        return organizationCode;
-    }
-
-    public void setOrganizationCode(String organizationCode) {
-        this.organizationCode = organizationCode;
-    }
-
-    public String getOrganizationDesc() {
-        return organizationDesc;
-    }
-
-    public void setOrganizationDesc(String organizationDesc) {
-        this.organizationDesc = organizationDesc;
-    }
-
-    @XmlJavaTypeAdapter(BigDecimalAdapter.class)
-    public BigDecimal getRevisionNum() {
-        return revisionNum;
-    }
-
-    public void setRevisionNum(BigDecimal revisionNum) {
-        this.revisionNum = revisionNum;
-    }
-
-    public String getConfigurationCategoryCode() {
-        return configurationCategoryCode;
-    }
-
-    public void setConfigurationCategoryCode(String configurationCategoryCode) {
-        this.configurationCategoryCode = configurationCategoryCode;
-    }
-
-    public String getConfigurationCategoryDesc() {
-        return configurationCategoryDesc;
-    }
-
-    public void setConfigurationCategoryDesc(String configurationCategoryDesc) {
-        this.configurationCategoryDesc = configurationCategoryDesc;
-    }
-
     @Override
     public String toString() {
         return "EquipmentConfigurationEntity{" +
-                "equipmentConfigStatusCode='" + equipmentConfigStatusCode + '\'' +
+                "equipmentConfigCode='" + equipmentConfigCode + '\'' +
+                ", equipmentConfigDesc='" + equipmentConfigDesc + '\'' +
+                ", organizationCode='" + organizationCode + '\'' +
+                ", organizationDesc='" + organizationDesc + '\'' +
+                ", equipmentConfigStatusCode='" + equipmentConfigStatusCode + '\'' +
                 ", equipmentConfigStatusDesc='" + equipmentConfigStatusDesc + '\'' +
                 ", configurationDepartmentCode='" + configurationDepartmentCode + '\'' +
                 ", configurationDepartmentDesc='" + configurationDepartmentDesc + '\'' +
+                ", revisionNum=" + revisionNum +
+                ", equipmentType='" + equipmentType + '\'' +
+                ", customFields=" + Arrays.toString(customFields) +
                 ", configurationClassCode='" + configurationClassCode + '\'' +
                 ", configurationClassDesc='" + configurationClassDesc + '\'' +
                 ", configurationCategoryCode='" + configurationCategoryCode + '\'' +
                 ", configurationCategoryDesc='" + configurationCategoryDesc + '\'' +
-                ", revisionNum='" + revisionNum + '\'' +
-                ", equipmentPrefix='" + equipmentPrefix + '\'' +
-                ", equipmentSuffix='" + equipmentSuffix + '\'' +
                 ", dateCreated=" + dateCreated +
                 ", dateUpdated=" + dateUpdated +
                 ", createdBy='" + createdBy + '\'' +
                 ", updatedBy='" + updatedBy + '\'' +
+                ", classOrganizationCode='" + classOrganizationCode + '\'' +
+                ", getClassOrganizationDesc='" + getClassOrganizationDesc + '\'' +
+                ", costCode='" + costCode + '\'' +
+                ", costCodeDesc='" + costCodeDesc + '\'' +
+                ", equipmentValue=" + equipmentValue +
+                ", equipmentPrefix='" + equipmentPrefix + '\'' +
+                ", equipmentSuffix='" + equipmentSuffix + '\'' +
+                ", createAsSpecific=" + createAsSpecific +
                 ", equipmentStatusCode='" + equipmentStatusCode + '\'' +
                 ", equipmentStatusDesc='" + equipmentStatusDesc + '\'' +
-                ", createAsSpecific='" + createAsSpecific + '\'' +
-                ", equipmentType='" + equipmentType + '\'' +
-                ", sequenceLength=" + sequenceLength +
+                ", equipmentSequenceLength=" + equipmentSequenceLength +
+                ", autoNumber=" + autoNumber +
                 ", sampleCode='" + sampleCode + '\'' +
                 ", commissioningWONum='" + commissioningWONum + '\'' +
                 ", commissioningWODesc='" + commissioningWODesc + '\'' +
-                ", autoNumber='" + autoNumber + '\'' +
-                ", equipmentConfigCode='" + equipmentConfigCode + '\'' +
-                ", equipmentConfigDesc='" + equipmentConfigDesc + '\'' +
-                ", organizationCode='" + organizationCode + '\'' +
-                ", organizationDesc='" + organizationDesc + '\'' +
                 '}';
     }
 }
