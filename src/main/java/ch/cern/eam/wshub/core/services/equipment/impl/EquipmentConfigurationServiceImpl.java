@@ -56,6 +56,13 @@ public class EquipmentConfigurationServiceImpl implements EquipmentConfiguration
     public EquipmentConfigurationEntity readEquipmentConfiguration(InforContext context, String equipmentConfigurationCode, BigDecimal revisionNum) throws InforException {
         EquipmentConfiguration inforEquipmentConfiguration = readInforEquipmentConfiguration(context, equipmentConfigurationCode, revisionNum);
         EquipmentConfigurationEntity equipmentConfiguration = tools.getInforFieldTools().transformInforObject(new EquipmentConfigurationEntity(), inforEquipmentConfiguration);
+
+        tools.processRunnables(
+                () -> equipmentConfiguration.setConfigurationCategoryDesc(tools.getFieldDescriptionsTools().readCategoryDesc(context, equipmentConfiguration.getConfigurationCategoryCode())),
+                () -> equipmentConfiguration.setConfigurationClassDesc(tools.getFieldDescriptionsTools().readClassDesc(context, "OBJ", equipmentConfiguration.getConfigurationClassCode())),
+                () -> equipmentConfiguration.setEquipmentStatusDesc(tools.getFieldDescriptionsTools().readUserCodeDesc(context, "OBST", equipmentConfiguration.getEquipmentStatusCode())),
+                () -> equipmentConfiguration.setEquipmentTypeDesc(tools.getFieldDescriptionsTools().readUserCodeDesc(context, "OBTP", equipmentConfiguration.getEquipmentTypeCode()))
+        );
         return equipmentConfiguration;
     }
 

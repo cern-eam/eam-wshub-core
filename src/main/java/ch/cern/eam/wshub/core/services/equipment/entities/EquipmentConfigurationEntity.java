@@ -1,12 +1,10 @@
 package ch.cern.eam.wshub.core.services.equipment.entities;
 
-import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
 import ch.cern.eam.wshub.core.annotations.InforField;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
 
 import javax.persistence.Entity;
 import javax.persistence.Transient;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -53,7 +51,11 @@ public class EquipmentConfigurationEntity implements Serializable {
 
     @Transient
     @InforField(xpath = "TYPE/TYPECODE")
-    private String equipmentType;
+    private String equipmentTypeCode;
+
+    @Transient
+    @InforField(xpath = "TYPE/DESCRIPTION")
+    private String equipmentTypeDesc;
 
     @Transient
     @InforField(xpath = "USERDEFINEDAREA")
@@ -242,12 +244,20 @@ public class EquipmentConfigurationEntity implements Serializable {
         this.revisionNum = revisionNum;
     }
 
-    public String getEquipmentType() {
-        return equipmentType;
+    public String getEquipmentTypeCode() {
+        return equipmentTypeCode;
     }
 
-    public void setEquipmentType(String equipmentType) {
-        this.equipmentType = equipmentType;
+    public void setEquipmentTypeCode(String equipmentTypeCode) {
+        this.equipmentTypeCode = equipmentTypeCode;
+    }
+
+    public String getEquipmentTypeDesc() {
+        return equipmentTypeDesc;
+    }
+
+    public void setEquipmentTypeDesc(String equipmentTypeDesc) {
+        this.equipmentTypeDesc = equipmentTypeDesc;
     }
 
     public CustomField[] getCustomFields() {
@@ -478,7 +488,8 @@ public class EquipmentConfigurationEntity implements Serializable {
                 ", configurationDepartmentCode='" + configurationDepartmentCode + '\'' +
                 ", configurationDepartmentDesc='" + configurationDepartmentDesc + '\'' +
                 ", revisionNum=" + revisionNum +
-                ", equipmentType='" + equipmentType + '\'' +
+                ", equipmentTypeCode='" + equipmentTypeCode + '\'' +
+                ", equipmentTypeDesc='" + equipmentTypeDesc + '\'' +
                 ", customFields=" + Arrays.toString(customFields) +
                 ", configurationClassCode='" + configurationClassCode + '\'' +
                 ", configurationClassDesc='" + configurationClassDesc + '\'' +

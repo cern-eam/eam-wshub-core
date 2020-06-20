@@ -10,6 +10,7 @@ import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import ch.cern.eam.wshub.core.services.grids.GridsService;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
 import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 import static ch.cern.eam.wshub.core.tools.GridTools.extractSingleResult;
@@ -135,6 +136,15 @@ public class FieldDescriptionTools {
 		GridRequest gridRequest = new GridRequest("LVCSTC", GridRequest.GRIDTYPE.LOV, 1);
 		gridRequest.addFilter("costcode", costCode, "=");
 		return getDescription(inforContext, gridRequest, "des_text");
+	}
+
+	public String readUserCodeDesc(InforContext inforContext, String entity, String userCode) {
+		if (isEmpty(userCode)) return null;
+		GridRequest gridRequest = new GridRequest("BSUCOD_HDR", GridRequest.GRIDTYPE.LOV, 1);
+		gridRequest.addParam("param.entitycode", entity);
+		gridRequest.setUserFunctionName("BSUCOD");
+		gridRequest.addFilter("usercode", userCode, "EQUALS");
+		return getDescription(inforContext, gridRequest, "usercodedescription");
 	}
 
 	/**
