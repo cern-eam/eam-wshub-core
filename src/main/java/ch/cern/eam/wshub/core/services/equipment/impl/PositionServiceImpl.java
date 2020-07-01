@@ -5,6 +5,7 @@ import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.equipment.PositionService;
 import ch.cern.eam.wshub.core.services.equipment.entities.Equipment;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedListService;
+import ch.cern.eam.wshub.core.services.userdefinedscreens.entities.EntityId;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.impl.UserDefinedListServiceImpl;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
@@ -25,6 +26,7 @@ import net.datastream.schemas.mp_results.mp0328_002.MP0328_GetPositionParentHier
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
 import java.util.Arrays;
+import java.util.HashMap;
 
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.*;
 
@@ -63,7 +65,7 @@ public class PositionServiceImpl implements PositionService {
 		MP0306_AddPositionEquipment_001_Result result =
 			tools.performInforOperation(context, inforws::addPositionEquipmentOp, addPosition);
 		String equipmentCode = result.getResultData().getPOSITIONID().getEQUIPMENTCODE();
-		userDefinedListService.writeUDLToEntityCopyFrom(context, positionParam, "OBJ", equipmentCode);
+		userDefinedListService.writeUDLToEntityCopyFrom(context, positionParam, new EntityId("OBJ", equipmentCode));
 		//TODO Update CERN properties
 		//equipmentOther.updateEquipmentCERNProperties(positionParam);
 		return equipmentCode;
@@ -77,7 +79,7 @@ public class PositionServiceImpl implements PositionService {
 		deletePosition.getPOSITIONID().setEQUIPMENTCODE(positionCode);
 
 		tools.performInforOperation(context, inforws::deletePositionEquipmentOp, deletePosition);
-		userDefinedListService.deleteUDLFromEntity(context, "OBJ", positionCode);
+		userDefinedListService.deleteUDLFromEntity(context, new EntityId("OBJ", positionCode));
 		return positionCode;
 	}
 
@@ -108,7 +110,7 @@ public class PositionServiceImpl implements PositionService {
 				tools.performInforOperation(context, inforws::getPositionEquipmentDefaultOp, getPositionEquipmentDefault_001);
 
 		Equipment equipment = tools.getInforFieldTools().transformInforObject(new Equipment(), result.getResultData().getPositionEquipment());
-		equipment.setUserDefinedList(Arrays.asList());
+		equipment.setUserDefinedList(new HashMap<>());
 		return equipment;
 	}
 
@@ -289,7 +291,7 @@ public class PositionServiceImpl implements PositionService {
 			}
 		}
 
-		userDefinedListService.readUDLToEntity(context, position, "OBJ", positionCode);
+		userDefinedListService.readUDLToEntity(context, position, new EntityId("OBJ", positionCode));
 		return position;
 	}
 
@@ -323,7 +325,7 @@ public class PositionServiceImpl implements PositionService {
 		MP0308_SyncPositionEquipment_001 syncPosition = new MP0308_SyncPositionEquipment_001();
 		syncPosition.setPositionEquipment(positionEquipment);
 		tools.performInforOperation(context, inforws::syncPositionEquipmentOp, syncPosition);
-		userDefinedListService.writeUDLToEntity(context, positionParam, "OBJ", positionParam.getCode());
+		userDefinedListService.writeUDLToEntity(context, positionParam, new EntityId("OBJ", positionParam.getCode()));
 		//TODO Update CERN properties
 		//equipmentOther.updateEquipmentCERNProperties(positionParam);
 		return positionParam.getCode();

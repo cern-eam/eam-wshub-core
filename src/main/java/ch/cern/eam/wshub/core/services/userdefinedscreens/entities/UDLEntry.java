@@ -14,107 +14,36 @@ import ch.cern.eam.wshub.core.adapters.DateAdapter;
 public class UDLEntry implements Serializable {
     private static final long serialVersionUID = 3824835369799503639L;
 
-    private Object value;
-    private UDLEntryType type;
+    private UDLEntryId entryId;
+    private UDLValue value;
 
-    private String property;
-    private BigInteger sequenceNumber;
-
-    public UDLEntry() {
-        // to turn this into a Java Bean, avoid using in actual code
+    public UDLEntry(UDLEntryId entryId, UDLValue value) {
+        this.entryId = entryId;
+        this.value = value == null ? new UDLValue() : value;
     }
 
-    public UDLEntry(String property, BigInteger sequenceNumber, String value) {
-        this(property, sequenceNumber);
-        setString(value);
-    }
-
-    public UDLEntry(String property, BigInteger sequenceNumber, Date value) {
-        this(property, sequenceNumber);
-        setDate(value);
-    }
-
-    public UDLEntry(String property, BigInteger sequenceNumber, BigDecimal value) {
-        this(property, sequenceNumber);
-        setNumeric(value);
-    }
-
-    public UDLEntry(String property, BigInteger sequenceNumber) {
-        if(property == null) {
-            throw new IllegalArgumentException("UDL property must not be null");
-        }
-
-        if(property.length() > 30) {
-            throw new IllegalArgumentException("UDL property string too large to include in a UDL");
-        }
-
-        this.value = null;
-        this.property = property;
-        this.sequenceNumber = sequenceNumber;
-        type = UDLEntryType.NULL;
-    }
-
-    public void setString(String value) {
-        if(value != null && value.length() > 64) {
-            throw new IllegalArgumentException("String too large to include as a UDL value");
-        }
-
-        type = UDLEntryType.STRING;
-        this.value = value;
-    }
-
-    public void setDate(Date value) {
-        type = UDLEntryType.DATE;
-        this.value = value;
-    }
-
-    public void setNumeric(BigDecimal value) {
-        type = UDLEntryType.NUMERIC;
-        this.value = value;
-    }
-
-    public String getString() {
-        return type == UDLEntryType.STRING ? (String) value : null;
-    }
-
-    @XmlJavaTypeAdapter(DateAdapter.class)
-    public Date getDate() {
-        return type == UDLEntryType.DATE ? (Date) value : null;
-    }
-
-    @XmlJavaTypeAdapter(BigDecimalAdapter.class)
-    public BigDecimal getNumeric() {
-        return type == UDLEntryType.NUMERIC ? (BigDecimal) value : null;
-    }
-
-    public BigInteger getSequenceNumber() {
-        return sequenceNumber;
-    }
-
-    public String getProperty() {
-        return property;
-    }
-
-    public void setProperty(String property) {
-        this.property = property;
-    }
-
-    public void setSequenceNumber(BigInteger sequenceNumber) {
-        this.sequenceNumber = sequenceNumber;
+    public UDLEntry(UDLEntryId entryId) {
+        this(entryId, null);
     }
 
     @Override
     public String toString() {
-        String initialString = "UDLEntry[property=" + property + ", sequenceNumber=" + sequenceNumber + ", value=";
+        return "UDLEntry[entryId=" + entryId + ", value=" + value + "]";
+    }
 
-        if(type == UDLEntryType.NULL) {
-            return initialString + "null]";
-        }
+    public UDLEntryId getEntryId() {
+        return entryId;
+    }
 
-        if(type == UDLEntryType.STRING) {
-            return initialString + "\"" + value + "\"]";
-        }
+    public void setEntryId(UDLEntryId entryId) {
+        this.entryId = entryId;
+    }
 
-        return initialString + value + "]";
+    public UDLValue getValue() {
+        return value;
+    }
+
+    public void setValue(UDLValue value) {
+        this.value = value;
     }
 }

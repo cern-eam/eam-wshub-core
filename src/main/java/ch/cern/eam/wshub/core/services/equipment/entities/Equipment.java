@@ -8,6 +8,8 @@ import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedListHelpable;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.entities.UDLEntry;
+import ch.cern.eam.wshub.core.services.userdefinedscreens.entities.UDLValue;
+import ch.cern.eam.wshub.core.services.userdefinedscreens.entities.udlmap.UDLMapAdapter;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlElement;
@@ -19,6 +21,7 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Table(name = "R5OBJECTS")
@@ -324,7 +327,7 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
 	private String copyFrom;
 
 	@Transient
-	private List<UDLEntry> userDefinedList;
+	private Map<String, List<UDLValue>> userDefinedList;
 
 	public String getDescription() {
 		return description;
@@ -1188,12 +1191,14 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
 	}
 
 	@Override
-	public List<UDLEntry> getUserDefinedList() {
+	@XmlElement
+	@XmlJavaTypeAdapter(UDLMapAdapter.class)
+	public Map<String, List<UDLValue>> getUserDefinedList() {
 		return userDefinedList;
 	}
 
 	@Override
-	public void setUserDefinedList(List<UDLEntry> userDefinedList) {
+	public void setUserDefinedList(Map<String, List<UDLValue>> userDefinedList) {
 		this.userDefinedList = userDefinedList;
 	}
 

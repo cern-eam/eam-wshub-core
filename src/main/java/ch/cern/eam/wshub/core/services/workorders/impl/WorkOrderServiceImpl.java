@@ -9,6 +9,7 @@ import ch.cern.eam.wshub.core.services.grids.GridsService;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedListService;
+import ch.cern.eam.wshub.core.services.userdefinedscreens.entities.EntityId;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.entities.UDLEntry;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.impl.UserDefinedListServiceImpl;
 import ch.cern.eam.wshub.core.services.workorders.StandardWorkOrderService;
@@ -32,6 +33,7 @@ import net.datastream.schemas.mp_results.mp0026_001.MP0026_GetWorkOrderDefault_0
 import net.datastream.schemas.mp_results.mp0026_001.ResultData;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.toCodeString;
@@ -92,7 +94,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			() -> workOrder.setDepartmentDesc(tools.getFieldDescriptionsTools().readDepartmentDesc(context, workOrder.getDepartmentCode())),
 			() -> workOrder.setClassDesc(tools.getFieldDescriptionsTools().readClassDesc(context, "EVNT", workOrder.getClassCode())),
 			() -> workOrder.setCostCodeDesc(tools.getFieldDescriptionsTools().readCostCodeDesc(context, workOrder.getCostCode())),
-			() -> userDefinedListService.readUDLToEntity(context, workOrder, "EVNT", number)
+			() -> userDefinedListService.readUDLToEntity(context, workOrder, new EntityId("EVNT", number))
 		);
 
 		return workOrder;
@@ -150,7 +152,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			workOrder.setReportedDate(tools.getDataTypeTools().decodeInforDate(resultData.getREPORTED()));
 		}
 
-		workOrder.setUserDefinedList(Arrays.asList());
+		workOrder.setUserDefinedList(new HashMap<>());
 
 		return workOrder;
 	}
@@ -252,7 +254,8 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		}
 
 		String workOrderNumber = result.getResultData().getJOBNUM();
-		userDefinedListService.writeUDLToEntityCopyFrom(context, workorderParam, "EVNT", workOrderNumber);
+		userDefinedListService.writeUDLToEntityCopyFrom(context,
+			workorderParam, new EntityId("EVNT", workOrderNumber));
 		return workOrderNumber;
 	}
 
@@ -318,7 +321,8 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		tools.performInforOperation(context, inforws::syncWorkOrderOp, syncWO);
 
 		String workOrderNumber = inforWorkOrder.getWORKORDERID().getJOBNUM();
-		userDefinedListService.writeUDLToEntity(context, workorderParam, "EVNT", workOrderNumber);
+		userDefinedListService.writeUDLToEntity(context,
+			workorderParam, new EntityId("EVNT", workOrderNumber));
 		return workOrderNumber;
 	}
 
@@ -329,7 +333,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		deleteWO.getWORKORDERID().setJOBNUM(workOrderNumber);
 
 		tools.performInforOperation(context, inforws::deleteWorkOrderOp, deleteWO);
-		userDefinedListService.deleteUDLFromEntity(context, "EVNT", workOrderNumber);
+		userDefinedListService.deleteUDLFromEntity(context, new EntityId("EVNT", workOrderNumber));
 		return workOrderNumber;
 	}
 
