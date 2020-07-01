@@ -24,9 +24,14 @@ import net.datastream.schemas.mp_results.mp0305_001.MP0305_GetAssetEquipmentDefa
 import net.datastream.schemas.mp_results.mp0327_001.MP0327_GetAssetParentHierarchy_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.*;
-
-import java.util.Arrays;
+import static ch.cern.eam.wshub.core.services.equipment.impl.EquipmentHierarchyTools.readAssetParent;
+import static ch.cern.eam.wshub.core.services.equipment.impl.EquipmentHierarchyTools.readPositionParent;
+import static ch.cern.eam.wshub.core.services.equipment.impl.EquipmentHierarchyTools.readPrimarySystemParent;
+import static ch.cern.eam.wshub.core.services.equipment.impl.EquipmentHierarchyTools.readLocationParent;
+import static ch.cern.eam.wshub.core.services.equipment.impl.EquipmentHierarchyTools.readSystemsParent;
+import static ch.cern.eam.wshub.core.services.equipment.impl.EquipmentHierarchyTools.readHierarchyType;
 import java.util.HashMap;
+import java.util.List;
 
 @SuppressWarnings("Duplicates")
 public class AssetServiceImpl implements AssetService {
@@ -267,8 +272,7 @@ public class AssetServiceImpl implements AssetService {
         getassetph.getASSETID().setORGANIZATIONID(tools.getOrganization(context));
         getassetph.getASSETID().setEQUIPMENTCODE(assetCode);
 
-        MP0327_GetAssetParentHierarchy_001_Result result =
-            tools.performInforOperation(context, inforws::getAssetParentHierarchyOp, getassetph);
+        MP0327_GetAssetParentHierarchy_001_Result result = tools.performInforOperation(context, inforws::getAssetParentHierarchyOp, getassetph);
 
         return result.getResultData().getAssetParentHierarchy();
 
@@ -281,8 +285,8 @@ public class AssetServiceImpl implements AssetService {
         getAsset.getASSETID().setORGANIZATIONID(tools.getOrganization(context));
         getAsset.getASSETID().setEQUIPMENTCODE(assetCode);
 
-        MP0302_GetAssetEquipment_001_Result getAssetResult =
-            tools.performInforOperation(context, inforws::getAssetEquipmentOp, getAsset);
+        MP0302_GetAssetEquipment_001_Result getAssetResult = tools.performInforOperation(context, inforws::getAssetEquipmentOp, getAsset);
+        getAssetResult.getResultData().getAssetEquipment().setAssetParentHierarchy(readInforAssetHierarchy(context, assetCode));
 
         return getAssetResult.getResultData().getAssetEquipment();
     }
@@ -377,167 +381,189 @@ public class AssetServiceImpl implements AssetService {
                 || assetParam.getHierarchyPrimarySystemCode() != null
                 || assetParam.getHierarchyLocationCode() != null) {
             initializeAssetHierarchy(assetInfor, assetParam, context);
+        }
+    }
+
+    enum HIERARCHY_TYPE {ASSET_DEP, POSITION_DEP, PRIM_SYSTEM_DEP, LOCATION_DEP, SYSTEM_DEP, NON_DEP_PARENTS};
+
+    private void initializeAssetHierarchy(AssetEquipment assetInfor, Equipment assetParam, InforContext context) throws InforException {
+        AssetParentHierarchy hierarchy = new AssetParentHierarchy();
+
+        hierarchy.setASSETID(new EQUIPMENTID_Type());
+        hierarchy.getASSETID().setEQUIPMENTCODE(assetParam.getCode());
+        hierarchy.getASSETID().setORGANIZATIONID(tools.getOrganization(context));
+        hierarchy.setTYPE(new TYPE_Type());
+        hierarchy.getTYPE().setTYPECODE("A");
+
+        //
+        ASSETPARENT_Type assetParent = readAssetParent(assetInfor.getAssetParentHierarchy());
+        POSITIONPARENT_Type positionParent = readPositionParent(assetInfor.getAssetParentHierarchy());
+        SYSTEMPARENT_Type primarySystemParent = readPrimarySystemParent(assetInfor.getAssetParentHierarchy());
+        LOCATIONPARENT_Type locationParent = readLocationParent(assetInfor.getAssetParentHierarchy());
+        List<SYSTEMPARENT_Type> systemParents = readSystemsParent(assetInfor.getAssetParentHierarchy());
+        HIERARCHY_TYPE currentHierarchyType = readHierarchyType(assetInfor.getAssetParentHierarchy());
+
+        assetParent = createHierarchyAsset(context, assetParam.getHierarchyAssetCode(), assetParam.getHierarchyAssetCostRollUp(), assetParent);
+        positionParent = createHierarchyPosition(context, assetParam.getHierarchyPositionCode(), assetParam.getHierarchyPositionCostRollUp(), positionParent);
+        primarySystemParent = createHierarchyPrimarySystem(context, assetParam.getHierarchyPrimarySystemCode(), assetParam.getHierarchyPrimarySystemCostRollUp(), primarySystemParent);
+        locationParent = createHierarchyLocation(context, assetParam.getHierarchyLocationCode(), locationParent);
+
+        switch (getNewHierarchyType(assetParam, currentHierarchyType)) {
+            case ASSET_DEP:
+                hierarchy.setAssetDependency(createAssetDependency(assetParent, positionParent, primarySystemParent, systemParents));
+                break;
+            case POSITION_DEP:
+                hierarchy.setPositionDependency(createPositionDependency(assetParent, positionParent, primarySystemParent, systemParents));
+                break;
+            case PRIM_SYSTEM_DEP:
+                hierarchy.setPrimarySystemDependency(createPrimarySystemDependency(assetParent, positionParent, primarySystemParent, systemParents));
+                break;
+            case LOCATION_DEP:
+                hierarchy.setLocationDependency(createLocationDependency(assetParent, positionParent, primarySystemParent, systemParents, locationParent));
+                break;
+            default:
+                hierarchy.setNonDependentParents(createNonDependentParents(assetParent, positionParent, primarySystemParent, systemParents));
+        }
+
+        assetInfor.setAssetParentHierarchy(hierarchy);
+    }
+
+    //TODO complete the logic determining new hierarchy type based on the old one and input params
+    private HIERARCHY_TYPE getNewHierarchyType(Equipment assetParam, HIERARCHY_TYPE currentHierarchyType) {
+        if (assetParam.getHierarchyAssetDependent() != null && assetParam.getHierarchyAssetDependent()) {
+            return HIERARCHY_TYPE.ASSET_DEP;
+        } else if (assetParam.getHierarchyPositionDependent() != null && assetParam.getHierarchyPositionDependent()) {
+            return HIERARCHY_TYPE.POSITION_DEP;
+        } else if (assetParam.getHierarchyPrimarySystemDependent() != null && assetParam.getHierarchyPrimarySystemDependent()) {
+            return HIERARCHY_TYPE.PRIM_SYSTEM_DEP;
+        } else if (isNotEmpty(assetParam.getHierarchyLocationCode())) {
+            return HIERARCHY_TYPE.LOCATION_DEP;
+        } else if (currentHierarchyType == HIERARCHY_TYPE.ASSET_DEP && assetParam.getHierarchyAssetDependent() == null){
+            return HIERARCHY_TYPE.ASSET_DEP;
+        } else if (currentHierarchyType == HIERARCHY_TYPE.POSITION_DEP && assetParam.getHierarchyPositionDependent() == null){
+            return HIERARCHY_TYPE.POSITION_DEP;
+        } else if (currentHierarchyType == HIERARCHY_TYPE.PRIM_SYSTEM_DEP && assetParam.getHierarchyPrimarySystemDependent() == null){
+            return HIERARCHY_TYPE.PRIM_SYSTEM_DEP;
+        } else if (currentHierarchyType == HIERARCHY_TYPE.LOCATION_DEP){
+            return HIERARCHY_TYPE.LOCATION_DEP;
+        } else if (currentHierarchyType == HIERARCHY_TYPE.SYSTEM_DEP){
+            return HIERARCHY_TYPE.SYSTEM_DEP;
         } else {
-            // Setting to null won't touch the existing structure
-            assetInfor.setAssetParentHierarchy(null);
+            return HIERARCHY_TYPE.NON_DEP_PARENTS;
         }
     }
 
-    private void initializeAssetHierarchy(AssetEquipment assetInfor, Equipment assetParam, InforContext context) {
-        AssetParentHierarchy assetParentHierarchy = new AssetParentHierarchy();
-
-        assetParentHierarchy.setASSETID(new EQUIPMENTID_Type());
-        assetParentHierarchy.getASSETID().setORGANIZATIONID(tools.getOrganization(context));
-        assetParentHierarchy.getASSETID().setEQUIPMENTCODE(assetParam.getCode());
-        assetParentHierarchy.setTYPE(new TYPE_Type());
-        assetParentHierarchy.getTYPE().setTYPECODE(assetParam.getTypeCode());
-
-        EQUIPMENTID_Type hierarchyAsset = new EQUIPMENTID_Type();
-        hierarchyAsset.setORGANIZATIONID(tools.getOrganization(context));
-        hierarchyAsset.setEQUIPMENTCODE(assetParam.getHierarchyAssetCode());
-
-        EQUIPMENTID_Type hierarchyPosition = new EQUIPMENTID_Type();
-        hierarchyPosition.setORGANIZATIONID(tools.getOrganization(context));
-        hierarchyPosition.setEQUIPMENTCODE(assetParam.getHierarchyPositionCode());
-
-        EQUIPMENTID_Type hierarchySystem = new EQUIPMENTID_Type();
-        hierarchySystem.setORGANIZATIONID(tools.getOrganization(context));
-        hierarchySystem.setEQUIPMENTCODE(assetParam.getHierarchyPrimarySystemCode());
-
-        // Asset dependent
-        if (assetParam.getHierarchyAssetDependent() != null && assetParam.getHierarchyAssetDependent() && tools.getDataTypeTools().isNotEmpty(assetParam.getHierarchyAssetCode())) {
-
-            assetParentHierarchy.setAssetDependency(new AssetDependency());
-            // Non dependent position
-            if (tools.getDataTypeTools().isNotEmpty(assetParam.getHierarchyPositionCode())) {
-                assetParentHierarchy.getAssetDependency().setNONDEPENDENTPOSITION(this.createHierarchyPosition(assetParam, hierarchyPosition));
-            }
-
-            // Non dependent system
-            if (tools.getDataTypeTools().isNotEmpty(assetParam.getHierarchyPrimarySystemCode())) {
-                assetParentHierarchy.getAssetDependency().setNONDEPENDENTPRIMARYSYSTEM(this.createHierarchyPrymarySystem(assetParam, hierarchySystem));
-            }
-
-            // Dependent asset
-            assetParentHierarchy.getAssetDependency().setDEPENDENTASSET(this.createHierarchyAsset(assetParam, hierarchyAsset));
-        }
-        // Position dependent
-        else if (assetParam.getHierarchyPositionDependent() != null && assetParam.getHierarchyPositionDependent() && tools.getDataTypeTools().isNotEmpty(assetParam.getHierarchyPositionCode())) {
-            assetParentHierarchy.setPositionDependency(new PositionDependency());
-
-            // Non dependent asset
-            if (tools.getDataTypeTools().isNotEmpty(assetParam.getHierarchyAssetCode())) {
-                assetParentHierarchy.getPositionDependency()
-                        .setNONDEPENDENTASSET(this.createHierarchyAsset(assetParam, hierarchyAsset));
-            }
-
-            // Non dependent system
-            if (tools.getDataTypeTools().isNotEmpty(assetParam.getHierarchyPrimarySystemCode())) {
-                assetParentHierarchy.getPositionDependency()
-                        .setNONDEPENDENTPRIMARYSYSTEM(this.createHierarchyPrymarySystem(assetParam, hierarchySystem));
-            }
-
-            // Dependent position
-            assetParentHierarchy.getPositionDependency()
-                    .setDEPENDENTPOSITION(this.createHierarchyPosition(assetParam, hierarchyPosition));
-        }
-        // System dependent
-        else if (assetParam.getHierarchyPrimarySystemDependent() != null && assetParam.getHierarchyPrimarySystemDependent() && tools.getDataTypeTools().isNotEmpty(assetParam.getHierarchyPrimarySystemCode())) {
-
-            assetParentHierarchy.setPrimarySystemDependency(new PrimarySystemDependency());
-            // Non dependent position
-            if (tools.getDataTypeTools().isNotEmpty(assetParam.getHierarchyPositionCode())) {
-                assetParentHierarchy.getPrimarySystemDependency()
-                        .setNONDEPENDENTPOSITION(this.createHierarchyPosition(assetParam, hierarchyPosition));
-            }
-
-            // Non dependent asset
-            if (tools.getDataTypeTools().isNotEmpty(assetParam.getHierarchyAssetCode())) {
-                assetParentHierarchy.getPrimarySystemDependency()
-                        .setNONDEPENDENTASSET(this.createHierarchyAsset(assetParam, hierarchyAsset));
-            }
-
-            // Dependent System
-            assetParentHierarchy.getPrimarySystemDependency()
-                    .setDEPENDENTPRIMARYSYSTEM(this.createHierarchyPrymarySystem(assetParam, hierarchySystem));
-        }
-        // Location dependent
-        else if (tools.getDataTypeTools().isNotEmpty(assetParam.getHierarchyLocationCode())) {
-
-            assetParentHierarchy.setLocationDependency(new LocationDependency());
-            // Dependent location
-            assetParentHierarchy.getLocationDependency().setDEPENDENTLOCATION(new LOCATIONPARENT_Type());
-            assetParentHierarchy.getLocationDependency().getDEPENDENTLOCATION().setLOCATIONID(new LOCATIONID_Type());
-            assetParentHierarchy.getLocationDependency().getDEPENDENTLOCATION().getLOCATIONID()
-                    .setORGANIZATIONID(tools.getOrganization(context));
-            assetParentHierarchy.getLocationDependency().getDEPENDENTLOCATION().getLOCATIONID()
-                    .setLOCATIONCODE(assetParam.getHierarchyLocationCode());
-
-            // There is position
-            if (tools.getDataTypeTools().isNotEmpty(assetParam.getHierarchyPositionCode())) {
-                assetParentHierarchy.getLocationDependency()
-                        .setNONDEPENDENTPOSITION(this.createHierarchyPosition(assetParam, hierarchyPosition));
-            }
-
-            // There is asset
-            if (tools.getDataTypeTools().isNotEmpty(assetParam.getHierarchyAssetCode())) {
-                assetParentHierarchy.getLocationDependency()
-                        .setNONDEPENDENTASSET(this.createHierarchyAsset(assetParam, hierarchyAsset));
-            }
-
-            // There is system
-            if (tools.getDataTypeTools().isNotEmpty(assetParam.getHierarchyPrimarySystemCode())) {
-                assetParentHierarchy.getLocationDependency().setNONDEPENDENTPRIMARYSYSTEM(
-                        this.createHierarchyPrymarySystem(assetParam, hierarchySystem));
-            }
-
-        }
-        // Non-dependent parents
-        else {
-            assetParentHierarchy.setNonDependentParents(new NonDependentParents_Type());
-
-            // There is position
-            if (tools.getDataTypeTools().isNotEmpty(assetParam.getHierarchyPositionCode())) {
-                assetParentHierarchy.getNonDependentParents()
-                        .setNONDEPENDENTPOSITION(this.createHierarchyPosition(assetParam, hierarchyPosition));
-            }
-
-            // There is asset
-            if (tools.getDataTypeTools().isNotEmpty(assetParam.getHierarchyAssetCode())) {
-                assetParentHierarchy.getNonDependentParents()
-                        .setNONDEPENDENTASSET(this.createHierarchyAsset(assetParam, hierarchyAsset));
-            }
-
-            // There is system
-            if (tools.getDataTypeTools().isNotEmpty(assetParam.getHierarchyPrimarySystemCode())) {
-                assetParentHierarchy.getNonDependentParents().setNONDEPENDENTPRIMARYSYSTEM(
-                        this.createHierarchyPrymarySystem(assetParam, hierarchySystem));
-            }
-        }
-
-        assetInfor.setAssetParentHierarchy(assetParentHierarchy);
+    private AssetDependency createAssetDependency(ASSETPARENT_Type assetParent, POSITIONPARENT_Type positionParent, SYSTEMPARENT_Type primarySystemParent, List<SYSTEMPARENT_Type> systemParents) {
+        AssetDependency assetDependency = new AssetDependency();
+        assetDependency.setDEPENDENTASSET(assetParent);
+        assetDependency.setNONDEPENDENTPOSITION(positionParent);
+        assetDependency.setNONDEPENDENTPRIMARYSYSTEM(primarySystemParent);
+        assetDependency.getNONDEPENDENTSYSTEM().addAll(systemParents);
+        return assetDependency;
     }
 
-    private ASSETPARENT_Type createHierarchyAsset(Equipment assetParam, EQUIPMENTID_Type hierarchyAsset) {
+    private PositionDependency createPositionDependency(ASSETPARENT_Type assetParent, POSITIONPARENT_Type positionParent, SYSTEMPARENT_Type primarySystemParent, List<SYSTEMPARENT_Type> systemParents) {
+        PositionDependency positionDependency = new PositionDependency();
+        positionDependency.setNONDEPENDENTASSET(assetParent);
+        positionDependency.setDEPENDENTPOSITION(positionParent);
+        positionDependency.setNONDEPENDENTPRIMARYSYSTEM(primarySystemParent);
+        positionDependency.getNONDEPENDENTSYSTEM().addAll(systemParents);
+        return positionDependency;
+    }
+
+    private PrimarySystemDependency createPrimarySystemDependency(ASSETPARENT_Type assetParent, POSITIONPARENT_Type positionParent, SYSTEMPARENT_Type primarySystemParent, List<SYSTEMPARENT_Type> systemParents) {
+        PrimarySystemDependency positionDependency = new PrimarySystemDependency();
+        positionDependency.setNONDEPENDENTASSET(assetParent);
+        positionDependency.setNONDEPENDENTPOSITION(positionParent);
+        positionDependency.setDEPENDENTPRIMARYSYSTEM(primarySystemParent);
+        positionDependency.getNONDEPENDENTSYSTEM().addAll(systemParents);
+        return positionDependency;
+    }
+
+    private LocationDependency createLocationDependency(ASSETPARENT_Type assetParent, POSITIONPARENT_Type positionParent, SYSTEMPARENT_Type primarySystemParent, List<SYSTEMPARENT_Type> systemParents, LOCATIONPARENT_Type locationParent) {
+        LocationDependency locationDependency = new LocationDependency();
+        locationDependency.setNONDEPENDENTASSET(assetParent);
+        locationDependency.setNONDEPENDENTPOSITION(positionParent);
+        locationDependency.setNONDEPENDENTPRIMARYSYSTEM(primarySystemParent);
+        locationDependency.getNONDEPENDENTSYSTEM().addAll(systemParents);
+        locationDependency.setDEPENDENTLOCATION(locationParent);
+        return locationDependency;
+    }
+
+    private NonDependentParents_Type createNonDependentParents(ASSETPARENT_Type assetParent, POSITIONPARENT_Type positionParent, SYSTEMPARENT_Type primarySystemParent, List<SYSTEMPARENT_Type> systemParents) {
+        NonDependentParents_Type nonDependentParents = new NonDependentParents_Type();
+        nonDependentParents.setNONDEPENDENTASSET(assetParent);
+        nonDependentParents.setNONDEPENDENTPOSITION(positionParent);
+        nonDependentParents.setNONDEPENDENTPRIMARYSYSTEM(primarySystemParent);
+        nonDependentParents.getNONDEPENDENTSYSTEM().addAll(systemParents);
+        return nonDependentParents;
+    }
+
+    private ASSETPARENT_Type createHierarchyAsset(InforContext context, String assetCode, Boolean costRollUp, ASSETPARENT_Type oldHierarchyAsset) {
+        if (assetCode == null) {
+            return oldHierarchyAsset;
+        }
+
+        if (assetCode.equals("")) {
+            return null;
+        }
+
         ASSETPARENT_Type assetType = new ASSETPARENT_Type();
-        assetType.setASSETID(hierarchyAsset);
-        assetType.setCOSTROLLUP(encodeBoolean(assetParam.getHierarchyAssetCostRollUp(), BooleanType.TRUE_FALSE));
+        assetType.setASSETID(new EQUIPMENTID_Type());
+        assetType.getASSETID().setEQUIPMENTCODE(assetCode);
+        assetType.getASSETID().setORGANIZATIONID(tools.getOrganization(context));
+        assetType.setCOSTROLLUP(encodeBoolean(costRollUp, BooleanType.TRUE_FALSE));
         return assetType;
     }
 
-    private POSITIONPARENT_Type createHierarchyPosition(Equipment assetParam, EQUIPMENTID_Type hierarchyPosition) {
+    private POSITIONPARENT_Type createHierarchyPosition(InforContext context, String positionCode, Boolean costRollUp, POSITIONPARENT_Type oldHierarchyPosition) {
+        if (positionCode == null) {
+            return oldHierarchyPosition;
+        }
+
+        if (positionCode.equals("")) {
+            return null;
+        }
+
         POSITIONPARENT_Type positionType = new POSITIONPARENT_Type();
-        positionType.setPOSITIONID(hierarchyPosition);
-        positionType.setCOSTROLLUP(encodeBoolean(assetParam.getHierarchyPositionCostRollUp(), BooleanType.TRUE_FALSE));
+        positionType.setPOSITIONID(new EQUIPMENTID_Type());
+        positionType.getPOSITIONID().setEQUIPMENTCODE(positionCode);
+        positionType.getPOSITIONID().setORGANIZATIONID(tools.getOrganization(context));
+        positionType.setCOSTROLLUP(encodeBoolean(costRollUp, BooleanType.TRUE_FALSE));
         return positionType;
     }
 
-    private SYSTEMPARENT_Type createHierarchyPrymarySystem(Equipment assetParam, EQUIPMENTID_Type hierarchySystem) {
+    private SYSTEMPARENT_Type createHierarchyPrimarySystem(InforContext context, String systemCode, Boolean costRollUp, SYSTEMPARENT_Type oldSystemHierarchy) {
+        if (systemCode == null) {
+            return oldSystemHierarchy;
+        }
+
+        if (systemCode.equals("")) {
+            return null;
+        }
+
         SYSTEMPARENT_Type systemType = new SYSTEMPARENT_Type();
-        systemType.setSYSTEMID(hierarchySystem);
-        systemType.setCOSTROLLUP(encodeBoolean(assetParam.getHierarchyPrimarySystemCostRollUp(), BooleanType.TRUE_FALSE));
+        systemType.setSYSTEMID(new EQUIPMENTID_Type());
+        systemType.getSYSTEMID().setEQUIPMENTCODE(systemCode);
+        systemType.getSYSTEMID().setORGANIZATIONID(tools.getOrganization(context));
+        systemType.setCOSTROLLUP(encodeBoolean(costRollUp, BooleanType.TRUE_FALSE));
         return systemType;
     }
 
+    private LOCATIONPARENT_Type createHierarchyLocation(InforContext context, String locationCode, LOCATIONPARENT_Type oldLocationHierarchy) {
+        if (locationCode == null) {
+            return oldLocationHierarchy;
+        }
+
+        if (locationCode.equals("")) {
+            return null;
+        }
+
+        LOCATIONPARENT_Type locationType = new LOCATIONPARENT_Type();
+        locationType.setLOCATIONID(new LOCATIONID_Type());
+        locationType.getLOCATIONID().setLOCATIONCODE(locationCode);
+        locationType.getLOCATIONID().setORGANIZATIONID(tools.getOrganization(context));
+        return locationType;
+    }
 
 }
