@@ -64,6 +64,8 @@ public class WorkOrderActivityCheckList implements Serializable {
 	private Boolean requiredToClose = false;
 	private Boolean hideFollowUp;
 
+	private String color;
+
 	private String newCheckListCode;
 	private String newWorkOrderCode;
 	private List<Finding> possibleFindings;
@@ -307,6 +309,14 @@ public class WorkOrderActivityCheckList implements Serializable {
 		this.equipmentDesc = equipmentDesc;
 	}
 
+	public String getColor() {
+		return color;
+	}
+
+	public void setColor(String color) {
+		this.color = color;
+	}
+
 	@Override
 	public String toString() {
 		return "WorkOrderActivityCheckList{" +
@@ -331,7 +341,8 @@ public class WorkOrderActivityCheckList implements Serializable {
 				", requiredToClose='" + requiredToClose + '\'' +
 				", newCheckListCode='" + newCheckListCode + '\'' +
 				", newWorkOrderCode='" + newWorkOrderCode + '\'' +
-				", possibleFindings=" + possibleFindings +
+				", possibleFindings='" + possibleFindings + '\'' +
+				", color='" + color + '\'' +
 				'}';
 	}
 }
