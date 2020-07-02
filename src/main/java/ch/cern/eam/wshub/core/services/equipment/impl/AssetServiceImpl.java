@@ -29,6 +29,11 @@ import static ch.cern.eam.wshub.core.services.equipment.impl.EquipmentHierarchyT
 import static ch.cern.eam.wshub.core.services.equipment.impl.EquipmentHierarchyTools.readLocationParent;
 import static ch.cern.eam.wshub.core.services.equipment.impl.EquipmentHierarchyTools.readSystemsParent;
 import static ch.cern.eam.wshub.core.services.equipment.impl.EquipmentHierarchyTools.readHierarchyType;
+import static ch.cern.eam.wshub.core.services.equipment.impl.EquipmentHierarchyTools.createAssetDependency;
+import static ch.cern.eam.wshub.core.services.equipment.impl.EquipmentHierarchyTools.createPositionDependency;
+import static ch.cern.eam.wshub.core.services.equipment.impl.EquipmentHierarchyTools.createPrimarySystemDependency;
+import static ch.cern.eam.wshub.core.services.equipment.impl.EquipmentHierarchyTools.createLocationDependency;
+import static ch.cern.eam.wshub.core.services.equipment.impl.EquipmentHierarchyTools.createNonDependentParents;
 
 import java.util.Arrays;
 import java.util.List;
@@ -380,7 +385,12 @@ public class AssetServiceImpl implements AssetService {
                 || assetParam.getHierarchyPositionCode() != null
                 || assetParam.getHierarchyPrimarySystemCode() != null
                 || assetParam.getHierarchyLocationCode() != null) {
-            initializeAssetHierarchy(assetInfor, assetParam, context);
+            try {
+                initializeAssetHierarchy(assetInfor, assetParam, context);
+            } catch (Exception e) {
+                System.out.println("error: " + e.getMessage());
+                e.printStackTrace();
+            }
         }
     }
 
@@ -395,7 +405,7 @@ public class AssetServiceImpl implements AssetService {
         hierarchy.setTYPE(new TYPE_Type());
         hierarchy.getTYPE().setTYPECODE("A");
 
-        //
+        // Fetch all possible parent types that are present in only one object that indicates the current hierarchy type
         ASSETPARENT_Type assetParent = readAssetParent(assetInfor.getAssetParentHierarchy());
         POSITIONPARENT_Type positionParent = readPositionParent(assetInfor.getAssetParentHierarchy());
         SYSTEMPARENT_Type primarySystemParent = readPrimarySystemParent(assetInfor.getAssetParentHierarchy());
@@ -403,11 +413,13 @@ public class AssetServiceImpl implements AssetService {
         List<SYSTEMPARENT_Type> systemParents = readSystemsParent(assetInfor.getAssetParentHierarchy());
         HIERARCHY_TYPE currentHierarchyType = readHierarchyType(assetInfor.getAssetParentHierarchy());
 
+        // Incorporate user changes into the parent types
         assetParent = createHierarchyAsset(context, assetParam.getHierarchyAssetCode(), assetParam.getHierarchyAssetCostRollUp(), assetParent);
         positionParent = createHierarchyPosition(context, assetParam.getHierarchyPositionCode(), assetParam.getHierarchyPositionCostRollUp(), positionParent);
         primarySystemParent = createHierarchyPrimarySystem(context, assetParam.getHierarchyPrimarySystemCode(), assetParam.getHierarchyPrimarySystemCostRollUp(), primarySystemParent);
         locationParent = createHierarchyLocation(context, assetParam.getHierarchyLocationCode(), locationParent);
 
+        // Init new hierarchy
         switch (getNewHierarchyType(assetParam, currentHierarchyType)) {
             case ASSET_DEP:
                 hierarchy.setAssetDependency(createAssetDependency(assetParent, positionParent, primarySystemParent, systemParents));
@@ -428,7 +440,7 @@ public class AssetServiceImpl implements AssetService {
         assetInfor.setAssetParentHierarchy(hierarchy);
     }
 
-    //TODO complete the logic determining new hierarchy type based on the old one and input params
+    //TODO complete the logic determining new hierarchy type based on the old one and the input params
     private HIERARCHY_TYPE getNewHierarchyType(Equipment assetParam, HIERARCHY_TYPE currentHierarchyType) {
         if (assetParam.getHierarchyAssetDependent() != null && assetParam.getHierarchyAssetDependent()) {
             return HIERARCHY_TYPE.ASSET_DEP;
@@ -444,59 +456,13 @@ public class AssetServiceImpl implements AssetService {
             return HIERARCHY_TYPE.POSITION_DEP;
         } else if (currentHierarchyType == HIERARCHY_TYPE.PRIM_SYSTEM_DEP && assetParam.getHierarchyPrimarySystemDependent() == null){
             return HIERARCHY_TYPE.PRIM_SYSTEM_DEP;
-        } else if (currentHierarchyType == HIERARCHY_TYPE.LOCATION_DEP){
+        } else if (currentHierarchyType == HIERARCHY_TYPE.LOCATION_DEP && !"".equals(assetParam.getHierarchyLocationCode())){
             return HIERARCHY_TYPE.LOCATION_DEP;
         } else if (currentHierarchyType == HIERARCHY_TYPE.SYSTEM_DEP){
             return HIERARCHY_TYPE.SYSTEM_DEP;
         } else {
             return HIERARCHY_TYPE.NON_DEP_PARENTS;
         }
-    }
-
-    private AssetDependency createAssetDependency(ASSETPARENT_Type assetParent, POSITIONPARENT_Type positionParent, SYSTEMPARENT_Type primarySystemParent, List<SYSTEMPARENT_Type> systemParents) {
-        AssetDependency assetDependency = new AssetDependency();
-        assetDependency.setDEPENDENTASSET(assetParent);
-        assetDependency.setNONDEPENDENTPOSITION(positionParent);
-        assetDependency.setNONDEPENDENTPRIMARYSYSTEM(primarySystemParent);
-        assetDependency.getNONDEPENDENTSYSTEM().addAll(systemParents);
-        return assetDependency;
-    }
-
-    private PositionDependency createPositionDependency(ASSETPARENT_Type assetParent, POSITIONPARENT_Type positionParent, SYSTEMPARENT_Type primarySystemParent, List<SYSTEMPARENT_Type> systemParents) {
-        PositionDependency positionDependency = new PositionDependency();
-        positionDependency.setNONDEPENDENTASSET(assetParent);
-        positionDependency.setDEPENDENTPOSITION(positionParent);
-        positionDependency.setNONDEPENDENTPRIMARYSYSTEM(primarySystemParent);
-        positionDependency.getNONDEPENDENTSYSTEM().addAll(systemParents);
-        return positionDependency;
-    }
-
-    private PrimarySystemDependency createPrimarySystemDependency(ASSETPARENT_Type assetParent, POSITIONPARENT_Type positionParent, SYSTEMPARENT_Type primarySystemParent, List<SYSTEMPARENT_Type> systemParents) {
-        PrimarySystemDependency positionDependency = new PrimarySystemDependency();
-        positionDependency.setNONDEPENDENTASSET(assetParent);
-        positionDependency.setNONDEPENDENTPOSITION(positionParent);
-        positionDependency.setDEPENDENTPRIMARYSYSTEM(primarySystemParent);
-        positionDependency.getNONDEPENDENTSYSTEM().addAll(systemParents);
-        return positionDependency;
-    }
-
-    private LocationDependency createLocationDependency(ASSETPARENT_Type assetParent, POSITIONPARENT_Type positionParent, SYSTEMPARENT_Type primarySystemParent, List<SYSTEMPARENT_Type> systemParents, LOCATIONPARENT_Type locationParent) {
-        LocationDependency locationDependency = new LocationDependency();
-        locationDependency.setNONDEPENDENTASSET(assetParent);
-        locationDependency.setNONDEPENDENTPOSITION(positionParent);
-        locationDependency.setNONDEPENDENTPRIMARYSYSTEM(primarySystemParent);
-        locationDependency.getNONDEPENDENTSYSTEM().addAll(systemParents);
-        locationDependency.setDEPENDENTLOCATION(locationParent);
-        return locationDependency;
-    }
-
-    private NonDependentParents_Type createNonDependentParents(ASSETPARENT_Type assetParent, POSITIONPARENT_Type positionParent, SYSTEMPARENT_Type primarySystemParent, List<SYSTEMPARENT_Type> systemParents) {
-        NonDependentParents_Type nonDependentParents = new NonDependentParents_Type();
-        nonDependentParents.setNONDEPENDENTASSET(assetParent);
-        nonDependentParents.setNONDEPENDENTPOSITION(positionParent);
-        nonDependentParents.setNONDEPENDENTPRIMARYSYSTEM(primarySystemParent);
-        nonDependentParents.getNONDEPENDENTSYSTEM().addAll(systemParents);
-        return nonDependentParents;
     }
 
     private ASSETPARENT_Type createHierarchyAsset(InforContext context, String assetCode, Boolean costRollUp, ASSETPARENT_Type oldHierarchyAsset) {
@@ -534,6 +500,8 @@ public class AssetServiceImpl implements AssetService {
     }
 
     private SYSTEMPARENT_Type createHierarchyPrimarySystem(InforContext context, String systemCode, Boolean costRollUp, SYSTEMPARENT_Type oldSystemHierarchy) {
+        System.out.println("SC: " + systemCode);
+
         if (systemCode == null) {
             return oldSystemHierarchy;
         }
