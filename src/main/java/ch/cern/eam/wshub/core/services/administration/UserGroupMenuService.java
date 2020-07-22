@@ -5,6 +5,7 @@ import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.interceptors.LogDataReferenceType;
 import ch.cern.eam.wshub.core.services.INFOR_OPERATION;
 import ch.cern.eam.wshub.core.services.administration.entities.MenuSpecification;
+import ch.cern.eam.wshub.core.services.entities.BatchResponse;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 
@@ -15,10 +16,16 @@ public interface UserGroupMenuService {
     String MENU_FUNCTION_CODE = "BSFOLD";
 
     @Operation(logOperation = INFOR_OPERATION.MENU_HIERARCHY_ADD, logDataReference1 = LogDataReferenceType.RESULT)
-    String addToMenuHierarchy(InforContext context, MenuSpecification node) throws InforException;
+    String addToMenuHierarchy(InforContext context, MenuSpecification menuSpecification) throws InforException;
 
     @Operation(logOperation = INFOR_OPERATION.MENU_HIERARCHY_DELETE, logDataReference1 = LogDataReferenceType.RESULT)
-    String deleteFromMenuHierarchy(InforContext context, MenuSpecification node) throws InforException;
+    String deleteFromMenuHierarchy(InforContext context, MenuSpecification menuSpecification) throws InforException;
+
+    @Operation(logOperation = INFOR_OPERATION.MENU_HIERARCHY_ADD_BATCH, logDataReference1 = LogDataReferenceType.RESULT)
+    BatchResponse<String> addToMenuHierarchyBatch(InforContext context, List<MenuSpecification> menuSpecificationList) throws InforException;
+
+    @Operation(logOperation = INFOR_OPERATION.MENU_HIERARCHY_ADD_MANY_USERGROUPS, logDataReference1 = LogDataReferenceType.RESULT)
+    BatchResponse<String> addToMenuHierarchyManyUsergroups(InforContext context, List<String> userGroups, MenuSpecification menuSpecification) throws InforException;
 
     static void validateInputNode(MenuSpecification ms) throws InforException {
         List<String> path = ms.getMenuPath();
