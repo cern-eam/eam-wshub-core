@@ -69,6 +69,10 @@ public class CommentServiceImpl implements CommentService {
 				commentInfor.getENTITYCOMMENTID().setCOMMENTTYPE(new TYPE_Type());
 				commentInfor.getENTITYCOMMENTID().getCOMMENTTYPE().setTYPECODE("*");
 			}
+			//
+			if (comment.getLineNumber() != null) {
+				commentInfor.getENTITYCOMMENTID().setLINENUM(tools.getDataTypeTools().encodeLong(comment.getLineNumber(), "Line Number"));
+			}
 		}
 
 		//
@@ -84,7 +88,12 @@ public class CommentServiceImpl implements CommentService {
 
 		//
 		commentInfor.setORGANIZATIONID(tools.getOrganization(context));
-		commentInfor.setPRINT("0");
+
+		if (comment.getPrint() == null) {
+			commentInfor.setPRINT("0");
+		} else {
+			commentInfor.setPRINT(comment.getPrint());
+		}
 
 		MP0109_AddComments_001 addComments = new MP0109_AddComments_001();
 		addComments.setCOMMENT(commentInfor);

@@ -1,7 +1,6 @@
 package ch.cern.eam.wshub.core.services.userdefinedscreens.impl;
 
 import ch.cern.eam.wshub.core.client.InforContext;
-import ch.cern.eam.wshub.core.services.entities.BatchResponse;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedListHelpable;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedListService;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedTableService;
@@ -13,11 +12,9 @@ import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
-import javax.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
-import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -29,8 +26,6 @@ public class UserDefinedListServiceImpl implements UserDefinedListService {
     private InforWebServicesPT inforws;
     private ApplicationData applicationData;
     private UserDefinedTableService userDefinedTableService;
-    private EntityManager entityManager;
-
     public UserDefinedListServiceImpl(ApplicationData applicationData, Tools tools,
                                       InforWebServicesPT inforWebServicesToolkitClient) {
         this.applicationData = applicationData;
@@ -38,10 +33,6 @@ public class UserDefinedListServiceImpl implements UserDefinedListService {
         this.inforws = inforWebServicesToolkitClient;
         userDefinedTableService =
                 new UserDefinedTableServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
-
-        if (tools.isDatabaseConnectionConfigured()) {
-            this.entityManager = tools.getEntityManager();
-        }
     }
 
     private UDTRow initUDLRow(UDLProperty property) {
@@ -195,7 +186,6 @@ public class UserDefinedListServiceImpl implements UserDefinedListService {
 
         UDTRow filters = initUDLRow(property);
 
-        entityManager.joinTransaction();
         userDefinedTableService.deleteUserDefinedTableRows(context, TABLE_NAME, filters);
         userDefinedTableService.createUserDefinedTableRows(context, TABLE_NAME, rows);
         return "OK";
