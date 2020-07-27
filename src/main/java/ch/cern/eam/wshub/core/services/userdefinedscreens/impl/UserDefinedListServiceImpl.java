@@ -10,7 +10,6 @@ import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
-import javax.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
@@ -25,8 +24,6 @@ public class UserDefinedListServiceImpl implements UserDefinedListService {
     private InforWebServicesPT inforws;
     private ApplicationData applicationData;
     private UserDefinedTableService userDefinedTableService;
-    private EntityManager entityManager;
-
     public UserDefinedListServiceImpl(ApplicationData applicationData, Tools tools,
                                       InforWebServicesPT inforWebServicesToolkitClient) {
         this.applicationData = applicationData;
@@ -34,10 +31,6 @@ public class UserDefinedListServiceImpl implements UserDefinedListService {
         this.inforws = inforWebServicesToolkitClient;
         userDefinedTableService =
                 new UserDefinedTableServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
-
-        if (tools.isDatabaseConnectionConfigured()) {
-            this.entityManager = tools.getEntityManager();
-        }
     }
 
     private UDTRow initUDLRow(UDLEntryId entryId) {
@@ -135,7 +128,6 @@ public class UserDefinedListServiceImpl implements UserDefinedListService {
 
     @Override
     public String setUserDefinedLists(InforContext context, EntityId entityId, Map<String, List<UDLValue>> values) throws InforException {
-        entityManager.joinTransaction();
 
         List<UDTRow> rows = new ArrayList<>();
         for(String property : values.keySet()) {

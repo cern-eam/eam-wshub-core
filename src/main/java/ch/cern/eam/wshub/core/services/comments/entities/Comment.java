@@ -18,6 +18,7 @@ public class Comment implements Serializable {
 	private String typeCode;
 	private String entityKeyCode;
 	private String entityCode;
+	private String print;
 	
 	public String getPk() {
 		return this.getEntityKeyCode() + "C" + this.getLineNumber();
@@ -134,5 +135,13 @@ public class Comment implements Serializable {
 	}
 	public void setCreated(boolean created) {
 		this.created = created;
+	}
+
+	public String getPrint() {
+		return print;
+	}
+
+	public void setPrint(String print) {
+		this.print = print;
 	}
 }
