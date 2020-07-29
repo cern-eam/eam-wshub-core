@@ -108,6 +108,38 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         return addToMenuHierarchyBatch(context, menuSpecificationList);
     }
 
+    /**
+     * For each menu specification in the list: if a function code is specified in menuSpecification,
+     * deletes all children functions with that function code from the specified path. If the function code
+     * provided is an empty string, deletes the last menu item with all its children from the path specified.
+     *
+     * @param context               the user credentials
+     * @param menuSpecificationList the list of menu specifications to add
+     * @return                      the batch of infor responses
+     */
+    @Override
+    public BatchResponse<String> deleteFromMenuHierarchyBatch(InforContext context, List<MenuSpecification> menuSpecificationList) {
+        return tools.batchOperation(context, this::deleteFromMenuHierarchy, menuSpecificationList);
+    }
+
+    /**
+     * For a each user group of a specific list of usergroups: if a function code is specified in menuSpecification,
+     * deletes all children functions with that function code from the specified path. If the function code
+     * provided is an empty string, deletes the last menu item with all its children from the path specified.
+     *
+     * @param context           the user credentials
+     * @param userGroups        the list of specific user groups to delete the menu specification
+     * @param menuSpecification the specified full path and function to delete; the user group is not used
+     * @return                  the batch of infor responses
+     */
+    @Override
+    public BatchResponse<String> deleteFromMenuHierarchyManyUsergroups(InforContext context, List<String> userGroups, MenuSpecification menuSpecification) {
+        List<MenuSpecification> menuSpecificationList = new ArrayList<MenuSpecification>();
+        userGroups.stream().forEach(u -> menuSpecificationList.add(new MenuSpecification(menuSpecification.getMenuPath(), menuSpecification.getFunctionCode(), u)));
+
+        return deleteFromMenuHierarchyBatch(context, menuSpecificationList);
+    }
+
     private ExtMenusHierarchy getExtMenuHierarchy(InforContext context, String userGroup) throws InforException {
         MP6005_GetExtMenusHierarchy_001 getExtMenusHierarchy = new MP6005_GetExtMenusHierarchy_001();
         getExtMenusHierarchy.setUSERGROUPID(new USERGROUPID_Type());

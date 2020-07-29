@@ -24,6 +24,12 @@ public interface UserGroupMenuService {
     @Operation(logOperation = INFOR_OPERATION.MENU_HIERARCHY_ADD_BATCH, logDataReference1 = LogDataReferenceType.RESULT)
     BatchResponse<String> addToMenuHierarchyBatch(InforContext context, List<MenuSpecification> menuSpecificationList) throws InforException;
 
+    @Operation(logOperation = INFOR_OPERATION.MENU_HIERARCHY_DELETE_MANY_USERGROUPS, logDataReference1 = LogDataReferenceType.RESULT)
+    BatchResponse<String> deleteFromMenuHierarchyManyUsergroups(InforContext context, List<String> userGroups, MenuSpecification menuSpecification) throws InforException;
+
+    @Operation(logOperation = INFOR_OPERATION.MENU_HIERARCHY_DELETE_BATCH, logDataReference1 = LogDataReferenceType.RESULT)
+    BatchResponse<String> deleteFromMenuHierarchyBatch(InforContext context, List<MenuSpecification> menuSpecificationList) throws InforException;
+
     @Operation(logOperation = INFOR_OPERATION.MENU_HIERARCHY_ADD_MANY_USERGROUPS, logDataReference1 = LogDataReferenceType.RESULT)
     BatchResponse<String> addToMenuHierarchyManyUsergroups(InforContext context, List<String> userGroups, MenuSpecification menuSpecification) throws InforException;
 
