@@ -37,6 +37,7 @@ import static ch.cern.eam.wshub.core.services.equipment.impl.EquipmentHierarchyT
 import static ch.cern.eam.wshub.core.services.equipment.impl.EquipmentHierarchyTools.createNonDependentParents;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
 
 public class AssetServiceImpl implements AssetService {
 
@@ -387,7 +388,7 @@ public class AssetServiceImpl implements AssetService {
             try {
                 initializeAssetHierarchy(assetInfor, assetParam, context);
             } catch (Exception e) {
-                System.out.println("error: " + e.getMessage());
+                tools.log(Level.SEVERE, e.getMessage());
                 e.printStackTrace();
             }
         }
@@ -477,7 +478,11 @@ public class AssetServiceImpl implements AssetService {
         assetType.setASSETID(new EQUIPMENTID_Type());
         assetType.getASSETID().setEQUIPMENTCODE(assetCode);
         assetType.getASSETID().setORGANIZATIONID(tools.getOrganization(context));
-        assetType.setCOSTROLLUP(encodeBoolean(costRollUp, BooleanType.TRUE_FALSE));
+        if (costRollUp == null && oldHierarchyAsset != null) {
+            assetType.setCOSTROLLUP(oldHierarchyAsset.getCOSTROLLUP());
+        } else {
+            assetType.setCOSTROLLUP(encodeBoolean(costRollUp, BooleanType.TRUE_FALSE));
+        }
         return assetType;
     }
 
@@ -494,12 +499,15 @@ public class AssetServiceImpl implements AssetService {
         positionType.setPOSITIONID(new EQUIPMENTID_Type());
         positionType.getPOSITIONID().setEQUIPMENTCODE(positionCode);
         positionType.getPOSITIONID().setORGANIZATIONID(tools.getOrganization(context));
-        positionType.setCOSTROLLUP(encodeBoolean(costRollUp, BooleanType.TRUE_FALSE));
+        if (costRollUp == null && oldHierarchyPosition != null) {
+            positionType.setCOSTROLLUP(oldHierarchyPosition.getCOSTROLLUP());
+        } else {
+            positionType.setCOSTROLLUP(encodeBoolean(costRollUp, BooleanType.TRUE_FALSE));
+        }
         return positionType;
     }
 
     private SYSTEMPARENT_Type createHierarchyPrimarySystem(InforContext context, String systemCode, Boolean costRollUp, SYSTEMPARENT_Type oldSystemHierarchy) {
-        System.out.println("SC: " + systemCode);
 
         if (systemCode == null) {
             return oldSystemHierarchy;
@@ -513,7 +521,12 @@ public class AssetServiceImpl implements AssetService {
         systemType.setSYSTEMID(new EQUIPMENTID_Type());
         systemType.getSYSTEMID().setEQUIPMENTCODE(systemCode);
         systemType.getSYSTEMID().setORGANIZATIONID(tools.getOrganization(context));
-        systemType.setCOSTROLLUP(encodeBoolean(costRollUp, BooleanType.TRUE_FALSE));
+        if (costRollUp == null && oldSystemHierarchy != null) {
+            systemType.setCOSTROLLUP(oldSystemHierarchy.getCOSTROLLUP());
+        } else {
+            systemType.setCOSTROLLUP(encodeBoolean(costRollUp, BooleanType.TRUE_FALSE));
+        }
+
         return systemType;
     }
 

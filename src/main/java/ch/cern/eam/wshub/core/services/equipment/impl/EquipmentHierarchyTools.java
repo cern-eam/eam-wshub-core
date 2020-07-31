@@ -126,6 +126,9 @@ public class EquipmentHierarchyTools {
     //
 
     public static AssetDependency createAssetDependency(ASSETPARENT_Type assetParent, POSITIONPARENT_Type positionParent, SYSTEMPARENT_Type primarySystemParent, List<SYSTEMPARENT_Type> systemParents) {
+        if (assetParent == null) {
+            return null;
+        }
         AssetDependency assetDependency = new AssetDependency();
         assetDependency.setDEPENDENTASSET(assetParent);
         assetDependency.setNONDEPENDENTPOSITION(positionParent);
@@ -137,6 +140,9 @@ public class EquipmentHierarchyTools {
     }
 
     public static PositionDependency createPositionDependency(ASSETPARENT_Type assetParent, POSITIONPARENT_Type positionParent, SYSTEMPARENT_Type primarySystemParent, List<SYSTEMPARENT_Type> systemParents) {
+        if (positionParent == null) {
+            return null;
+        }
         PositionDependency positionDependency = new PositionDependency();
         positionDependency.setNONDEPENDENTASSET(assetParent);
         positionDependency.setDEPENDENTPOSITION(positionParent);
@@ -148,6 +154,9 @@ public class EquipmentHierarchyTools {
     }
 
     public static PrimarySystemDependency createPrimarySystemDependency(ASSETPARENT_Type assetParent, POSITIONPARENT_Type positionParent, SYSTEMPARENT_Type primarySystemParent, List<SYSTEMPARENT_Type> systemParents) {
+        if (primarySystemParent == null) {
+            return null;
+        }
         PrimarySystemDependency positionDependency = new PrimarySystemDependency();
         positionDependency.setNONDEPENDENTASSET(assetParent);
         positionDependency.setNONDEPENDENTPOSITION(positionParent);
@@ -159,6 +168,9 @@ public class EquipmentHierarchyTools {
     }
 
     public static LocationDependency createLocationDependency(ASSETPARENT_Type assetParent, POSITIONPARENT_Type positionParent, SYSTEMPARENT_Type primarySystemParent, List<SYSTEMPARENT_Type> systemParents, LOCATIONPARENT_Type locationParent) {
+        if (locationParent == null) {
+            return null;
+        }
         LocationDependency locationDependency = new LocationDependency();
         locationDependency.setNONDEPENDENTASSET(assetParent);
         locationDependency.setNONDEPENDENTPOSITION(positionParent);
@@ -171,6 +183,9 @@ public class EquipmentHierarchyTools {
     }
 
     public static NonDependentParents_Type createNonDependentParents(ASSETPARENT_Type assetParent, POSITIONPARENT_Type positionParent, SYSTEMPARENT_Type primarySystemParent, List<SYSTEMPARENT_Type> systemParents) {
+        if (assetParent == null && positionParent == null && primarySystemParent == null && systemParents == null) {
+            return null;
+        }
         NonDependentParents_Type nonDependentParents = new NonDependentParents_Type();
         nonDependentParents.setNONDEPENDENTASSET(assetParent);
         nonDependentParents.setNONDEPENDENTPOSITION(positionParent);
@@ -181,33 +196,5 @@ public class EquipmentHierarchyTools {
         return nonDependentParents;
     }
 
-    //
-    //
-    //
-
-    //TODO complete the logic determining new hierarchy type based on the old one and the input params
-    public static AssetServiceImpl.HIERARCHY_TYPE getNewHierarchyType(Equipment assetParam, AssetServiceImpl.HIERARCHY_TYPE currentHierarchyType) {
-        if (assetParam.getHierarchyAssetDependent() != null && assetParam.getHierarchyAssetDependent()) {
-            return AssetServiceImpl.HIERARCHY_TYPE.ASSET_DEP;
-        } else if (assetParam.getHierarchyPositionDependent() != null && assetParam.getHierarchyPositionDependent()) {
-            return AssetServiceImpl.HIERARCHY_TYPE.POSITION_DEP;
-        } else if (assetParam.getHierarchyPrimarySystemDependent() != null && assetParam.getHierarchyPrimarySystemDependent()) {
-            return AssetServiceImpl.HIERARCHY_TYPE.PRIM_SYSTEM_DEP;
-        } else if (isNotEmpty(assetParam.getHierarchyLocationCode())) {
-            return AssetServiceImpl.HIERARCHY_TYPE.LOCATION_DEP;
-        } else if (currentHierarchyType == AssetServiceImpl.HIERARCHY_TYPE.ASSET_DEP && assetParam.getHierarchyAssetDependent() == null){
-            return AssetServiceImpl.HIERARCHY_TYPE.ASSET_DEP;
-        } else if (currentHierarchyType == AssetServiceImpl.HIERARCHY_TYPE.POSITION_DEP && assetParam.getHierarchyPositionDependent() == null){
-            return AssetServiceImpl.HIERARCHY_TYPE.POSITION_DEP;
-        } else if (currentHierarchyType == AssetServiceImpl.HIERARCHY_TYPE.PRIM_SYSTEM_DEP && assetParam.getHierarchyPrimarySystemDependent() == null){
-            return AssetServiceImpl.HIERARCHY_TYPE.PRIM_SYSTEM_DEP;
-        } else if (currentHierarchyType == AssetServiceImpl.HIERARCHY_TYPE.LOCATION_DEP && !"".equals(assetParam.getHierarchyLocationCode())){
-            return AssetServiceImpl.HIERARCHY_TYPE.LOCATION_DEP;
-        } else if (currentHierarchyType == AssetServiceImpl.HIERARCHY_TYPE.SYSTEM_DEP){
-            return AssetServiceImpl.HIERARCHY_TYPE.SYSTEM_DEP;
-        } else {
-            return AssetServiceImpl.HIERARCHY_TYPE.NON_DEP_PARENTS;
-        }
-    }
 
 }
