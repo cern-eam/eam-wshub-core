@@ -18,6 +18,8 @@ import ch.cern.eam.wshub.core.services.grids.GridsService;
 import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.services.material.*;
 import ch.cern.eam.wshub.core.services.material.impl.*;
+import ch.cern.eam.wshub.core.services.workorders.SafetyService;
+import ch.cern.eam.wshub.core.services.workorders.impl.SafetyServiceImpl;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedListService;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.impl.UserDefinedListServiceImpl;
 import ch.cern.eam.wshub.core.services.workorders.*;
@@ -120,6 +122,8 @@ public class InforClient implements Serializable {
     private UserDefinedListService userDefinedListService;
 
     private MECService mecService;
+
+    private SafetyService safetyService;
 
     // Prevent initializing the class without the builder
     private InforClient() {}
@@ -261,6 +265,7 @@ public class InforClient implements Serializable {
             inforClient.routeService = proxy(RouteService.class, new RouteServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.mecService = proxy(MECService.class, new MECServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.inforWebServicesToolkitClient = inforWebServicesToolkitClient;
+            inforClient.safetyService = proxy(SafetyService.class, new SafetyServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             if (!tools.isDatabaseConnectionConfigured()) {
                 logger.log(Level.WARNING, "Some of the services might require a database connection.");
             }
@@ -421,6 +426,8 @@ public class InforClient implements Serializable {
     public UserGroupMenuService getUserGroupMenuService() { return userGroupMenuService; }
 
     public BindingProvider getBindingProvider() { return bindingProvider; }
+
+    public SafetyService getSafetyService() { return safetyService; }
 
     public MECService getMECService() { return mecService; }
 
