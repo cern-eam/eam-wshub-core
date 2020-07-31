@@ -5,6 +5,7 @@ import ch.cern.eam.wshub.core.services.administration.UserGroupMenuService;
 import ch.cern.eam.wshub.core.services.administration.entities.MenuEntryNode;
 import ch.cern.eam.wshub.core.services.administration.entities.MenuSpecification;
 import ch.cern.eam.wshub.core.services.administration.entities.MenuType;
+import ch.cern.eam.wshub.core.services.entities.BatchResponse;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
@@ -17,6 +18,7 @@ import net.datastream.schemas.mp_functions.mp6045_001.MP6045_DeleteExtMenus_001;
 import net.datastream.schemas.mp_results.mp6043_001.MP6043_AddExtMenus_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class UserGroupMenuServiceImpl implements UserGroupMenuService {
@@ -76,6 +78,66 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         }
 
         return "OK";
+    }
+
+    /**
+     * Adds many full menu/submenu/function path to the menu hierarchy. If the paths specified are not complete, they will be completed.
+     *
+     * @param context               the user credentials
+     * @param menuSpecificationList the list of menu specifications to add
+     * @return                      the batch of infor responses
+     */
+    @Override
+    public BatchResponse<String> addToMenuHierarchyBatch(InforContext context, List<MenuSpecification> menuSpecificationList) {
+        return tools.batchOperation(context, this::addToMenuHierarchy, menuSpecificationList);
+    }
+
+    /**
+     * Adds a full menu/submenu/function path to the menu hierarchy of different user groups. If the path specified is not complete, it will be completed.
+     *
+     * @param context           the user credentials
+     * @param userGroups        the list of specific user groups to add the menu specification
+     * @param menuSpecification the specified full path and function to add; the user group is not used
+     * @return                  the batch of infor responses
+     */
+    @Override
+    public BatchResponse<String> addToMenuHierarchyManyUsergroups(InforContext context, List<String> userGroups, MenuSpecification menuSpecification) {
+        List<MenuSpecification> menuSpecificationList = new ArrayList<MenuSpecification>();
+        userGroups.stream().forEach(u -> menuSpecificationList.add(new MenuSpecification(menuSpecification.getMenuPath(), menuSpecification.getFunctionCode(), u)));
+
+        return addToMenuHierarchyBatch(context, menuSpecificationList);
+    }
+
+    /**
+     * For each menu specification in the list: if a function code is specified in menuSpecification,
+     * deletes all children functions with that function code from the specified path. If the function code
+     * provided is an empty string, deletes the last menu item with all its children from the path specified.
+     *
+     * @param context               the user credentials
+     * @param menuSpecificationList the list of menu specifications to add
+     * @return                      the batch of infor responses
+     */
+    @Override
+    public BatchResponse<String> deleteFromMenuHierarchyBatch(InforContext context, List<MenuSpecification> menuSpecificationList) {
+        return tools.batchOperation(context, this::deleteFromMenuHierarchy, menuSpecificationList);
+    }
+
+    /**
+     * For a each user group of a specific list of usergroups: if a function code is specified in menuSpecification,
+     * deletes all children functions with that function code from the specified path. If the function code
+     * provided is an empty string, deletes the last menu item with all its children from the path specified.
+     *
+     * @param context           the user credentials
+     * @param userGroups        the list of specific user groups to delete the menu specification
+     * @param menuSpecification the specified full path and function to delete; the user group is not used
+     * @return                  the batch of infor responses
+     */
+    @Override
+    public BatchResponse<String> deleteFromMenuHierarchyManyUsergroups(InforContext context, List<String> userGroups, MenuSpecification menuSpecification) {
+        List<MenuSpecification> menuSpecificationList = new ArrayList<MenuSpecification>();
+        userGroups.stream().forEach(u -> menuSpecificationList.add(new MenuSpecification(menuSpecification.getMenuPath(), menuSpecification.getFunctionCode(), u)));
+
+        return deleteFromMenuHierarchyBatch(context, menuSpecificationList);
     }
 
     private ExtMenusHierarchy getExtMenuHierarchy(InforContext context, String userGroup) throws InforException {
