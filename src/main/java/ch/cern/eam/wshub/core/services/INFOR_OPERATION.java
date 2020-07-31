@@ -207,8 +207,10 @@ public enum INFOR_OPERATION {
     // MEC
     MEC_GET("MEC_GET"),
     MEC_ADD("MEC_ADD"),
+    MEC_ADD_BATCH("MEC_ADD_BATCH"),
     MEC_DELETE("MEC_DELETE"),
     MEC_SYNC("MEC_SYNC"),
+    MEC_GET_INFOR("MEC_GET_INFOR"),
 
     OTHER("OTHER")
     ;
