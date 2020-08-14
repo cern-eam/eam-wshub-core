@@ -1,14 +1,14 @@
 package ch.cern.eam.wshub.core.services.equipment.impl;
 
+import ch.cern.eam.wshub.core.annotations.BooleanType;
+import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.equipment.entities.Equipment;
 import net.datastream.schemas.mp_entities.assetequipment_001.*;
-import net.datastream.schemas.mp_fields.ASSETPARENT_Type;
-import net.datastream.schemas.mp_fields.LOCATIONPARENT_Type;
-import net.datastream.schemas.mp_fields.POSITIONPARENT_Type;
-import net.datastream.schemas.mp_fields.SYSTEMPARENT_Type;
+import net.datastream.schemas.mp_fields.*;
 
 import java.util.List;
 
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.encodeBoolean;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
 
 public class EquipmentHierarchyTools {
@@ -168,7 +168,7 @@ public class EquipmentHierarchyTools {
     }
 
     public static LocationDependency createLocationDependency(ASSETPARENT_Type assetParent, POSITIONPARENT_Type positionParent, SYSTEMPARENT_Type primarySystemParent, List<SYSTEMPARENT_Type> systemParents, LOCATIONPARENT_Type locationParent) {
-        if (locationParent == null) {
+        if (assetParent == null && positionParent == null && primarySystemParent == null && systemParents == null && locationParent == null) {
             return null;
         }
         LocationDependency locationDependency = new LocationDependency();
@@ -195,6 +195,9 @@ public class EquipmentHierarchyTools {
         }
         return nonDependentParents;
     }
+
+
+
 
 
 }

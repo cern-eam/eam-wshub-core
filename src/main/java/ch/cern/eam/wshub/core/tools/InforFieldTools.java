@@ -76,20 +76,11 @@ public class InforFieldTools {
      * @param <W>
      */
     private <I,W> void setInforValue(W wshubObject, Field wshubField, I inforObject, InforContext context ) {
-        List<String> fieldNamePath = convertXPathToPropertyChain(inforObject.getClass(), wshubField.getAnnotation(InforField.class));
+        InforField inforField = wshubField.getAnnotation(InforField.class);
+        List<String> fieldNamePath = convertXPathToPropertyChain(inforObject.getClass(), inforField.xpath()[0], inforField.enforceValidXpath());
         try {
             wshubField.setAccessible(true);
             Object wshubFieldValue = wshubField.get(wshubObject);
-            // If null simply ignore the property
-//            if (wshubFieldValue == null) {
-//                return;
-//            }
-//            if (fieldNamePath.size() == 1) {
-//                setSingleField(inforObject, fieldNamePath.get(0), wshubFieldValue, wshubField, context);
-//            }
-//            if (fieldNamePath.size() == 2) {
-//                setComplexField(inforObject, fieldNamePath.get(0), fieldNamePath.get(1), wshubFieldValue, wshubField, context);
-//            }
             setInforFieldByPath(inforObject, fieldNamePath, wshubFieldValue, wshubField, context);
         } catch (Exception exception ) {
             exception.printStackTrace();
@@ -106,14 +97,9 @@ public class InforFieldTools {
      * @param <W>
      */
     private <I,W> void setWSHubValue(W wshubObject, Field wshubField, I inforObject) {
-        List<String> propertyPath = convertXPathToPropertyChain(inforObject.getClass(), wshubField.getAnnotation(InforField.class));
-
-        if (propertyPath == null) {
-            return;
-        }
 
         try {
-            Object inforValue = getValue(inforObject, propertyPath);
+            Object inforValue = getValue(inforObject, wshubField.getAnnotation(InforField.class));
             if (inforValue == null) {
                 return;
             }
@@ -157,14 +143,15 @@ public class InforFieldTools {
      * of corresponding nested properties
      *
      * @param inforClass
-     * @param inforField
+     * @param xpath
+     * @param enforceValidXpath
      * @return
      */
-    private List<String> convertXPathToPropertyChain(Class inforClass, InforField inforField) {
+    private List<String> convertXPathToPropertyChain(Class inforClass, String xpath, Boolean enforceValidXpath) {
             LinkedList<String> result = new LinkedList<>();
             try {
 
-                for (String xp : Arrays.asList(inforField.xpath().split("/"))) {
+                for (String xp : Arrays.asList(xpath.split("/"))) {
                     Field field = Arrays.stream(inforClass.getDeclaredFields())
                             .filter(decField ->
                                     decField.getAnnotation(XmlElement.class) != null &&
@@ -178,8 +165,8 @@ public class InforFieldTools {
                 }
                 return result;
             } catch (Exception e) {
-                if (inforField.enforceValidXpath()) {
-                    System.out.println("Couldn't extract path for: " + inforField.xpath());
+                if (enforceValidXpath) {
+                    System.out.println("Couldn't extract path for: " + xpath);
                 }
             }
             return result;
@@ -206,6 +193,13 @@ public class InforFieldTools {
         return null;
     }
 
+    private <I> Object getValue(I inforObject, InforField inforField) {
+        return Arrays.stream(inforField.xpath()).map(xpath -> convertXPathToPropertyChain(inforObject.getClass(), xpath, false))
+                .map(propList -> getValue(inforObject, propList))
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(null);
+    }
 
     private void setOrganizationField(Object inforObject, InforContext context) {
         try {

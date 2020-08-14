@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface InforField {
-    String xpath();
+    String[] xpath();
     boolean enforceValidXpath() default true;
     boolean readOnly() default false;
     BooleanType booleanType() default BooleanType.TRUE_FALSE;
