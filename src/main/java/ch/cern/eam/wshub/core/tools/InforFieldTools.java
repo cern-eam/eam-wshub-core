@@ -126,8 +126,8 @@ public class InforFieldTools {
             } else if (inforValue.getClass().equals(Long.class) || inforValue.getClass().equals(Long.TYPE)) {
                 Long longValue = (Long) inforValue;
                 wshubField.set(wshubObject, BigInteger.valueOf(longValue));
-            } else if ("UserDefinedFields".equals(wshubField.getAnnotation(InforField.class).xpath()) ||
-                       "StandardUserDefinedFields".equals(wshubField.getAnnotation(InforField.class).xpath())) {
+            } else if ("UserDefinedFields".equals(wshubField.getAnnotation(InforField.class).xpath()[0]) ||
+                       "StandardUserDefinedFields".equals(wshubField.getAnnotation(InforField.class).xpath()[0])) {
                 wshubField.set(wshubObject, transformInforObject(new UserDefinedFields(), inforValue));
             }
         }
