@@ -52,11 +52,19 @@ public class UserSetupServiceImpl implements UserSetupService {
 	public String login(InforContext context, String userCode) throws InforException {
 		MP9532_RunEmptyOp_001 runEmptyOp = new MP9532_RunEmptyOp_001();
 		if (context != null && context.getCredentials() != null) {
+			String sessionTerminationScenario = "terminate";
+			if (context.getKeepSession() != null && context.getKeepSession()) {
+				sessionTerminationScenario = null;
+			}
 			Holder<SessionType> sessionTypeHolder = new Holder<>();
 			MP9532_RunEmptyOp_001_Result result =  inforws.runEmptyOpOp(runEmptyOp, tools.getOrganizationCode(context),
-					tools.createSecurityHeader(context), "", sessionTypeHolder, null,
+					tools.createSecurityHeader(context), sessionTerminationScenario, sessionTypeHolder, null,
 					tools.getTenant(context));
-			return sessionTypeHolder.value.getSessionId();
+			if (sessionTypeHolder.value != null && sessionTypeHolder.value.getSessionId() != null) {
+				return sessionTypeHolder.value.getSessionId();
+			} else {
+				return "SUCCESS";
+			}
 		} else {
 			throw tools.generateFault("Please supply valid credentials");
 		}
