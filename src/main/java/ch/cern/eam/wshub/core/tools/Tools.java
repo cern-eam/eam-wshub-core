@@ -313,13 +313,16 @@ public class Tools {
 			throws InforException {
 		Security security = null;
 		String organization = getOrganizationCode(context);
-		String unknown2 = "TERMINATE";
+		String sessionTerminationScenario = "terminate";
 		Holder holder = null;
 		MessageConfigType messageConfigType = createMessageConfig();
 
+		if (context.getKeepSession() != null && context.getKeepSession()) {
+			sessionTerminationScenario = null;
+		}
+
 		if(context.getCredentials() != null) {
 			security = createSecurityHeader(context);
-			unknown2 = null;
 		} else {
 			holder = new Holder<>(createInforSession(context));
 		}
@@ -331,6 +334,6 @@ public class Tools {
 
 		String tenant = getTenant(context);
 
-		return operation.apply(argument, organization, security, unknown2, holder, messageConfigType, tenant);
+		return operation.apply(argument, organization, security, sessionTerminationScenario, holder, messageConfigType, tenant);
 	}
 }

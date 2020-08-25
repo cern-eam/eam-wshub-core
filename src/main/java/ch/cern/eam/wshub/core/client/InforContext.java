@@ -15,6 +15,7 @@ public class InforContext implements Serializable {
     private String organizationCode;
     private String tenant;
     private Signature signature;
+    private Boolean keepSession;
 
     public InforContext () { }
 
@@ -58,5 +59,13 @@ public class InforContext implements Serializable {
 
     public void setSignature(Signature signature) {
         this.signature = signature;
+    }
+
+    public Boolean getKeepSession() {
+        return keepSession;
+    }
+
+    public void setKeepSession(Boolean keepSession) {
+        this.keepSession = keepSession;
     }
 }
