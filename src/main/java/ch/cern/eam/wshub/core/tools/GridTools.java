@@ -6,7 +6,10 @@ import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.function.Function;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
+
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toList;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.convertStringToDate;
@@ -27,13 +30,36 @@ public class GridTools {
      * @param gridRequestResult
      * @return
      */
-    public List<Map<String,String>> convertGridResultToMapList(List<String> columns, GridRequestResult gridRequestResult) {
+
+    public static List<Map<String,String>> convertGridResultToMapList(GridRequestResult gridRequestResult) {
+        return convertGridResultToMapList(gridRequestResult, null);
+    }
+
+    public static List<Map<String,String>> convertGridResultToMapList(GridRequestResult gridRequestResult, List<String> allowedColumns) {
+        Function<GridRequestRow, LinkedHashMap<String, String>> mapper = (row) -> gridRequestRowMapper(row, allowedColumns);
+
         return Arrays.stream(gridRequestResult.getRows())
-                .map(gridRequestRow ->
-                    Arrays.stream(gridRequestRow.getCell()).filter(cell -> columns.contains(cell.getCol()) || columns.contains(cell.getTag()))
-                                                           .filter(cell -> cell.getContent() != null)
-                                                           .collect(toMap(GridRequestCell::getTag, GridRequestCell::getContent))
-                ).collect(toList());
+                .map(mapper)
+                .collect(Collectors.toCollection(LinkedList::new));
+    }
+
+    public static LinkedHashMap<String, String> gridRequestRowMapper(GridRequestRow row, List<String> allowedColumns) {
+        LinkedHashMap<String, String> rowAsPairs =
+                Arrays.stream(row.getCell())
+                        .filter(cell -> cell.getOrder() >= 0)
+                        .filter(cell -> allowedColumns == null || allowedColumns.contains(cell.getCol()) || allowedColumns.contains(cell.getTag()))
+                        .sorted(Comparator.comparing(GridRequestCell::getOrder))
+                        .collect(
+                                Collectors.toMap(
+                                        GridRequestCell::getTag,
+                                        GridRequestCell::getContent,
+                                        (v1, v2) -> {
+                                            throw new RuntimeException(String.format("Duplicate key for values %s and %s", v1, v2));
+                                        },
+                                        LinkedHashMap::new
+                                )
+                        );
+        return rowAsPairs;
     }
 
     /**
