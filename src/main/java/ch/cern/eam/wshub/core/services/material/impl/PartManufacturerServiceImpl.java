@@ -34,42 +34,16 @@ public class PartManufacturerServiceImpl implements PartManufacturerService {
 	public String addPartManufacturer(InforContext context, PartManufacturer partManufacturerParam) throws InforException {
 		net.datastream.schemas.mp_entities.partmanufacturer_001.PartManufacturer partManufacturerInfor = new net.datastream.schemas.mp_entities.partmanufacturer_001.PartManufacturer();
 
-		//
-		if (partManufacturerParam.getManufacturerPartNumber() != null) {
-			partManufacturerInfor.setMANUFACTURERPARTCODE(partManufacturerParam.getManufacturerPartNumber());
-		}
+		//TRANSFORM
+		tools.getInforFieldTools().transformWSHubObject(partManufacturerInfor, partManufacturerParam, context);
 
-		//
-		if (partManufacturerParam.getPartCode() != null) {
-			partManufacturerInfor.setPARTID(new PARTID_Type());
-			partManufacturerInfor.getPARTID().setORGANIZATIONID(tools.getOrganization(context));
-			partManufacturerInfor.getPARTID().setPARTCODE(partManufacturerParam.getPartCode().trim().toUpperCase());
-		}
-
-		//
-		if (partManufacturerParam.getDrawingNumber() != null) {
-			partManufacturerInfor.setMANUFACTURERDRAW(partManufacturerParam.getDrawingNumber());
-		}
-		//
-		if (partManufacturerParam.getManufacturerCode() != null) {
-			partManufacturerInfor.setMANUFACTURERID(new MANUFACTURERID_Type());
-			partManufacturerInfor.getMANUFACTURERID().setORGANIZATIONID(tools.getOrganization(context));
-			partManufacturerInfor.getMANUFACTURERID().setMANUFACTURERCODE(partManufacturerParam.getManufacturerCode().trim().toUpperCase());
-		}
-
-
-		partManufacturerInfor.setOUTOFSERVICE(tools.getDataTypeTools().encodeBoolean(partManufacturerParam.getOutOfService(), BooleanType.TRUE_FALSE));
-
-		//
-		if (partManufacturerParam.getPrimary() != null) {
-			partManufacturerInfor.setISPRIMARY(tools.getDataTypeTools().encodeBoolean(partManufacturerParam.getPrimary(), BooleanType.TRUE_FALSE));
-		}
 		//
 		// CALL INFOR WS
 		//
 		MP0261_AddPartManufacturer_001 addPartManufacturer = new  MP0261_AddPartManufacturer_001();
 		addPartManufacturer.setPartManufacturer(partManufacturerInfor);
 		tools.performInforOperation(context, inforws::addPartManufacturerOp, addPartManufacturer);
+
 		return partManufacturerParam.getManufacturerCode();
 	}
 
@@ -91,30 +65,17 @@ public class PartManufacturerServiceImpl implements PartManufacturerService {
 			tools.performInforOperation(context, inforws::getPartManufacturerOp, getPartM);
 
 		partManufacturerInfor = result.getResultData().getPartManufacturer();
-		//
-		if (partManufacturerParam.getManufacturerPartNumberNew() != null) {
-			partManufacturerInfor.setManufacturerpartcode_New(partManufacturerParam.getManufacturerPartNumberNew().trim());
-		} else {
-			partManufacturerInfor.setManufacturerpartcode_New("");
+
+		//FIELD ALWAYS HAS TO BE SET
+		if (partManufacturerParam.getManufacturerPartNumberNew() == null) {
+			partManufacturerParam.setManufacturerPartNumberNew(partManufacturerParam.getManufacturerPartNumber());
 		}
 
-		//
-		if (partManufacturerParam.getDrawingNumber() != null) {
-			partManufacturerInfor.setMANUFACTURERDRAW(partManufacturerParam.getDrawingNumber());
-		}
+		//TRANSFORM
+		tools.getInforFieldTools().transformWSHubObject(partManufacturerInfor, partManufacturerParam, context);
 
-		//
-		if (partManufacturerParam.getOutOfService() != null) {
-			partManufacturerInfor.setOUTOFSERVICE(tools.getDataTypeTools().encodeBoolean(partManufacturerParam.getOutOfService(), BooleanType.TRUE_FALSE));
-		}
+		//CALL INFOR WS
 
-		//
-		if (partManufacturerParam.getPrimary() != null) {
-			partManufacturerInfor.setISPRIMARY(tools.getDataTypeTools().encodeBoolean(partManufacturerParam.getPrimary(), BooleanType.TRUE_FALSE));
-		}
-		//
-		// CALL INFOR WS
-		//
 		MP0262_SyncPartManufacturer_001 syncPartManufacturer = new  MP0262_SyncPartManufacturer_001();
 		syncPartManufacturer.setPartManufacturer(partManufacturerInfor);
 		tools.performInforOperation(context, inforws::syncPartManufacturerOp, syncPartManufacturer);
