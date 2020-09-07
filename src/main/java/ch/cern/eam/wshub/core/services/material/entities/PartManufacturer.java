@@ -1,19 +1,36 @@
 package ch.cern.eam.wshub.core.services.material.entities;
 
 import ch.cern.eam.wshub.core.adapters.BooleanAdapter;
+import ch.cern.eam.wshub.core.annotations.BooleanType;
+import ch.cern.eam.wshub.core.annotations.InforField;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 
 public class PartManufacturer implements Serializable {
 
+	@InforField(xpath = "MANUFACTURERID/MANUFACTURERCODE", nullifyParentLevel = 0)
 	private String manufacturerCode;
+
+	@InforField(xpath = "MANUFACTURERID/DESCRIPTION")
 	private String manufacturerDesc;
+
+	@InforField(xpath = "PARTID/PARTCODE", nullifyParentLevel = 0)
 	private String partCode;
+
+	@InforField(xpath = "MANUFACTURERDRAW")
 	private String drawingNumber;
-	private Boolean outOfService = false;
-	private Boolean primary = false;
+
+	@InforField(xpath = "OUTOFSERVICE", booleanType = BooleanType.TRUE_FALSE)
+	private Boolean outOfService;
+
+	@InforField(xpath = "ISPRIMARY", booleanType = BooleanType.TRUE_FALSE, nullifyParentLevel = 0)
+	private Boolean primary;
+
+	@InforField(xpath = "MANUFACTURERPARTCODE", nullifyParentLevel = 0)
 	private String manufacturerPartNumber;
+
+	@InforField(xpath = "manufacturerpartcode_new", nullifyParentLevel = 0)
 	private String manufacturerPartNumberNew;
 	
 	public String getManufacturerCode() {
