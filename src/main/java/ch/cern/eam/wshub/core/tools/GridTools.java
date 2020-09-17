@@ -50,14 +50,9 @@ public class GridTools {
                         .filter(cell -> allowedColumns == null || allowedColumns.contains(cell.getCol()) || allowedColumns.contains(cell.getTag()))
                         .sorted(Comparator.comparing(GridRequestCell::getOrder))
                         .collect(
-                                Collectors.toMap(
-                                        GridRequestCell::getTag,
-                                        GridRequestCell::getContent,
-                                        (v1, v2) -> {
-                                            throw new RuntimeException(String.format("Duplicate key for values %s and %s", v1, v2));
-                                        },
-                                        LinkedHashMap::new
-                                )
+                                LinkedHashMap::new,
+                                (m, v) -> m.put(v.getTag(), v.getContent()),
+                                HashMap::putAll
                         );
         return rowAsPairs;
     }
