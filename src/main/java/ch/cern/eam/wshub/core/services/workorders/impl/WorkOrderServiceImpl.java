@@ -239,10 +239,11 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		// POPULATE ALL OTHER FIELDS
 		tools.getInforFieldTools().transformWSHubObject(inforWorkOrder, workorderParam, context);
 
-		if(workorderParam.getCopyFrom() != null) {
-			for(CUSTOMFIELD customField : inforWorkOrder.getUSERDEFINEDAREA().getCUSTOMFIELD()) {
-				customField.setChanged("true");
-			}
+		if(workorderParam.getCopyFrom() != null
+				&& inforWorkOrder.getUSERDEFINEDAREA() != null
+				&& inforWorkOrder.getUSERDEFINEDAREA().getCUSTOMFIELD() != null) {
+			inforWorkOrder.getUSERDEFINEDAREA().getCUSTOMFIELD().stream()
+					.forEach(customField -> customField.setChanged("true"));
 		}
 
 		MP0023_AddWorkOrder_001 addWO = new MP0023_AddWorkOrder_001();
