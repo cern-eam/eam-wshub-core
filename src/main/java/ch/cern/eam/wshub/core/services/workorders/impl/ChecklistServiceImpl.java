@@ -1,28 +1,33 @@
 package ch.cern.eam.wshub.core.services.workorders.impl;
 
 import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.services.entities.Signature;
 import ch.cern.eam.wshub.core.services.grids.GridsService;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestRow;
 import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.services.workorders.ChecklistService;
-import ch.cern.eam.wshub.core.services.workorders.entities.Activity;
-import ch.cern.eam.wshub.core.services.workorders.entities.Finding;
+import ch.cern.eam.wshub.core.services.workorders.entities.*;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.annotations.BooleanType;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.*;
-import ch.cern.eam.wshub.core.services.workorders.entities.TaskplanCheckList;
-import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrderActivityCheckList;
+
 import net.datastream.schemas.mp_entities.taskchecklist_001.TaskChecklist;
 import net.datastream.schemas.mp_fields.*;
 import net.datastream.schemas.mp_functions.mp7913_001.MP7913_SyncWorkOrderActivityCheckList_001;
 import net.datastream.schemas.mp_functions.mp7914_001.MP7914_GetWorkOrderActivityCheckList_001;
 import net.datastream.schemas.mp_functions.mp7916_001.MP7916_AddTaskChecklist_001;
+import net.datastream.schemas.mp_functions.mp7997_001.MP7997_PerformWorkOrderActivityCheckList_001;
+import net.datastream.schemas.mp_functions.mp7998_001.MP7998_ReviewWorkOrderActivityCheckList_001;
+import net.datastream.schemas.mp_functions.mp7999_001.MP7999_GetWorkOrderActivityCheckListDefault_001;
 import net.datastream.schemas.mp_functions.mp8000_001.MP8000_CreateFollowUpWorkOrder_001;
 import net.datastream.schemas.mp_results.mp7914_001.MP7914_GetWorkOrderActivityCheckList_001_Result;
+import net.datastream.schemas.mp_results.mp7997_001.MP7997_PerformWorkOrderActivityCheckList_001_Result;
+import net.datastream.schemas.mp_results.mp7998_001.MP7998_ReviewWorkOrderActivityCheckList_001_Result;
+import net.datastream.schemas.mp_results.mp7999_001.MP7999_GetWorkOrderActivityCheckListDefault_001_Result;
 import net.datastream.schemas.mp_results.mp8000_001.MP8000_CreateFollowUpWorkOrder_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
@@ -33,12 +38,10 @@ import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrderActivityChec
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.isEmpty;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.logging.Level;
@@ -59,10 +62,132 @@ public class ChecklistServiceImpl implements ChecklistService {
 		this.gridsService = new GridsServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
 	}
 
+	public WorkOrderActivityChecklistSignatureResult[] getWorkOrderActivityCheckList(InforContext context, String workOrderCode,
+																					 String activityCode) throws InforException {
+		WorkOrderActivityCheckListDefault workOrderActivityCheckListDefault = new WorkOrderActivityCheckListDefault();
+		workOrderActivityCheckListDefault.setActivityCode(new BigInteger(activityCode));
+		workOrderActivityCheckListDefault.setWorkOrderId(workOrderCode);
+
+		MP7999_GetWorkOrderActivityCheckListDefault_001 getWorkOrderActivityCheckListDefault = new MP7999_GetWorkOrderActivityCheckListDefault_001();
+		tools.getInforFieldTools().transformWSHubObject(getWorkOrderActivityCheckListDefault, workOrderActivityCheckListDefault, context);
+		MP7999_GetWorkOrderActivityCheckListDefault_001_Result getResult =
+				tools.performInforOperation(context, inforws::getWorkOrderActivityCheckListDefaultOp, getWorkOrderActivityCheckListDefault);
+
+		WorkOrderActivityCheckListDefaultResult workOrderActivityCheckListDefaultResult = new WorkOrderActivityCheckListDefaultResult();
+		tools.getInforFieldTools().transformInforObject(workOrderActivityCheckListDefaultResult, getResult.getResultData().getWorkOrderActivityCheckListDefault());
+		workOrderActivityCheckListDefaultResult.setUserResponsibilities(
+				getResult.getResultData().getWorkOrderActivityCheckListDefault().getUSERRESPONSIBILITY());
+		WorkOrderActivityChecklistSignatureResult[] res = getSignatures(workOrderActivityCheckListDefaultResult);
+		return res;
+	}
+
+	private WorkOrderActivityChecklistSignatureResult[] getSignatures(WorkOrderActivityCheckListDefaultResult workOrderActivityCheckList) {
+		String reviewerQualification = workOrderActivityCheckList.getReviewerQualification();
+		String performer1Qualification = workOrderActivityCheckList.getPerformer1Qualification();
+		String performer2Qualification = workOrderActivityCheckList.getPerformer2Qualification();
+		List<String> qualifications = new ArrayList<String>();
+		for(USERDEFINEDCODEID_Type userData : workOrderActivityCheckList.getUserResponsibilities())
+			qualifications.add(userData.getUSERDEFINEDCODE());
+		boolean noRequiredQualifications = reviewerQualification == null &&
+				                           performer1Qualification == null &&
+				                           performer2Qualification == null;
+		List<WorkOrderActivityChecklistSignatureResult> signatures = new LinkedList<WorkOrderActivityChecklistSignatureResult>();
+
+		boolean isPerformer1 = noRequiredQualifications || performer1Qualification == null
+							   || qualifications.contains(performer1Qualification);
+
+		boolean isPerformer2 = noRequiredQualifications || performer2Qualification == null && isPerformer1
+				               || qualifications.contains(performer2Qualification);
+
+		boolean isReviewer = noRequiredQualifications || reviewerQualification == null && (isPerformer1 || isPerformer2)
+							 || qualifications.contains(reviewerQualification);
+
+
+
+		if(isPerformer1 || isReviewer){
+			WorkOrderActivityChecklistSignatureResult perf1 = new WorkOrderActivityChecklistSignatureResult();
+			perf1.setType("PB01");
+			perf1.setSigner(workOrderActivityCheckList.getPerformer1Name());
+			perf1.setViewAsPerformer(isPerformer1);
+			perf1.setViewAsReviewer(isReviewer);
+			signatures.add(perf1);
+		}
+
+		if(isPerformer2 || isReviewer){
+			WorkOrderActivityChecklistSignatureResult perf2 = new WorkOrderActivityChecklistSignatureResult();
+			perf2.setType("PB02");
+			perf2.setSigner(workOrderActivityCheckList.getPerformer2Name());
+			perf2.setViewAsPerformer(isPerformer2);
+			perf2.setViewAsReviewer(isReviewer);
+			signatures.add(perf2);
+		}
+
+		if(isReviewer){
+			WorkOrderActivityChecklistSignatureResult reviewer = new WorkOrderActivityChecklistSignatureResult();
+			reviewer.setType("RB01");
+			reviewer.setSigner(workOrderActivityCheckList.getReviewerName());
+			reviewer.setViewAsPerformer(workOrderActivityCheckList.getPerformer1Name() != null
+										|| workOrderActivityCheckList.getPerformer2Name() != null);
+			signatures.add(reviewer);
+		}
+
+		return signatures.toArray(signatures.toArray(new WorkOrderActivityChecklistSignatureResult[0]));
+	}
+
+	public String eSignWorkOrderActivityChecklist(InforContext context, WorkOrderActivityCheckListSignature workOrderActivityCheckListSignature)
+				throws InforException {
+//		if(workOrderActivityCheckListSignature.getUserCode() == null || workOrderActivityCheckListSignature.getPassword() == null
+//				|| workOrderActivityCheckListSignature.getSignatureType() == null)
+//			throw new InforException("Insufficient signature details");
+		Signature signature = new Signature();
+		signature.setUserCode(workOrderActivityCheckListSignature.getUserCode());
+		signature.setPassword(workOrderActivityCheckListSignature.getPassword());
+		signature.setSignatureType(workOrderActivityCheckListSignature.getSignatureType());
+		context.setSignature(signature);
+		if(signature.getSignatureType().endsWith("02"))
+			workOrderActivityCheckListSignature.setSequenceNumber(new BigInteger("2"));
+		BaseSchemaRequestElement request;
+		if(workOrderActivityCheckListSignature.getSignatureType().startsWith("PB")) {
+			workOrderActivityCheckListSignature.setVerb(VERB_Type.PERFORM);
+			performWorkOrderActivityChecklist(context, workOrderActivityCheckListSignature);
+		} else {
+			workOrderActivityCheckListSignature.setVerb(VERB_Type.REVIEW);
+			reviewWorkOrderActivityCheckList(context, workOrderActivityCheckListSignature);
+		}
+		return String.format("Signed with signature type: %s", workOrderActivityCheckListSignature.getSignatureType());
+//		MP7997_PerformWorkOrderActivityCheckList_001 performWorkOrderActivityCheckList = new MP7997_PerformWorkOrderActivityCheckList_001();
+//		tools.getInforFieldTools().transformWSHubObject(request, workOrderActivityCheckListSignature, context);
+//		MP7997_PerformWorkOrderActivityCheckList_001_Result getResult =
+//				tools.performInforOperation(context, inforws::performWorkOrderActivityCheckListOp, performWorkOrderActivityCheckList);
+//		System.out.println(getResult);
+	}
+
+	private void performWorkOrderActivityChecklist(InforContext context, WorkOrderActivityCheckListSignature workOrderActivityCheckListSignature)
+				throws InforException {
+
+		MP7997_PerformWorkOrderActivityCheckList_001 performWorkOrderActivityCheckList = new MP7997_PerformWorkOrderActivityCheckList_001();
+
+		tools.getInforFieldTools().transformWSHubObject(performWorkOrderActivityCheckList, workOrderActivityCheckListSignature, context);
+		MP7997_PerformWorkOrderActivityCheckList_001_Result getResult =
+				tools.performInforOperation(context, inforws::performWorkOrderActivityCheckListOp, performWorkOrderActivityCheckList);
+//		System.out.println(getResult);
+	}
+
+	private void reviewWorkOrderActivityCheckList(InforContext context, WorkOrderActivityCheckListSignature workOrderActivityCheckListSignature)
+				throws InforException{
+
+		MP7998_ReviewWorkOrderActivityCheckList_001 reviewWorkOrderActivityCheckList = new MP7998_ReviewWorkOrderActivityCheckList_001();
+
+		tools.getInforFieldTools().transformWSHubObject(reviewWorkOrderActivityCheckList, workOrderActivityCheckListSignature, context);
+		MP7998_ReviewWorkOrderActivityCheckList_001_Result getResult =
+				tools.performInforOperation(context, inforws::reviewWorkOrderActivityCheckListOp, reviewWorkOrderActivityCheckList);
+	}
+
 	public String updateWorkOrderChecklist(InforContext context, WorkOrderActivityCheckList workOrderActivityCheckList) throws InforException {
 		//
 		// Fetch it first
 		//
+//		MP7999_GetWorkOrderActivityCheckListDefault_001_Result
 		MP7914_GetWorkOrderActivityCheckList_001 getwoactchl = new MP7914_GetWorkOrderActivityCheckList_001();
 		getwoactchl.setCHECKLISTCODE(workOrderActivityCheckList.getCheckListCode());
 		MP7914_GetWorkOrderActivityCheckList_001_Result getresult =

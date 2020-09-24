@@ -1,5 +1,7 @@
 package ch.cern.eam.wshub.core.services.workorders.entities;
 
+import ch.cern.eam.wshub.core.annotations.InforField;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import java.io.Serializable;
@@ -43,7 +45,6 @@ public class WorkOrderActivityCheckList implements Serializable {
 	private static final long serialVersionUID = 4618078230002480288L;
 
 	private String checkListCode;
-
 	private String workOrderCode;
 	private String activityCode;
 	private String sequence;
@@ -63,7 +64,6 @@ public class WorkOrderActivityCheckList implements Serializable {
 	private String followUpWorkOrder;
 	private Boolean requiredToClose = false;
 	private Boolean hideFollowUp;
-
 	private String color;
 
 	private String newCheckListCode;

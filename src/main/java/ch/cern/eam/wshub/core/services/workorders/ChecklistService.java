@@ -3,9 +3,8 @@ package ch.cern.eam.wshub.core.services.workorders;
 import ch.cern.eam.wshub.core.annotations.Operation;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.INFOR_OPERATION;
-import ch.cern.eam.wshub.core.services.workorders.entities.Activity;
-import ch.cern.eam.wshub.core.services.workorders.entities.TaskplanCheckList;
-import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrderActivityCheckList;
+import ch.cern.eam.wshub.core.services.entities.Signature;
+import ch.cern.eam.wshub.core.services.workorders.entities.*;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 public interface ChecklistService {
@@ -22,4 +21,16 @@ public interface ChecklistService {
     @Operation(logOperation = INFOR_OPERATION.WO_CHECKL_FOLLOWUPWO_C)
     Long createFollowUpWorkOrders(InforContext context, Activity activity) throws InforException;
 
+    //    @Operation(logOperation = INFOR_OPERATION.WO_CHECKL_U)
+    public String eSignWorkOrderActivityChecklist(InforContext context, WorkOrderActivityCheckListSignature workOrderActivityCheckListSignature)
+            throws InforException;
+
+    //    @Operation(logOperation = INFOR_OPERATION.WO_CHECKL_U)
+//    void perform2WorkOrderActivityChecklist(InforContext context, String workOrderCode, String activityCode,
+//                                            String userCode, String password) throws InforException;
+
+//    void reviewWorkOrderActivityCheckList(InforContext context, String workOrderCode, String activityCode,
+//                                          String userCode, String password) throws InforException;
+
+    WorkOrderActivityChecklistSignatureResult[] getWorkOrderActivityCheckList(InforContext context, String workOrderCode, String activityCode) throws InforException;
 }

@@ -154,10 +154,11 @@ public class InforFieldTools {
                 for (String xp : Arrays.asList(xpath.split("/"))) {
                     Field field = Arrays.stream(inforClass.getDeclaredFields())
                             .filter(decField ->
-                                    decField.getAnnotation(XmlElement.class) != null &&
-                                            xp.equalsIgnoreCase(decField.getAnnotation(XmlElement.class).name()) ||
-                                            decField.getAnnotation(XmlAttribute.class) != null &&
-                                                    xp.equalsIgnoreCase(decField.getAnnotation(XmlAttribute.class).name()))
+                                    decField.getAnnotation(XmlElement.class) != null
+                                            && xp.equalsIgnoreCase(decField.getAnnotation(XmlElement.class).name())
+                                    || decField.getAnnotation(XmlAttribute.class) != null
+                                            && xp.equalsIgnoreCase(decField.getAnnotation(XmlAttribute.class).name())
+                                    || xp.equals(decField.getName()))
                             .findFirst().orElse(null);
 
                     result.add(field.getName());
