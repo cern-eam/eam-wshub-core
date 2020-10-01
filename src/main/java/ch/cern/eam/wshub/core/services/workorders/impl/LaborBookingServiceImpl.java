@@ -6,12 +6,11 @@ import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.services.workorders.ChecklistService;
 import ch.cern.eam.wshub.core.services.workorders.LaborBookingService;
-import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrderActivityCheckList;
+import ch.cern.eam.wshub.core.services.workorders.TaskPlanService;
+import ch.cern.eam.wshub.core.services.workorders.entities.*;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
-import ch.cern.eam.wshub.core.services.workorders.entities.Activity;
-import ch.cern.eam.wshub.core.services.workorders.entities.LaborBooking;
 import net.datastream.schemas.mp_fields.*;
 import net.datastream.schemas.mp_functions.SessionType;
 import net.datastream.schemas.mp_functions.mp0035_001.MP0035_GetActivity_001;
@@ -43,6 +42,7 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 	private ApplicationData applicationData;
 	private ChecklistService checklistService;
 	private GridsService gridsService;
+	private TaskPlanService taskPlanService;
 
 	public LaborBookingServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
 		this.applicationData = applicationData;
@@ -50,6 +50,7 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 		this.inforws = inforWebServicesToolkitClient;
 		this.checklistService = new ChecklistServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
 		this.gridsService = new GridsServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
+		this.taskPlanService = new TaskPlanServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
 	}
 
 	public List<LaborBooking> readLaborBookings(InforContext context, String workOrderNumber) throws InforException {
@@ -141,7 +142,19 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 				List<Runnable> runnables = activities.stream()
 						.<Runnable>map(activity -> () -> {
 							try {
-								activity.setChecklists(checklistService.readWorkOrderChecklists(context, activity));
+								WorkOrderActivityChecklistSignatureResult[] signatures = checklistService.getSignatures(context, workOrderNumber, activity.getActivityCode());
+								if(signatures.length > 0) {
+									activity.setChecklists(checklistService.readWorkOrderChecklists(context, activity));
+									String taskCode = activity.getTaskCode();
+									TaskPlan taskPlan = new TaskPlan();
+									taskPlan.setCode(taskCode);
+									taskPlan = taskPlanService.getTaskPlan(context, taskPlan);
+									if(taskPlan.getPerformedByRequired() || taskPlan.getReviewedByRequired()){
+										activity.setSignatures(signatures);
+									}
+								}
+								else
+									activity.setChecklists(new WorkOrderActivityCheckList[0]);
 							} catch (Exception e) {
 								activity.setChecklists(new WorkOrderActivityCheckList[0]);
 							}

@@ -7,11 +7,23 @@ public class WorkOrderActivityChecklistSignatureResult implements Serializable {
 
     private String signer;
 
-    private String responsibility;
+    private String responsibilityCode;
+
+    private String responsibilityDescription;
 
     private Boolean viewAsPerformer;
 
     private Boolean viewAsReviewer;
+
+    private String time;
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
 
     public String getType() {
         return type;
@@ -29,14 +41,6 @@ public class WorkOrderActivityChecklistSignatureResult implements Serializable {
         this.signer = signer;
     }
 
-    public String getResponsibility() {
-        return responsibility;
-    }
-
-    public void setResponsibility(String responsibility) {
-        this.responsibility = responsibility;
-    }
-
     public Boolean getViewAsPerformer() {
         return viewAsPerformer;
     }
@@ -51,5 +55,21 @@ public class WorkOrderActivityChecklistSignatureResult implements Serializable {
 
     public void setViewAsReviewer(Boolean viewAsReviewer) {
         this.viewAsReviewer = viewAsReviewer;
+    }
+
+    public String getResponsibilityCode() {
+        return responsibilityCode;
+    }
+
+    public void setResponsibilityCode(String responsibilityCode) {
+        this.responsibilityCode = responsibilityCode;
+    }
+
+    public String getResponsibilityDescription() {
+        return responsibilityDescription;
+    }
+
+    public void setResponsibilityDescription(String responsibilityDescription) {
+        this.responsibilityDescription = responsibilityDescription;
     }
 }

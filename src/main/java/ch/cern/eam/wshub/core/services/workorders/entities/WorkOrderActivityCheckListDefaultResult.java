@@ -2,8 +2,10 @@ package ch.cern.eam.wshub.core.services.workorders.entities;
 
 import ch.cern.eam.wshub.core.annotations.InforField;
 import net.datastream.schemas.mp_fields.USERDEFINEDCODEID_Type;
+import org.openapplications.oagis_segments.DATETIME;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 public class WorkOrderActivityCheckListDefaultResult implements Serializable {
@@ -36,6 +38,15 @@ public class WorkOrderActivityCheckListDefaultResult implements Serializable {
 
     @InforField(xpath = "USERRESPONSIBILITY")
     List<USERDEFINEDCODEID_Type> userResponsibilities;
+
+    @InforField(xpath = "PERFORMEDBYESIGN/ESIGNATURE/EXTERNALDATETIME")
+    Date timePerf1;
+
+    @InforField(xpath = "PERFORMEDBYESIGN2/ESIGNATURE/EXTERNALDATETIME")
+    Date timePerf2;
+
+    @InforField(xpath = "REVIEWEDBYESIGN/ESIGNATURE/EXTERNALDATETIME")
+    Date timeRev1;
 
     public WorkOrderActivityCheckListDefaultResult(){
         rejectPerformedBy = "false";
@@ -120,5 +131,29 @@ public class WorkOrderActivityCheckListDefaultResult implements Serializable {
 
     public void setUserResponsibilities(List<USERDEFINEDCODEID_Type> userResponsibilities) {
         this.userResponsibilities = userResponsibilities;
+    }
+
+    public Date getTimePerf1() {
+        return timePerf1;
+    }
+
+    public void setTimePerf1(Date timePerf1) {
+        this.timePerf1 = timePerf1;
+    }
+
+    public Date getTimePerf2() {
+        return timePerf2;
+    }
+
+    public void setTimePerf2(Date timePerf2) {
+        this.timePerf2 = timePerf2;
+    }
+
+    public Date getTimeRev1() {
+        return timeRev1;
+    }
+
+    public void setTimeRev1(Date timeRev1) {
+        this.timeRev1 = timeRev1;
     }
 }

@@ -118,4 +118,8 @@ public class WorkOrderActivityCheckListSignature implements Serializable{
     public void setSignatureType(String signatureType) {
         this.signatureType = signatureType;
     }
+
+    public BigInteger getActivityCodeValue() {
+        return activityCodeValue;
+    }
 }

@@ -4,6 +4,7 @@ import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
 import ch.cern.eam.wshub.core.adapters.BigIntegerAdapter;
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
 import ch.cern.eam.wshub.core.annotations.GridField;
+import ch.cern.eam.wshub.core.services.entities.Signature;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -75,6 +76,9 @@ public class Activity implements Serializable {
 
 	@Transient
 	private WorkOrderActivityCheckList[] checklists;
+
+	@Transient
+	private WorkOrderActivityChecklistSignatureResult[] signatures;
 
 	public String getWorkOrderNumber() {
 		return workOrderNumber;
@@ -189,6 +193,14 @@ public class Activity implements Serializable {
 	public String getActivityNote() {return activityNote;}
 
 	public void setActivityNote(String activityNote) {this.activityNote = activityNote; }
+
+	public WorkOrderActivityChecklistSignatureResult[] getSignatures() {
+		return signatures;
+	}
+
+	public void setSignatures(WorkOrderActivityChecklistSignatureResult[] signatures) {
+		this.signatures = signatures;
+	}
 
 	@Override
 	public String toString() {

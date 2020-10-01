@@ -21,16 +21,10 @@ public interface ChecklistService {
     @Operation(logOperation = INFOR_OPERATION.WO_CHECKL_FOLLOWUPWO_C)
     Long createFollowUpWorkOrders(InforContext context, Activity activity) throws InforException;
 
+    //TODO: FIX @OPERATION
     //    @Operation(logOperation = INFOR_OPERATION.WO_CHECKL_U)
-    public String eSignWorkOrderActivityChecklist(InforContext context, WorkOrderActivityCheckListSignature workOrderActivityCheckListSignature)
-            throws InforException;
+    WorkOrderActivityChecklistSignatureResponse eSignWorkOrderActivityChecklist(InforContext context, WorkOrderActivityCheckListSignature workOrderActivityCheckListSignature)
+            throws Exception;
 
-    //    @Operation(logOperation = INFOR_OPERATION.WO_CHECKL_U)
-//    void perform2WorkOrderActivityChecklist(InforContext context, String workOrderCode, String activityCode,
-//                                            String userCode, String password) throws InforException;
-
-//    void reviewWorkOrderActivityCheckList(InforContext context, String workOrderCode, String activityCode,
-//                                          String userCode, String password) throws InforException;
-
-    WorkOrderActivityChecklistSignatureResult[] getWorkOrderActivityCheckList(InforContext context, String workOrderCode, String activityCode) throws InforException;
+    WorkOrderActivityChecklistSignatureResult[] getSignatures(InforContext context, String workOrderCode, String activityCode) throws Exception;
 }
