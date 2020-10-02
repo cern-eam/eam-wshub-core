@@ -67,13 +67,13 @@ public class ChecklistServiceImpl implements ChecklistService {
 	}
 
 	public WorkOrderActivityChecklistSignatureResult[] getSignatures(InforContext context, String workOrderCode,
-																	 String activityCode) throws Exception {
+																	 String activityCode) throws InforException {
 		MP7999_GetWorkOrderActivityCheckListDefault_001_Result getResult = getSignatureWS(context, workOrderCode, activityCode);
 		WorkOrderActivityCheckListDefaultResult workOrderActivityCheckListDefaultResult = new WorkOrderActivityCheckListDefaultResult();
 		tools.getInforFieldTools().transformInforObject(workOrderActivityCheckListDefaultResult,
 														getResult.getResultData().getWorkOrderActivityCheckListDefault());
 
-		workOrderActivityCheckListDefaultResult.setUserResponsibilities(
+		workOrderActivityCheckListDefaultResult.setUserCodes(
 				getResult.getResultData().getWorkOrderActivityCheckListDefault().getUSERRESPONSIBILITY());
 		WorkOrderActivityChecklistSignatureResult[] res = filterSignatures(workOrderActivityCheckListDefaultResult);
 		getResponsibilityDescriptions(context, res);
@@ -114,14 +114,13 @@ public class ChecklistServiceImpl implements ChecklistService {
 						.forEach(signature -> signature.setResponsibilityDescription(getCellContent.apply(row, "description"))));
 	}
 
-	private WorkOrderActivityChecklistSignatureResult[] filterSignatures(WorkOrderActivityCheckListDefaultResult workOrderActivityCheckList) throws Exception {
-		DateAdapter dateAdapter = new DateAdapter();
+	private WorkOrderActivityChecklistSignatureResult[] filterSignatures(WorkOrderActivityCheckListDefaultResult workOrderActivityCheckList){
 		String reviewerQualification = workOrderActivityCheckList.getReviewerQualification();
 		String performer1Qualification = workOrderActivityCheckList.getPerformer1Qualification();
 		String performer2Qualification = workOrderActivityCheckList.getPerformer2Qualification();
 		List<String> qualifications = new ArrayList<>();
-		for(USERDEFINEDCODEID_Type userData : workOrderActivityCheckList.getUserResponsibilities())
-			qualifications.add(userData.getUSERDEFINEDCODE());
+		for(String qualification : workOrderActivityCheckList.getUserResponsibilities())
+			qualifications.add(qualification);
 
 		boolean noRequiredQualifications = reviewerQualification == null &&
 				                           performer1Qualification == null &&
@@ -144,7 +143,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 			perf1.setSigner(workOrderActivityCheckList.getPerformer1Name());
 			perf1.setViewAsPerformer(isPerformer1);
 			perf1.setViewAsReviewer(isReviewer);
-			perf1.setTime(workOrderActivityCheckList.getTimePerf1() != null ? dateAdapter.marshal(workOrderActivityCheckList.getTimePerf1()) : null);
+			perf1.setTime(workOrderActivityCheckList.getTimePerf1() != null ? workOrderActivityCheckList.getTimePerf1() : null);
 			perf1.setResponsibilityCode(performer1Qualification);
 			signatures.add(perf1);
 		}
@@ -156,7 +155,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 			perf2.setViewAsPerformer(isPerformer2);
 			perf2.setViewAsReviewer(isReviewer);
 			perf2.setTime(workOrderActivityCheckList.getTimePerf2() != null ?
-					dateAdapter.marshal(workOrderActivityCheckList.getTimePerf2()) : null);
+					workOrderActivityCheckList.getTimePerf2() : null);
 			perf2.setResponsibilityCode(performer2Qualification != null ? performer2Qualification : performer1Qualification);
 			signatures.add(perf2);
 		}
@@ -167,7 +166,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 			reviewer.setSigner(workOrderActivityCheckList.getReviewerName());
 			reviewer.setViewAsPerformer(workOrderActivityCheckList.getPerformer1Name() != null
 										|| workOrderActivityCheckList.getPerformer2Name() != null);
-			reviewer.setTime(workOrderActivityCheckList.getTimeRev1() != null ? dateAdapter.marshal(workOrderActivityCheckList.getTimeRev1()) : null);
+			reviewer.setTime(workOrderActivityCheckList.getTimeRev1() != null ? workOrderActivityCheckList.getTimeRev1() : null);
 			if(reviewerQualification == null && performer1Qualification != null && performer2Qualification == null)
 				reviewerQualification = performer1Qualification;
 
@@ -176,23 +175,33 @@ public class ChecklistServiceImpl implements ChecklistService {
 			signatures.add(reviewer);
 		}
 
-		return signatures.toArray(signatures.toArray(new WorkOrderActivityChecklistSignatureResult[0]));
+		return signatures.toArray(new WorkOrderActivityChecklistSignatureResult[0]);
 	}
 
 	private MP7999_GetWorkOrderActivityCheckListDefault_001_Result getSignatureWS(InforContext context, String workOrderCode, String activityCode) throws InforException {
-		WorkOrderActivityCheckListDefault workOrderActivityCheckListDefault = new WorkOrderActivityCheckListDefault();
-		workOrderActivityCheckListDefault.setActivityCode(new BigInteger(activityCode));
-		workOrderActivityCheckListDefault.setWorkOrderId(workOrderCode);
-
 		MP7999_GetWorkOrderActivityCheckListDefault_001 getWorkOrderActivityCheckListDefault = new MP7999_GetWorkOrderActivityCheckListDefault_001();
-		tools.getInforFieldTools().transformWSHubObject(getWorkOrderActivityCheckListDefault, workOrderActivityCheckListDefault, context);
+		transformGetWorkOrderActivityCheckListDefaultRequest(getWorkOrderActivityCheckListDefault, workOrderCode, activityCode);
+//		tools.getInforFieldTools().transformWSHubObject(getWorkOrderActivityCheckListDefault, workOrderActivityCheckListDefault, context);
 		MP7999_GetWorkOrderActivityCheckListDefault_001_Result getResult =
 				tools.performInforOperation(context, inforws::getWorkOrderActivityCheckListDefaultOp, getWorkOrderActivityCheckListDefault);
 		return getResult;
 	}
 
+	private void transformGetWorkOrderActivityCheckListDefaultRequest(MP7999_GetWorkOrderActivityCheckListDefault_001 getWorkOrderActivityCheckListDefault,
+																	  String workOrderCode, String activityCode) {
+		ACTIVITYCODE activityCodeField = new ACTIVITYCODE();
+		activityCodeField.setValue(Long.parseLong(activityCode));
+		getWorkOrderActivityCheckListDefault.setACTIVITYCODE(activityCodeField);
+		WOID_Type workOrderID = new WOID_Type();
+		workOrderID.setJOBNUM(workOrderCode);
+		workOrderID.setAuto_Generated(true);
+		getWorkOrderActivityCheckListDefault.setWORKORDERID(workOrderID);
+		getWorkOrderActivityCheckListDefault.setVerb(VERB_Type.GET);
+		getWorkOrderActivityCheckListDefault.setNoun(NOUN_Type.WORK_ORDER_ACTIVITY_CHECK_LIST_DEFAULT);
+	}
+
 	public WorkOrderActivityChecklistSignatureResponse eSignWorkOrderActivityChecklist(InforContext context, WorkOrderActivityCheckListSignature workOrderActivityCheckListSignature)
-			throws Exception {
+			throws InforException{
 		Signature signature = new Signature();
 		signature.setUserCode(workOrderActivityCheckListSignature.getUserCode());
 		signature.setPassword(workOrderActivityCheckListSignature.getPassword());
@@ -210,8 +219,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 	}
 
 	private WorkOrderActivityChecklistSignatureResponse performWorkOrderActivityChecklist(InforContext context, WorkOrderActivityCheckListSignature workOrderActivityCheckListSignature)
-			throws Exception {
-		DateAdapter dateAdapter = new DateAdapter();
+			throws InforException {
 		MP7997_PerformWorkOrderActivityCheckList_001 performWorkOrderActivityCheckList = new MP7997_PerformWorkOrderActivityCheckList_001();
 
 		tools.getInforFieldTools().transformWSHubObject(performWorkOrderActivityCheckList, workOrderActivityCheckListSignature, context);
@@ -224,36 +232,34 @@ public class ChecklistServiceImpl implements ChecklistService {
 		if(workOrderActivityCheckListSignature.getSequenceNumber() != null &&
 				workOrderActivityCheckListSignature.getSequenceNumber().intValue() == 2){
 			res.setSigner(getResult.getResultData().getWorkOrderActivityCheckListDefault().getPERFORMEDBYESIGN2().getESIGNATURE().getUSERID().getDESCRIPTION());
-			res.setTimeStamp(dateAdapter.marshal(decodeInforDate(
-					getResult.getResultData().getWorkOrderActivityCheckListDefault().getPERFORMEDBYESIGN2().getESIGNATURE().getEXTERNALDATETIME())));
+			res.setTimeStamp(decodeInforDate(
+					getResult.getResultData().getWorkOrderActivityCheckListDefault().getPERFORMEDBYESIGN2().getESIGNATURE().getEXTERNALDATETIME()));
 		}
-		else{
+		else {
 			res.setSigner(getResult.getResultData().getWorkOrderActivityCheckListDefault().getPERFORMEDBYESIGN().getESIGNATURE().getUSERID().getDESCRIPTION());
-			res.setTimeStamp(dateAdapter.marshal(decodeInforDate(
-					getResult.getResultData().getWorkOrderActivityCheckListDefault().getPERFORMEDBYESIGN().getESIGNATURE().getEXTERNALDATETIME())));
+			res.setTimeStamp(decodeInforDate(
+					getResult.getResultData().getWorkOrderActivityCheckListDefault().getPERFORMEDBYESIGN().getESIGNATURE().getEXTERNALDATETIME()));
 		}
 		return res;
 	}
 
 	private WorkOrderActivityChecklistSignatureResponse reviewWorkOrderActivityCheckList(InforContext context, WorkOrderActivityCheckListSignature workOrderActivityCheckListSignature)
-			throws Exception {
+			throws InforException {
 
-		DateAdapter dateAdapter = new DateAdapter();
 		MP7998_ReviewWorkOrderActivityCheckList_001 reviewWorkOrderActivityCheckList = new MP7998_ReviewWorkOrderActivityCheckList_001();
 
 		tools.getInforFieldTools().transformWSHubObject(reviewWorkOrderActivityCheckList, workOrderActivityCheckListSignature, context);
-		MP7998_ReviewWorkOrderActivityCheckList_001_Result revResult =
-				tools.performInforOperation(context, inforws::reviewWorkOrderActivityCheckListOp, reviewWorkOrderActivityCheckList);
+		tools.performInforOperation(context, inforws::reviewWorkOrderActivityCheckListOp, reviewWorkOrderActivityCheckList);
 
 		MP7999_GetWorkOrderActivityCheckListDefault_001_Result getResult =
 				getSignatureWS(context, workOrderActivityCheckListSignature.getWorkOrderCode(),
 						       workOrderActivityCheckListSignature.getActivityCodeValue().toString());
 
-		WorkOrderActivityChecklistSignatureResponse res = new WorkOrderActivityChecklistSignatureResponse();
-		res.setSigner(getResult.getResultData().getWorkOrderActivityCheckListDefault().getREVIEWEDBYESIGN().getESIGNATURE().getUSERID().getDESCRIPTION());
-		res.setTimeStamp(dateAdapter.marshal(decodeInforDate(
-				getResult.getResultData().getWorkOrderActivityCheckListDefault().getREVIEWEDBYESIGN().getESIGNATURE().getEXTERNALDATETIME())));
-		return res;
+		WorkOrderActivityChecklistSignatureResponse response = new WorkOrderActivityChecklistSignatureResponse();
+		response.setSigner(getResult.getResultData().getWorkOrderActivityCheckListDefault().getREVIEWEDBYESIGN().getESIGNATURE().getUSERID().getDESCRIPTION());
+		response.setTimeStamp(decodeInforDate(
+				getResult.getResultData().getWorkOrderActivityCheckListDefault().getREVIEWEDBYESIGN().getESIGNATURE().getEXTERNALDATETIME()));
+		return response;
 	}
 
 
@@ -261,7 +267,6 @@ public class ChecklistServiceImpl implements ChecklistService {
 		//
 		// Fetch it first
 		//
-//		MP7999_GetWorkOrderActivityCheckListDefault_001_Result
 		MP7914_GetWorkOrderActivityCheckList_001 getwoactchl = new MP7914_GetWorkOrderActivityCheckList_001();
 		getwoactchl.setCHECKLISTCODE(workOrderActivityCheckList.getCheckListCode());
 		MP7914_GetWorkOrderActivityCheckList_001_Result getresult =

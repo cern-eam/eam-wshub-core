@@ -5,6 +5,7 @@ import net.datastream.schemas.mp_fields.USERDEFINEDCODEID_Type;
 import org.openapplications.oagis_segments.DATETIME;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -37,7 +38,9 @@ public class WorkOrderActivityCheckListDefaultResult implements Serializable {
     private String rejectPerformedBy2;
 
     @InforField(xpath = "USERRESPONSIBILITY")
-    List<USERDEFINEDCODEID_Type> userResponsibilities;
+    List<USERDEFINEDCODEID_Type> userCodes;
+
+    List<String> userResponsibilities;
 
     @InforField(xpath = "PERFORMEDBYESIGN/ESIGNATURE/EXTERNALDATETIME")
     Date timePerf1;
@@ -125,11 +128,17 @@ public class WorkOrderActivityCheckListDefaultResult implements Serializable {
         this.rejectPerformedBy2 = rejectPerformedBy2;
     }
 
-    public List<USERDEFINEDCODEID_Type> getUserResponsibilities() {
+    public List<String> getUserResponsibilities() {
+        if(userResponsibilities == null){
+            userResponsibilities = new ArrayList<>();
+            if(userCodes != null)
+                for(USERDEFINEDCODEID_Type userCode : userCodes)
+                    userResponsibilities.add(userCode.getUSERDEFINEDCODE());
+        }
         return userResponsibilities;
     }
 
-    public void setUserResponsibilities(List<USERDEFINEDCODEID_Type> userResponsibilities) {
+    public void setUserResponsibilities(List<String> userResponsibilities) {
         this.userResponsibilities = userResponsibilities;
     }
 
@@ -155,5 +164,13 @@ public class WorkOrderActivityCheckListDefaultResult implements Serializable {
 
     public void setTimeRev1(Date timeRev1) {
         this.timeRev1 = timeRev1;
+    }
+
+    public List<USERDEFINEDCODEID_Type> getUserCodes() {
+        return userCodes;
+    }
+
+    public void setUserCodes(List<USERDEFINEDCODEID_Type> userCodes) {
+        this.userCodes = userCodes;
     }
 }

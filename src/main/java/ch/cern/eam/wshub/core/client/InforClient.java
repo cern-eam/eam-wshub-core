@@ -433,5 +433,5 @@ public class InforClient implements Serializable {
 
     public MECService getMECService() { return mecService; }
 
-    public TaskPlanService getTaskPlanService() {return  taskPlanService; }
+    public TaskPlanService getTaskPlanService() { return  taskPlanService; }
 }

@@ -1,11 +1,15 @@
 package ch.cern.eam.wshub.core.services.workorders.entities;
 
+import ch.cern.eam.wshub.core.adapters.DateAdapter;
+
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
+import java.util.Date;
 
 public class WorkOrderActivityChecklistSignatureResponse implements Serializable {
     private String signer;
 
-    private String timeStamp;
+    private Date timeStamp;
 
     public String getSigner() {
         return signer;
@@ -15,11 +19,12 @@ public class WorkOrderActivityChecklistSignatureResponse implements Serializable
         this.signer = signer;
     }
 
-    public String getTimeStamp() {
+    @XmlJavaTypeAdapter(DateAdapter.class)
+    public Date getTimeStamp() {
         return timeStamp;
     }
 
-    public void setTimeStamp(String timeStamp) {
+    public void setTimeStamp(Date timeStamp) {
         this.timeStamp = timeStamp;
     }
 }
