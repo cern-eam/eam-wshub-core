@@ -181,7 +181,6 @@ public class ChecklistServiceImpl implements ChecklistService {
 	private MP7999_GetWorkOrderActivityCheckListDefault_001_Result getSignatureWS(InforContext context, String workOrderCode, String activityCode) throws InforException {
 		MP7999_GetWorkOrderActivityCheckListDefault_001 getWorkOrderActivityCheckListDefault = new MP7999_GetWorkOrderActivityCheckListDefault_001();
 		transformGetWorkOrderActivityCheckListDefaultRequest(getWorkOrderActivityCheckListDefault, workOrderCode, activityCode);
-//		tools.getInforFieldTools().transformWSHubObject(getWorkOrderActivityCheckListDefault, workOrderActivityCheckListDefault, context);
 		MP7999_GetWorkOrderActivityCheckListDefault_001_Result getResult =
 				tools.performInforOperation(context, inforws::getWorkOrderActivityCheckListDefaultOp, getWorkOrderActivityCheckListDefault);
 		return getResult;
@@ -220,6 +219,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 
 	private WorkOrderActivityChecklistSignatureResponse performWorkOrderActivityChecklist(InforContext context, WorkOrderActivityCheckListSignature workOrderActivityCheckListSignature)
 			throws InforException {
+
 		MP7997_PerformWorkOrderActivityCheckList_001 performWorkOrderActivityCheckList = new MP7997_PerformWorkOrderActivityCheckList_001();
 
 		tools.getInforFieldTools().transformWSHubObject(performWorkOrderActivityCheckList, workOrderActivityCheckListSignature, context);
@@ -230,17 +230,10 @@ public class ChecklistServiceImpl implements ChecklistService {
 						       workOrderActivityCheckListSignature.getActivityCodeValue().toString());
 		WorkOrderActivityChecklistSignatureResponse res = new WorkOrderActivityChecklistSignatureResponse();
 		if(workOrderActivityCheckListSignature.getSequenceNumber() != null &&
-				workOrderActivityCheckListSignature.getSequenceNumber().intValue() == 2){
-			res.setSigner(getResult.getResultData().getWorkOrderActivityCheckListDefault().getPERFORMEDBYESIGN2().getESIGNATURE().getUSERID().getDESCRIPTION());
-			res.setTimeStamp(decodeInforDate(
-					getResult.getResultData().getWorkOrderActivityCheckListDefault().getPERFORMEDBYESIGN2().getESIGNATURE().getEXTERNALDATETIME()));
-		}
-		else {
-			res.setSigner(getResult.getResultData().getWorkOrderActivityCheckListDefault().getPERFORMEDBYESIGN().getESIGNATURE().getUSERID().getDESCRIPTION());
-			res.setTimeStamp(decodeInforDate(
-					getResult.getResultData().getWorkOrderActivityCheckListDefault().getPERFORMEDBYESIGN().getESIGNATURE().getEXTERNALDATETIME()));
-		}
-		return res;
+				workOrderActivityCheckListSignature.getSequenceNumber().intValue() == 2)
+			return transformESIGNATUREtoResponse(getResult.getResultData().getWorkOrderActivityCheckListDefault().getPERFORMEDBYESIGN2().getESIGNATURE());
+		else
+			return transformESIGNATUREtoResponse(getResult.getResultData().getWorkOrderActivityCheckListDefault().getPERFORMEDBYESIGN().getESIGNATURE());
 	}
 
 	private WorkOrderActivityChecklistSignatureResponse reviewWorkOrderActivityCheckList(InforContext context, WorkOrderActivityCheckListSignature workOrderActivityCheckListSignature)
@@ -255,13 +248,15 @@ public class ChecklistServiceImpl implements ChecklistService {
 				getSignatureWS(context, workOrderActivityCheckListSignature.getWorkOrderCode(),
 						       workOrderActivityCheckListSignature.getActivityCodeValue().toString());
 
-		WorkOrderActivityChecklistSignatureResponse response = new WorkOrderActivityChecklistSignatureResponse();
-		response.setSigner(getResult.getResultData().getWorkOrderActivityCheckListDefault().getREVIEWEDBYESIGN().getESIGNATURE().getUSERID().getDESCRIPTION());
-		response.setTimeStamp(decodeInforDate(
-				getResult.getResultData().getWorkOrderActivityCheckListDefault().getREVIEWEDBYESIGN().getESIGNATURE().getEXTERNALDATETIME()));
-		return response;
+		return transformESIGNATUREtoResponse(getResult.getResultData().getWorkOrderActivityCheckListDefault().getREVIEWEDBYESIGN().getESIGNATURE());
 	}
 
+	private WorkOrderActivityChecklistSignatureResponse transformESIGNATUREtoResponse(ESIGNATURE eSignature) {
+		WorkOrderActivityChecklistSignatureResponse response = new WorkOrderActivityChecklistSignatureResponse();
+		response.setSigner(eSignature.getUSERID().getDESCRIPTION());
+		response.setTimeStamp(decodeInforDate(eSignature.getEXTERNALDATETIME()));
+		return response
+	}
 
 	public String updateWorkOrderChecklist(InforContext context, WorkOrderActivityCheckList workOrderActivityCheckList) throws InforException {
 		//
