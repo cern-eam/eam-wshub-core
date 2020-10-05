@@ -149,12 +149,14 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 									TaskPlan taskPlan = new TaskPlan();
 									taskPlan.setCode(taskCode);
 									taskPlan = taskPlanService.getTaskPlan(context, taskPlan);
-									if(taskPlan.getPerformedByRequired() || taskPlan.getReviewedByRequired()){
+									if(taskPlan.getPerformedByRequired() || taskPlan.getReviewedByRequired()) {
 										activity.setSignatures(signatures);
 									}
+									activity.setForceExpansionOnLoad(taskPlan.getForceExpansionOnLoad() != null && taskPlan.getForceExpansionOnLoad());
 								}
-								else
+								else {
 									activity.setChecklists(new WorkOrderActivityCheckList[0]);
+								}
 							} catch (Exception e) {
 								activity.setChecklists(new WorkOrderActivityCheckList[0]);
 							}

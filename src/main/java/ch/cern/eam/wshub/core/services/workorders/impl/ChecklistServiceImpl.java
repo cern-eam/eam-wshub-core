@@ -1,6 +1,6 @@
 package ch.cern.eam.wshub.core.services.workorders.impl;
 
-import ch.cern.eam.wshub.core.adapters.DateAdapter;
+import ch.cern.eam.wshub.core.annotations.BooleanType;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.entities.Signature;
 import ch.cern.eam.wshub.core.services.grids.GridsService;
@@ -8,12 +8,11 @@ import ch.cern.eam.wshub.core.services.grids.entities.*;
 import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.services.workorders.ChecklistService;
 import ch.cern.eam.wshub.core.services.workorders.entities.*;
+import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrderActivityCheckList.CheckListType;
+import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrderActivityCheckList.ReturnType;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.annotations.BooleanType;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
-import static ch.cern.eam.wshub.core.tools.DataTypeTools.*;
-
 import net.datastream.schemas.mp_entities.taskchecklist_001.TaskChecklist;
 import net.datastream.schemas.mp_fields.*;
 import net.datastream.schemas.mp_functions.mp7913_001.MP7913_SyncWorkOrderActivityCheckList_001;
@@ -24,20 +23,9 @@ import net.datastream.schemas.mp_functions.mp7998_001.MP7998_ReviewWorkOrderActi
 import net.datastream.schemas.mp_functions.mp7999_001.MP7999_GetWorkOrderActivityCheckListDefault_001;
 import net.datastream.schemas.mp_functions.mp8000_001.MP8000_CreateFollowUpWorkOrder_001;
 import net.datastream.schemas.mp_results.mp7914_001.MP7914_GetWorkOrderActivityCheckList_001_Result;
-import net.datastream.schemas.mp_results.mp7997_001.MP7997_PerformWorkOrderActivityCheckList_001_Result;
-import net.datastream.schemas.mp_results.mp7998_001.MP7998_ReviewWorkOrderActivityCheckList_001_Result;
 import net.datastream.schemas.mp_results.mp7999_001.MP7999_GetWorkOrderActivityCheckListDefault_001_Result;
 import net.datastream.schemas.mp_results.mp8000_001.MP8000_CreateFollowUpWorkOrder_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
-
-import static ch.cern.eam.wshub.core.tools.GridTools.extractSingleResult;
-import static ch.cern.eam.wshub.core.tools.GridTools.getCellContent;
-import static ch.cern.eam.wshub.core.tools.DataTypeTools.decodeBoolean;
-import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrderActivityCheckList.*;
-
-import javax.xml.bind.Marshaller;
-
-import static ch.cern.eam.wshub.core.tools.DataTypeTools.isEmpty;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -49,7 +37,10 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.*;
+import static ch.cern.eam.wshub.core.tools.GridTools.extractSingleResult;
+import static ch.cern.eam.wshub.core.tools.GridTools.getCellContent;
 
 public class ChecklistServiceImpl implements ChecklistService {
 
@@ -73,8 +64,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 		tools.getInforFieldTools().transformInforObject(workOrderActivityCheckListDefaultResult,
 														getResult.getResultData().getWorkOrderActivityCheckListDefault());
 
-		workOrderActivityCheckListDefaultResult.setUserCodes(
-				getResult.getResultData().getWorkOrderActivityCheckListDefault().getUSERRESPONSIBILITY());
+
 		WorkOrderActivityChecklistSignatureResult[] res = filterSignatures(workOrderActivityCheckListDefaultResult);
 		getResponsibilityDescriptions(context, res);
 		return res;
@@ -86,7 +76,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 		GridRequest gridRequest = new GridRequest("LVUSERRESPONSIBILITIES");
 		gridRequest.setDataspyID("4297");
 		gridRequest.getParams().put("param.rentity", "RESP");
-		List<GridRequestFilter> filters = new LinkedList<GridRequestFilter>();
+		List<GridRequestFilter> filters = new LinkedList<>();
 		Map<String, List<WorkOrderActivityChecklistSignatureResult>> responsibilityToSignature
 				= new HashMap<>();
 		for(WorkOrderActivityChecklistSignatureResult signatureResult : signatures){
@@ -119,8 +109,8 @@ public class ChecklistServiceImpl implements ChecklistService {
 		String performer1Qualification = workOrderActivityCheckList.getPerformer1Qualification();
 		String performer2Qualification = workOrderActivityCheckList.getPerformer2Qualification();
 		List<String> qualifications = new ArrayList<>();
-		for(String qualification : workOrderActivityCheckList.getUserResponsibilities())
-			qualifications.add(qualification);
+		for(UserQualification qualification : workOrderActivityCheckList.getUserQualifications())
+			qualifications.add(qualification.getUserDefinedCode());
 
 		boolean noRequiredQualifications = reviewerQualification == null &&
 				                           performer1Qualification == null &&
@@ -181,9 +171,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 	private MP7999_GetWorkOrderActivityCheckListDefault_001_Result getSignatureWS(InforContext context, String workOrderCode, String activityCode) throws InforException {
 		MP7999_GetWorkOrderActivityCheckListDefault_001 getWorkOrderActivityCheckListDefault = new MP7999_GetWorkOrderActivityCheckListDefault_001();
 		transformGetWorkOrderActivityCheckListDefaultRequest(getWorkOrderActivityCheckListDefault, workOrderCode, activityCode);
-		MP7999_GetWorkOrderActivityCheckListDefault_001_Result getResult =
-				tools.performInforOperation(context, inforws::getWorkOrderActivityCheckListDefaultOp, getWorkOrderActivityCheckListDefault);
-		return getResult;
+		return tools.performInforOperation(context, inforws::getWorkOrderActivityCheckListDefaultOp, getWorkOrderActivityCheckListDefault);
 	}
 
 	private void transformGetWorkOrderActivityCheckListDefaultRequest(MP7999_GetWorkOrderActivityCheckListDefault_001 getWorkOrderActivityCheckListDefault,
@@ -228,7 +216,6 @@ public class ChecklistServiceImpl implements ChecklistService {
 		MP7999_GetWorkOrderActivityCheckListDefault_001_Result getResult =
 				getSignatureWS(context, workOrderActivityCheckListSignature.getWorkOrderCode(),
 						       workOrderActivityCheckListSignature.getActivityCodeValue().toString());
-		WorkOrderActivityChecklistSignatureResponse res = new WorkOrderActivityChecklistSignatureResponse();
 		if(workOrderActivityCheckListSignature.getSequenceNumber() != null &&
 				workOrderActivityCheckListSignature.getSequenceNumber().intValue() == 2)
 			return transformESIGNATUREtoResponse(getResult.getResultData().getWorkOrderActivityCheckListDefault().getPERFORMEDBYESIGN2().getESIGNATURE());
@@ -255,7 +242,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 		WorkOrderActivityChecklistSignatureResponse response = new WorkOrderActivityChecklistSignatureResponse();
 		response.setSigner(eSignature.getUSERID().getDESCRIPTION());
 		response.setTimeStamp(decodeInforDate(eSignature.getEXTERNALDATETIME()));
-		return response
+		return response;
 	}
 
 	public String updateWorkOrderChecklist(InforContext context, WorkOrderActivityCheckList workOrderActivityCheckList) throws InforException {

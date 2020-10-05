@@ -38,9 +38,7 @@ public class WorkOrderActivityCheckListDefaultResult implements Serializable {
     private String rejectPerformedBy2;
 
     @InforField(xpath = "USERRESPONSIBILITY")
-    List<USERDEFINEDCODEID_Type> userCodes;
-
-    List<String> userResponsibilities;
+    UserQualification[] userQualifications;
 
     @InforField(xpath = "PERFORMEDBYESIGN/ESIGNATURE/EXTERNALDATETIME")
     Date timePerf1;
@@ -128,20 +126,6 @@ public class WorkOrderActivityCheckListDefaultResult implements Serializable {
         this.rejectPerformedBy2 = rejectPerformedBy2;
     }
 
-    public List<String> getUserResponsibilities() {
-        if(userResponsibilities == null){
-            userResponsibilities = new ArrayList<>();
-            if(userCodes != null)
-                for(USERDEFINEDCODEID_Type userCode : userCodes)
-                    userResponsibilities.add(userCode.getUSERDEFINEDCODE());
-        }
-        return userResponsibilities;
-    }
-
-    public void setUserResponsibilities(List<String> userResponsibilities) {
-        this.userResponsibilities = userResponsibilities;
-    }
-
     public Date getTimePerf1() {
         return timePerf1;
     }
@@ -166,11 +150,12 @@ public class WorkOrderActivityCheckListDefaultResult implements Serializable {
         this.timeRev1 = timeRev1;
     }
 
-    public List<USERDEFINEDCODEID_Type> getUserCodes() {
-        return userCodes;
+    public UserQualification[] getUserQualifications() {
+        return userQualifications;
     }
 
-    public void setUserCodes(List<USERDEFINEDCODEID_Type> userCodes) {
-        this.userCodes = userCodes;
+    public void setUserQualifications(UserQualification[] userQualifications) {
+        this.userQualifications = userQualifications;
     }
+
 }
