@@ -108,7 +108,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 		String reviewerQualification = workOrderActivityCheckList.getReviewerQualification();
 		String performer1Qualification = workOrderActivityCheckList.getPerformer1Qualification();
 		String performer2Qualification = workOrderActivityCheckList.getPerformer2Qualification();
-		List<String> qualifications = null;
+		List<String> qualifications = new ArrayList<>();
 
 		if(workOrderActivityCheckList.getUserQualifications() != null){
 			qualifications = workOrderActivityCheckList.getUserQualifications().stream()
@@ -123,13 +123,13 @@ public class ChecklistServiceImpl implements ChecklistService {
 		List<WorkOrderActivityChecklistSignatureResult> signatures = new LinkedList<>();
 
 		boolean isPerformer1 = noRequiredQualifications || performer1Qualification == null
-							   || qualifications != null && qualifications.contains(performer1Qualification);
+							   || qualifications.contains(performer1Qualification);
 
 		boolean isPerformer2 = noRequiredQualifications || performer2Qualification == null && isPerformer1
-				               || qualifications != null && qualifications.contains(performer2Qualification);
+				               || qualifications.contains(performer2Qualification);
 
 		boolean isReviewer = noRequiredQualifications || reviewerQualification == null && (isPerformer1 || isPerformer2)
-							 || qualifications != null && qualifications.contains(reviewerQualification);
+							 || qualifications.contains(reviewerQualification);
 
 		List<Boolean> permissions = new ArrayList<>();
 		permissions.add(isPerformer1);
