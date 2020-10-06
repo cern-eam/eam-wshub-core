@@ -14,6 +14,8 @@ import javax.xml.bind.annotation.XmlElement;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Array;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
@@ -132,14 +134,16 @@ public class InforFieldTools {
                 wshubField.set(wshubObject, transformInforObject(new UserDefinedFields(), inforValue));
             } else if(List.class.isAssignableFrom(inforValue.getClass())){
                 List inforValueAsList = (List) inforValue;
-                if(inforValueAsList.size() == 0) return;
-                Class arrayMemberClazz = wshubField.getType().getComponentType();
-                Object[] arr = (Object[]) Array.newInstance(arrayMemberClazz, inforValueAsList.size());
-                for(int i = 0; i < arr.length; i++){
-                    arr[i] =  arrayMemberClazz.newInstance();
-                    transformInforObject(arr[i], inforValueAsList.get(i));
+                if(wshubField.getGenericType() instanceof ParameterizedType) {
+                    ParameterizedType listGenericType = (ParameterizedType) wshubField.getGenericType();
+                    Class itemsType = (Class) listGenericType.getActualTypeArguments()[0];
+                    List rawWSHubList = new ArrayList();
+                    for (int i = 0; i < inforValueAsList.size(); i++) {
+                        rawWSHubList.add(itemsType.newInstance());
+                        transformInforObject(rawWSHubList.get(i), inforValueAsList.get(i));
+                    }
+                    wshubField.set(wshubObject, rawWSHubList);
                 }
-                wshubField.set(wshubObject, arr);
             }
         }
         catch (Exception e) {

@@ -38,7 +38,7 @@ public class WorkOrderActivityCheckListDefaultResult implements Serializable {
     private String rejectPerformedBy2;
 
     @InforField(xpath = "USERRESPONSIBILITY")
-    UserQualification[] userQualifications;
+    List <UserQualification> userQualifications;
 
     @InforField(xpath = "PERFORMEDBYESIGN/ESIGNATURE/EXTERNALDATETIME")
     Date timePerf1;
@@ -150,11 +150,11 @@ public class WorkOrderActivityCheckListDefaultResult implements Serializable {
         this.timeRev1 = timeRev1;
     }
 
-    public UserQualification[] getUserQualifications() {
+    public List<UserQualification> getUserQualifications() {
         return userQualifications;
     }
 
-    public void setUserQualifications(UserQualification[] userQualifications) {
+    public void setUserQualifications(List<UserQualification> userQualifications) {
         this.userQualifications = userQualifications;
     }
 
