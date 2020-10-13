@@ -152,7 +152,6 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 									if(taskPlan.getPerformedByRequired() || taskPlan.getReviewedByRequired()) {
 										activity.setSignatures(signatures);
 									}
-									activity.setForceExpansionOnLoad(taskPlan.getForceExpansionOnLoad() != null && taskPlan.getForceExpansionOnLoad());
 								}
 								else {
 									activity.setChecklists(new WorkOrderActivityCheckList[0]);

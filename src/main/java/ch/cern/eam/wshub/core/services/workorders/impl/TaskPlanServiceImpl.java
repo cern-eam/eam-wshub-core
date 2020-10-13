@@ -26,8 +26,9 @@ public class TaskPlanServiceImpl implements TaskPlanService {
     public TaskPlan getTaskPlan(InforContext context, TaskPlan taskPlan) throws InforException {
 
         MP0079_GetTask_001 getTaskPlan = new MP0079_GetTask_001();
-        if(taskPlan.getTaskRevision() == null)
+        if(taskPlan.getTaskRevision() == null) {
             taskPlan.setTaskRevision(new BigInteger("0"));
+        }
         tools.getInforFieldTools().transformWSHubObject(getTaskPlan, taskPlan, context);
         MP0079_GetTask_001_Result getTask_001_result =
                 tools.performInforOperation(context, inforws::getTaskOp, getTaskPlan);
