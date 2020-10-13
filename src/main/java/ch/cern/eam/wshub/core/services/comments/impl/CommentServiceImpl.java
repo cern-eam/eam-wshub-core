@@ -7,16 +7,15 @@ import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_fields.*;
-import net.datastream.schemas.mp_functions.SessionType;
 import net.datastream.schemas.mp_functions.mp0108_001.CommentsReq;
 import net.datastream.schemas.mp_functions.mp0108_001.MP0108_GetComments_001;
 import net.datastream.schemas.mp_functions.mp0109_001.MP0109_AddComments_001;
 import net.datastream.schemas.mp_functions.mp0110_001.MP0110_SyncComments_001;
+import net.datastream.schemas.mp_functions.mp0111_001.MP0111_DeleteComments_001;
 import net.datastream.schemas.mp_results.mp0108_001.MP0108_GetComments_001_Result;
 import net.datastream.schemas.mp_results.mp0109_001.MP0109_AddComments_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
-import javax.xml.ws.Holder;
-import java.util.Arrays;
+
 
 public class CommentServiceImpl implements CommentService {
 
@@ -271,7 +270,29 @@ public class CommentServiceImpl implements CommentService {
 		return commentParam.getPk();
 	}
 
+	public String deleteComment(InforContext context, Comment comment) throws InforException {
+		MP0111_DeleteComments_001 deleteComments = new MP0111_DeleteComments_001();
+		deleteComments.setENTITYCOMMENTID(new ENTITYCOMMENTID_Type());
 
+		deleteComments.getENTITYCOMMENTID().setENTITY(comment.getEntityCode());
+		deleteComments.getENTITYCOMMENTID().setENTITYKEYCODE(comment.getEntityKeyCode());
+		deleteComments.getENTITYCOMMENTID().setLANGUAGEID(new LANGUAGEID_Type());
+		deleteComments.getENTITYCOMMENTID().getLANGUAGEID().setLANGUAGECODE("EN");
+		deleteComments.getENTITYCOMMENTID().setCOMMENTTYPE(new TYPE_Type());
+		deleteComments.getENTITYCOMMENTID().setLINENUM(tools.getDataTypeTools().encodeLong(comment.getLineNumber(), "Line Number"));
+
+		if (comment.getTypeCode() != null) {
+			deleteComments.getENTITYCOMMENTID().getCOMMENTTYPE().setTYPECODE(comment.getTypeCode());
+		} else {
+			deleteComments.getENTITYCOMMENTID().getCOMMENTTYPE().setTYPECODE("*");
+		}
+
+
+
+		tools.performInforOperation(context, inforws::deleteCommentsOp, deleteComments);
+
+		return comment.getPk();
+	}
 
 }
 

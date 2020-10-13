@@ -10,11 +10,14 @@ import ch.cern.eam.wshub.core.tools.InforException;
 public interface CommentService {
 
     @Operation(logOperation = INFOR_OPERATION.COMMENT_C, logDataReference1 = LogDataReferenceType.INPUTFIELD, logDataReference1FieldName = "entityKeyCode", logDataReference2 = LogDataReferenceType.RESULT)
-    String createComment(InforContext context, Comment commentParam) throws InforException;
+    String createComment(InforContext context, Comment comment) throws InforException;
 
     @Operation(logOperation = INFOR_OPERATION.COMMENT_R)
     Comment[] readComments(InforContext context, String entityCode, String entityKeyCode, String typeCode) throws InforException;
 
     @Operation(logOperation = INFOR_OPERATION.COMMENT_U, logDataReference1 = LogDataReferenceType.INPUTFIELD, logDataReference1FieldName = "entityKeyCode", logDataReference2 = LogDataReferenceType.RESULT)
-    String updateComment(InforContext context, Comment commentParam) throws InforException;
+    String updateComment(InforContext context, Comment comment) throws InforException;
+
+    @Operation(logOperation = INFOR_OPERATION.COMMENT_D)
+    String deleteComment(InforContext context, Comment comment) throws InforException;
 }
