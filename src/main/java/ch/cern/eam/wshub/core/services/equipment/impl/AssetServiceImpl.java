@@ -7,7 +7,6 @@ import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedListService
 import ch.cern.eam.wshub.core.services.userdefinedscreens.entities.EntityId;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.impl.UserDefinedListServiceImpl;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.annotations.BooleanType;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_entities.assetequipment_001.*;
@@ -24,17 +23,7 @@ import net.datastream.schemas.mp_results.mp0305_001.MP0305_GetAssetEquipmentDefa
 import net.datastream.schemas.mp_results.mp0327_001.MP0327_GetAssetParentHierarchy_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.*;
-import static ch.cern.eam.wshub.core.services.equipment.impl.EquipmentHierarchyTools.readAssetParent;
-import static ch.cern.eam.wshub.core.services.equipment.impl.EquipmentHierarchyTools.readPositionParent;
-import static ch.cern.eam.wshub.core.services.equipment.impl.EquipmentHierarchyTools.readPrimarySystemParent;
-import static ch.cern.eam.wshub.core.services.equipment.impl.EquipmentHierarchyTools.readLocationParent;
-import static ch.cern.eam.wshub.core.services.equipment.impl.EquipmentHierarchyTools.readSystemsParent;
-import static ch.cern.eam.wshub.core.services.equipment.impl.EquipmentHierarchyTools.readHierarchyType;
-import static ch.cern.eam.wshub.core.services.equipment.impl.EquipmentHierarchyTools.createAssetDependency;
-import static ch.cern.eam.wshub.core.services.equipment.impl.EquipmentHierarchyTools.createPositionDependency;
-import static ch.cern.eam.wshub.core.services.equipment.impl.EquipmentHierarchyTools.createPrimarySystemDependency;
-import static ch.cern.eam.wshub.core.services.equipment.impl.EquipmentHierarchyTools.createLocationDependency;
-import static ch.cern.eam.wshub.core.services.equipment.impl.EquipmentHierarchyTools.createNonDependentParents;
+import static ch.cern.eam.wshub.core.services.equipment.impl.EquipmentHierarchyTools.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
@@ -72,9 +61,7 @@ public class AssetServiceImpl implements AssetService {
     }
 
     public Equipment readAsset(InforContext context, String assetCode) throws InforException {
-        System.out.println("Reading asset.");
         AssetEquipment assetEquipment = readInforAsset(context, assetCode);
-        assetEquipment.setAssetParentHierarchy(readInforAssetHierarchy(context, assetCode));
         //
         Equipment asset = tools.getInforFieldTools().transformInforObject(new Equipment(), assetEquipment);
         asset.setSystemTypeCode("A");
@@ -104,8 +91,7 @@ public class AssetServiceImpl implements AssetService {
         return asset;
     }
 
-    private AssetParentHierarchy readInforAssetHierarchy(InforContext context, String assetCode)
-            throws InforException {
+    private AssetParentHierarchy readInforAssetHierarchy(InforContext context, String assetCode) throws InforException {
         MP0327_GetAssetParentHierarchy_001 getassetph = new MP0327_GetAssetParentHierarchy_001();
         getassetph.setASSETID(new EQUIPMENTID_Type());
         getassetph.getASSETID().setORGANIZATIONID(tools.getOrganization(context));
@@ -114,7 +100,6 @@ public class AssetServiceImpl implements AssetService {
         MP0327_GetAssetParentHierarchy_001_Result result = tools.performInforOperation(context, inforws::getAssetParentHierarchyOp, getassetph);
 
         return result.getResultData().getAssetParentHierarchy();
-
     }
 
     private AssetEquipment readInforAsset(InforContext context, String assetCode)
@@ -228,8 +213,6 @@ public class AssetServiceImpl implements AssetService {
         }
     }
 
-    enum HIERARCHY_TYPE {ASSET_DEP, POSITION_DEP, PRIM_SYSTEM_DEP, LOCATION_DEP, SYSTEM_DEP, NON_DEP_PARENTS};
-
     private void initializeAssetHierarchy(AssetEquipment assetInfor, Equipment assetParam, InforContext context) throws InforException {
         AssetParentHierarchy hierarchy = new AssetParentHierarchy();
 
@@ -248,136 +231,30 @@ public class AssetServiceImpl implements AssetService {
         HIERARCHY_TYPE currentHierarchyType = readHierarchyType(assetInfor.getAssetParentHierarchy());
 
         // Incorporate user changes into the parent types
-        assetParent = createAssetParent(context, assetParam.getHierarchyAssetCode(), assetParam.getHierarchyAssetCostRollUp(), assetParent);
-        positionParent = createHierarchyPosition(context, assetParam.getHierarchyPositionCode(), assetParam.getHierarchyPositionCostRollUp(), positionParent);
-        primarySystemParent = createHierarchyPrimarySystem(context, assetParam.getHierarchyPrimarySystemCode(), assetParam.getHierarchyPrimarySystemCostRollUp(), primarySystemParent);
-        locationParent = createHierarchyLocation(context, assetParam.getHierarchyLocationCode(), locationParent);
+        assetParent = createAssetParent(tools.getOrganizationCode(context), assetParam.getHierarchyAssetCode(), assetParam.getHierarchyAssetCostRollUp(), assetParent);
+        positionParent = createPositionParent(tools.getOrganizationCode(context), assetParam.getHierarchyPositionCode(), assetParam.getHierarchyPositionCostRollUp(), positionParent);
+        primarySystemParent = createPrimarySystemParent(tools.getOrganizationCode(context), assetParam.getHierarchyPrimarySystemCode(), assetParam.getHierarchyPrimarySystemCostRollUp(), primarySystemParent);
+        locationParent = createLocationParent(tools.getOrganizationCode(context), assetParam.getHierarchyLocationCode(), locationParent);
 
         // Init new hierarchy
         switch (getNewHierarchyType(assetParam, currentHierarchyType)) {
             case ASSET_DEP:
-                hierarchy.setAssetDependency(createAssetDependency(assetParent, positionParent, primarySystemParent, systemParents));
+                hierarchy.setAssetDependency(createAssetDependencyForAsset(assetParent, positionParent, primarySystemParent, systemParents));
                 break;
             case POSITION_DEP:
-                hierarchy.setPositionDependency(createPositionDependency(assetParent, positionParent, primarySystemParent, systemParents));
+                hierarchy.setPositionDependency(createPositionDependencyForAsset(assetParent, positionParent, primarySystemParent, systemParents));
                 break;
             case PRIM_SYSTEM_DEP:
-                hierarchy.setPrimarySystemDependency(createPrimarySystemDependency(assetParent, positionParent, primarySystemParent, systemParents));
+                hierarchy.setPrimarySystemDependency(createPrimarySystemDependencyForAsset(assetParent, positionParent, primarySystemParent, systemParents));
                 break;
             case LOCATION_DEP:
-                hierarchy.setLocationDependency(createLocationDependency(assetParent, positionParent, primarySystemParent, systemParents, locationParent));
+                hierarchy.setLocationDependency(createLocationDependencyForAsset(assetParent, positionParent, primarySystemParent, systemParents, locationParent));
                 break;
             default:
-                hierarchy.setNonDependentParents(createNonDependentParents(assetParent, positionParent, primarySystemParent, systemParents));
+                hierarchy.setNonDependentParents(createNonDependentParentsForAsset(assetParent, positionParent, primarySystemParent, systemParents));
         }
 
         assetInfor.setAssetParentHierarchy(hierarchy);
-    }
-
-    //TODO complete the logic determining new hierarchy type based on the old one and the input params
-    private HIERARCHY_TYPE getNewHierarchyType(Equipment assetParam, HIERARCHY_TYPE currentHierarchyType) {
-        if (assetParam.getHierarchyAssetDependent() != null && assetParam.getHierarchyAssetDependent()) {
-            return HIERARCHY_TYPE.ASSET_DEP;
-        } else if (assetParam.getHierarchyPositionDependent() != null && assetParam.getHierarchyPositionDependent()) {
-            return HIERARCHY_TYPE.POSITION_DEP;
-        } else if (assetParam.getHierarchyPrimarySystemDependent() != null && assetParam.getHierarchyPrimarySystemDependent()) {
-            return HIERARCHY_TYPE.PRIM_SYSTEM_DEP;
-        } else if (isNotEmpty(assetParam.getHierarchyLocationCode())) {
-            return HIERARCHY_TYPE.LOCATION_DEP;
-        } else if (currentHierarchyType == HIERARCHY_TYPE.ASSET_DEP && assetParam.getHierarchyAssetDependent() == null){
-            return HIERARCHY_TYPE.ASSET_DEP;
-        } else if (currentHierarchyType == HIERARCHY_TYPE.POSITION_DEP && assetParam.getHierarchyPositionDependent() == null){
-            return HIERARCHY_TYPE.POSITION_DEP;
-        } else if (currentHierarchyType == HIERARCHY_TYPE.PRIM_SYSTEM_DEP && assetParam.getHierarchyPrimarySystemDependent() == null){
-            return HIERARCHY_TYPE.PRIM_SYSTEM_DEP;
-        } else if (currentHierarchyType == HIERARCHY_TYPE.LOCATION_DEP && !"".equals(assetParam.getHierarchyLocationCode())){
-            return HIERARCHY_TYPE.LOCATION_DEP;
-        } else if (currentHierarchyType == HIERARCHY_TYPE.SYSTEM_DEP){
-            return HIERARCHY_TYPE.SYSTEM_DEP;
-        } else {
-            return HIERARCHY_TYPE.NON_DEP_PARENTS;
-        }
-    }
-
-    public ASSETPARENT_Type createAssetParent(InforContext inforContext, String assetCode, Boolean costRollUp, ASSETPARENT_Type oldHierarchyAsset) {
-        if (assetCode == null) {
-            return oldHierarchyAsset;
-        }
-
-        if (assetCode.equals("")) {
-            return null;
-        }
-
-        ASSETPARENT_Type assetType = new ASSETPARENT_Type();
-        assetType.setASSETID(new EQUIPMENTID_Type());
-        assetType.getASSETID().setEQUIPMENTCODE(assetCode);
-        assetType.getASSETID().setORGANIZATIONID(tools.getOrganization(inforContext));
-        if (costRollUp == null && oldHierarchyAsset != null) {
-            assetType.setCOSTROLLUP(oldHierarchyAsset.getCOSTROLLUP());
-        } else {
-            assetType.setCOSTROLLUP(encodeBoolean(costRollUp, BooleanType.TRUE_FALSE));
-        }
-        return assetType;
-    }
-
-    private POSITIONPARENT_Type createHierarchyPosition(InforContext context, String positionCode, Boolean costRollUp, POSITIONPARENT_Type oldHierarchyPosition) {
-        if (positionCode == null) {
-            return oldHierarchyPosition;
-        }
-
-        if (positionCode.equals("")) {
-            return null;
-        }
-
-        POSITIONPARENT_Type positionType = new POSITIONPARENT_Type();
-        positionType.setPOSITIONID(new EQUIPMENTID_Type());
-        positionType.getPOSITIONID().setEQUIPMENTCODE(positionCode);
-        positionType.getPOSITIONID().setORGANIZATIONID(tools.getOrganization(context));
-        if (costRollUp == null && oldHierarchyPosition != null) {
-            positionType.setCOSTROLLUP(oldHierarchyPosition.getCOSTROLLUP());
-        } else {
-            positionType.setCOSTROLLUP(encodeBoolean(costRollUp, BooleanType.TRUE_FALSE));
-        }
-        return positionType;
-    }
-
-    private SYSTEMPARENT_Type createHierarchyPrimarySystem(InforContext context, String systemCode, Boolean costRollUp, SYSTEMPARENT_Type oldSystemHierarchy) {
-
-        if (systemCode == null) {
-            return oldSystemHierarchy;
-        }
-
-        if (systemCode.equals("")) {
-            return null;
-        }
-
-        SYSTEMPARENT_Type systemType = new SYSTEMPARENT_Type();
-        systemType.setSYSTEMID(new EQUIPMENTID_Type());
-        systemType.getSYSTEMID().setEQUIPMENTCODE(systemCode);
-        systemType.getSYSTEMID().setORGANIZATIONID(tools.getOrganization(context));
-        if (costRollUp == null && oldSystemHierarchy != null) {
-            systemType.setCOSTROLLUP(oldSystemHierarchy.getCOSTROLLUP());
-        } else {
-            systemType.setCOSTROLLUP(encodeBoolean(costRollUp, BooleanType.TRUE_FALSE));
-        }
-
-        return systemType;
-    }
-
-    private LOCATIONPARENT_Type createHierarchyLocation(InforContext context, String locationCode, LOCATIONPARENT_Type oldLocationHierarchy) {
-        if (locationCode == null) {
-            return oldLocationHierarchy;
-        }
-
-        if (locationCode.equals("")) {
-            return null;
-        }
-
-        LOCATIONPARENT_Type locationType = new LOCATIONPARENT_Type();
-        locationType.setLOCATIONID(new LOCATIONID_Type());
-        locationType.getLOCATIONID().setLOCATIONCODE(locationCode);
-        locationType.getLOCATIONID().setORGANIZATIONID(tools.getOrganization(context));
-        return locationType;
     }
 
 }

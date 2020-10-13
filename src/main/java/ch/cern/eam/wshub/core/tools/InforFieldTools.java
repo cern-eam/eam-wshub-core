@@ -179,6 +179,10 @@ public class InforFieldTools {
      * @return
      */
     private <I> Object getValue(I inforObject, List<String> fieldNames) {
+        if (fieldNames == null || fieldNames.size() == 0) {
+            return null;
+        }
+
         try {
             Object result = inforObject;
             for (String fieldName : fieldNames) {
@@ -189,8 +193,8 @@ public class InforFieldTools {
             return result;
         } catch (Exception e) {
             // Nothing wrong about an exception here
+            return null;
         }
-        return null;
     }
 
     private <I> Object getValue(I inforObject, InforField inforField) {
@@ -210,7 +214,6 @@ public class InforFieldTools {
             // Nothing wrong about an exception here
         }
     }
-
 
     private Object setPreviousFields(Object inforObject, List<String> fields) {
         Object inforTempObject = inforObject;
