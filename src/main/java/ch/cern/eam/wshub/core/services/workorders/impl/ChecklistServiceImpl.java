@@ -41,6 +41,7 @@ import java.util.stream.Collectors;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.*;
 import static ch.cern.eam.wshub.core.tools.GridTools.extractSingleResult;
 import static ch.cern.eam.wshub.core.tools.GridTools.getCellContent;
+import static ch.cern.eam.wshub.core.tools.GridTools.convertGridResultToMap;
 
 public class ChecklistServiceImpl implements ChecklistService {
 
@@ -62,8 +63,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 		MP7999_GetWorkOrderActivityCheckListDefault_001_Result getResult = getSignatureWS(context, workOrderCode, activityCode);
 		WorkOrderActivityCheckListDefaultResult workOrderActivityCheckListDefaultResult = new WorkOrderActivityCheckListDefaultResult();
 		tools.getInforFieldTools().transformInforObject(workOrderActivityCheckListDefaultResult,
-														getResult.getResultData().getWorkOrderActivityCheckListDefault());
-
+				getResult.getResultData().getWorkOrderActivityCheckListDefault());
 
 		WorkOrderActivityChecklistSignatureResult[] res = filterSignatures(workOrderActivityCheckListDefaultResult);
 		getResponsibilityDescriptions(context, res);
@@ -77,31 +77,22 @@ public class ChecklistServiceImpl implements ChecklistService {
 		gridRequest.setDataspyID("4297");
 		gridRequest.getParams().put("param.rentity", "RESP");
 		List<GridRequestFilter> filters = new LinkedList<>();
-		Map<String, List<WorkOrderActivityChecklistSignatureResult>> responsibilityToSignature
-				= new HashMap<>();
 		for(WorkOrderActivityChecklistSignatureResult signatureResult : signatures){
 			String responsibilityCode = signatureResult.getResponsibilityCode();
 			if(responsibilityCode != null) {
-				List<WorkOrderActivityChecklistSignatureResult> signaturesWithResp =
-						responsibilityToSignature.getOrDefault(responsibilityCode, new ArrayList<WorkOrderActivityChecklistSignatureResult>());
-				signaturesWithResp.add(signatureResult);
-				responsibilityToSignature.put(responsibilityCode, signaturesWithResp);
 				filters.add(new GridRequestFilter(
 						"responsibility", responsibilityCode, "=", GridRequestFilter.JOINER.OR, false, false));
 			}
 		}
 		if(filters.size() == 0) return;
 		gridRequest.setGridRequestFilters(filters);
-		GridRequestResult request = gridsService.executeQuery(context, gridRequest);
-		GridRequestRow[] rows = request.getRows();
-		GridRequestCell emptyCell = new GridRequestCell("", "");
-		BiFunction<GridRequestRow, String, String> getCellContent = (row, tag)->
-					Arrays.stream(row.getCell())
-							.filter(cell -> cell.getTag().equals(tag)).findFirst().orElse(emptyCell).getContent();
+		Map<String, String>	 responsibilityToDescription =
+				convertGridResultToMap("responsibility", "description", gridsService.executeQuery(context, gridRequest));
 
-		Arrays.stream(rows).forEach(row ->
-				responsibilityToSignature.get(getCellContent.apply(row, "responsibility")).stream()
-						.forEach(signature -> signature.setResponsibilityDescription(getCellContent.apply(row, "description"))));
+		Arrays.stream(signatures).forEach(signature -> {
+			if(responsibilityToDescription.containsKey(signature.getResponsibilityCode()))
+				signature.setResponsibilityDescription(responsibilityToDescription.get(signature.getResponsibilityCode()));
+		});
 	}
 
 	private WorkOrderActivityChecklistSignatureResult[] filterSignatures(WorkOrderActivityCheckListDefaultResult workOrderActivityCheckList){
@@ -131,10 +122,6 @@ public class ChecklistServiceImpl implements ChecklistService {
 		boolean isReviewer = noRequiredQualifications || reviewerQualification == null && (isPerformer1 || isPerformer2)
 							 || qualifications.contains(reviewerQualification);
 
-		List<Boolean> permissions = new ArrayList<>();
-		permissions.add(isPerformer1);
-		permissions.add(isPerformer2);
-		permissions.add(isReviewer);
 
 		if(isPerformer1 || isReviewer){
 			WorkOrderActivityChecklistSignatureResult perf1 = new WorkOrderActivityChecklistSignatureResult();
@@ -192,8 +179,6 @@ public class ChecklistServiceImpl implements ChecklistService {
 		workOrderID.setJOBNUM(workOrderCode);
 		workOrderID.setAuto_Generated(true);
 		getWorkOrderActivityCheckListDefault.setWORKORDERID(workOrderID);
-		getWorkOrderActivityCheckListDefault.setVerb(VERB_Type.GET);
-		getWorkOrderActivityCheckListDefault.setNoun(NOUN_Type.WORK_ORDER_ACTIVITY_CHECK_LIST_DEFAULT);
 	}
 
 	public WorkOrderActivityChecklistSignatureResponse eSignWorkOrderActivityChecklist(InforContext context, WorkOrderActivityCheckListSignature workOrderActivityCheckListSignature)
@@ -206,10 +191,8 @@ public class ChecklistServiceImpl implements ChecklistService {
 		if(signature.getSignatureType().endsWith("02"))
 			workOrderActivityCheckListSignature.setSequenceNumber(new BigInteger("2"));
 		if(workOrderActivityCheckListSignature.getSignatureType().startsWith("PB")) {
-			workOrderActivityCheckListSignature.setVerb(VERB_Type.PERFORM);
-			return  performWorkOrderActivityChecklist(context, workOrderActivityCheckListSignature);
+			return performWorkOrderActivityChecklist(context, workOrderActivityCheckListSignature);
 		} else {
-			workOrderActivityCheckListSignature.setVerb(VERB_Type.REVIEW);
 			return reviewWorkOrderActivityCheckList(context, workOrderActivityCheckListSignature);
 		}
 	}

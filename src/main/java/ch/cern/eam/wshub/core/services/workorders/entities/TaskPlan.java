@@ -16,7 +16,7 @@ public class TaskPlan {
 	private BigInteger taskRevision;
 
 	@InforField(xpath = "CHECKLISTPERFORMEDBYREQUIRED")
-	private  Boolean performedByRequired;
+	private Boolean performedByRequired;
 
 	@InforField(xpath = "CHECKLISTREVIEWEDBYREQUIRED")
 	private Boolean reviewedByRequired;
