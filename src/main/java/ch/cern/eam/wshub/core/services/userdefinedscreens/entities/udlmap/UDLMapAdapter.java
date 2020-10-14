@@ -12,21 +12,33 @@ public class UDLMapAdapter extends XmlAdapter<UDLValueMap, Map<String, List<UDLV
     @Override
     public Map<String, List<UDLValue>> unmarshal(UDLValueMap value) throws Exception {
         Map<String, List<UDLValue>> map = new HashMap<>();
-        for(UDLValueMapEntry list : value.getProperty()) {
+
+        if (value == null) {
+            return null;
+        }
+
+        for (UDLValueMapEntry list : value.getProperty()) {
             map.put(list.getKey(), list.getEntries());
         }
+
         return map;
     }
 
     @Override
     public UDLValueMap marshal(Map<String, List<UDLValue>> value) throws Exception {
         UDLValueMap udlValueMap = new UDLValueMap();
-        for(Map.Entry<String, List<UDLValue>> property : value.entrySet()) {
+
+        if (value == null) {
+            return null;
+        }
+
+        for (Map.Entry<String, List<UDLValue>> property : value.entrySet()) {
             UDLValueMapEntry udlValueMapEntry = new UDLValueMapEntry();
             udlValueMapEntry.setKey(property.getKey());
             udlValueMapEntry.setEntries(property.getValue());
             udlValueMap.getProperty().add(udlValueMapEntry);
         }
+
         return udlValueMap;
     }
 }
