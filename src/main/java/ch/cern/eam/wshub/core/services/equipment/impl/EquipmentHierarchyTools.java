@@ -7,6 +7,7 @@ import net.datastream.schemas.mp_entities.positionhierarchy_002.PositionParentHi
 import net.datastream.schemas.mp_fields.*;
 import java.util.List;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.encodeBoolean;
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
 
 public class EquipmentHierarchyTools {
 
@@ -502,7 +503,7 @@ public class EquipmentHierarchyTools {
             return HIERARCHY_TYPE.POSITION_DEP;
         } else if (currentHierarchyType == HIERARCHY_TYPE.PRIM_SYSTEM_DEP && assetParam.getHierarchyPrimarySystemDependent() == null  && !"".equals(assetParam.getHierarchyPrimarySystemCode())){
             return HIERARCHY_TYPE.PRIM_SYSTEM_DEP;
-        } else if (currentHierarchyType == HIERARCHY_TYPE.LOCATION_DEP || !"".equals(assetParam.getHierarchyLocationCode())){
+        } else if (currentHierarchyType == HIERARCHY_TYPE.LOCATION_DEP && !"".equals(assetParam.getHierarchyLocationCode()) || isNotEmpty(assetParam.getHierarchyLocationCode())){
             return HIERARCHY_TYPE.LOCATION_DEP;
         } else if (currentHierarchyType == HIERARCHY_TYPE.SYSTEM_DEP){
             return HIERARCHY_TYPE.SYSTEM_DEP;
@@ -511,5 +512,5 @@ public class EquipmentHierarchyTools {
         }
     }
 
-
 }
+
