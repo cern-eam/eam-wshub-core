@@ -320,7 +320,7 @@ public class DataTypeTools {
                 resultStr = value ? "yes" : "no";
                 break;
             case ONE_ZERO:
-                resultStr = value ? "one" : "zero";
+                resultStr = value ? "1" : "0";
                 break;
             case PLUS_MINUS:
                 resultStr = value ? "+" : "-";

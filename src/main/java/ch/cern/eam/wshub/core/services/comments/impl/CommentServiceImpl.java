@@ -1,11 +1,13 @@
 package ch.cern.eam.wshub.core.services.comments.impl;
 
+import ch.cern.eam.wshub.core.annotations.BooleanType;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.comments.CommentService;
 import ch.cern.eam.wshub.core.services.comments.entities.Comment;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.encodeBoolean;
 import net.datastream.schemas.mp_fields.*;
 import net.datastream.schemas.mp_functions.mp0108_001.CommentsReq;
 import net.datastream.schemas.mp_functions.mp0108_001.MP0108_GetComments_001;
@@ -45,11 +47,6 @@ public class CommentServiceImpl implements CommentService {
 			throw tools.generateFault("Entity key code can't end with '#*'");
 		}
 
-		String entityKeyCode = comment.getEntityKeyCode();
-		if ("OBJ".equals(comment.getEntityCode()) || "PART".equals(comment.getEntityCode())) {
-			entityKeyCode = comment.getEntityKeyCode() + "#*";
-		}
-
 		//
 		// CREATION
 		//
@@ -58,7 +55,7 @@ public class CommentServiceImpl implements CommentService {
 		if (comment.getEntityCode() != null) {
 			commentInfor.setENTITYCOMMENTID(new ENTITYCOMMENTID_Type());
 			commentInfor.getENTITYCOMMENTID().setENTITY(comment.getEntityCode());
-			commentInfor.getENTITYCOMMENTID().setENTITYKEYCODE(entityKeyCode);
+			commentInfor.getENTITYCOMMENTID().setENTITYKEYCODE(complementEntityKeyCode(comment.getEntityCode(), comment.getEntityKeyCode()));
 			commentInfor.getENTITYCOMMENTID().setLANGUAGEID(new LANGUAGEID_Type());
 			commentInfor.getENTITYCOMMENTID().getLANGUAGEID().setLANGUAGECODE("EN");
 			if (comment.getTypeCode() != null) {
@@ -89,9 +86,9 @@ public class CommentServiceImpl implements CommentService {
 		commentInfor.setORGANIZATIONID(tools.getOrganization(context));
 
 		if (comment.getPrint() == null) {
-			commentInfor.setPRINT("0");
+			commentInfor.setPRINT("true");
 		} else {
-			commentInfor.setPRINT(comment.getPrint());
+			commentInfor.setPRINT(encodeBoolean(comment.getPrint(), BooleanType.TRUE_FALSE));
 		}
 
 		MP0109_AddComments_001 addComments = new MP0109_AddComments_001();
@@ -133,15 +130,10 @@ public class CommentServiceImpl implements CommentService {
 
 	private Comment[] readCommentsForType(InforContext context, String entityCode, String entityKeyCode, String typeCode) throws InforException {
 
-		String entityKeyCodeInfor = entityKeyCode;
-		if ("OBJ".equals(entityCode) || "PART".equals(entityCode)) {
-			entityKeyCodeInfor += "#*";
-		}
-
 		CommentsReq commentsReq = new CommentsReq();
 		//
 		commentsReq.setENTITY(entityCode);
-		commentsReq.setENTITYKEYCODE(entityKeyCodeInfor);
+		commentsReq.setENTITYKEYCODE(complementEntityKeyCode(entityCode, entityKeyCode));
 		commentsReq.setCOMMENTTYPE(new TYPE_Type());
 		commentsReq.getCOMMENTTYPE().setTYPECODE(typeCode);
 		//
@@ -214,7 +206,6 @@ public class CommentServiceImpl implements CommentService {
 		}
 
 		// FETCH UPDATE COUNT IF NOT PROVIDED
-		String entityKeyCode = commentParam.getEntityKeyCode();
 		if (commentParam.getUpdateCount() == null ||
 				commentParam.getUpdateCount().trim().equals("") ||
 				commentParam.getTypeCode() == null ||
@@ -224,11 +215,6 @@ public class CommentServiceImpl implements CommentService {
 				if (comment.getLineNumber().equals(commentParam.getLineNumber())) {
 					commentParam.setUpdateCount(comment.getUpdateCount());
 					commentParam.setTypeCode(comment.getTypeCode());
-
-					if ("OBJ".equals(commentParam.getEntityCode()) || "PART".equals(commentParam.getEntityCode())) {
-						entityKeyCode = commentParam.getEntityKeyCode()+"#*";
-					}
-
 				}
 			}
 		}
@@ -240,7 +226,7 @@ public class CommentServiceImpl implements CommentService {
 		if (commentParam.getEntityCode() != null) {
 			commentInfor.setENTITYCOMMENTID(new ENTITYCOMMENTID_Type());
 			commentInfor.getENTITYCOMMENTID().setENTITY(commentParam.getEntityCode());
-			commentInfor.getENTITYCOMMENTID().setENTITYKEYCODE(entityKeyCode);
+			commentInfor.getENTITYCOMMENTID().setENTITYKEYCODE(complementEntityKeyCode(commentParam.getEntityCode(), commentParam.getEntityKeyCode()));
 			commentInfor.getENTITYCOMMENTID().setLANGUAGEID(new LANGUAGEID_Type());
 			commentInfor.getENTITYCOMMENTID().getLANGUAGEID().setLANGUAGECODE("EN");
 			commentInfor.getENTITYCOMMENTID().setLINENUM(tools.getDataTypeTools().encodeLong(commentParam.getLineNumber(), "Line Number"));
@@ -261,7 +247,12 @@ public class CommentServiceImpl implements CommentService {
 		}
 		//
 		commentInfor.setORGANIZATIONID(tools.getOrganization(context));
-		commentInfor.setPRINT("0");
+
+		if (commentParam.getPrint() == null) {
+			commentInfor.setPRINT("true");
+		} else {
+			commentInfor.setPRINT(encodeBoolean(commentParam.getPrint(), BooleanType.TRUE_FALSE));
+		}
 
 		MP0110_SyncComments_001 syncComments = new MP0110_SyncComments_001();
 		syncComments.setCOMMENT(commentInfor);
@@ -275,7 +266,7 @@ public class CommentServiceImpl implements CommentService {
 		deleteComments.setENTITYCOMMENTID(new ENTITYCOMMENTID_Type());
 
 		deleteComments.getENTITYCOMMENTID().setENTITY(comment.getEntityCode());
-		deleteComments.getENTITYCOMMENTID().setENTITYKEYCODE(comment.getEntityKeyCode());
+		deleteComments.getENTITYCOMMENTID().setENTITYKEYCODE(complementEntityKeyCode(comment.getEntityCode(), comment.getEntityKeyCode()));
 		deleteComments.getENTITYCOMMENTID().setLANGUAGEID(new LANGUAGEID_Type());
 		deleteComments.getENTITYCOMMENTID().getLANGUAGEID().setLANGUAGECODE("EN");
 		deleteComments.getENTITYCOMMENTID().setCOMMENTTYPE(new TYPE_Type());
@@ -287,11 +278,16 @@ public class CommentServiceImpl implements CommentService {
 			deleteComments.getENTITYCOMMENTID().getCOMMENTTYPE().setTYPECODE("*");
 		}
 
-
-
 		tools.performInforOperation(context, inforws::deleteCommentsOp, deleteComments);
 
 		return comment.getPk();
+	}
+
+	private static String complementEntityKeyCode(String entityCode, String entityKeyCode) {
+		if ("OBJ".equals(entityCode) || "PART".equals(entityCode)) {
+			return entityKeyCode + "#*";
+		}
+		return entityKeyCode;
 	}
 
 }
