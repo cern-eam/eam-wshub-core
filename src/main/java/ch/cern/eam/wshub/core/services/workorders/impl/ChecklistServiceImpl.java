@@ -86,7 +86,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 		}
 		if(filters.size() == 0) return;
 		gridRequest.setGridRequestFilters(filters);
-		Map<String, String>	 responsibilityToDescription =
+		Map<String, String> responsibilityToDescription =
 				convertGridResultToMap("responsibility", "description", gridsService.executeQuery(context, gridRequest));
 
 		Arrays.stream(signatures).forEach(signature -> {
