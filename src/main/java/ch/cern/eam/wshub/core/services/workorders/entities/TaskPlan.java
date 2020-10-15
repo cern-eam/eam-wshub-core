@@ -1,13 +1,26 @@
 package ch.cern.eam.wshub.core.services.workorders.entities;
 
 import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
+import ch.cern.eam.wshub.core.annotations.InforField;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 public class TaskPlan {
 
+	@InforField(xpath = "TASKLISTID/TASKCODE")
 	private String code;
+
+	@InforField(xpath = "TASKLISTID/TASKREVISION")
+	private BigInteger taskRevision;
+
+	@InforField(xpath = "CHECKLISTPERFORMEDBYREQUIRED")
+	private Boolean performedByRequired;
+
+	@InforField(xpath = "CHECKLISTREVIEWEDBYREQUIRED")
+	private Boolean reviewedByRequired;
+
 	private String description;
 	private String tradeCode;
 	private String classCode;
@@ -117,5 +130,22 @@ public class TaskPlan {
 	public void setMaterialList(String materialList) {
 		this.materialList = materialList;
 	}
-	
+	public BigInteger getTaskRevision() { return taskRevision; }
+	public void setTaskRevision(BigInteger taskRevision) { this.taskRevision = taskRevision; }
+
+	public Boolean getPerformedByRequired() {
+		return performedByRequired;
+	}
+
+	public void setPerformedByRequired(Boolean performedByRequired) {
+		this.performedByRequired = performedByRequired;
+	}
+
+	public Boolean getReviewedByRequired() {
+		return reviewedByRequired;
+	}
+
+	public void setReviewedByRequired(Boolean reviewedByRequired) {
+		this.reviewedByRequired = reviewedByRequired;
+	}
 }

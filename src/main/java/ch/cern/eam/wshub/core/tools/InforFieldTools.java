@@ -13,6 +13,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Array;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
@@ -129,6 +132,18 @@ public class InforFieldTools {
             } else if ("UserDefinedFields".equals(wshubField.getAnnotation(InforField.class).xpath()[0]) ||
                        "StandardUserDefinedFields".equals(wshubField.getAnnotation(InforField.class).xpath()[0])) {
                 wshubField.set(wshubObject, transformInforObject(new UserDefinedFields(), inforValue));
+            } else if(List.class.isAssignableFrom(inforValue.getClass())){
+                List inforValueAsList = (List) inforValue;
+                if(wshubField.getGenericType() instanceof ParameterizedType) {
+                    ParameterizedType listGenericType = (ParameterizedType) wshubField.getGenericType();
+                    Class itemsType = (Class) listGenericType.getActualTypeArguments()[0];
+                    List rawWSHubList = new ArrayList();
+                    for (int i = 0; i < inforValueAsList.size(); i++) {
+                        rawWSHubList.add(itemsType.newInstance());
+                        transformInforObject(rawWSHubList.get(i), inforValueAsList.get(i));
+                    }
+                    wshubField.set(wshubObject, rawWSHubList);
+                }
             }
         }
         catch (Exception e) {
@@ -154,10 +169,11 @@ public class InforFieldTools {
                 for (String xp : Arrays.asList(xpath.split("/"))) {
                     Field field = Arrays.stream(inforClass.getDeclaredFields())
                             .filter(decField ->
-                                    decField.getAnnotation(XmlElement.class) != null &&
-                                            xp.equalsIgnoreCase(decField.getAnnotation(XmlElement.class).name()) ||
-                                            decField.getAnnotation(XmlAttribute.class) != null &&
-                                                    xp.equalsIgnoreCase(decField.getAnnotation(XmlAttribute.class).name()))
+                                    decField.getAnnotation(XmlElement.class) != null
+                                            && xp.equalsIgnoreCase(decField.getAnnotation(XmlElement.class).name())
+                                    || decField.getAnnotation(XmlAttribute.class) != null
+                                            && xp.equalsIgnoreCase(decField.getAnnotation(XmlAttribute.class).name())
+                                    || xp.equals(decField.getName()))
                             .findFirst().orElse(null);
 
                     result.add(field.getName());
