@@ -80,6 +80,8 @@ public class Activity implements Serializable {
 	@Transient
 	private WorkOrderActivityChecklistSignatureResult[] signatures;
 
+	private Boolean forceActivityExpansion;
+
 	public String getWorkOrderNumber() {
 		return workOrderNumber;
 	}
@@ -200,6 +202,14 @@ public class Activity implements Serializable {
 
 	public void setSignatures(WorkOrderActivityChecklistSignatureResult[] signatures) {
 		this.signatures = signatures;
+	}
+
+	public Boolean getForceActivityExpansion() {
+		return forceActivityExpansion;
+	}
+
+	public void setForceActivityExpansion(Boolean forceActivityExpansion) {
+		this.forceActivityExpansion = forceActivityExpansion;
 	}
 
 	@Override

@@ -21,6 +21,9 @@ public class TaskPlan {
 	@InforField(xpath = "CHECKLISTREVIEWEDBYREQUIRED")
 	private Boolean reviewedByRequired;
 
+	@InforField(xpath = "StandardUserDefinedFields/UDFCHKBOX03")
+	private Boolean forceChecklistExpansion;
+
 	private String description;
 	private String tradeCode;
 	private String classCode;
@@ -147,5 +150,13 @@ public class TaskPlan {
 
 	public void setReviewedByRequired(Boolean reviewedByRequired) {
 		this.reviewedByRequired = reviewedByRequired;
+	}
+
+	public Boolean getForceChecklistExpansion() {
+		return forceChecklistExpansion;
+	}
+
+	public void setForceChecklistExpansion(Boolean forceChecklistExpansion) {
+		this.forceChecklistExpansion = forceChecklistExpansion;
 	}
 }
