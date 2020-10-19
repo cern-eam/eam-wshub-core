@@ -80,6 +80,7 @@ public class Activity implements Serializable {
 	@Transient
 	private WorkOrderActivityChecklistSignatureResult[] signatures;
 
+	@Transient
 	private Boolean forceActivityExpansion;
 
 	public String getWorkOrderNumber() {
