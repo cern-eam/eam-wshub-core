@@ -491,17 +491,17 @@ public class EquipmentHierarchyTools {
      * @return
      */
     public static HIERARCHY_TYPE getNewHierarchyType(Equipment assetParam, HIERARCHY_TYPE currentHierarchyType) {
-        if (assetParam.getHierarchyAssetDependent() != null && assetParam.getHierarchyAssetDependent()) {
+        if (assetParam.getHierarchyAssetDependent() != null && assetParam.getHierarchyAssetDependent() && !"".equals(assetParam.getHierarchyAssetCode())) {
             return HIERARCHY_TYPE.ASSET_DEP;
-        } else if (assetParam.getHierarchyPositionDependent() != null && assetParam.getHierarchyPositionDependent()) {
+        } else if (assetParam.getHierarchyPositionDependent() != null && assetParam.getHierarchyPositionDependent() && !"".equals(assetParam.getHierarchyPositionCode())) {
             return HIERARCHY_TYPE.POSITION_DEP;
-        } else if (assetParam.getHierarchyPrimarySystemDependent() != null && assetParam.getHierarchyPrimarySystemDependent()) {
+        } else if (assetParam.getHierarchyPrimarySystemDependent() != null && assetParam.getHierarchyPrimarySystemDependent() && !"".equals(assetParam.getHierarchyPrimarySystemCode())) {
             return HIERARCHY_TYPE.PRIM_SYSTEM_DEP;
         } else if (currentHierarchyType == HIERARCHY_TYPE.ASSET_DEP && assetParam.getHierarchyAssetDependent() == null && !"".equals(assetParam.getHierarchyAssetCode())){
             return HIERARCHY_TYPE.ASSET_DEP;
-        } else if (currentHierarchyType == HIERARCHY_TYPE.POSITION_DEP && assetParam.getHierarchyPositionDependent() == null  && !"".equals(assetParam.getHierarchyPositionCode())){
+        } else if (currentHierarchyType == HIERARCHY_TYPE.POSITION_DEP && assetParam.getHierarchyPositionDependent() == null && !"".equals(assetParam.getHierarchyPositionCode())){
             return HIERARCHY_TYPE.POSITION_DEP;
-        } else if (currentHierarchyType == HIERARCHY_TYPE.PRIM_SYSTEM_DEP && assetParam.getHierarchyPrimarySystemDependent() == null  && !"".equals(assetParam.getHierarchyPrimarySystemCode())){
+        } else if (currentHierarchyType == HIERARCHY_TYPE.PRIM_SYSTEM_DEP && assetParam.getHierarchyPrimarySystemDependent() == null && !"".equals(assetParam.getHierarchyPrimarySystemCode())){
             return HIERARCHY_TYPE.PRIM_SYSTEM_DEP;
         } else if (currentHierarchyType == HIERARCHY_TYPE.LOCATION_DEP && !"".equals(assetParam.getHierarchyLocationCode()) || isNotEmpty(assetParam.getHierarchyLocationCode())){
             return HIERARCHY_TYPE.LOCATION_DEP;
