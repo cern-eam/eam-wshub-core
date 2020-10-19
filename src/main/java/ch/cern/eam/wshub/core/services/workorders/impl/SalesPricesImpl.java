@@ -1,7 +1,7 @@
 package ch.cern.eam.wshub.core.services.workorders.impl;
 
 import ch.cern.eam.wshub.core.client.InforContext;
-import ch.cern.eam.wshub.core.services.workorders.SalesPrices;
+import ch.cern.eam.wshub.core.services.workorders.SalesPriceService;
 import ch.cern.eam.wshub.core.services.workorders.entities.SalesPrice;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
@@ -16,9 +16,13 @@ import net.datastream.schemas.mp_results.mp7874_001.MP7874_AddCustomerContractSa
 import net.datastream.schemas.mp_results.mp7875_001.MP7875_SyncCustomerContractSalesPrice_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.isEmpty;
 
-public class SalesPricesImpl implements SalesPrices {
+public class SalesPricesImpl implements SalesPriceService {
 
     private Tools tools;
     private InforWebServicesPT inforws;
@@ -34,6 +38,14 @@ public class SalesPricesImpl implements SalesPrices {
         //
         if (isEmpty(salesPrice.getSalesPriceCode())) {
             salesPrice.setSalesPriceCode("");
+        }
+        //
+        if (salesPrice.getCustomerContractRevision() == null) {
+            salesPrice.setCustomerContractRevision(BigDecimal.ZERO);
+        }
+        // Set date expired to 31-12-2099 (will be overwritten by EAM anyways but has to be set)
+        if (salesPrice.getDateExpired() == null) {
+            salesPrice.setDateExpired(new Date(4102444799000l));
         }
 
         MP7874_AddCustomerContractSalesPrice_001 addSalesPrice = new MP7874_AddCustomerContractSalesPrice_001();

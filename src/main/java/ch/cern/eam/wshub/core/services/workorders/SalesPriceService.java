@@ -4,7 +4,7 @@ import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.workorders.entities.SalesPrice;
 import ch.cern.eam.wshub.core.tools.InforException;
 
-public interface SalesPrices {
+public interface SalesPriceService {
 
     String createSalesPrice(InforContext context, SalesPrice salesPrice) throws InforException;
 

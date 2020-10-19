@@ -2,6 +2,7 @@ package ch.cern.eam.wshub.core.services.workorders.entities;
 
 import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
 import ch.cern.eam.wshub.core.adapters.BigIntegerAdapter;
+import ch.cern.eam.wshub.core.adapters.BooleanAdapter;
 import ch.cern.eam.wshub.core.annotations.InforField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 
@@ -113,6 +114,7 @@ public class TaskPlan {
 		this.taskRevision = taskRevision;
 	}
 
+	@XmlJavaTypeAdapter(BooleanAdapter.class)
 	public Boolean getPerformedByRequired() {
 		return performedByRequired;
 	}
@@ -121,6 +123,7 @@ public class TaskPlan {
 		this.performedByRequired = performedByRequired;
 	}
 
+	@XmlJavaTypeAdapter(BooleanAdapter.class)
 	public Boolean getReviewedByRequired() {
 		return reviewedByRequired;
 	}
@@ -153,6 +156,7 @@ public class TaskPlan {
 		this.performBy2Responsibility = performBy2Responsibility;
 	}
 
+	@XmlJavaTypeAdapter(BooleanAdapter.class)
 	public Boolean getActiveChecklist() {
 		return activeChecklist;
 	}
@@ -211,6 +215,7 @@ public class TaskPlan {
 		this.revisionStatus = revisionStatus;
 	}
 
+	@XmlJavaTypeAdapter(BooleanAdapter.class)
 	public Boolean getOutOfService() {
 		return outOfService;
 	}

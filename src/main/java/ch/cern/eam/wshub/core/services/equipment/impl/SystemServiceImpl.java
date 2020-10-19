@@ -1,6 +1,5 @@
 package ch.cern.eam.wshub.core.services.equipment.impl;
 
-import ch.cern.eam.wshub.core.annotations.BooleanType;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.equipment.SystemService;
 import ch.cern.eam.wshub.core.services.equipment.entities.Equipment;
@@ -23,10 +22,9 @@ import net.datastream.schemas.mp_results.mp0312_001.MP0312_GetSystemEquipment_00
 import net.datastream.schemas.mp_results.mp0315_001.MP0315_GetSystemEquipmentDefault_001_Result;
 import net.datastream.schemas.mp_results.mp0329_001.MP0329_GetSystemParentHierarchy_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
-
-import java.util.Arrays;
+import static ch.cern.eam.wshub.core.services.equipment.impl.EquipmentHierarchyTools.createPrimarySystemParent;
+import static ch.cern.eam.wshub.core.services.equipment.impl.EquipmentHierarchyTools.createLocationParent;
 import java.util.HashMap;
-
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.*;
 
 public class SystemServiceImpl implements SystemService {
@@ -61,6 +59,15 @@ public class SystemServiceImpl implements SystemService {
 		return equipment;
 	}
 
+	private SystemParentHierarchy readHierarchyInfor(InforContext context, String systemCode) throws InforException {
+		MP0329_GetSystemParentHierarchy_001 getsystemh = new MP0329_GetSystemParentHierarchy_001();
+		getsystemh.setSYSTEMID(new EQUIPMENTID_Type());
+		getsystemh.getSYSTEMID().setEQUIPMENTCODE(systemCode);
+		getsystemh.getSYSTEMID().setORGANIZATIONID(tools.getOrganization(context));
+		MP0329_GetSystemParentHierarchy_001_Result result = tools.performInforOperation(context, inforws::getSystemParentHierarchyOp, getsystemh);
+		return result.getResultData().getSystemParentHierarchy();
+	}
+
 	public Equipment readSystem(InforContext context, String systemCode) throws InforException {
 
 		SystemEquipment systemEquipment = readSystemInfor(context, systemCode);
@@ -74,40 +81,12 @@ public class SystemServiceImpl implements SystemService {
 		}
 
 		// HIERARCHY
-		MP0329_GetSystemParentHierarchy_001 getsystemh = new MP0329_GetSystemParentHierarchy_001();
-		getsystemh.setSYSTEMID(systemEquipment.getSYSTEMID());
-		MP0329_GetSystemParentHierarchy_001_Result gethresult =
-			tools.performInforOperation(context, inforws::getSystemParentHierarchyOp, getsystemh);
-		// System parent hierarchy
-		systemEquipment.setSystemParentHierarchy(gethresult.getResultData().getSystemParentHierarchy());
-
-		// Location
 		if (systemEquipment.getSystemParentHierarchy().getLOCATIONID() != null) {
-			system.setHierarchyLocationCode(
-					systemEquipment.getSystemParentHierarchy().getLOCATIONID().getLOCATIONCODE());
-			system.setHierarchyLocationDesc(
-					systemEquipment.getSystemParentHierarchy().getLOCATIONID().getDESCRIPTION());
+			system.setHierarchyLocationCode(systemEquipment.getSystemParentHierarchy().getLOCATIONID().getLOCATIONCODE());
+			system.setHierarchyLocationDesc(systemEquipment.getSystemParentHierarchy().getLOCATIONID().getDESCRIPTION());
 		}
-		// Dependent primary system
-		if (systemEquipment.getSystemParentHierarchy().getDEPENDENTPRIMARYSYSTEM() != null) {
-			system.setHierarchyPrimarySystemCode(systemEquipment.getSystemParentHierarchy().getDEPENDENTPRIMARYSYSTEM()
-					.getSYSTEMID().getEQUIPMENTCODE());
-			system.setHierarchyPrimarySystemDesc(systemEquipment.getSystemParentHierarchy().getDEPENDENTPRIMARYSYSTEM()
-					.getSYSTEMID().getDESCRIPTION());
-			system.setHierarchyPrimarySystemDependent(true);
-			system.setHierarchyPrimarySystemCostRollUp(decodeBoolean(
-					systemEquipment.getSystemParentHierarchy().getDEPENDENTPRIMARYSYSTEM().getCOSTROLLUP()));
-		}
-		// Non Dependent primary system
-		else if (systemEquipment.getSystemParentHierarchy().getNONDEPENDENTPRIMARYSYSTEM() != null) {
-			system.setHierarchyPrimarySystemCode(systemEquipment.getSystemParentHierarchy()
-					.getNONDEPENDENTPRIMARYSYSTEM().getSYSTEMID().getEQUIPMENTCODE());
-			system.setHierarchyPrimarySystemDesc(systemEquipment.getSystemParentHierarchy()
-					.getNONDEPENDENTPRIMARYSYSTEM().getSYSTEMID().getDESCRIPTION());
-			system.setHierarchyPrimarySystemDependent(false);
-			system.setHierarchyPrimarySystemCostRollUp(decodeBoolean(
-					systemEquipment.getSystemParentHierarchy().getNONDEPENDENTPRIMARYSYSTEM().getCOSTROLLUP()));
-		}
+		system.setHierarchyPrimarySystemDependent(systemEquipment.getSystemParentHierarchy().getDEPENDENTPRIMARYSYSTEM() != null);
+
 
 		userDefinedListService.readUDLToEntity(context, system, new EntityId("OBJ", systemCode));
 		return system;
@@ -120,7 +99,7 @@ public class SystemServiceImpl implements SystemService {
 		getSystem.getSYSTEMID().setEQUIPMENTCODE(systemCode);
 		MP0312_GetSystemEquipment_001_Result getAssetResult =
 			tools.performInforOperation(context, inforws::getSystemEquipmentOp, getSystem);
-
+		getAssetResult.getResultData().getSystemEquipment().setSystemParentHierarchy(readHierarchyInfor(context, systemCode));
 		return getAssetResult.getResultData().getSystemEquipment();
 	}
 
@@ -197,74 +176,23 @@ public class SystemServiceImpl implements SystemService {
 		}
 
 		// HIERARCHY
-		if (isNotEmpty(systemParam.getHierarchyLocationCode()) || isNotEmpty(systemParam.getHierarchyPrimarySystemCode())) {
+		if (systemParam.getHierarchyLocationCode() != null || systemParam.getHierarchyPrimarySystemCode() != null) {
 			populateSystemHierarchy(context, systemParam, systemInfor);
 		}
 
 	}
 
 	private void populateSystemHierarchy(InforContext context, Equipment systemParam, SystemEquipment systemInfor) {
-		SystemParentHierarchy systemParentHierarchy = new SystemParentHierarchy();
+		SystemParentHierarchy systemParentHierarchy = systemInfor.getSystemParentHierarchy();
 
-		systemParentHierarchy.setSYSTEMID(new EQUIPMENTID_Type());
-		systemParentHierarchy.getSYSTEMID().setORGANIZATIONID(tools.getOrganization(context));
-		systemParentHierarchy.getSYSTEMID().setEQUIPMENTCODE(systemParam.getCode());
-		systemParentHierarchy.setTYPE(new TYPE_Type());
-		systemParentHierarchy.getTYPE().setTYPECODE("S");
-
-		// HIERARCHY - PRIMARY SYSTEM
-		if (tools.getDataTypeTools().isNotEmpty(systemParam.getHierarchyPrimarySystemCode())) {
-
-			if (systemParam.getHierarchyPrimarySystemDependent() == null || !systemParam.getHierarchyPrimarySystemDependent()) {
-				systemParam.setHierarchyAssetDependent(false);
-			}
-			// System
-			EQUIPMENTID_Type hierarchySystem = new EQUIPMENTID_Type();
-			hierarchySystem.setORGANIZATIONID(tools.getOrganization(context));
-			hierarchySystem.setEQUIPMENTCODE(systemParam.getHierarchyPrimarySystemCode());
-			// System dependent
-			if (systemParam.getHierarchyPrimarySystemDependent() != null && systemParam.getHierarchyPrimarySystemDependent()) {
-				SYSTEMPARENT_Type systemType = new SYSTEMPARENT_Type();
-				systemType.setSYSTEMID(hierarchySystem);
-				systemType.setCOSTROLLUP(encodeBoolean(systemParam.getHierarchyPrimarySystemCostRollUp(), BooleanType.TRUE_FALSE));
-				systemParentHierarchy.setDEPENDENTPRIMARYSYSTEM(systemType);
-
-				// Check for location
-				if (tools.getDataTypeTools().isNotEmpty(systemParam.getHierarchyLocationCode())) {
-					systemParentHierarchy.setLOCATIONID(new LOCATIONID_Type());
-					systemParentHierarchy.getLOCATIONID().setORGANIZATIONID(tools.getOrganization(context));
-					systemParentHierarchy.getLOCATIONID().setLOCATIONCODE(systemParam.getHierarchyLocationCode());
-				}
-
-			} else {
-				// Non Dependent system
-				SYSTEMPARENT_Type systemType = new SYSTEMPARENT_Type();
-				systemType.setSYSTEMID(hierarchySystem);
-				systemType.setCOSTROLLUP(encodeBoolean(systemParam.getHierarchyPrimarySystemCostRollUp(), BooleanType.TRUE_FALSE));
-				systemParentHierarchy.setNONDEPENDENTPRIMARYSYSTEM(systemType);
-
-				// Check for location
-				if (tools.getDataTypeTools().isNotEmpty(systemParam.getHierarchyLocationCode())) {
-					// Dependent location
-					systemParentHierarchy.setDEPENDENTLOCATION(new LOCATIONPARENT_Type());
-					systemParentHierarchy.getDEPENDENTLOCATION().setLOCATIONID(new LOCATIONID_Type());
-					systemParentHierarchy.getDEPENDENTLOCATION().getLOCATIONID()
-							.setORGANIZATIONID(tools.getOrganization(context));
-					systemParentHierarchy.getDEPENDENTLOCATION().getLOCATIONID()
-							.setLOCATIONCODE(systemParam.getHierarchyLocationCode());
-				}
-			}
+		if (systemParam.getHierarchyPrimarySystemDependent() != null && systemParam.getHierarchyPrimarySystemDependent() ||
+			systemParam.getHierarchyPrimarySystemDependent() == null && systemParentHierarchy.getDEPENDENTPRIMARYSYSTEM() != null) {
+			systemParentHierarchy.setDEPENDENTLOCATION(null);
+			systemParentHierarchy.setDEPENDENTPRIMARYSYSTEM(createPrimarySystemParent(tools.getOrganizationCode(context), systemParam.getHierarchyPrimarySystemCode(), systemParam.getHierarchyPrimarySystemCostRollUp(), systemParentHierarchy.getDEPENDENTPRIMARYSYSTEM()));
+		} else {
+			systemParentHierarchy.setDEPENDENTPRIMARYSYSTEM(null);
+			systemParentHierarchy.setDEPENDENTLOCATION(createLocationParent(tools.getOrganizationCode(context), systemParam.getHierarchyLocationCode(), systemParentHierarchy.getDEPENDENTLOCATION()));
+			systemParentHierarchy.setNONDEPENDENTPRIMARYSYSTEM(createPrimarySystemParent(tools.getOrganizationCode(context), systemParam.getHierarchyPrimarySystemCode(), systemParam.getHierarchyPrimarySystemCostRollUp(), systemParentHierarchy.getNONDEPENDENTPRIMARYSYSTEM()));
 		}
-		// Just Locations
-		else if (tools.getDataTypeTools().isNotEmpty(systemParam.getHierarchyLocationCode())) {
-			// Dependent location
-			systemParentHierarchy.setDEPENDENTLOCATION(new LOCATIONPARENT_Type());
-			systemParentHierarchy.getDEPENDENTLOCATION().setLOCATIONID(new LOCATIONID_Type());
-			systemParentHierarchy.getDEPENDENTLOCATION().getLOCATIONID().setORGANIZATIONID(tools.getOrganization(context));
-			systemParentHierarchy.getDEPENDENTLOCATION().getLOCATIONID()
-					.setLOCATIONCODE(systemParam.getHierarchyLocationCode());
-		}
-
-		systemInfor.setSystemParentHierarchy(systemParentHierarchy);
 	}
 }

@@ -1,8 +1,12 @@
 package ch.cern.eam.wshub.core.services.workorders.entities;
 
+import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
+import ch.cern.eam.wshub.core.adapters.BooleanAdapter;
+import ch.cern.eam.wshub.core.adapters.DateAdapter;
 import ch.cern.eam.wshub.core.annotations.InforField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -53,6 +57,7 @@ public class SalesPrice {
         this.code = code;
     }
 
+    @XmlJavaTypeAdapter(DateAdapter.class)
     public Date getDateEffective() {
         return dateEffective;
     }
@@ -61,6 +66,7 @@ public class SalesPrice {
         this.dateEffective = dateEffective;
     }
 
+    @XmlJavaTypeAdapter(BigDecimalAdapter.class)
     public BigDecimal getSalesPrice() {
         return salesPrice;
     }
@@ -77,6 +83,7 @@ public class SalesPrice {
         this.salesPriceCode = salesPriceCode;
     }
 
+    @XmlJavaTypeAdapter(BigDecimalAdapter.class)
     public BigDecimal getCustomerContractRevision() {
         return customerContractRevision;
     }
@@ -85,6 +92,7 @@ public class SalesPrice {
         this.customerContractRevision = customerContractRevision;
     }
 
+    @XmlJavaTypeAdapter(DateAdapter.class)
     public Date getDateExpired() {
         return dateExpired;
     }

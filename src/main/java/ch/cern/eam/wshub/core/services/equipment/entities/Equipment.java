@@ -293,7 +293,10 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
             "PositionParentHierarchy/PrimarySystemDependency/DEPENDENTPRIMARYSYSTEM/SYSTEMID/EQUIPMENTCODE",
             "PositionParentHierarchy/SystemDependency/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/EQUIPMENTCODE",
             "PositionParentHierarchy/LocationDependency/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/EQUIPMENTCODE",
-            "PositionParentHierarchy/NonDependentParents/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/EQUIPMENTCODE"},
+            "PositionParentHierarchy/NonDependentParents/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/EQUIPMENTCODE",
+
+            "SystemParentHierarchy/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/EQUIPMENTCODE",
+            "SystemParentHierarchy/DEPENDENTPRIMARYSYSTEM/SYSTEMID/EQUIPMENTCODE"},
             readOnly = true)
     private String hierarchyPrimarySystemCode;
     @Transient
@@ -310,7 +313,10 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
             "PositionParentHierarchy/PrimarySystemDependency/DEPENDENTPRIMARYSYSTEM/SYSTEMID/DESCRIPTION",
             "PositionParentHierarchy/SystemDependency/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/DESCRIPTION",
             "PositionParentHierarchy/LocationDependency/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/DESCRIPTION",
-            "PositionParentHierarchy/NonDependentParents/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/DESCRIPTION"},
+            "PositionParentHierarchy/NonDependentParents/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/DESCRIPTION",
+
+            "SystemParentHierarchy/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/DESCRIPTION",
+            "SystemParentHierarchy/DEPENDENTPRIMARYSYSTEM/SYSTEMID/DESCRIPTION"},
             readOnly = true)
     private String hierarchyPrimarySystemDesc;
     @Transient
@@ -329,7 +335,10 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
             "PositionParentHierarchy/PrimarySystemDependency/DEPENDENTPRIMARYSYSTEM/COSTROLLUP",
             "PositionParentHierarchy/SystemDependency/NONDEPENDENTPRIMARYSYSTEM/COSTROLLUP",
             "PositionParentHierarchy/LocationDependency/NONDEPENDENTPRIMARYSYSTEM/COSTROLLUP",
-            "PositionParentHierarchy/NonDependentParents/NONDEPENDENTPRIMARYSYSTEM/COSTROLLUP"},
+            "PositionParentHierarchy/NonDependentParents/NONDEPENDENTPRIMARYSYSTEM/COSTROLLUP",
+
+            "SystemParentHierarchy/NONDEPENDENTPRIMARYSYSTEM/COSTROLLUP",
+            "SystemParentHierarchy/DEPENDENTPRIMARYSYSTEM/COSTROLLUP"},
             readOnly = true)
     private Boolean hierarchyPrimarySystemCostRollUp;
     // System
