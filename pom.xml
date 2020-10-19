@@ -20,7 +20,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ch.cern.eam</groupId>
     <artifactId>eam-wshub-core</artifactId>
-    <version>11.5-17-SNAPSHOT</version>
+    <version>11.5-17</version>
     <name>EAM WS Hub Core</name>
     <description>High-level Java SE library that provides all core functionalities of EAM WS Hub.</description>
     <url>https://github.com/cern-eam/eam-wshub-core</url>
@@ -122,7 +122,7 @@
 
     <scm>
         <connection>scm:git:ssh://git@github.com/cern-eam/eam-wshub-core.git</connection>
-        <tag>HEAD</tag>
+        <tag>eam-wshub-core-11.5-17</tag>
         <url>https://github.com/cern-eam/eam-wshub-core</url>
     </scm>
 
