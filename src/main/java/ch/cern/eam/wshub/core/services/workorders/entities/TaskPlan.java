@@ -43,6 +43,7 @@ public class TaskPlan {
 	private Boolean activeChecklist;
 
 	@InforField(xpath = "TRADEID/TRADECODE")
+
 	private String tradeCode;
 
 	@InforField(xpath = "CLASSID/CLASSCODE")
@@ -335,4 +336,5 @@ public class TaskPlan {
 				", workOrderType='" + workOrderType + '\'' +
 				'}';
 	}
+  
 }
