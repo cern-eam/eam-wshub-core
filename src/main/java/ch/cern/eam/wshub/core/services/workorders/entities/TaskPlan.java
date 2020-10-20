@@ -2,6 +2,7 @@ package ch.cern.eam.wshub.core.services.workorders.entities;
 
 import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
 import ch.cern.eam.wshub.core.annotations.InforField;
+import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.math.BigDecimal;
@@ -21,8 +22,8 @@ public class TaskPlan {
 	@InforField(xpath = "CHECKLISTREVIEWEDBYREQUIRED")
 	private Boolean reviewedByRequired;
 
-	@InforField(xpath = "StandardUserDefinedFields/UDFCHKBOX03")
-	private Boolean forceChecklistExpansion;
+	@InforField(xpath = "StandardUserDefinedFields")
+	private UserDefinedFields userDefinedFields;
 
 	private String description;
 	private String tradeCode;
@@ -152,11 +153,11 @@ public class TaskPlan {
 		this.reviewedByRequired = reviewedByRequired;
 	}
 
-	public Boolean getForceChecklistExpansion() {
-		return forceChecklistExpansion;
+	public UserDefinedFields getUserDefinedFields() {
+		return userDefinedFields;
 	}
 
-	public void setForceChecklistExpansion(Boolean forceChecklistExpansion) {
-		this.forceChecklistExpansion = forceChecklistExpansion;
+	public void setUserDefinedFields(UserDefinedFields userDefinedFields) {
+		this.userDefinedFields = userDefinedFields;
 	}
 }
