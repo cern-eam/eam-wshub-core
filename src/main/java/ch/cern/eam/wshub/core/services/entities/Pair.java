@@ -3,6 +3,7 @@ package ch.cern.eam.wshub.core.services.entities;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class Pair implements Serializable {
 
@@ -50,6 +51,8 @@ public class Pair implements Serializable {
 
 	@Override
 	public boolean equals(Object other){
+		if(this == other) return true;
+
 		if(other instanceof Pair){
 			Pair otherPair = (Pair) other;
 			boolean codeEq = otherPair.getCode() == code ||
@@ -63,10 +66,6 @@ public class Pair implements Serializable {
 
 	@Override
 	public int hashCode(){
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + (code == null ? 0 : code.hashCode());
-		result = prime * result + (desc == null ? 0 : desc.hashCode());
-		return result;
+		return Objects.hash(code, desc);
 	}
 }
