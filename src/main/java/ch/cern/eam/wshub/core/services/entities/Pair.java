@@ -1,9 +1,11 @@
 package ch.cern.eam.wshub.core.services.entities;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
-public class Pair {
+public class Pair implements Serializable {
 
 	private String code;
 	private String desc;
@@ -47,4 +49,23 @@ public class Pair {
 		return map;
 	}
 
+	@Override
+	public boolean equals(Object other) {
+		if (this == other) return true;
+
+		if (other instanceof Pair) {
+			Pair otherPair = (Pair) other;
+			boolean codeEq = otherPair.getCode() == code ||
+					otherPair.getCode() != null && code != null && otherPair.getCode().equals(code);
+			boolean descEq = otherPair.getDesc() == desc ||
+					otherPair.getDesc()  != null && desc != null && otherPair.getDesc().equals(desc);
+			return codeEq && descEq;
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(code, desc);
+	}
 }
