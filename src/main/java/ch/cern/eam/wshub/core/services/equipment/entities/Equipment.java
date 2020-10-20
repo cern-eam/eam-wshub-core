@@ -178,7 +178,14 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
             "AssetParentHierarchy/PrimarySystemDependency/NONDEPENDENTASSET/ASSETID/EQUIPMENTCODE",
             "AssetParentHierarchy/SystemDependency/NONDEPENDENTASSET/ASSETID/EQUIPMENTCODE",
             "AssetParentHierarchy/LocationDependency/NONDEPENDENTASSET/ASSETID/EQUIPMENTCODE",
-            "AssetParentHierarchy/NonDependentParents/NONDEPENDENTASSET/ASSETID/EQUIPMENTCODE",},
+            "AssetParentHierarchy/NonDependentParents/NONDEPENDENTASSET/ASSETID/EQUIPMENTCODE",
+
+            "PositionParentHierarchy/AssetDependency/DEPENDENTASSET/ASSETID/EQUIPMENTCODE",
+            "PositionParentHierarchy/PositionDependency/NONDEPENDENTASSET/ASSETID/EQUIPMENTCODE",
+            "PositionParentHierarchy/PrimarySystemDependency/NONDEPENDENTASSET/ASSETID/EQUIPMENTCODE",
+            "PositionParentHierarchy/SystemDependency/NONDEPENDENTASSET/ASSETID/EQUIPMENTCODE",
+            "PositionParentHierarchy/LocationDependency/NONDEPENDENTASSET/ASSETID/EQUIPMENTCODE",
+            "PositionParentHierarchy/NonDependentParents/NONDEPENDENTASSET/ASSETID/EQUIPMENTCODE"},
             readOnly = true)
     private String hierarchyAssetCode;
     @Transient
@@ -188,7 +195,14 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
             "AssetParentHierarchy/PrimarySystemDependency/NONDEPENDENTASSET/ASSETID/DESCRIPTION",
             "AssetParentHierarchy/SystemDependency/NONDEPENDENTASSET/ASSETID/DESCRIPTION",
             "AssetParentHierarchy/LocationDependency/NONDEPENDENTASSET/ASSETID/DESCRIPTION",
-            "AssetParentHierarchy/NonDependentParents/NONDEPENDENTASSET/ASSETID/DESCRIPTION",},
+            "AssetParentHierarchy/NonDependentParents/NONDEPENDENTASSET/ASSETID/DESCRIPTION",
+
+            "PositionParentHierarchy/AssetDependency/DEPENDENTASSET/ASSETID/DESCRIPTION",
+            "PositionParentHierarchy/PositionDependency/NONDEPENDENTASSET/ASSETID/DESCRIPTION",
+            "PositionParentHierarchy/PrimarySystemDependency/NONDEPENDENTASSET/ASSETID/DESCRIPTION",
+            "PositionParentHierarchy/SystemDependency/NONDEPENDENTASSET/ASSETID/DESCRIPTION",
+            "PositionParentHierarchy/LocationDependency/NONDEPENDENTASSET/ASSETID/DESCRIPTION",
+            "PositionParentHierarchy/NonDependentParents/NONDEPENDENTASSET/ASSETID/DESCRIPTION"},
             readOnly = true)
     private String hierarchyAssetDesc;
     @Transient
@@ -200,7 +214,14 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
             "AssetParentHierarchy/PrimarySystemDependency/NONDEPENDENTASSET/COSTROLLUP",
             "AssetParentHierarchy/SystemDependency/NONDEPENDENTASSET/COSTROLLUP",
             "AssetParentHierarchy/LocationDependency/NONDEPENDENTASSET/COSTROLLUP",
-            "AssetParentHierarchy/NonDependentParents/NONDEPENDENTASSET/COSTROLLUP",},
+            "AssetParentHierarchy/NonDependentParents/NONDEPENDENTASSET/COSTROLLUP",
+
+            "PositionParentHierarchy/AssetDependency/DEPENDENTASSET/COSTROLLUP",
+            "PositionParentHierarchy/PositionDependency/NONDEPENDENTASSET/COSTROLLUP",
+            "PositionParentHierarchy/PrimarySystemDependency/NONDEPENDENTASSET/COSTROLLUP",
+            "PositionParentHierarchy/SystemDependency/NONDEPENDENTASSET/COSTROLLUP",
+            "PositionParentHierarchy/LocationDependency/NONDEPENDENTASSET/COSTROLLUP",
+            "PositionParentHierarchy/NonDependentParents/NONDEPENDENTASSET/COSTROLLUP"},
             readOnly = true)
     private Boolean hierarchyAssetCostRollUp;
     // Position
@@ -211,7 +232,14 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
             "AssetParentHierarchy/PrimarySystemDependency/NONDEPENDENTPOSITION/POSITIONID/EQUIPMENTCODE",
             "AssetParentHierarchy/SystemDependency/NONDEPENDENTPOSITION/POSITIONID/EQUIPMENTCODE",
             "AssetParentHierarchy/LocationDependency/NONDEPENDENTPOSITION/POSITIONID/EQUIPMENTCODE",
-            "AssetParentHierarchy/NonDependentParents/NONDEPENDENTPOSITION/POSITIONID/EQUIPMENTCODE",},
+            "AssetParentHierarchy/NonDependentParents/NONDEPENDENTPOSITION/POSITIONID/EQUIPMENTCODE",
+
+            "PositionParentHierarchy/AssetDependency/NONDEPENDENTPOSITION/POSITIONID/EQUIPMENTCODE",
+            "PositionParentHierarchy/PositionDependency/DEPENDENTPOSITION/POSITIONID/EQUIPMENTCODE",
+            "PositionParentHierarchy/PrimarySystemDependency/NONDEPENDENTPOSITION/POSITIONID/EQUIPMENTCODE",
+            "PositionParentHierarchy/SystemDependency/NONDEPENDENTPOSITION/POSITIONID/EQUIPMENTCODE",
+            "PositionParentHierarchy/LocationDependency/NONDEPENDENTPOSITION/POSITIONID/EQUIPMENTCODE",
+            "PositionParentHierarchy/NonDependentParents/NONDEPENDENTPOSITION/POSITIONID/EQUIPMENTCODE"},
             readOnly = true)
     private String hierarchyPositionCode;
     @Transient
@@ -221,7 +249,14 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
             "AssetParentHierarchy/PrimarySystemDependency/NONDEPENDENTPOSITION/POSITIONID/DESCRIPTION",
             "AssetParentHierarchy/SystemDependency/NONDEPENDENTPOSITION/POSITIONID/DESCRIPTION",
             "AssetParentHierarchy/LocationDependency/NONDEPENDENTPOSITION/POSITIONID/DESCRIPTION",
-            "AssetParentHierarchy/NonDependentParents/NONDEPENDENTPOSITION/POSITIONID/DESCRIPTION",},
+            "AssetParentHierarchy/NonDependentParents/NONDEPENDENTPOSITION/POSITIONID/DESCRIPTION",
+
+            "PositionParentHierarchy/AssetDependency/NONDEPENDENTPOSITION/POSITIONID/DESCRIPTION",
+            "PositionParentHierarchy/PositionDependency/DEPENDENTPOSITION/POSITIONID/DESCRIPTION",
+            "PositionParentHierarchy/PrimarySystemDependency/NONDEPENDENTPOSITION/POSITIONID/DESCRIPTION",
+            "PositionParentHierarchy/SystemDependency/NONDEPENDENTPOSITION/POSITIONID/DESCRIPTION",
+            "PositionParentHierarchy/LocationDependency/NONDEPENDENTPOSITION/POSITIONID/DESCRIPTION",
+            "PositionParentHierarchy/NonDependentParents/NONDEPENDENTPOSITION/POSITIONID/DESCRIPTION"},
             readOnly = true)
     private String hierarchyPositionDesc;
     @Transient
@@ -233,7 +268,14 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
             "AssetParentHierarchy/PrimarySystemDependency/NONDEPENDENTPOSITION/COSTROLLUP",
             "AssetParentHierarchy/SystemDependency/NONDEPENDENTPOSITION/COSTROLLUP",
             "AssetParentHierarchy/LocationDependency/NONDEPENDENTPOSITION/COSTROLLUP",
-            "AssetParentHierarchy/NonDependentParents/NONDEPENDENTPOSITION/COSTROLLUP",},
+            "AssetParentHierarchy/NonDependentParents/NONDEPENDENTPOSITION/COSTROLLUP",
+
+            "PositionParentHierarchy/AssetDependency/NONDEPENDENTPOSITION/COSTROLLUP",
+            "PositionParentHierarchy/PositionDependency/DEPENDENTPOSITION/COSTROLLUP",
+            "PositionParentHierarchy/PrimarySystemDependency/NONDEPENDENTPOSITION/COSTROLLUP",
+            "PositionParentHierarchy/SystemDependency/NONDEPENDENTPOSITION/COSTROLLUP",
+            "PositionParentHierarchy/LocationDependency/NONDEPENDENTPOSITION/COSTROLLUP",
+            "PositionParentHierarchy/NonDependentParents/NONDEPENDENTPOSITION/COSTROLLUP"},
             readOnly = true)
     private Boolean hierarchyPositionCostRollUp;
     // Primary System
@@ -244,7 +286,17 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
             "AssetParentHierarchy/PrimarySystemDependency/DEPENDENTPRIMARYSYSTEM/SYSTEMID/EQUIPMENTCODE",
             "AssetParentHierarchy/SystemDependency/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/EQUIPMENTCODE",
             "AssetParentHierarchy/LocationDependency/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/EQUIPMENTCODE",
-            "AssetParentHierarchy/NonDependentParents/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/EQUIPMENTCODE",},
+            "AssetParentHierarchy/NonDependentParents/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/EQUIPMENTCODE",
+
+            "PositionParentHierarchy/AssetDependency/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/EQUIPMENTCODE",
+            "PositionParentHierarchy/PositionDependency/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/EQUIPMENTCODE",
+            "PositionParentHierarchy/PrimarySystemDependency/DEPENDENTPRIMARYSYSTEM/SYSTEMID/EQUIPMENTCODE",
+            "PositionParentHierarchy/SystemDependency/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/EQUIPMENTCODE",
+            "PositionParentHierarchy/LocationDependency/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/EQUIPMENTCODE",
+            "PositionParentHierarchy/NonDependentParents/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/EQUIPMENTCODE",
+
+            "SystemParentHierarchy/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/EQUIPMENTCODE",
+            "SystemParentHierarchy/DEPENDENTPRIMARYSYSTEM/SYSTEMID/EQUIPMENTCODE"},
             readOnly = true)
     private String hierarchyPrimarySystemCode;
     @Transient
@@ -254,7 +306,17 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
             "AssetParentHierarchy/PrimarySystemDependency/DEPENDENTPRIMARYSYSTEM/SYSTEMID/DESCRIPTION",
             "AssetParentHierarchy/SystemDependency/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/DESCRIPTION",
             "AssetParentHierarchy/LocationDependency/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/DESCRIPTION",
-            "AssetParentHierarchy/NonDependentParents/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/DESCRIPTION",},
+            "AssetParentHierarchy/NonDependentParents/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/DESCRIPTION",
+
+            "PositionParentHierarchy/AssetDependency/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/DESCRIPTION",
+            "PositionParentHierarchy/PositionDependency/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/DESCRIPTION",
+            "PositionParentHierarchy/PrimarySystemDependency/DEPENDENTPRIMARYSYSTEM/SYSTEMID/DESCRIPTION",
+            "PositionParentHierarchy/SystemDependency/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/DESCRIPTION",
+            "PositionParentHierarchy/LocationDependency/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/DESCRIPTION",
+            "PositionParentHierarchy/NonDependentParents/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/DESCRIPTION",
+
+            "SystemParentHierarchy/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/DESCRIPTION",
+            "SystemParentHierarchy/DEPENDENTPRIMARYSYSTEM/SYSTEMID/DESCRIPTION"},
             readOnly = true)
     private String hierarchyPrimarySystemDesc;
     @Transient
@@ -266,7 +328,17 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
             "AssetParentHierarchy/PrimarySystemDependency/DEPENDENTPRIMARYSYSTEM/COSTROLLUP",
             "AssetParentHierarchy/SystemDependency/NONDEPENDENTPRIMARYSYSTEM/COSTROLLUP",
             "AssetParentHierarchy/LocationDependency/NONDEPENDENTPRIMARYSYSTEM/COSTROLLUP",
-            "AssetParentHierarchy/NonDependentParents/NONDEPENDENTPRIMARYSYSTEM/COSTROLLUP",},
+            "AssetParentHierarchy/NonDependentParents/NONDEPENDENTPRIMARYSYSTEM/COSTROLLUP",
+
+            "PositionParentHierarchy/AssetDependency/NONDEPENDENTPRIMARYSYSTEM/COSTROLLUP",
+            "PositionParentHierarchy/PositionDependency/NONDEPENDENTPRIMARYSYSTEM/COSTROLLUP",
+            "PositionParentHierarchy/PrimarySystemDependency/DEPENDENTPRIMARYSYSTEM/COSTROLLUP",
+            "PositionParentHierarchy/SystemDependency/NONDEPENDENTPRIMARYSYSTEM/COSTROLLUP",
+            "PositionParentHierarchy/LocationDependency/NONDEPENDENTPRIMARYSYSTEM/COSTROLLUP",
+            "PositionParentHierarchy/NonDependentParents/NONDEPENDENTPRIMARYSYSTEM/COSTROLLUP",
+
+            "SystemParentHierarchy/NONDEPENDENTPRIMARYSYSTEM/COSTROLLUP",
+            "SystemParentHierarchy/DEPENDENTPRIMARYSYSTEM/COSTROLLUP"},
             readOnly = true)
     private Boolean hierarchyPrimarySystemCostRollUp;
     // System

@@ -1,6 +1,9 @@
 package ch.cern.eam.wshub.core.services.comments.entities;
 
+import ch.cern.eam.wshub.core.adapters.BooleanAdapter;
+
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 
 public class Comment implements Serializable {
@@ -18,7 +21,7 @@ public class Comment implements Serializable {
 	private String typeCode;
 	private String entityKeyCode;
 	private String entityCode;
-	private String print;
+	private Boolean print;
 	
 	public String getPk() {
 		return this.getEntityKeyCode() + "C" + this.getLineNumber();
@@ -137,11 +140,12 @@ public class Comment implements Serializable {
 		this.created = created;
 	}
 
-	public String getPrint() {
+	@XmlJavaTypeAdapter(BooleanAdapter.class)
+	public Boolean getPrint() {
 		return print;
 	}
 
-	public void setPrint(String print) {
+	public void setPrint(Boolean print) {
 		this.print = print;
 	}
 }

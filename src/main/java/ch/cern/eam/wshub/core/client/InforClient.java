@@ -86,6 +86,7 @@ public class InforClient implements Serializable {
     private InspectionService inspectionService;
     private RouteService routeService;
     private TaskPlanService taskPlanService;
+    private SalesPriceService salesPriceService;
 
     private AssetService assetService;
     private PositionService positionService;
@@ -268,6 +269,7 @@ public class InforClient implements Serializable {
             inforClient.inforWebServicesToolkitClient = inforWebServicesToolkitClient;
             inforClient.safetyService = proxy(SafetyService.class, new SafetyServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.taskPlanService = proxy(TaskPlanService.class, new TaskPlanServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
+            inforClient.salesPriceService = proxy(SalesPriceService.class, new SalesPricesImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             if (!tools.isDatabaseConnectionConfigured()) {
                 logger.log(Level.WARNING, "Some of the services might require a database connection.");
             }
@@ -433,5 +435,7 @@ public class InforClient implements Serializable {
 
     public MECService getMECService() { return mecService; }
 
-    public TaskPlanService getTaskPlanService() {return  taskPlanService; }
+    public TaskPlanService getTaskPlanService() { return  taskPlanService; }
+
+    public SalesPriceService getSalesPriceService() {return salesPriceService; }
 }

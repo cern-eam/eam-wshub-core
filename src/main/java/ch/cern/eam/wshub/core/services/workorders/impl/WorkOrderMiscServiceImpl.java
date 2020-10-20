@@ -26,6 +26,7 @@ import net.datastream.wsdls.inforws.InforWebServicesPT;
 
 import javax.xml.ws.Holder;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 public class WorkOrderMiscServiceImpl implements WorkOrderMiscService {
 
@@ -310,87 +311,18 @@ public class WorkOrderMiscServiceImpl implements WorkOrderMiscService {
 	*/
 
 	public String createTaskPlan(InforContext context, TaskPlan taskPlan) throws InforException {
-
-		Task inforTask = new Task();
-
-		// CODE, DESCRIPTION
-		inforTask.setTASKLISTID(new TASKLISTID_Type());
-		inforTask.getTASKLISTID().setDESCRIPTION(taskPlan.getDescription());
-		inforTask.getTASKLISTID().setTASKCODE(taskPlan.getCode());
-		inforTask.getTASKLISTID().setORGANIZATIONID(tools.getOrganization(context));
-		if (taskPlan.getRevision() == null) {
-			inforTask.getTASKLISTID().setTASKREVISION(0L);
-
-		} else {
-			inforTask.getTASKLISTID().setTASKREVISION(tools.getDataTypeTools().encodeLong(taskPlan.getRevision(), "Task Revision"));
+		// Provide defaults for the revision control if not present
+		if (taskPlan.getTaskRevision() == null) {
+			taskPlan.setTaskRevision(BigInteger.ZERO);
 		}
 
-		// TRADE
-		if (taskPlan.getTradeCode() != null) {
-			inforTask.setTRADEID(new TRADEID_Type());
-			inforTask.getTRADEID().setTRADECODE(taskPlan.getTradeCode());
-			inforTask.getTRADEID().setORGANIZATIONID(tools.getOrganization(context));
-			// PEOPLE REQUIRED
-			if (taskPlan.getPeopleRequired() == null) {
-				inforTask.setPERSONS(1l);
-			} else {
-				inforTask.setPERSONS(tools.getDataTypeTools().encodeLong(taskPlan.getPeopleRequired(), "People Required"));
-			}
-			// PEOPLE REQUIRED
-			if (taskPlan.getEstimatedHours() == null) {
-				inforTask.setHOURSREQUESTED(tools.getDataTypeTools().encodeQuantity(BigDecimal.ONE, "Estimated Hours"));
-			} else {
-				inforTask.setHOURSREQUESTED(tools.getDataTypeTools().encodeQuantity(taskPlan.getEstimatedHours(), "Estimated Hours"));
-			}
-		}
-
-		// STATUS
 		if (taskPlan.getRevisionStatus() == null) {
-			inforTask.setSTATUS(new STATUS_Type());
-			inforTask.getSTATUS().setSTATUSCODE("A");
-		} else {
-			inforTask.setSTATUS(new STATUS_Type());
-			inforTask.getSTATUS().setSTATUSCODE(taskPlan.getRevisionStatus());
+			taskPlan.setRevisionStatus("A");
 		}
 
-		// PLANNING LEVEL
-		inforTask.setPLANNINGLEVEL("TP");
-
-		// TYPE
-		if (taskPlan.getTypeCode() != null) {
-			inforTask.setTASKPLANTYPE(taskPlan.getTypeCode());
-		}
-
-		// CLASS
-		if (taskPlan.getClassCode() != null) {
-			inforTask.setCLASSID(new CLASSID_Type());
-			inforTask.getCLASSID().setORGANIZATIONID(tools.getOrganization(context));
-			inforTask.getCLASSID().setCLASSCODE(taskPlan.getClassCode());
-		}
-
-		//
-		if (taskPlan.getOutOfService() != null) {
-			inforTask.setOUTOFSERVICE(taskPlan.getOutOfService());
-		}
-
-		if (taskPlan.getEquipmentType() != null) {
-			inforTask.setEQUIPMENTTYPE(taskPlan.getEquipmentType());
-		}
-
-		if (taskPlan.getEquipmentClass() != null) {
-			inforTask.setEQUIPMENTCLASSID(new CLASSID_Type());
-			inforTask.getEQUIPMENTCLASSID().setORGANIZATIONID(tools.getOrganization(context));
-			inforTask.getEQUIPMENTCLASSID().setCLASSCODE(taskPlan.getEquipmentClass());
-		}
-
-		if (taskPlan.getMaterialList() != null) {
-			inforTask.setMATERIALLISTID(new MATERIALLISTID_Type());
-			inforTask.getMATERIALLISTID().setORGANIZATIONID(tools.getOrganization(context));
-			inforTask.getMATERIALLISTID().setMTLCODE(taskPlan.getMaterialList());
-		}
-		//
+		// Create the Task Plan
 		MP0080_AddTask_001 addTask = new MP0080_AddTask_001();
-		addTask.setTask(inforTask);
+		addTask.setTask(tools.getInforFieldTools().transformWSHubObject(new Task(), taskPlan, context));
 
 		tools.performInforOperation(context, inforws::addTaskOp, addTask);
 		return "done";

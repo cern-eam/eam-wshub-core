@@ -13,6 +13,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Array;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
@@ -129,6 +132,18 @@ public class InforFieldTools {
             } else if ("UserDefinedFields".equals(wshubField.getAnnotation(InforField.class).xpath()[0]) ||
                        "StandardUserDefinedFields".equals(wshubField.getAnnotation(InforField.class).xpath()[0])) {
                 wshubField.set(wshubObject, transformInforObject(new UserDefinedFields(), inforValue));
+            } else if(List.class.isAssignableFrom(inforValue.getClass())){
+                List inforValueAsList = (List) inforValue;
+                if(wshubField.getGenericType() instanceof ParameterizedType) {
+                    ParameterizedType listGenericType = (ParameterizedType) wshubField.getGenericType();
+                    Class itemsType = (Class) listGenericType.getActualTypeArguments()[0];
+                    List rawWSHubList = new ArrayList();
+                    for (int i = 0; i < inforValueAsList.size(); i++) {
+                        rawWSHubList.add(itemsType.newInstance());
+                        transformInforObject(rawWSHubList.get(i), inforValueAsList.get(i));
+                    }
+                    wshubField.set(wshubObject, rawWSHubList);
+                }
             }
         }
         catch (Exception e) {
@@ -180,6 +195,10 @@ public class InforFieldTools {
      * @return
      */
     private <I> Object getValue(I inforObject, List<String> fieldNames) {
+        if (fieldNames == null || fieldNames.size() == 0) {
+            return null;
+        }
+
         try {
             Object result = inforObject;
             for (String fieldName : fieldNames) {
@@ -190,8 +209,8 @@ public class InforFieldTools {
             return result;
         } catch (Exception e) {
             // Nothing wrong about an exception here
+            return null;
         }
-        return null;
     }
 
     private <I> Object getValue(I inforObject, InforField inforField) {
@@ -211,7 +230,6 @@ public class InforFieldTools {
             // Nothing wrong about an exception here
         }
     }
-
 
     private Object setPreviousFields(Object inforObject, List<String> fields) {
         Object inforTempObject = inforObject;
