@@ -50,10 +50,10 @@ public class Pair implements Serializable {
 	}
 
 	@Override
-	public boolean equals(Object other){
-		if(this == other) return true;
+	public boolean equals(Object other) {
+		if (this == other) return true;
 
-		if(other instanceof Pair){
+		if (other instanceof Pair) {
 			Pair otherPair = (Pair) other;
 			boolean codeEq = otherPair.getCode() == code ||
 					otherPair.getCode() != null && code != null && otherPair.getCode().equals(code);
@@ -65,7 +65,7 @@ public class Pair implements Serializable {
 	}
 
 	@Override
-	public int hashCode(){
+	public int hashCode() {
 		return Objects.hash(code, desc);
 	}
 }
