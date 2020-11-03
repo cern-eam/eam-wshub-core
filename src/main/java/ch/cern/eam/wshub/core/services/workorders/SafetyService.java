@@ -13,6 +13,9 @@ public interface SafetyService {
     @Operation(logOperation = INFOR_OPERATION.SAFETY_HLR)
     List<Safety> readSafeties(InforContext context, String entityType, String entityCode) throws InforException;
 
-    @Operation(logOperation =  INFOR_OPERATION.SAFETY_HLU)
+    @Operation(logOperation = INFOR_OPERATION.SAFETY_HLU)
     void setSafeties(InforContext context, String entityType, String entityCode, List<Safety> safeties) throws InforException;
+
+    @Operation(logOperation = INFOR_OPERATION.SAFETY_R)
+    Safety readSafety(InforContext context, String entityType, String safetyCode) throws InforException;
 }

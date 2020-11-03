@@ -17,7 +17,6 @@ import net.datastream.schemas.mp_functions.mp7983_001.MP7983_GetWorkSafety_001;
 import net.datastream.schemas.mp_functions.mp7984_001.MP7984_AddWorkSafety_001;
 import net.datastream.schemas.mp_functions.mp7985_001.MP7985_SyncWorkSafety_001;
 import net.datastream.schemas.mp_functions.mp7986_001.MP7986_DeleteWorkSafety_001;
-import net.datastream.schemas.mp_results.mp3222_001.MP3222_GetEntitySafety_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 import org.openapplications.oagis_segments.QUANTITY;
 
@@ -41,6 +40,7 @@ public class SafetyServiceImpl implements SafetyService {
     }
 
     // The entityType argument takes either "EVNT" or "OBJ"
+    // Note that this method does not return the user defined fields, use the readSafety method for now to get these
     @Override
     public List<Safety> readSafeties(InforContext context, String entityType, String entityCode) throws InforException {
         GridRequest request = new GridRequest();
@@ -61,6 +61,8 @@ public class SafetyServiceImpl implements SafetyService {
 
         GridRequestResult result = gridsService.executeQuery(context, request);
         List<Safety> safeties = GridTools.convertGridResultToObject(Safety.class, null, result);
+
+        safeties.stream().forEach(safety -> safety.setUserDefinedFields(null));
 
         return safeties;
     }
@@ -99,6 +101,27 @@ public class SafetyServiceImpl implements SafetyService {
         // remove old safeties
         for(Safety safety : currentSafetiesMap.values()) {
             removeSafety(context, entityType, safety.getId());
+        }
+    }
+
+    @Override
+    public Safety readSafety(InforContext context, String entityType, String safetyCode) throws InforException {
+        if (isObject(entityType)) {
+            MP3222_GetEntitySafety_001 getEntitySafety = new MP3222_GetEntitySafety_001();
+            getEntitySafety.setSAFETYCODE(safetyCode);
+            EntitySafety inforSafety = tools.performInforOperation(context, inforws::getEntitySafetyOp, getEntitySafety)
+                    .getResultData().getEntitySafety();
+            Safety safety = new Safety();
+            return tools.getInforFieldTools().transformInforObject(safety, inforSafety);
+        } else if(isWorkOrder(entityType)) {
+            MP7983_GetWorkSafety_001 getWorkSafety = new MP7983_GetWorkSafety_001();
+            getWorkSafety.setSAFETYCODE(safetyCode);
+            WorkSafety workSafety = tools.performInforOperation(context, inforws::getWorkSafetyOp, getWorkSafety)
+                    .getResultData().getWorkSafety();
+            Safety safety = new Safety();
+            return tools.getInforFieldTools().transformInforObject(safety, workSafety);
+        } else {
+            throw Tools.generateFault("Invalid entityType");
         }
     }
 

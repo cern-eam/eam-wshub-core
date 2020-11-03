@@ -201,6 +201,7 @@ public enum INFOR_OPERATION {
     // SAFETIES
     SAFETY_HLR("SAFETY_HLR"),
     SAFETY_HLU("SAFETY_HLU"),
+    SAFETY_R("SAFETY_R"),
 
     // MEC
     MEC_GET("MEC_GET"),
