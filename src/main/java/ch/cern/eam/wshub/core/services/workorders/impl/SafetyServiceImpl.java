@@ -126,7 +126,7 @@ public class SafetyServiceImpl implements SafetyService {
     }
 
     private String getFullEntityCode(InforContext context, String entityType, String entityCode) {
-        String extension = isObject(entityType) ? "#" + context.getOrganizationCode() : "";
+        String extension = isObject(entityType) ? "#" + tools.getOrganizationCode(context) : "";
         return entityCode + extension;
     }
 
@@ -140,6 +140,10 @@ public class SafetyServiceImpl implements SafetyService {
 
         EntitySafety entitySafetyInfor = original == null ? new EntitySafety() : original;
         tools.getInforFieldTools().transformWSHubObject(entitySafetyInfor, safety, context);
+
+        if (safety.getId() == null) {
+            entitySafetyInfor.setSAFETYCODE("0");
+        }
 
         entitySafetyInfor.setENTITY(entityType);
         entitySafetyInfor.setENTITYSAFETYCODE(getFullEntityCode(context, entityType, entityCode));
@@ -161,6 +165,10 @@ public class SafetyServiceImpl implements SafetyService {
 
         WorkSafety workSafetyInfor = original == null ? new WorkSafety() : original;
         tools.getInforFieldTools().transformWSHubObject(workSafetyInfor, safety, context);
+
+        if (safety.getId() == null) {
+            workSafetyInfor.setSAFETYCODE("0");
+        }
 
         workSafetyInfor.setENTITY(entityType);
         workSafetyInfor.setENTITYSAFETYCODE(getFullEntityCode(context, entityType, entityCode));
