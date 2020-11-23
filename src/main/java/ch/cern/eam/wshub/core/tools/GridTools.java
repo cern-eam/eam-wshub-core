@@ -191,7 +191,7 @@ public class GridTools {
      * @throws Exception
      */
     private static <T> void setValue(T object, Field field, String column, String[] alternativeColumns, List<GridRequestCell> gridRequestCellList) throws Exception {
-        if (field.getType().equals(UserDefinedFields.class)) {
+        if (UserDefinedFields.class.equals(field.getType())) {
             field.setAccessible(true);
             field.set(object, convertCellListToObjectAnnotation(UserDefinedFields.class, gridRequestCellList));
             return;
