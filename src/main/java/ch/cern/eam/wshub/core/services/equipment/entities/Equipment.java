@@ -10,6 +10,7 @@ import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedListHelpabl
 import ch.cern.eam.wshub.core.services.userdefinedscreens.entities.UDLEntry;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.entities.UDLValue;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.entities.udlmap.UDLMapAdapter;
+import ch.cern.eam.wshub.core.services.userdefinedscreens.entities.xmlhashmap.XmlHashMapAdapter;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlElement;
@@ -1330,8 +1331,7 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
     }
 
     @Override
-    @XmlElement
-    @XmlJavaTypeAdapter(UDLMapAdapter.class)
+    @XmlJavaTypeAdapter(XmlHashMapAdapter.class)
     public Map<String, List<UDLValue>> getUserDefinedList() {
         return userDefinedList;
     }
