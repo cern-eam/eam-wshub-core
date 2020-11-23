@@ -3,14 +3,19 @@ package ch.cern.eam.wshub.core.services.entities;
 import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
 import ch.cern.eam.wshub.core.adapters.BooleanAdapter;
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
+import ch.cern.eam.wshub.core.annotations.GridField;
 import ch.cern.eam.wshub.core.annotations.InforField;
+import ch.cern.eam.wshub.core.services.workorders.impl.Safety;
 
 import javax.persistence.Embeddable;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.StringJoiner;
+import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 
 @Embeddable
 public class UserDefinedFields implements Serializable, Cloneable {
@@ -18,94 +23,139 @@ public class UserDefinedFields implements Serializable, Cloneable {
 	private static final long serialVersionUID = 8838910762758979180L;
 
 	@InforField(xpath = "UDFCHAR01")
+	@GridField(name = "udfchar01")
 	private String udfchar01;
 	@InforField(xpath = "UDFCHAR02")
+	@GridField(name = "udfchar02")
 	private String udfchar02;
 	@InforField(xpath = "UDFCHAR03")
+	@GridField(name = "udfchar03")
 	private String udfchar03;
 	@InforField(xpath = "UDFCHAR04")
+	@GridField(name = "udfchar04")
 	private String udfchar04;
 	@InforField(xpath = "UDFCHAR05")
+	@GridField(name = "udfchar05")
 	private String udfchar05;
 	@InforField(xpath = "UDFCHAR06")
+	@GridField(name = "udfchar06")
 	private String udfchar06;
 	@InforField(xpath = "UDFCHAR07")
+	@GridField(name = "udfchar07")
 	private String udfchar07;
 	@InforField(xpath = "UDFCHAR08")
+	@GridField(name = "udfchar08")
 	private String udfchar08;
 	@InforField(xpath = "UDFCHAR09")
+	@GridField(name = "udfchar09")
 	private String udfchar09;
 	@InforField(xpath = "UDFCHAR10")
+	@GridField(name = "udfchar10")
 	private String udfchar10;
 	@InforField(xpath = "UDFCHAR11")
+	@GridField(name = "udfchar11")
 	private String udfchar11;
 	@InforField(xpath = "UDFCHAR12")
+	@GridField(name = "udfchar12")
 	private String udfchar12;
 	@InforField(xpath = "UDFCHAR13")
+	@GridField(name = "udfchar13")
 	private String udfchar13;
 	@InforField(xpath = "UDFCHAR14")
+	@GridField(name = "udfchar14")
 	private String udfchar14;
 	@InforField(xpath = "UDFCHAR15")
+	@GridField(name = "udfchar15")
 	private String udfchar15;
 	@InforField(xpath = "UDFCHAR16")
+	@GridField(name = "udfchar16")
 	private String udfchar16;
 	@InforField(xpath = "UDFCHAR17")
+	@GridField(name = "udfchar17")
 	private String udfchar17;
 	@InforField(xpath = "UDFCHAR18")
+	@GridField(name = "udfchar18")
 	private String udfchar18;
 	@InforField(xpath = "UDFCHAR19")
+	@GridField(name = "udfchar19")
 	private String udfchar19;
 	@InforField(xpath = "UDFCHAR20")
+	@GridField(name = "udfchar20")
 	private String udfchar20;
 	@InforField(xpath = "UDFCHAR21")
+	@GridField(name = "udfchar21")
 	private String udfchar21;
 	@InforField(xpath = "UDFCHAR22")
+	@GridField(name = "udfchar22")
 	private String udfchar22;
 	@InforField(xpath = "UDFCHAR23")
+	@GridField(name = "udfchar23")
 	private String udfchar23;
 	@InforField(xpath = "UDFCHAR24")
+	@GridField(name = "udfchar24")
 	private String udfchar24;
 	@InforField(xpath = "UDFCHAR25")
+	@GridField(name = "udfchar25")
 	private String udfchar25;
 	@InforField(xpath = "UDFCHAR26")
+	@GridField(name = "udfchar26")
 	private String udfchar26;
 	@InforField(xpath = "UDFCHAR27")
+	@GridField(name = "udfchar27")
 	private String udfchar27;
 	@InforField(xpath = "UDFCHAR28")
+	@GridField(name = "udfchar28")
 	private String udfchar28;
 	@InforField(xpath = "UDFCHAR29")
+	@GridField(name = "udfchar29")
 	private String udfchar29;
 	@InforField(xpath = "UDFCHAR30")
+	@GridField(name = "udfchar30")
 	private String udfchar30;
 	@InforField(xpath = "UDFCHAR31", enforceValidXpath = false)
+	@GridField(name = "udfchar31")
 	private String udfchar31;
 	@InforField(xpath = "UDFCHAR32", enforceValidXpath = false)
+	@GridField(name = "udfchar32")
 	private String udfchar32;
 	@InforField(xpath = "UDFCHAR33", enforceValidXpath = false)
+	@GridField(name = "udfchar33")
 	private String udfchar33;
 	@InforField(xpath = "UDFCHAR34", enforceValidXpath = false)
+	@GridField(name = "udfchar34")
 	private String udfchar34;
 	@InforField(xpath = "UDFCHAR35", enforceValidXpath = false)
+	@GridField(name = "udfchar35")
 	private String udfchar35;
 	@InforField(xpath = "UDFCHAR36", enforceValidXpath = false)
+	@GridField(name = "udfchar36")
 	private String udfchar36;
 	@InforField(xpath = "UDFCHAR37", enforceValidXpath = false)
+	@GridField(name = "udfchar37")
 	private String udfchar37;
 	@InforField(xpath = "UDFCHAR38", enforceValidXpath = false)
+	@GridField(name = "udfchar38")
 	private String udfchar38;
 	@InforField(xpath = "UDFCHAR39", enforceValidXpath = false)
+	@GridField(name = "udfchar39")
 	private String udfchar39;
 	@InforField(xpath = "UDFCHAR40", enforceValidXpath = false)
+	@GridField(name = "udfchar40")
 	private String udfchar40;
 	@InforField(xpath = "UDFCHAR41", enforceValidXpath = false)
+	@GridField(name = "udfchar41")
 	private String udfchar41;
 	@InforField(xpath = "UDFCHAR42", enforceValidXpath = false)
+	@GridField(name = "udfchar42")
 	private String udfchar42;
 	@InforField(xpath = "UDFCHAR43", enforceValidXpath = false)
+	@GridField(name = "udfchar43")
 	private String udfchar43;
 	@InforField(xpath = "UDFCHAR44", enforceValidXpath = false)
+	@GridField(name = "udfchar44")
 	private String udfchar44;
 	@InforField(xpath = "UDFCHAR45", enforceValidXpath = false)
+	@GridField(name = "udfchar45")
 	private String udfchar45;
 
 	private String udfchar01Desc;
@@ -155,66 +205,96 @@ public class UserDefinedFields implements Serializable, Cloneable {
 	private String udfchar45Desc;
 
 	@InforField(xpath = "UDFCHKBOX01")
+	@GridField(name = "udfchkbox01")
 	private Boolean udfchkbox01;
 	@InforField(xpath = "UDFCHKBOX02")
+	@GridField(name = "udfchkbox02")
 	private Boolean udfchkbox02;
 	@InforField(xpath = "UDFCHKBOX03")
+	@GridField(name = "udfchkbox03")
 	private Boolean udfchkbox03;
 	@InforField(xpath = "UDFCHKBOX04")
+	@GridField(name = "udfchkbox04")
 	private Boolean udfchkbox04;
 	@InforField(xpath = "UDFCHKBOX05")
+	@GridField(name = "udfchkbox05")
 	private Boolean udfchkbox05;
 	@InforField(xpath = "UDFCHKBOX06", enforceValidXpath = false)
+	@GridField(name = "udfchkbox06")
 	private Boolean udfchkbox06;
 	@InforField(xpath = "UDFCHKBOX07", enforceValidXpath = false)
+	@GridField(name = "udfchkbox07")
 	private Boolean udfchkbox07;
 	@InforField(xpath = "UDFCHKBOX08", enforceValidXpath = false)
+	@GridField(name = "udfchkbox08")
 	private Boolean udfchkbox08;
 	@InforField(xpath = "UDFCHKBOX09", enforceValidXpath = false)
+	@GridField(name = "udfchkbox09")
 	private Boolean udfchkbox09;
 	@InforField(xpath = "UDFCHKBOX10", enforceValidXpath = false)
+	@GridField(name = "udfchkbox10")
 	private Boolean udfchkbox10;
 
 	@InforField(xpath = "UDFNUM01")
+	@GridField(name = "udfnum01")
 	private BigDecimal udfnum01;
 	@InforField(xpath = "UDFNUM02")
+	@GridField(name = "udfnum02")
 	private BigDecimal udfnum02;
 	@InforField(xpath = "UDFNUM03")
+	@GridField(name = "udfnum03")
 	private BigDecimal udfnum03;
 	@InforField(xpath = "UDFNUM04")
+	@GridField(name = "udfnum04")
 	private BigDecimal udfnum04;
 	@InforField(xpath = "UDFNUM05")
+	@GridField(name = "udfnum05")
 	private BigDecimal udfnum05;
 	@InforField(xpath = "UDFNUM06", enforceValidXpath = false)
+	@GridField(name = "udfnum06")
 	private BigDecimal udfnum06;
 	@InforField(xpath = "UDFNUM07", enforceValidXpath = false)
+	@GridField(name = "udfnum07")
 	private BigDecimal udfnum07;
 	@InforField(xpath = "UDFNUM08", enforceValidXpath = false)
+	@GridField(name = "udfnum08")
 	private BigDecimal udfnum08;
 	@InforField(xpath = "UDFNUM09", enforceValidXpath = false)
+	@GridField(name = "udfnum09")
 	private BigDecimal udfnum09;
 	@InforField(xpath = "UDFNUM10", enforceValidXpath = false)
+	@GridField(name = "udfnum10")
 	private BigDecimal udfnum10;
 
 	@InforField(xpath = "UDFDATE01")
+	@GridField(name = "udfdate01")
 	private Date udfdate01;
 	@InforField(xpath = "UDFDATE02")
+	@GridField(name = "udfdate02")
 	private Date udfdate02;
 	@InforField(xpath = "UDFDATE03")
+	@GridField(name = "udfdate03")
 	private Date udfdate03;
 	@InforField(xpath = "UDFDATE04")
+	@GridField(name = "udfdate04")
 	private Date udfdate04;
 	@InforField(xpath = "UDFDATE05")
+	@GridField(name = "udfdate05")
 	private Date udfdate05;
 	@InforField(xpath = "UDFDATE06", enforceValidXpath = false)
+	@GridField(name = "udfdate06")
 	private Date udfdate06;
 	@InforField(xpath = "UDFDATE07", enforceValidXpath = false)
+	@GridField(name = "udfdate07")
 	private Date udfdate07;
 	@InforField(xpath = "UDFDATE08", enforceValidXpath = false)
+	@GridField(name = "udfdate08")
 	private Date udfdate08;
 	@InforField(xpath = "UDFDATE09", enforceValidXpath = false)
+	@GridField(name = "udfdate09")
 	private Date udfdate09;
 	@InforField(xpath = "UDFDATE10", enforceValidXpath = false)
+	@GridField(name = "udfdate10")
 	private Date udfdate10;
 	
 	public UserDefinedFields copy() {
@@ -1655,5 +1735,96 @@ public class UserDefinedFields implements Serializable, Cloneable {
 				+ (udfdate10 != null ? "udfdate10=" + udfdate10 : "") + "]";
 	}
 
+	@Override
+	public boolean equals(Object otherObject) {
+		if (this == otherObject) {
+			return true;
+		}
 
+		if (otherObject == null || getClass() != otherObject.getClass()) {
+			return false;
+		}
+
+		BiPredicate<Object, Object> udfObjectComparison = (object1, object2) ->
+				(object1 == null && object2 == null)
+						|| (object1 != null ? object1.equals(object2) : object2.equals(object1));
+
+		UserDefinedFields other = (UserDefinedFields) otherObject;
+
+		return udfObjectComparison.test(getUdfchar01(), other.getUdfchar01())
+				&& udfObjectComparison.test(getUdfchar02(), other.getUdfchar02())
+				&& udfObjectComparison.test(getUdfchar03(), other.getUdfchar03())
+				&& udfObjectComparison.test(getUdfchar04(), other.getUdfchar04())
+				&& udfObjectComparison.test(getUdfchar05(), other.getUdfchar05())
+				&& udfObjectComparison.test(getUdfchar06(), other.getUdfchar06())
+				&& udfObjectComparison.test(getUdfchar07(), other.getUdfchar07())
+				&& udfObjectComparison.test(getUdfchar08(), other.getUdfchar08())
+				&& udfObjectComparison.test(getUdfchar09(), other.getUdfchar09())
+				&& udfObjectComparison.test(getUdfchar10(), other.getUdfchar10())
+				&& udfObjectComparison.test(getUdfchar11(), other.getUdfchar11())
+				&& udfObjectComparison.test(getUdfchar12(), other.getUdfchar12())
+				&& udfObjectComparison.test(getUdfchar13(), other.getUdfchar13())
+				&& udfObjectComparison.test(getUdfchar14(), other.getUdfchar14())
+				&& udfObjectComparison.test(getUdfchar15(), other.getUdfchar15())
+				&& udfObjectComparison.test(getUdfchar16(), other.getUdfchar16())
+				&& udfObjectComparison.test(getUdfchar17(), other.getUdfchar17())
+				&& udfObjectComparison.test(getUdfchar18(), other.getUdfchar18())
+				&& udfObjectComparison.test(getUdfchar19(), other.getUdfchar19())
+				&& udfObjectComparison.test(getUdfchar20(), other.getUdfchar20())
+				&& udfObjectComparison.test(getUdfchar21(), other.getUdfchar21())
+				&& udfObjectComparison.test(getUdfchar22(), other.getUdfchar22())
+				&& udfObjectComparison.test(getUdfchar23(), other.getUdfchar23())
+				&& udfObjectComparison.test(getUdfchar24(), other.getUdfchar24())
+				&& udfObjectComparison.test(getUdfchar25(), other.getUdfchar25())
+				&& udfObjectComparison.test(getUdfchar26(), other.getUdfchar26())
+				&& udfObjectComparison.test(getUdfchar27(), other.getUdfchar27())
+				&& udfObjectComparison.test(getUdfchar28(), other.getUdfchar28())
+				&& udfObjectComparison.test(getUdfchar29(), other.getUdfchar29())
+				&& udfObjectComparison.test(getUdfchar30(), other.getUdfchar30())
+				&& udfObjectComparison.test(getUdfchar31(), other.getUdfchar31())
+				&& udfObjectComparison.test(getUdfchar32(), other.getUdfchar32())
+				&& udfObjectComparison.test(getUdfchar33(), other.getUdfchar33())
+				&& udfObjectComparison.test(getUdfchar34(), other.getUdfchar34())
+				&& udfObjectComparison.test(getUdfchar35(), other.getUdfchar35())
+				&& udfObjectComparison.test(getUdfchar36(), other.getUdfchar36())
+				&& udfObjectComparison.test(getUdfchar37(), other.getUdfchar37())
+				&& udfObjectComparison.test(getUdfchar38(), other.getUdfchar38())
+				&& udfObjectComparison.test(getUdfchar39(), other.getUdfchar39())
+				&& udfObjectComparison.test(getUdfchar40(), other.getUdfchar40())
+				&& udfObjectComparison.test(getUdfchar41(), other.getUdfchar41())
+				&& udfObjectComparison.test(getUdfchar42(), other.getUdfchar42())
+				&& udfObjectComparison.test(getUdfchar43(), other.getUdfchar43())
+				&& udfObjectComparison.test(getUdfchar44(), other.getUdfchar44())
+				&& udfObjectComparison.test(getUdfchar45(), other.getUdfchar45())
+				&& udfObjectComparison.test(getUdfchkbox01(), other.getUdfchkbox01())
+				&& udfObjectComparison.test(getUdfchkbox02(), other.getUdfchkbox02())
+				&& udfObjectComparison.test(getUdfchkbox03(), other.getUdfchkbox03())
+				&& udfObjectComparison.test(getUdfchkbox04(), other.getUdfchkbox04())
+				&& udfObjectComparison.test(getUdfchkbox05(), other.getUdfchkbox05())
+				&& udfObjectComparison.test(getUdfchkbox06(), other.getUdfchkbox06())
+				&& udfObjectComparison.test(getUdfchkbox07(), other.getUdfchkbox07())
+				&& udfObjectComparison.test(getUdfchkbox08(), other.getUdfchkbox08())
+				&& udfObjectComparison.test(getUdfchkbox09(), other.getUdfchkbox09())
+				&& udfObjectComparison.test(getUdfchkbox10(), other.getUdfchkbox10())
+				&& udfObjectComparison.test(getUdfnum01(), other.getUdfnum01())
+				&& udfObjectComparison.test(getUdfnum02(), other.getUdfnum02())
+				&& udfObjectComparison.test(getUdfnum03(), other.getUdfnum03())
+				&& udfObjectComparison.test(getUdfnum04(), other.getUdfnum04())
+				&& udfObjectComparison.test(getUdfnum05(), other.getUdfnum05())
+				&& udfObjectComparison.test(getUdfnum06(), other.getUdfnum06())
+				&& udfObjectComparison.test(getUdfnum07(), other.getUdfnum07())
+				&& udfObjectComparison.test(getUdfnum08(), other.getUdfnum08())
+				&& udfObjectComparison.test(getUdfnum09(), other.getUdfnum09())
+				&& udfObjectComparison.test(getUdfnum10(), other.getUdfnum10())
+				&& udfObjectComparison.test(getUdfdate01(), other.getUdfdate01())
+				&& udfObjectComparison.test(getUdfdate02(), other.getUdfdate02())
+				&& udfObjectComparison.test(getUdfdate03(), other.getUdfdate03())
+				&& udfObjectComparison.test(getUdfdate04(), other.getUdfdate04())
+				&& udfObjectComparison.test(getUdfdate05(), other.getUdfdate05())
+				&& udfObjectComparison.test(getUdfdate06(), other.getUdfdate06())
+				&& udfObjectComparison.test(getUdfdate07(), other.getUdfdate07())
+				&& udfObjectComparison.test(getUdfdate08(), other.getUdfdate08())
+				&& udfObjectComparison.test(getUdfdate09(), other.getUdfdate09())
+				&& udfObjectComparison.test(getUdfdate10(), other.getUdfdate10());
+	}
 }

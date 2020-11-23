@@ -1,14 +1,17 @@
 package ch.cern.eam.wshub.core.tools;
 
 import ch.cern.eam.wshub.core.annotations.GridField;
+import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import ch.cern.eam.wshub.core.services.grids.entities.*;
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toList;
@@ -188,6 +191,12 @@ public class GridTools {
      * @throws Exception
      */
     private static <T> void setValue(T object, Field field, String column, String[] alternativeColumns, List<GridRequestCell> gridRequestCellList) throws Exception {
+        if (UserDefinedFields.class.equals(field.getType())) {
+            field.setAccessible(true);
+            field.set(object, convertCellListToObjectAnnotation(UserDefinedFields.class, gridRequestCellList));
+            return;
+        }
+
         // Extract the value from gridRequestCellList
         String value = gridRequestCellList.stream()
                 .filter(cell -> cell.getCol().equals(column) ||
