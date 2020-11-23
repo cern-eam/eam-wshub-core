@@ -1,11 +1,13 @@
 package ch.cern.eam.wshub.core.services.workorders.impl;
 
 import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.services.entities.BatchResponse;
 import ch.cern.eam.wshub.core.services.grids.GridsService;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
 import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.services.workorders.SafetyService;
+import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrder;
 import ch.cern.eam.wshub.core.tools.*;
 import net.datastream.schemas.mp_entities.entitysafety_001.EntitySafety;
 import net.datastream.schemas.mp_entities.worksafety_001.WorkSafety;
@@ -23,6 +25,7 @@ import org.openapplications.oagis_segments.QUANTITY;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -37,6 +40,24 @@ public class SafetyServiceImpl implements SafetyService {
         this.tools = tools;
         this.inforws = inforWebServicesToolkitClient;
         this.gridsService = new GridsServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
+    }
+
+    @Override
+    public BatchResponse<List<Safety>> readSafetiesBatch(InforContext context, String entityType, List<String> entityCode) {
+        List<Callable<List<Safety>>> callableList = entityCode.stream()
+                .<Callable<List<Safety>>>map(code -> () -> readSafeties(context, entityType, code))
+                .collect(Collectors.toList());
+
+        return tools.processCallables(callableList);
+    }
+
+    @Override
+    public BatchResponse<String> setSafetiesBatch(InforContext context, String entityType, Map<String, List<Safety>> entityCodeToSafeties) {
+        List<Callable<String>> callableList = entityCodeToSafeties.keySet().stream()
+                .<Callable<String>>map(code -> () -> setSafeties(context, entityType, code, entityCodeToSafeties.get(code)))
+                .collect(Collectors.toList());
+
+        return tools.processCallables(callableList);
     }
 
     // The entityType argument takes either "EVNT" or "OBJ"
@@ -69,7 +90,7 @@ public class SafetyServiceImpl implements SafetyService {
 
     // The entityType argument takes either "EVNT" or "OBJ"
     @Override
-    public void setSafeties(InforContext context, String entityType, String entityCode, List<Safety> safeties) throws InforException {
+    public String setSafeties(InforContext context, String entityType, String entityCode, List<Safety> safeties) throws InforException {
         if (!isWorkOrder(entityType) && !isObject(entityType)) {
             throw Tools.generateFault("Invalid entityType");
         }
@@ -102,6 +123,8 @@ public class SafetyServiceImpl implements SafetyService {
         for(Safety safety : currentSafetiesMap.values()) {
             removeSafety(context, entityType, safety.getId());
         }
+
+        return "OK";
     }
 
     @Override
