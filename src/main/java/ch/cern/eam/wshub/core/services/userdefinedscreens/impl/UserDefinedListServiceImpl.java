@@ -143,7 +143,10 @@ public class UserDefinedListServiceImpl implements UserDefinedListService {
             }
         }
 
-        userDefinedTableService.createUserDefinedTableRows(context, TABLE_NAME, rows);
+        if (!rows.isEmpty()) {
+            userDefinedTableService.createUserDefinedTableRows(context, TABLE_NAME, rows);
+        }
+
         return "OK";
     }
 
