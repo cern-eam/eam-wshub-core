@@ -11,5 +11,8 @@ import java.math.BigDecimal;
 public interface DataspyService {
 
     @Operation(logOperation = INFOR_OPERATION.DATASPY_CP)
-    BigDecimal copyDataspy(InforContext context, DataspyCopy dataspyCopy) throws InforException;
+    String copyDataspy(InforContext context, DataspyCopy dataspyCopy) throws InforException;
+
+    @Operation(logOperation = INFOR_OPERATION.DATASPY_D)
+    BigDecimal deleteDataspy(InforContext context, BigDecimal dataspyId) throws InforException;
 }
