@@ -64,12 +64,12 @@ public class DataspyServiceImpl implements DataspyService {
         return extractSingleResult(gridsService.executeQuery(context, gridRequest), "dds_ddspyid").replace(",", "");
     }
 
-    public BigDecimal deleteDataspy(InforContext context, BigDecimal dataspyId) throws InforException {
+    public String deleteDataspy(InforContext context, BigDecimal dataspyId) throws InforException {
         MP6518_DeleteScreenDataspy_001 deleteScreenDataspy = new MP6518_DeleteScreenDataspy_001();
         deleteScreenDataspy.setSCREENDATASPYID(new SCREENDATASPYID_Type());
         deleteScreenDataspy.getSCREENDATASPYID().setDDSPYID(encodeQuantity(dataspyId, "Dataspy ID"));
         tools.performInforOperation(context, inforws::deleteScreenDataspyOp, deleteScreenDataspy);
-        return dataspyId;
+        return dataspyId.toPlainString();
     }
 
 }

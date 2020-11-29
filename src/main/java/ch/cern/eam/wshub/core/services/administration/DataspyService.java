@@ -14,5 +14,5 @@ public interface DataspyService {
     String copyDataspy(InforContext context, DataspyCopy dataspyCopy) throws InforException;
 
     @Operation(logOperation = INFOR_OPERATION.DATASPY_D)
-    BigDecimal deleteDataspy(InforContext context, BigDecimal dataspyId) throws InforException;
+    String deleteDataspy(InforContext context, BigDecimal dataspyId) throws InforException;
 }
