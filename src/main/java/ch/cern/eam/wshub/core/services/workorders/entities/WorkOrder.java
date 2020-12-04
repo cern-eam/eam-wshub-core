@@ -137,7 +137,11 @@ public class WorkOrder implements Serializable, UserDefinedListHelpable {
 	@InforField(xpath = "CREATEDDATE")
 	private Date createdDate;
 	@Column(name = "EVT_CREATEDBY")
+	@InforField(xpath = "CREATEDBY/USERCODE")
 	private String createdBy;
+	@Transient
+	@InforField(xpath = "CREATEDBY/DESCRIPTION", readOnly = true)
+	private String createdByDesc;
 
 	@Transient
 	@InforField(xpath = "PROBLEMCODEID/PROBLEMCODE")
@@ -581,6 +585,14 @@ public class WorkOrder implements Serializable, UserDefinedListHelpable {
 		this.createdBy = createdBy;
 	}
 
+	public String getCreatedByDesc() {
+		return createdByDesc;
+	}
+
+	public void setCreatedByDesc(String createdByDesc) {
+		this.createdByDesc = createdByDesc;
+	}
+
 	public String getOrigWO() {
 		return origWO;
 	}
@@ -720,6 +732,7 @@ public class WorkOrder implements Serializable, UserDefinedListHelpable {
 				+ (dueDate != null ? "dueDate=" + dueDate + ", " : "")
 				+ (createdDate != null ? "createdDate=" + createdDate + ", " : "")
 				+ (createdBy != null ? "createdBy=" + createdBy + ", " : "")
+				+ (createdByDesc != null ? "createdByDesc=" + createdByDesc + "," : "")
 				+ (problemCode != null ? "problemCode=" + problemCode + ", " : "")
 				+ (failureCode != null ? "failureCode=" + failureCode + ", " : "")
 				+ (causeCode != null ? "causeCode=" + causeCode + ", " : "")
