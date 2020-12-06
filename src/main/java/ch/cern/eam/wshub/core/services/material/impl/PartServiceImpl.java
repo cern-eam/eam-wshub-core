@@ -1,6 +1,7 @@
 package ch.cern.eam.wshub.core.services.material.impl;
 
 import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.services.entities.BatchResponse;
 import ch.cern.eam.wshub.core.services.material.PartService;
 import ch.cern.eam.wshub.core.services.material.entities.Part;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedListService;
@@ -22,9 +23,8 @@ import net.datastream.schemas.mp_results.mp0241_001.MP0241_GetPart_001_Result;
 import net.datastream.schemas.mp_results.mp0242_001.MP0242_SyncPart_001_Result;
 import net.datastream.schemas.mp_results.mp0244_001.MP0244_GetPartDefault_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
-
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.isEmpty;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.toCodeString;
@@ -42,6 +42,30 @@ public class PartServiceImpl implements PartService {
 		this.inforws = inforWebServicesToolkitClient;
 		this.userDefinedListService = new UserDefinedListServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
 	}
+
+	//
+	// BATCH WEB SERVICES
+	//
+
+	public BatchResponse<String> createPartBatch(InforContext context, List<Part> parts) {
+		return tools.batchOperation(context, this::createPart, parts);
+	}
+
+	public BatchResponse<Part> readPartBatch(InforContext context, List<String> partCodes)  {
+		return tools.batchOperation(context, this::readPart, partCodes);
+	}
+
+	public BatchResponse<String> updatePartBatch(InforContext context, List<Part> parts) {
+		return tools.batchOperation(context, this::updatePart, parts);
+	}
+
+	public BatchResponse<String> deletePartBatch(InforContext context, List<String> partCodes) {
+		return tools.batchOperation(context, this::deletePart, partCodes);
+	}
+
+	//
+	//
+	//
 
 	public Part readPartDefault(InforContext context, String organization) throws InforException {
 		MP0244_GetPartDefault_001 getPartDefault_001 = new MP0244_GetPartDefault_001();
