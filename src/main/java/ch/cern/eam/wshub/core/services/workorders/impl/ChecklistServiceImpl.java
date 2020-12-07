@@ -59,7 +59,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 	}
 
 	public WorkOrderActivityChecklistSignatureResult[] getSignatures(InforContext context, String workOrderCode,
-																	 String activityCode, TaskPlan taskPlan) throws InforException {
+                                                                      String activityCode, TaskPlan taskPlan) throws InforException {
 		MP7999_GetWorkOrderActivityCheckListDefault_001_Result getResult = getSignatureWS(context, workOrderCode, activityCode);
 		WorkOrderActivityCheckListDefaultResult workOrderActivityCheckListDefaultResult = new WorkOrderActivityCheckListDefaultResult();
 		tools.getInforFieldTools().transformInforObject(workOrderActivityCheckListDefaultResult,
@@ -113,7 +113,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 				                           performer2Qualification == null;
 
 		boolean hasViewerQualification = noRequiredQualifications
-										|| viewerQualification != null && qualifications.contains(viewerQualification);
+				                         || viewerQualification != null && qualifications.contains(viewerQualification);
 
 		boolean isPerformer1 = noRequiredQualifications || performer1Qualification == null
 							   || qualifications.contains(performer1Qualification);
