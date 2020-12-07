@@ -142,13 +142,12 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 				List<Runnable> runnables = activities.stream()
 						.<Runnable>map(activity -> () -> {
 							try {
-								WorkOrderActivityChecklistSignatureResult[] signatures = checklistService.getSignatures(context, workOrderNumber, activity.getActivityCode());
+								TaskPlan taskPlan = new TaskPlan();
+								taskPlan.setCode(activity.getTaskCode());
+								taskPlan = taskPlanService.getTaskPlan(context, taskPlan);
+								WorkOrderActivityChecklistSignatureResult[] signatures = checklistService.getSignatures(context, workOrderNumber, activity.getActivityCode(), taskPlan);
 								if(signatures.length > 0) {
 									activity.setChecklists(checklistService.readWorkOrderChecklists(context, activity));
-									String taskCode = activity.getTaskCode();
-									TaskPlan taskPlan = new TaskPlan();
-									taskPlan.setCode(taskCode);
-									taskPlan = taskPlanService.getTaskPlan(context, taskPlan);
 									if(taskPlan.getPerformedByRequired() || taskPlan.getReviewedByRequired()) {
 										activity.setSignatures(signatures);
 									}
