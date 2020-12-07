@@ -59,13 +59,14 @@ public class ChecklistServiceImpl implements ChecklistService {
 	}
 
 	public WorkOrderActivityChecklistSignatureResult[] getSignatures(InforContext context, String workOrderCode,
-																	 String activityCode) throws InforException {
+		String activityCode, TaskPlan taskPlan) throws InforException {
+
 		MP7999_GetWorkOrderActivityCheckListDefault_001_Result getResult = getSignatureWS(context, workOrderCode, activityCode);
 		WorkOrderActivityCheckListDefaultResult workOrderActivityCheckListDefaultResult = new WorkOrderActivityCheckListDefaultResult();
 		tools.getInforFieldTools().transformInforObject(workOrderActivityCheckListDefaultResult,
 				getResult.getResultData().getWorkOrderActivityCheckListDefault());
 
-		WorkOrderActivityChecklistSignatureResult[] res = filterSignatures(workOrderActivityCheckListDefaultResult);
+		WorkOrderActivityChecklistSignatureResult[] res = filterSignatures(workOrderActivityCheckListDefaultResult, taskPlan);
 		getResponsibilityDescriptions(context, res);
 		return res;
 	}
@@ -95,10 +96,11 @@ public class ChecklistServiceImpl implements ChecklistService {
 		});
 	}
 
-	private WorkOrderActivityChecklistSignatureResult[] filterSignatures(WorkOrderActivityCheckListDefaultResult workOrderActivityCheckList){
+	private WorkOrderActivityChecklistSignatureResult[] filterSignatures(WorkOrderActivityCheckListDefaultResult workOrderActivityCheckList, TaskPlan taskPlan){
 		String reviewerQualification = workOrderActivityCheckList.getReviewerQualification();
 		String performer1Qualification = workOrderActivityCheckList.getPerformer1Qualification();
 		String performer2Qualification = workOrderActivityCheckList.getPerformer2Qualification();
+		String viewerQualification =  taskPlan.getViewOnlyResponsibility();
 		List<String> qualifications = new ArrayList<>();
 
 		if(workOrderActivityCheckList.getUserQualifications() != null){
@@ -111,7 +113,8 @@ public class ChecklistServiceImpl implements ChecklistService {
 				                           performer1Qualification == null &&
 				                           performer2Qualification == null;
 
-		List<WorkOrderActivityChecklistSignatureResult> signatures = new LinkedList<>();
+		boolean hasViewerQualification = noRequiredQualifications
+										 || viewerQualification != null && qualifications.contains(viewerQualification);
 
 		boolean isPerformer1 = noRequiredQualifications || performer1Qualification == null
 							   || qualifications.contains(performer1Qualification);
@@ -123,35 +126,37 @@ public class ChecklistServiceImpl implements ChecklistService {
 							 || qualifications.contains(reviewerQualification);
 
 
-		if(isPerformer1 || isReviewer){
+		List<WorkOrderActivityChecklistSignatureResult> signatures = new LinkedList<>();
+
+		if(isPerformer1 || isReviewer || hasViewerQualification){
 			WorkOrderActivityChecklistSignatureResult perf1 = new WorkOrderActivityChecklistSignatureResult();
 			perf1.setType("PB01");
 			perf1.setSigner(workOrderActivityCheckList.getPerformer1Name());
 			perf1.setViewAsPerformer(isPerformer1);
-			perf1.setViewAsReviewer(isReviewer);
+			perf1.setViewAsReviewer(isReviewer || hasViewerQualification);
 			perf1.setTime(workOrderActivityCheckList.getTimePerf1() != null ? workOrderActivityCheckList.getTimePerf1() : null);
 			perf1.setResponsibilityCode(performer1Qualification);
 			signatures.add(perf1);
 		}
 
-		if(isPerformer2 || isReviewer){
+		if(isPerformer2 || isReviewer || hasViewerQualification){
 			WorkOrderActivityChecklistSignatureResult perf2 = new WorkOrderActivityChecklistSignatureResult();
 			perf2.setType("PB02");
 			perf2.setSigner(workOrderActivityCheckList.getPerformer2Name());
 			perf2.setViewAsPerformer(isPerformer2);
-			perf2.setViewAsReviewer(isReviewer);
+			perf2.setViewAsReviewer(isReviewer || hasViewerQualification);
 			perf2.setTime(workOrderActivityCheckList.getTimePerf2() != null ?
 					workOrderActivityCheckList.getTimePerf2() : null);
 			perf2.setResponsibilityCode(performer2Qualification != null ? performer2Qualification : performer1Qualification);
 			signatures.add(perf2);
 		}
 
-		if(isReviewer){
+		if(isReviewer || hasViewerQualification){
 			WorkOrderActivityChecklistSignatureResult reviewer = new WorkOrderActivityChecklistSignatureResult();
 			reviewer.setType("RB01");
 			reviewer.setSigner(workOrderActivityCheckList.getReviewerName());
-			reviewer.setViewAsPerformer(workOrderActivityCheckList.getPerformer1Name() != null
-					|| workOrderActivityCheckList.getPerformer2Name() != null);
+			reviewer.setViewAsPerformer(isReviewer);
+			reviewer.setViewAsReviewer(hasViewerQualification);
 			reviewer.setTime(workOrderActivityCheckList.getTimeRev1() != null ? workOrderActivityCheckList.getTimeRev1() : null);
 			if(reviewerQualification == null && performer1Qualification != null && performer2Qualification == null)
 				reviewerQualification = performer1Qualification;
