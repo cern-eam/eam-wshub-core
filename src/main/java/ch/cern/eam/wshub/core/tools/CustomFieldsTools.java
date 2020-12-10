@@ -83,6 +83,7 @@ public class CustomFieldsTools {
         //
         else if (customFieldInfor.getType().toUpperCase().equals("CODE") && customFieldInfor.getCODEDESCFIELD() != null) {
             customField.setValue(customFieldInfor.getCODEDESCFIELD().getCODEVALUE());
+            customField.setValueDesc(customFieldInfor.getCODEDESCFIELD().getDESCRIPTION());
             try {
                 String[][] cf = getCFValues(customFieldInfor.getCLASSID().getCLASSCODE(),
                         customFieldInfor.getPROPERTYCODE(), "EN");
