@@ -15,6 +15,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import static java.util.Comparator.comparing;
 
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.*;
@@ -168,24 +171,34 @@ public class CustomFieldsTools {
 
     public void updateInforCustomFields(USERDEFINEDAREA userdefinedarea, CustomField[] customFields)
             throws InforException {
-        if (userdefinedarea != null && userdefinedarea.getCUSTOMFIELD() != null
-                && userdefinedarea.getCUSTOMFIELD().size() > 0) {
-            for (CUSTOMFIELD customFieldInfor : userdefinedarea.getCUSTOMFIELD()) {
-                customFieldInfor.setChanged("false");
-            }
+        if (userdefinedarea == null
+                || userdefinedarea.getCUSTOMFIELD() == null
+                || userdefinedarea.getCUSTOMFIELD().size() == 0) {
+            return;
         }
 
-        if (customFields != null && customFields.length > 0 && userdefinedarea != null
-                && userdefinedarea.getCUSTOMFIELD() != null && userdefinedarea.getCUSTOMFIELD().size() > 0) {
-            for (CustomField customField : customFields) {
-                for (CUSTOMFIELD customFieldInfor : userdefinedarea.getCUSTOMFIELD()) {
-                    if (customFieldInfor.getPROPERTYCODE().equals(customField.getCode())
-                            && hasChangedCustomField(customFieldInfor, customField)) {
-                        encodeInforCustomField(customFieldInfor, customField);
-                        customFieldInfor.setChanged("true");
-                        break;
-                    }
-                }
+        userdefinedarea.getCUSTOMFIELD().forEach(cf -> cf.setChanged("false"));
+
+        if (customFields == null || customFields.length == 0) {
+            return;
+        }
+
+        Map<String, CustomField> wshubCustomFieldMap = Arrays.stream(customFields)
+            .filter(cf -> cf != null && cf.getCode() != null)
+            .collect(Collectors.toMap(CustomField::getCode, cf -> cf));
+
+        userdefinedarea.getCUSTOMFIELD().removeIf(inforCustomField -> {
+            CustomField wshubCustomField = wshubCustomFieldMap.get(inforCustomField.getPROPERTYCODE());
+            return wshubCustomField != null
+                && (wshubCustomField.getValue() == null || "".equals(wshubCustomField.getValue()));
+        });
+
+        for (CUSTOMFIELD inforCustomField : userdefinedarea.getCUSTOMFIELD()) {
+            CustomField wshubCustomField = wshubCustomFieldMap.get(inforCustomField.getPROPERTYCODE());
+
+            if (wshubCustomField != null && hasChangedCustomField(inforCustomField, wshubCustomField)) {
+                encodeInforCustomField(inforCustomField, wshubCustomField);
+                inforCustomField.setChanged("true");
             }
         }
     }
