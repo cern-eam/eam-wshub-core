@@ -127,7 +127,6 @@ public class SystemServiceImpl implements SystemService {
 	}
 
 	public String createSystem(InforContext context, Equipment systemParam) throws InforException {
-
 		SystemEquipment systemEquipment = new SystemEquipment();
 		//
 		systemEquipment.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(
@@ -149,7 +148,6 @@ public class SystemServiceImpl implements SystemService {
 		userDefinedListService.writeUDLToEntityCopyFrom(context,
 			systemParam, new EntityId("OBJ", systemCode));
 		return systemCode;
-
 	}
 
 	public String deleteSystem(InforContext context, String systemCode) throws InforException {
@@ -177,6 +175,9 @@ public class SystemServiceImpl implements SystemService {
 
 		// HIERARCHY
 		if (systemParam.getHierarchyLocationCode() != null || systemParam.getHierarchyPrimarySystemCode() != null) {
+			if (systemInfor.getSystemParentHierarchy() == null) {
+				systemInfor.setSystemParentHierarchy(new SystemParentHierarchy());
+			}
 			populateSystemHierarchy(context, systemParam, systemInfor);
 		}
 
@@ -185,8 +186,8 @@ public class SystemServiceImpl implements SystemService {
 	private void populateSystemHierarchy(InforContext context, Equipment systemParam, SystemEquipment systemInfor) {
 		SystemParentHierarchy systemParentHierarchy = systemInfor.getSystemParentHierarchy();
 
-		if (systemParam.getHierarchyPrimarySystemDependent() != null && systemParam.getHierarchyPrimarySystemDependent() ||
-			systemParam.getHierarchyPrimarySystemDependent() == null && systemParentHierarchy.getDEPENDENTPRIMARYSYSTEM() != null) {
+		if (systemParam.getHierarchyPrimarySystemDependent() != null && systemParam.getHierarchyPrimarySystemDependent() && !"".equals(systemParam.getHierarchyPrimarySystemCode()) ||
+			systemParam.getHierarchyPrimarySystemDependent() == null && systemParentHierarchy.getDEPENDENTPRIMARYSYSTEM() != null && !"".equals(systemParam.getHierarchyPrimarySystemCode())) {
 			systemParentHierarchy.setDEPENDENTLOCATION(null);
 			systemParentHierarchy.setDEPENDENTPRIMARYSYSTEM(createPrimarySystemParent(tools.getOrganizationCode(context), systemParam.getHierarchyPrimarySystemCode(), systemParam.getHierarchyPrimarySystemCostRollUp(), systemParentHierarchy.getDEPENDENTPRIMARYSYSTEM()));
 		} else {
