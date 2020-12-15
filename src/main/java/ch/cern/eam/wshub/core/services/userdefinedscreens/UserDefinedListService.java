@@ -9,16 +9,17 @@ import ch.cern.eam.wshub.core.services.userdefinedscreens.entities.UDLEntryId;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.entities.UDLValue;
 import ch.cern.eam.wshub.core.tools.InforException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public interface UserDefinedListService {
     // High level services
     @Operation(logOperation = INFOR_OPERATION.USERDEFINEDLIST_HLR)
-    Map<String, List<UDLValue>> readUserDefinedLists(InforContext context, UDLEntryId entryId) throws InforException;
+    Map<String, ArrayList<UDLValue>> readUserDefinedLists(InforContext context, UDLEntryId entryId) throws InforException;
 
     @Operation(logOperation = INFOR_OPERATION.USERDEFINEDLIST_HLU)
-    String setUserDefinedLists(InforContext context, EntityId entityId, Map<String, List<UDLValue>> values)
+    String setUserDefinedLists(InforContext context, EntityId entityId, Map<String, ArrayList<UDLValue>> values)
             throws InforException;
 
     // Low level services

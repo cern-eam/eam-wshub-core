@@ -8,9 +8,8 @@ import ch.cern.eam.wshub.core.annotations.InforField;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedListHelpable;
-import ch.cern.eam.wshub.core.services.userdefinedscreens.entities.UDLEntry;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.entities.UDLValue;
-import ch.cern.eam.wshub.core.services.userdefinedscreens.entities.udlmap.UDLMapAdapter;
+import ch.cern.eam.wshub.core.services.userdefinedscreens.entities.xmlhashmap.XmlHashMapAdapter;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -21,10 +20,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @XmlAccessorType(XmlAccessType.PROPERTY)
 @Entity
@@ -217,7 +213,7 @@ public class WorkOrder implements Serializable, UserDefinedListHelpable {
 	private String copyFrom;
 
 	@Transient
-	private Map<String, List<UDLValue>> userDefinedList;
+	private HashMap<String, ArrayList<UDLValue>> userDefinedList;
 
 	public String getNumber() {
 		return number;
@@ -687,14 +683,12 @@ public class WorkOrder implements Serializable, UserDefinedListHelpable {
 	}
 
 	@Override
-	@XmlElement
-	@XmlJavaTypeAdapter(UDLMapAdapter.class)
-	public Map<String, List<UDLValue>> getUserDefinedList() {
+	public HashMap<String, ArrayList<UDLValue>> getUserDefinedList() {
 		return userDefinedList;
 	}
 
 	@Override
-	public void setUserDefinedList(Map<String, List<UDLValue>> userDefinedList) {
+	public void setUserDefinedList(HashMap<String, ArrayList<UDLValue>> userDefinedList) {
 		this.userDefinedList = userDefinedList;
 	}
 

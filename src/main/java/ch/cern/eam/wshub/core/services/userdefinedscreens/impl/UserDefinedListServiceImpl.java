@@ -102,10 +102,10 @@ public class UserDefinedListServiceImpl implements UserDefinedListService {
     }
 
     @Override
-    public Map<String, List<UDLValue>> readUserDefinedLists(InforContext context, UDLEntryId entryId) throws InforException {
+    public HashMap<String, ArrayList<UDLValue>> readUserDefinedLists(InforContext context, UDLEntryId entryId) throws InforException {
         List<UDLEntry> entries = readUserDefinedListEntries(context, entryId);
 
-        Map<String, List<UDLValue>> map = new HashMap<>();
+        HashMap<String, ArrayList<UDLValue>> map = new HashMap<>();
 
         // readUserDefinedListEntries returned an ordered list of entries, so we can simply add it to the map
         for(UDLEntry entry : entries) {
@@ -115,7 +115,7 @@ public class UserDefinedListServiceImpl implements UserDefinedListService {
             List<UDLValue> list = map.get(property);
 
             if(list == null) {
-                List<UDLValue> newList = new ArrayList<>();
+                ArrayList<UDLValue> newList = new ArrayList<>();
                 newList.add(value);
                 map.put(property, newList);
             } else {
@@ -127,7 +127,7 @@ public class UserDefinedListServiceImpl implements UserDefinedListService {
     }
 
     @Override
-    public String setUserDefinedLists(InforContext context, EntityId entityId, Map<String, List<UDLValue>> values) throws InforException {
+    public String setUserDefinedLists(InforContext context, EntityId entityId, Map<String, ArrayList<UDLValue>> values) throws InforException {
 
         List<UDTRow> rows = new ArrayList<>();
         for(String property : values.keySet()) {
@@ -213,7 +213,7 @@ public class UserDefinedListServiceImpl implements UserDefinedListService {
     @Override
     public void readUDLToEntity(InforContext context, UserDefinedListHelpable entity, EntityId entityId) {
         try {
-            Map<String, List<UDLValue>> entries = readUserDefinedLists(context, new UDLEntryId(entityId));
+            HashMap<String, ArrayList<UDLValue>> entries = readUserDefinedLists(context, new UDLEntryId(entityId));
             entity.setUserDefinedList(entries);
         } catch(Exception e) {
             tools.log(Level.SEVERE, "Failed reading UDL from " + entityId);
@@ -223,12 +223,12 @@ public class UserDefinedListServiceImpl implements UserDefinedListService {
     @Override
     public void writeUDLToEntityCopyFrom(InforContext context, UserDefinedListHelpable entity, EntityId entityId) {
         try {
-            Map<String, List<UDLValue>> entries = entity.getUserDefinedList();
+            HashMap<String, ArrayList<UDLValue>> entries = entity.getUserDefinedList();
             if (entries != null) {
                 setUserDefinedLists(context, entityId, entries);
             } else if (entity.getCopyFrom() != null) {
                 // only copy the UDL from the copyFrom entity if we didn't set it
-                Map<String, List<UDLValue>> copyFromEntries = readUserDefinedLists(context,
+                Map<String, ArrayList<UDLValue>> copyFromEntries = readUserDefinedLists(context,
                     new UDLEntryId(new EntityId(entityId.getEntityType(), entity.getCopyFrom())));
                 setUserDefinedLists(context, entityId, copyFromEntries);
             }
