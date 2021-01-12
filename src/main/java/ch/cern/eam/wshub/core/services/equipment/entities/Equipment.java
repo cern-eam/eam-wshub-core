@@ -81,6 +81,9 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
     @Transient
     @InforField(xpath = "COSTCODEID/COSTCODE", nullifyParentLevel = 1)
     private String costCode;
+    @Transient
+    @InforField(xpath = "COSTCODEID/DESCRIPTION", nullifyParentLevel = 0)
+    private String costCodeDesc;
 
     @Transient
     @InforField(xpath = "DEPARTMENTID/DEPARTMENTCODE", nullifyParentLevel = 1)
@@ -573,6 +576,14 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
 
     public void setCostCode(String costCode) {
         this.costCode = costCode;
+    }
+
+    public String getCostCodeDesc() {
+        return costCodeDesc;
+    }
+
+    public void setCostCodeDesc(String costCodeDesc) {
+        this.costCodeDesc = costCodeDesc;
     }
 
     @XmlJavaTypeAdapter(DateAdapter.class)
