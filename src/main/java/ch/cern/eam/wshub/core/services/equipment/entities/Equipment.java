@@ -8,7 +8,6 @@ import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedListHelpable;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.entities.UDLValue;
-import ch.cern.eam.wshub.core.services.userdefinedscreens.entities.xmlhashmap.XmlHashMapAdapter;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlElement;
@@ -1371,6 +1370,7 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
                 + (assignedToDesc != null ? "assignedToDesc=" + assignedToDesc + ", " : "")
                 + (meterUnit != null ? "meterUnit=" + meterUnit + ", " : "")
                 + (criticality != null ? "criticality=" + criticality + ", " : "")
+                + (cGMP != null ? "cGMP=" + cGMP + ", " : "")
                 + (cGMP != null ? "cGMP=" + cGMP + ", " : "")
                 + (originalReceiptDate != null ? "originalReceiptDate=" + originalReceiptDate + ", " : "")
                 + (manufacturerCode != null ? "manufacturerCode=" + manufacturerCode + ", " : "")

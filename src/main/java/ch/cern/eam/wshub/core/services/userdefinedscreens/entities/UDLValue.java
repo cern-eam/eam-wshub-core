@@ -11,64 +11,88 @@ import java.util.Date;
 public class UDLValue implements Serializable {
     private static final long serialVersionUID = 3824835369799503639L;
 
-    private Object value;
-    private UDLValueType type;
+    private String stringValue;
+    private BigDecimal numberValue;
+    private Date dateValue;
 
     public UDLValue() {
-        type = UDLValueType.NULL;
     }
 
-    public UDLValue(String value) {
-        setString(value);
+    public UDLValue(String stringValue) {
+        this.stringValue = stringValue;
     }
 
-    public UDLValue(Date value) {
-        setDate(value);
+    public UDLValue(BigDecimal numberValue) {
+        this.numberValue = numberValue;
     }
 
-    public UDLValue(BigDecimal value) {
-        setNumeric(value);
+    public UDLValue(Date dateValue) {
+        this.dateValue = dateValue;
     }
-
 
     public void setString(String value) {
-        if(value != null && value.length() > 64) {
-            throw new IllegalArgumentException("String too large to include in a UDLValue");
+        if (value != null) {
+            if (value.length() > 64) {
+                throw new IllegalArgumentException("String too large to include in a UDLValue");
+            }
+            this.stringValue = value;
+            this.numberValue = null;
+            this.dateValue = null;
         }
-
-        type = UDLValueType.STRING;
-        this.value = value;
-    }
-
-    public void setDate(Date value) {
-        type = UDLValueType.DATE;
-        this.value = value;
     }
 
     public void setNumeric(BigDecimal value) {
-        type = UDLValueType.NUMERIC;
-        this.value = value;
+        if (value != null) {
+            this.stringValue = null;
+            this.numberValue = value;
+            this.dateValue = null;
+        }
+    }
+
+    public void setDate(Date value) {
+        if (value != null) {
+            this.stringValue = null;
+            this.numberValue = null;
+            this.dateValue = value;
+        }
     }
 
     public String getString() {
-        return type == UDLValueType.STRING ? (String) value : null;
-    }
-
-    @XmlJavaTypeAdapter(DateAdapter.class)
-    public Date getDate() {
-        return type == UDLValueType.DATE ? (Date) value : null;
+        return stringValue;
     }
 
     @XmlJavaTypeAdapter(BigDecimalAdapter.class)
     public BigDecimal getNumeric() {
-        return type == UDLValueType.NUMERIC ? (BigDecimal) value : null;
+        return numberValue;
+    }
+
+    @XmlJavaTypeAdapter(DateAdapter.class)
+    public Date getDate() {
+        return dateValue;
+    }
+
+    public void setDateValue(Date dateValue) {
+        this.dateValue = dateValue;
+    }
+
+    public UDLValueType getType() {
+        return this.stringValue != null ? UDLValueType.STRING
+                : this.numberValue != null ? UDLValueType.NUMERIC
+                : this.dateValue != null ? UDLValueType.DATE
+                : UDLValueType.NULL;
+    }
+
+    public void setType(UDLValueType type) {
+        //To prevent unmarshaller errors
     }
 
     public String toString() {
-        switch(type) {
-            case NULL: return "null";
-            case STRING: return "\"" + value + "\"";
-            default: return value.toString();
+        switch (this.getType()) {
+            case STRING: return "\"" + this.stringValue + "\"";
+            case NUMERIC: return this.numberValue.toString();
+            case DATE: return this.dateValue.toString();
+            case NULL: return "*NULL*";
+            default: return null;
         }
     }
 }
