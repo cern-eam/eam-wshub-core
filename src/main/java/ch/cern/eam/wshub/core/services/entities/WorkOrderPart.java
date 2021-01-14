@@ -31,6 +31,9 @@ public class WorkOrderPart {
 	@GridField(name = "storecode")
 	private String storeCode;
 
+	@GridField(name = "partuom")
+	private String partUoM;
+
 	private String plannedSource;
 	private String available;
 	private String workOrderNumber;
@@ -120,4 +123,12 @@ public class WorkOrderPart {
 	public BigDecimal getQuantity() { return quantity; }
 
 	public void setQuantity(BigDecimal quantity) { this.quantity = quantity; }
+
+	public String getPartUoM() {
+		return partUoM;
+	}
+
+	public void setPartUoM(String partUoM) {
+		this.partUoM = partUoM;
+	}
 }
