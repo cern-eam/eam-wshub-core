@@ -162,8 +162,11 @@ public class InforGrids implements Serializable {
 		}
 
 		// REQUEST TYPE
-		funRequest.setREQUEST_TYPE(net.datastream.schemas.mp_functions.mp0118_getgridheaderdata_001.FUNCTION_REQUEST_TYPE.LIST___HEAD___DATA___STORED);
-
+		if (gridRequest.getRowCount() != null && gridRequest.getRowCount() == 0) {
+			funRequest.setREQUEST_TYPE(net.datastream.schemas.mp_functions.mp0118_getgridheaderdata_001.FUNCTION_REQUEST_TYPE.LIST___HEAD___ONLY___STORED);
+		} else {
+			funRequest.setREQUEST_TYPE(net.datastream.schemas.mp_functions.mp0118_getgridheaderdata_001.FUNCTION_REQUEST_TYPE.LIST___HEAD___DATA___STORED);
+		}
 		// GRID TYPE
 		funRequest.setGRID_TYPE(createGridType(gridRequest));
 
