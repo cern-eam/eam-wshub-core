@@ -10,4 +10,7 @@ public interface TaskPlanService {
 
     @Operation(logOperation = INFOR_OPERATION.TASKPLAN_R)
     TaskPlan getTaskPlan(InforContext context, TaskPlan taskPlan) throws InforException;
+
+    @Operation(logOperation = INFOR_OPERATION.TASKPLAN_R)
+    TaskPlan getTaskPlan(InforContext context, String taskCode) throws InforException;
 }

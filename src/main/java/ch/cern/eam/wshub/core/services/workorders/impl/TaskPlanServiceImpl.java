@@ -37,4 +37,11 @@ public class TaskPlanServiceImpl implements TaskPlanService {
         tools.getInforFieldTools().transformInforObject(res, getTask_001_result.getResultData().getTask());
         return res;
     }
+    @Override
+    public TaskPlan getTaskPlan(InforContext context, String taskCode) throws InforException {
+        TaskPlan taskPlan = new TaskPlan();
+        taskPlan.setCode(taskCode);
+        return getTaskPlan(context, taskPlan);
+    }
+
 }
