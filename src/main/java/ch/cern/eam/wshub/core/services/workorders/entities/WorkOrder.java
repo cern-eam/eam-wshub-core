@@ -37,12 +37,18 @@ public class WorkOrder implements Serializable, UserDefinedListHelpable {
 	@Column(name = "EVT_DESC")
 	@InforField(xpath = "WORKORDERID/DESCRIPTION")
 	private String description;
+	@Column(name = "EVT_ORG")
+	@InforField(xpath = "WORKORDERID/ORGANIZATIONID/ORGANIZATIONCODE")
+	private String organization;
 	@Transient
 	@InforField(xpath = "CLASSID/CLASSCODE", nullifyParentLevel = 1)
 	private String classCode;
 	@Transient
 	@InforField(xpath = "CLASSID/DESCRIPTION", readOnly = true)
 	private String classDesc;
+	@Transient
+	@InforField(xpath = "CLASSID/ORGANIZATIONID/ORGANIZATIONCODE")
+	private String classOrganization;
 	@Transient
 	@InforField(xpath = "recordid")
 	private BigInteger updateCount;
@@ -69,6 +75,8 @@ public class WorkOrder implements Serializable, UserDefinedListHelpable {
 	@Transient
 	@InforField(xpath = "DEPARTMENTID/DESCRIPTION", readOnly = true)
 	private String departmentDesc;
+	@InforField(xpath = "DEPARTMENTID/ORGANIZATIONID/ORGANIZATIONCODE")
+	private String departmentOrganization;
 	//
 	@Column(name = "EVT_OBJECT")
 	@InforField(xpath = "EQUIPMENTID/EQUIPMENTCODE")
@@ -76,6 +84,9 @@ public class WorkOrder implements Serializable, UserDefinedListHelpable {
 	@Transient
 	@InforField(xpath = "EQUIPMENTID/DESCRIPTION", readOnly = true)
 	private String equipmentDesc;
+	@Column(name = "EVT_OBJECT_ORG")
+	@InforField(xpath = "EQUIPMENTID/ORGANIZATIONID/ORGANIZATIONCODE")
+	private String equipmentOrganization;
 	//
 	@Transient
 	@InforField(xpath = "PROJECTID/PROJECTCODE")
@@ -692,6 +703,38 @@ public class WorkOrder implements Serializable, UserDefinedListHelpable {
 		this.userDefinedList = userDefinedList;
 	}
 
+	public String getOrganization() {
+		return organization;
+	}
+
+	public void setOrganization(String organization) {
+		this.organization = organization;
+	}
+
+	public String getEquipmentOrganization() {
+		return equipmentOrganization;
+	}
+
+	public void setEquipmentOrganization(String equipmentOrganization) {
+		this.equipmentOrganization = equipmentOrganization;
+	}
+
+	public String getClassOrganization() {
+		return classOrganization;
+	}
+
+	public void setClassOrganization(String classOrganization) {
+		this.classOrganization = classOrganization;
+	}
+
+	public String getDepartmentOrganization() {
+		return departmentOrganization;
+	}
+
+	public void setDepartmentOrganization(String departmentOrganization) {
+		this.departmentOrganization = departmentOrganization;
+	}
+
 	@Override
 	public String toString() {
 		return "WorkOrder [" + (number != null ? "number=" + number + ", " : "")
@@ -748,6 +791,10 @@ public class WorkOrder implements Serializable, UserDefinedListHelpable {
 				+ (origWO != null ? "origWO=" + origWO + ", ": "")
 				+ (copyFrom != null ? "copyFrom=" + copyFrom + ", " : "")
 				+ (userDefinedList != null ? "userDefinedList=" + userDefinedList : "")
+				+ (organization != null ? "organization=" + organization + ", " : "")
+				+ (equipmentOrganization != null ? "equipmentOrganization=" + equipmentOrganization + ", " : "")
+				+ (departmentOrganization != null ? "departmentOrganization=" + departmentOrganization + ", " : "")
+				+ (classOrganization != null ? "classOrganization=" + classOrganization + ", " : "")
 				+ "]";
 	}
 }
