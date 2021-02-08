@@ -6,6 +6,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 
@@ -69,6 +70,13 @@ public class WorkOrderActivityCheckList implements Serializable {
 	private String newCheckListCode;
 	private String newWorkOrderCode;
 	private List<Finding> possibleFindings;
+
+	private BigInteger minimumValue;
+	private BigInteger maximumValue;
+
+	private String notApplicableOption;
+
+	private String checklistDefinitionCode;
 
 	public String getCheckListCode() {
 		return checkListCode;
@@ -317,6 +325,38 @@ public class WorkOrderActivityCheckList implements Serializable {
 		this.color = color;
 	}
 
+	public BigInteger getMinimumValue() {
+		return minimumValue;
+	}
+
+	public void setMinimumValue(BigInteger minimumValue) {
+		this.minimumValue = minimumValue;
+	}
+
+	public BigInteger getMaximumValue() {
+		return maximumValue;
+	}
+
+	public void setMaximumValue(BigInteger maximumValue) {
+		this.maximumValue = maximumValue;
+	}
+
+	public String getNotApplicableOption() {
+		return notApplicableOption;
+	}
+
+	public void setNotApplicableOption(String notApplicableOption) {
+		this.notApplicableOption = notApplicableOption;
+	}
+
+	public String getChecklistDefinitionCode() {
+		return checklistDefinitionCode;
+	}
+
+	public void setChecklistDefinitionCode(String checklistDefinitionCode) {
+		this.checklistDefinitionCode = checklistDefinitionCode;
+	}
+
 	@Override
 	public String toString() {
 		return "WorkOrderActivityCheckList{" +
@@ -343,6 +383,10 @@ public class WorkOrderActivityCheckList implements Serializable {
 				", newWorkOrderCode='" + newWorkOrderCode + '\'' +
 				", possibleFindings='" + possibleFindings + '\'' +
 				", color='" + color + '\'' +
+				", minimumValue='" + minimumValue + '\'' +
+				", maximumValue='" + maximumValue + '\'' +
+				", notApplicableOption='" + notApplicableOption + '\'' +
+				", checklistDefinitionCode='" + checklistDefinitionCode + '\'' +
 				'}';
 	}
 }

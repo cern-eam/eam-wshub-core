@@ -2,6 +2,7 @@ package ch.cern.eam.wshub.core.services.workorders.impl;
 
 import ch.cern.eam.wshub.core.annotations.BooleanType;
 import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.services.entities.Pair;
 import ch.cern.eam.wshub.core.services.entities.Signature;
 import ch.cern.eam.wshub.core.services.grids.GridsService;
 import ch.cern.eam.wshub.core.services.grids.entities.*;
@@ -39,9 +40,7 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.*;
-import static ch.cern.eam.wshub.core.tools.GridTools.extractSingleResult;
-import static ch.cern.eam.wshub.core.tools.GridTools.getCellContent;
-import static ch.cern.eam.wshub.core.tools.GridTools.convertGridResultToMap;
+import static ch.cern.eam.wshub.core.tools.GridTools.*;
 
 public class ChecklistServiceImpl implements ChecklistService {
 
@@ -261,6 +260,12 @@ public class ChecklistServiceImpl implements ChecklistService {
 		// Follow Up
 		if (workOrderActivityCheckList.getFollowUp() != null) {
 			workOrderActivityCheckListInfor.setFOLLOWUP(tools.getDataTypeTools().encodeBoolean(workOrderActivityCheckList.getFollowUp(), BooleanType.PLUS_MINUS));
+		}
+
+		if (workOrderActivityCheckList.getNotApplicableOption() != null) {
+			USERDEFINEDCODEID_Type option = new USERDEFINEDCODEID_Type();
+			option.setUSERDEFINEDCODE(workOrderActivityCheckList.getNotApplicableOption());
+			workOrderActivityCheckListInfor.setNOTAPPLICABLEOPTION(option);
 		}
 
 		Function<String, String> getStringBool =
@@ -522,6 +527,17 @@ public class ChecklistServiceImpl implements ChecklistService {
 		checklist.setDesc(getCellContent("checklistdescription", row));
 		
 		checklist.setHideFollowUp(cellEquals(row, "hidefollowup", "true"));
+
+		checklist.setMinimumValue(encodeBigInteger(
+				getCellContent("minimumslidervalue", row), "minimumslidervalue"));
+
+		checklist.setMaximumValue(encodeBigInteger(
+				getCellContent("maximumslidervalue", row), "maximumslidervalue"));
+
+		checklist.setNotApplicableOption(getCellContent("notapplicable", row));
+
+		checklist.setChecklistDefinitionCode(getCellContent("taskchecklistcode", row));
+
 		//
 		// VALUES FOR DIFFERENT CHECKLIST TYPES
 		//
@@ -682,5 +698,37 @@ public class ChecklistServiceImpl implements ChecklistService {
 		MP8000_CreateFollowUpWorkOrder_001_Result createFUWOResult =
 			tools.performInforOperation(context, inforws::createFollowUpWorkOrderOp, createFUWO);
 		return createFUWOResult.getResultData().getWORKORDERCOUNT();
+	}
+
+	public WorkOrderActivityCheckListDefinition getChecklistDefinition(InforContext context, TaskPlan taskPlan, String code) throws InforException {
+		GridRequest gridRequest = new GridRequest("WSTASK_TCH", 1);
+		gridRequest.addParam("param.task", taskPlan.getCode());
+		gridRequest.addParam("param.revision", taskPlan.getTaskRevision());
+
+		gridRequest.addFilter("checklistitem", code, "EQUALS");
+
+		GridRequestResult result = gridsService.executeQuery(context, gridRequest);
+
+		WorkOrderActivityCheckListDefinition definition = convertGridResultToObject(
+				WorkOrderActivityCheckListDefinition.class, null, result).stream().findFirst().orElse(null);
+
+		String notApplicableOptionsString = extractSingleResult(result, "naoptions");
+
+		// optimization to not call the grid request below
+		if (notApplicableOptionsString == null || "".equals(notApplicableOptionsString)) {
+			return definition;
+		}
+
+		GridRequest notApplicableOptionsRequest = new GridRequest("LVNAOPTIONS", 2000);
+		Map<String, String> notApplicableOptionsMap =
+			convertGridResultToMap("code", "description", gridsService.executeQuery(context, notApplicableOptionsRequest));
+
+		List<Pair> notApplicableOptions = Arrays.stream(notApplicableOptionsString.split(","))
+				.map(optionCode -> new Pair(optionCode, notApplicableOptionsMap.get(optionCode)))
+				.collect(Collectors.toList());
+
+		definition.setNotApplicableOptions(notApplicableOptions);
+
+		return definition;
 	}
 }
