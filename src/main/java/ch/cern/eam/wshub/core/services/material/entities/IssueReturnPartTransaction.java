@@ -39,6 +39,8 @@ public class IssueReturnPartTransaction implements Serializable {
 	private String pickTicketCode;
 
 	private UserDefinedFields userDefinedFields;
+
+	private String relatedWorkOrder;
 	
 
 	public String getTransactionInfo() {
@@ -213,5 +215,13 @@ public class IssueReturnPartTransaction implements Serializable {
 
 	public void setUserDefinedFields(UserDefinedFields userDefinedFields) {
 		this.userDefinedFields = userDefinedFields;
+	}
+
+	public String getRelatedWorkOrder() {
+		return relatedWorkOrder;
+	}
+
+	public void setRelatedWorkOrder(String relatedWorkOrder) {
+		this.relatedWorkOrder = relatedWorkOrder;
 	}
 }

@@ -238,6 +238,13 @@ public class PartMiscServiceImpl implements PartMiscService {
 			issueReturnTransactionInfor.getIssueReturnTransactionLines().getIssueReturnTransactionLine()
 					.add(issueReturnTransactionLine);
 		}
+
+		if (issueReturnPartTransaction.getRelatedWorkOrder() != null) {
+			issueReturnTransactionInfor.setMULTIEQUIPSPLITINFOBATCH(new MULTIEQUIPSPLITINFOBATCH());
+			WOID_Type woid_type = new WOID_Type();
+			woid_type.setJOBNUM(issueReturnPartTransaction.getRelatedWorkOrder());
+			issueReturnTransactionInfor.getMULTIEQUIPSPLITINFOBATCH().setRELATEDWORKORDERID(woid_type);
+		}
 		//
 		//
 		//
