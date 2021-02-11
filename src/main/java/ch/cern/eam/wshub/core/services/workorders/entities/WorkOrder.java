@@ -104,6 +104,9 @@ public class WorkOrder implements Serializable, UserDefinedListHelpable {
 	@Transient
 	@InforField(xpath = "LOCATIONID/DESCRIPTION", readOnly = true)
 	private String locationDesc;
+	@Transient
+	@InforField(xpath = "LOCATIONID/ORGANIZATIONID/ORGANIZATIONCODE", nullifyParentLevel = 2)
+	private String locationOrganization;
 	//
 	@Transient
 	@InforField(xpath = "PRIORITY/PRIORITYCODE")
@@ -735,6 +738,14 @@ public class WorkOrder implements Serializable, UserDefinedListHelpable {
 		this.departmentOrganization = departmentOrganization;
 	}
 
+	public String getLocationOrganization() {
+		return locationOrganization;
+	}
+
+	public void setLocationOrganization(String locationOrganization) {
+		this.locationOrganization = locationOrganization;
+	}
+
 	@Override
 	public String toString() {
 		return "WorkOrder [" + (number != null ? "number=" + number + ", " : "")
@@ -795,6 +806,7 @@ public class WorkOrder implements Serializable, UserDefinedListHelpable {
 				+ (equipmentOrganization != null ? "equipmentOrganization=" + equipmentOrganization + ", " : "")
 				+ (departmentOrganization != null ? "departmentOrganization=" + departmentOrganization + ", " : "")
 				+ (classOrganization != null ? "classOrganization=" + classOrganization + ", " : "")
+//				+ (locationOrganization != null ? "locationOrganization" + locationOrganization + "," : "")
 				+ "]";
 	}
 }
