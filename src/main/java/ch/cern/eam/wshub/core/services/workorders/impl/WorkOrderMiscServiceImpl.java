@@ -41,12 +41,9 @@ public class WorkOrderMiscServiceImpl implements WorkOrderMiscService {
 	}
 
 	public String createMeterReading(InforContext context, ch.cern.eam.wshub.core.services.workorders.entities.MeterReading meterReadingParam) throws InforException {
-
 		// Handling the normal case for meter reading
 		MeterReading meterreadinginfor = new MeterReading();
-
-		meterreadinginfor.setUSAGEUOMID(new UOMID_Type());
-		meterreadinginfor.getUSAGEUOMID().setUOMCODE(meterReadingParam.getUOM());
+		tools.getInforFieldTools().transformWSHubObject(meterreadinginfor, meterReadingParam, context);
 
 		if (meterReadingParam.getActualValue() != null) {
 			meterreadinginfor
@@ -63,19 +60,6 @@ public class WorkOrderMiscServiceImpl implements WorkOrderMiscService {
 		} else {
 			meterreadinginfor
 					.setREADINGDATE(tools.getDataTypeTools().encodeInforDate(meterReadingParam.getReadingDate(), "Meter Reading Date"));
-		}
-
-		if (meterReadingParam.getEquipmentCode() != null) {
-			meterreadinginfor.setTARGETEQUIPMENTID(new EQUIPMENTID_Type());
-			meterreadinginfor.getTARGETEQUIPMENTID().setORGANIZATIONID(tools.getOrganization(context));
-			meterreadinginfor.getTARGETEQUIPMENTID()
-					.setEQUIPMENTCODE(meterReadingParam.getEquipmentCode().trim().toUpperCase());
-		}
-
-		if (meterReadingParam.getWoNumber() != null) {
-			meterreadinginfor.setWORKORDERID(new WOID_Type());
-			meterreadinginfor.getWORKORDERID().setORGANIZATIONID(tools.getOrganization(context));
-			meterreadinginfor.getWORKORDERID().setJOBNUM(meterReadingParam.getWoNumber());
 		}
 
 		MP0044_AddMeterReading_001 addmeterreading = new MP0044_AddMeterReading_001();

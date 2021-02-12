@@ -2,6 +2,7 @@ package ch.cern.eam.wshub.core.services.workorders.entities;
 
 import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
+import ch.cern.eam.wshub.core.annotations.InforField;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
@@ -11,11 +12,16 @@ import java.util.Date;
 public class MeterReading implements Serializable {
     private static final long serialVersionUID = -3004563411794265577L;
 
+    @InforField(xpath = "USAGEUOMID/UOMCODE")
     private String UOM;
+    @InforField(xpath = "TARGETEQUIPMENTID/EQUIPMENTCODE")
     private String equipmentCode;
+    @InforField(xpath = "TARGETEQUIPMENTID/ORGANIZATIONID/ORGANIZATIONCODE")
+    private String equipmentOrganization;
     private BigDecimal actualValue;
     private BigDecimal differenceValue;
     private Date readingDate;
+    @InforField(xpath = "WORKORDERID/JOBNUM")
     private String woNumber;
 
     public String getUOM() {
@@ -32,6 +38,14 @@ public class MeterReading implements Serializable {
 
     public void setEquipmentCode(String equipmentCode) {
         this.equipmentCode = equipmentCode;
+    }
+
+    public String getEquipmentOrganization() {
+        return equipmentOrganization;
+    }
+
+    public void setEquipmentOrganization(String equipmentOrganization) {
+        this.equipmentOrganization = equipmentOrganization;
     }
 
     @XmlJavaTypeAdapter(BigDecimalAdapter.class)
