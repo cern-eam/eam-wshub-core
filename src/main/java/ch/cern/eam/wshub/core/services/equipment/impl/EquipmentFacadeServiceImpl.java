@@ -140,4 +140,9 @@ public class EquipmentFacadeServiceImpl implements EquipmentFacadeService {
         }
     }
 
+    @Override
+    public String readEquipmentType(InforContext inforContext, String equipmentCode) throws InforException {
+        return equipmentTools.getEquipmentSystemTypeForEquipment(inforContext, equipmentCode);
+    }
+
 }

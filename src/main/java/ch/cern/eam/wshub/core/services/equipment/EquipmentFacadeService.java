@@ -42,4 +42,7 @@ public interface EquipmentFacadeService {
 
     @Operation(logOperation = INFOR_OPERATION.EQUIPMENT_D)
     String deleteEquipment(InforContext inforContext, String equipmentCode) throws InforException;
+
+
+    String readEquipmentType(InforContext inforContext, String equipmentCode) throws InforException;
 }
