@@ -64,6 +64,9 @@ public class Location implements Serializable {
 	private String hierarchyLocationCode;
 
 	@Transient
+	private String hierarchyLocationDesc;
+
+	@Transient
 	private String copyFrom;
 
 	public String getCode() {
@@ -141,6 +144,14 @@ public class Location implements Serializable {
 
 	public void setHierarchyLocationCode(String hierarchyLocationCode) {
 		this.hierarchyLocationCode = hierarchyLocationCode;
+	}
+
+	public String getHierarchyLocationDesc() {
+		return hierarchyLocationDesc;
+	}
+
+	public void setHierarchyLocationDesc(String hierarchyLocationDesc) {
+		this.hierarchyLocationDesc = hierarchyLocationDesc;
 	}
 
 	public String getCopyFrom() {
