@@ -1,5 +1,7 @@
 package ch.cern.eam.wshub.core.services.grids.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import net.datastream.schemas.mp_functions.gridrequest.GRID;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -7,6 +9,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import java.io.Serializable;
 import java.util.*;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class GridRequest implements Serializable {
 	private static final long serialVersionUID = 6690766576660475229L;
 
@@ -42,7 +45,8 @@ public class GridRequest implements Serializable {
 	private String departmentSecurityGridColumn = null;
 	
 	private Map<String, Object> params;
-	
+
+	@JsonProperty("gridFilter")
 	private List<GridRequestFilter> gridRequestFilters;
 	private GridRequestSort[] gridRequestSorts;
 
@@ -147,15 +151,18 @@ public class GridRequest implements Serializable {
 		this.fetchAllResults = fetchAllResults;
 	}
 
+	@JsonProperty("gridSort")
 	@XmlElementWrapper(name="gridSorts")
 	@XmlElement(name="gridSort")
 	public GridRequestSort[] getGridRequestSorts() {
 		return gridRequestSorts;
 	}
+	@JsonProperty("gridSort")
 	public void setGridRequestSorts(GridRequestSort[] gridRequestSorts) {
 		this.gridRequestSorts = gridRequestSorts;
 	}
 
+	@JsonProperty("gridFilter")
 	@XmlElementWrapper(name="gridFilters")
     @XmlElement(name="gridFilter")
 	public List<GridRequestFilter> getGridRequestFilters() {
@@ -165,8 +172,7 @@ public class GridRequest implements Serializable {
 		return gridRequestFilters;
 	}
 
-
-
+	@JsonProperty("gridFilter")
 	public void setGridRequestFilters(List<GridRequestFilter> gridRequestFilters) {
 		this.gridRequestFilters = gridRequestFilters;
 	}
