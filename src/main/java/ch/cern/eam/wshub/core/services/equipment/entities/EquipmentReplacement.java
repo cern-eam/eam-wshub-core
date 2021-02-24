@@ -49,6 +49,8 @@ public class EquipmentReplacement implements Serializable {
 	 */
 	private String replacementMode = "Standard";
 
+	private String oldEquipmentState = "DEF";
+
 	/**
 	 * Default constructor
 	 */
@@ -192,20 +194,25 @@ public class EquipmentReplacement implements Serializable {
 		this.newEquipmentDesc = newEquipmentDesc;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return "EquipmentReplacement [" + (oldEquipment != null ? "oldEquipment=" + oldEquipment + ", " : "")
-				+ (oldEquipmentDesc != null ? "oldEquipmentDesc=" + oldEquipmentDesc + ", " : "")
-				+ (oldEquipmentStatus != null ? "oldEquipmentStatus=" + oldEquipmentStatus + ", " : "")
-				+ (newEquipment != null ? "newEquipment=" + newEquipment + ", " : "")
-				+ (newEquipmentDesc != null ? "newEquipmentDesc=" + newEquipmentDesc + ", " : "")
-				+ (newEquipmentStatus != null ? "newEquipmentStatus=" + newEquipmentStatus + ", " : "")
-				+ (replacementMode != null ? "replacementMode=" + replacementMode : "") + "]";
+	public String getOldEquipmentState() {
+		return oldEquipmentState;
 	}
 
+	public void setOldEquipmentState(String oldEquipmentState) {
+		this.oldEquipmentState = oldEquipmentState;
+	}
+
+	@Override
+	public String toString() {
+		return "EquipmentReplacement{" +
+				"oldEquipment='" + oldEquipment + '\'' +
+				", oldEquipmentDesc='" + oldEquipmentDesc + '\'' +
+				", oldEquipmentStatus='" + oldEquipmentStatus + '\'' +
+				", newEquipment='" + newEquipment + '\'' +
+				", newEquipmentDesc='" + newEquipmentDesc + '\'' +
+				", newEquipmentStatus='" + newEquipmentStatus + '\'' +
+				", replacementMode='" + replacementMode + '\'' +
+				", oldEquipmentState='" + oldEquipmentState + '\'' +
+				'}';
+	}
 }
