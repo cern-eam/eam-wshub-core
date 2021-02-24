@@ -46,7 +46,6 @@ public class GridRequest implements Serializable {
 	
 	private Map<String, Object> params;
 
-	@JsonProperty("gridFilter")
 	private List<GridRequestFilter> gridRequestFilters;
 	private GridRequestSort[] gridRequestSorts;
 
@@ -157,7 +156,7 @@ public class GridRequest implements Serializable {
 	public GridRequestSort[] getGridRequestSorts() {
 		return gridRequestSorts;
 	}
-	@JsonProperty("gridSort")
+
 	public void setGridRequestSorts(GridRequestSort[] gridRequestSorts) {
 		this.gridRequestSorts = gridRequestSorts;
 	}
@@ -172,7 +171,6 @@ public class GridRequest implements Serializable {
 		return gridRequestFilters;
 	}
 
-	@JsonProperty("gridFilter")
 	public void setGridRequestFilters(List<GridRequestFilter> gridRequestFilters) {
 		this.gridRequestFilters = gridRequestFilters;
 	}
