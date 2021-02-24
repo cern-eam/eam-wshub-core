@@ -18,6 +18,8 @@ import ch.cern.eam.wshub.core.services.grids.GridsService;
 import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.services.material.*;
 import ch.cern.eam.wshub.core.services.material.impl.*;
+import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedScreenService;
+import ch.cern.eam.wshub.core.services.userdefinedscreens.impl.UserDefinedScreenServiceImpl;
 import ch.cern.eam.wshub.core.services.workorders.SafetyService;
 import ch.cern.eam.wshub.core.services.workorders.impl.SafetyServiceImpl;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedListService;
@@ -122,6 +124,7 @@ public class InforClient implements Serializable {
 
     private UserDefinedTableService userDefinedTableServices;
     private UserDefinedListService userDefinedListService;
+    private UserDefinedScreenService userDefinedScreenService;
 
     private MECService mecService;
 
@@ -270,6 +273,7 @@ public class InforClient implements Serializable {
             inforClient.safetyService = proxy(SafetyService.class, new SafetyServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.taskPlanService = proxy(TaskPlanService.class, new TaskPlanServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.salesPriceService = proxy(SalesPriceService.class, new SalesPricesImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
+            inforClient.userDefinedScreenService = proxy(UserDefinedScreenService.class, new UserDefinedScreenServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             if (!tools.isDatabaseConnectionConfigured()) {
                 logger.log(Level.WARNING, "Some of the services might require a database connection.");
             }
@@ -438,4 +442,6 @@ public class InforClient implements Serializable {
     public TaskPlanService getTaskPlanService() { return  taskPlanService; }
 
     public SalesPriceService getSalesPriceService() {return salesPriceService; }
+
+    public UserDefinedScreenService getUserDefinedScreenService() {return userDefinedScreenService; }
 }
