@@ -28,4 +28,7 @@ public interface ChecklistService {
     @Operation(logOperation = INFOR_OPERATION.WO_CHECKL_ESGN_R)
     WorkOrderActivityChecklistSignatureResult[] getSignatures(InforContext context, String workOrderCode, String activityCode, TaskPlan taskPlan)
             throws InforException;
+
+    @Operation(logOperation = INFOR_OPERATION.WO_CHECKLDEF_R)
+    WorkOrderActivityCheckListDefinition getChecklistDefinition(InforContext context, TaskPlan taskPlan, String code) throws InforException;
 }
