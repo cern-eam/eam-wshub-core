@@ -1,6 +1,6 @@
 package ch.cern.eam.wshub.core.services.grids.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import net.datastream.schemas.mp_functions.gridrequest.GRID;
 
@@ -9,7 +9,6 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import java.io.Serializable;
 import java.util.*;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class GridRequest implements Serializable {
 	private static final long serialVersionUID = 6690766576660475229L;
 
@@ -307,6 +306,7 @@ public class GridRequest implements Serializable {
 				+ (gridRequestSorts != null ? "gridRequestSorts=" + Arrays.toString(gridRequestSorts) : "") + "]";
 	}
 
+	@JsonIgnore
 	public String getRequestKey() {
 		return this.gridName + "#" + this.getDataspyID();
 	}
