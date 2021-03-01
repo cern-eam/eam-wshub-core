@@ -8,6 +8,7 @@ import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedListHelpable;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.entities.UDLValue;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlElement;
@@ -543,6 +544,7 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
         this.departmentDesc = departmentDesc;
     }
 
+    @JsonProperty("customField")
     @XmlElementWrapper(name = "customFields")
     @XmlElement(name = "customField")
     public CustomField[] getCustomFields() {
