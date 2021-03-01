@@ -472,7 +472,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 	public WorkOrderActivityCheckList[] readWorkOrderChecklists(InforContext context, Activity activity) throws InforException {
 		// Fetch the data
 		GridRequest gridRequest = new GridRequest("3315", "WSJOBS_ACK", "3369");
-		gridRequest.setRowCount(1000);
+		gridRequest.setRowCount(2000);
 		gridRequest.setUseNative(false);
 		gridRequest.getParams().put("param.workordernum", activity.getWorkOrderNumber());
 		gridRequest.getParams().put("param.activity", activity.getActivityCode());
