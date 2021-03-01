@@ -42,6 +42,10 @@ public class Part implements Serializable, UserDefinedListHelpable {
 	@InforField(xpath = "PARTID/DESCRIPTION")
 	private String description;
 
+	@Column(name = "PAR_ORG")
+	@InforField(xpath = "PARTID/ORGANIZATIONID/ORGANIZATIONCODE")
+	private String organization;
+
 	@Column(name = "PAR_UOM")
 	@InforField(xpath = "UOMID/UOMCODE")
 	private String UOM;
@@ -378,6 +382,14 @@ public class Part implements Serializable, UserDefinedListHelpable {
 	@Override
 	public void setUserDefinedList(HashMap<String, ArrayList<UDLValue>> userDefinedList) {
 		this.userDefinedList = userDefinedList;
+	}
+
+	public String getOrganization() {
+		return organization;
+	}
+
+	public void setOrganization(String organization) {
+		this.organization = organization;
 	}
 
 	@Override

@@ -225,7 +225,12 @@ public class InforFieldTools {
         try {
             Field orgField = inforObject.getClass().getDeclaredField("organizationid");
             orgField.setAccessible(true);
-            orgField.set(inforObject, tools.getOrganization(context));
+
+            String currentOrganization = (String) orgField.get(inforObject);
+
+            if (currentOrganization == null) {
+                orgField.set(inforObject, tools.getOrganization(context));
+            }
         } catch (Exception exception) {
             // Nothing wrong about an exception here
         }
