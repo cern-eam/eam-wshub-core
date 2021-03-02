@@ -43,6 +43,7 @@ public class CustomFieldsTools {
     public CustomField decodeInforCustomField(CUSTOMFIELD customFieldInfor) {
         CustomField customField = new CustomField();
 
+        customField.setGroupLabel(customFieldInfor.getGROUPLABEL());
         customField.setClassCode(customFieldInfor.getCLASSID().getCLASSCODE());
         customField.setEntityCode(customFieldInfor.getEntity());
         customField.setCode(customFieldInfor.getPROPERTYCODE());
