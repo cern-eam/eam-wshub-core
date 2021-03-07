@@ -308,6 +308,6 @@ public class GridRequest implements Serializable {
 
 	@JsonIgnore
 	public String getRequestKey() {
-		return this.gridName + "#" + this.getDataspyID();
+		return this.getGridType() + "#" + this.getGridName() + "#" + this.getDataspyID();
 	}
 }
