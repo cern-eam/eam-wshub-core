@@ -31,6 +31,7 @@ public class CustomField implements Serializable {
 	private String classCode;
 	private String lovType;
 	private String lovValidate;
+	private String groupLabel;
 
 	public CustomField() {
 	}
@@ -170,6 +171,14 @@ public class CustomField implements Serializable {
 
 	public void setLovValidate(String lovValidate) {
 		this.lovValidate = lovValidate;
+	}
+
+	public String getGroupLabel() {
+		return groupLabel;
+	}
+
+	public void setGroupLabel(String groupLabel) {
+		this.groupLabel = groupLabel;
 	}
 
 	@Override
