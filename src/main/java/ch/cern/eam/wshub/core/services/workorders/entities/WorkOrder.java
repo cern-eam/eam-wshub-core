@@ -10,6 +10,7 @@ import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedListHelpable;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.entities.UDLValue;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.entities.xmlhashmap.XmlHashMapAdapter;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -333,6 +334,7 @@ public class WorkOrder implements Serializable, UserDefinedListHelpable {
 		this.priorityDesc = priorityDesc;
 	}
 
+	@JsonProperty("customField")
 	@XmlElementWrapper(name = "customFields")
 	@XmlElement(name = "customField")
 	public CustomField[] getCustomFields() {
