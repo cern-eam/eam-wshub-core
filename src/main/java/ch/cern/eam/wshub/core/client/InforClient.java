@@ -3,9 +3,11 @@ package ch.cern.eam.wshub.core.client;
 import ch.cern.eam.wshub.core.interceptors.InforInterceptor;
 import ch.cern.eam.wshub.core.interceptors.InforInvocationHandler;
 import ch.cern.eam.wshub.core.services.administration.DataspyService;
+import ch.cern.eam.wshub.core.services.administration.ResponsibilityService;
 import ch.cern.eam.wshub.core.services.administration.UserGroupMenuService;
 import ch.cern.eam.wshub.core.services.administration.UserSetupService;
 import ch.cern.eam.wshub.core.services.administration.impl.DataspyServiceImpl;
+import ch.cern.eam.wshub.core.services.administration.impl.ResponsibilityServiceImpl;
 import ch.cern.eam.wshub.core.services.administration.impl.UserGroupMenuServiceImpl;
 import ch.cern.eam.wshub.core.services.administration.impl.UserSetupServiceImpl;
 import ch.cern.eam.wshub.core.services.comments.CommentService;
@@ -114,6 +116,7 @@ public class InforClient implements Serializable {
     private PhysicalInventoryService physicalInventoryService;
 
     private UserSetupService userSetupService;
+    private ResponsibilityService responsibilityService;
     private GridsService gridsService;
     private DocumentsService documentsService;
     private DataspyService dataspyService;
@@ -257,6 +260,7 @@ public class InforClient implements Serializable {
             inforClient.partKitService = proxy(PartKitService.class, new PartKitServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.purchaseOrdersService = proxy(PurchaseOrdersService.class, new PurchaseOrdersImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.userSetupService = proxy(UserSetupService.class, new UserSetupServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
+            inforClient.responsibilityService = proxy(ResponsibilityService.class, new ResponsibilityServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.gridsService = proxy(GridsService.class, new GridsServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.documentsService = proxy(DocumentsService.class, new DocumentsServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.pickTicketService = proxy(PickTicketService.class, new PickTicketServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
@@ -389,6 +393,10 @@ public class InforClient implements Serializable {
 
     public UserSetupService getUserSetupService() {
         return userSetupService;
+    }
+
+    public ResponsibilityService getResponsibilityService() {
+        return responsibilityService;
     }
 
     public GridsService getGridsService() {
