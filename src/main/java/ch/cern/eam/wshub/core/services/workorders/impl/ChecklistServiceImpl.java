@@ -110,12 +110,13 @@ public class ChecklistServiceImpl implements ChecklistService {
 
 		boolean noRequiredQualifications = reviewerQualification == null &&
 				                           performer1Qualification == null &&
-				                           performer2Qualification == null;
+				                           performer2Qualification == null &&
+										   viewerQualification == null;
 
 		boolean isViewer = noRequiredQualifications
-										 || viewerQualification != null && qualifications.contains(viewerQualification);
+			|| viewerQualification != null && qualifications.contains(viewerQualification);
 
-		boolean isPerformer1 = noRequiredQualifications || performer1Qualification == null
+		boolean isPerformer1 = noRequiredQualifications || performer1Qualification == null && isViewer
 							   || qualifications.contains(performer1Qualification);
 
 		boolean isPerformer2 = noRequiredQualifications || performer2Qualification == null && isPerformer1
