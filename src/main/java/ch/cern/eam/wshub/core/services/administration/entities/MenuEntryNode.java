@@ -1,10 +1,9 @@
 package ch.cern.eam.wshub.core.services.administration.entities;
-
 import net.datastream.schemas.mp_entities.extmenus_001.ExtMenus;
 import net.datastream.schemas.mp_fields.FOLDER_Type;
 import net.datastream.schemas.mp_fields.FUNCTION_Type;
 import net.datastream.schemas.mp_fields.MENU_Type;
-
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.decodeBoolean;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +14,13 @@ public class MenuEntryNode extends DefaultMutableTreeNode {
     private String id;
     private String description;
     private String functionId;
+    private String systemFunctionId;
+    private boolean isHidden;
     private long sequenceNumber;
+    private boolean readAllowed;
+    private boolean creationAllowed;
+    private boolean deleteAllowed;
+    private boolean updateAllowed;
 
 
     public MenuEntryNode(FOLDER_Type folder) {
@@ -42,7 +47,15 @@ public class MenuEntryNode extends DefaultMutableTreeNode {
         this.id = function.getEXTMENUCODE();
         this.description = function.getFUNCTIONID().getFUNCTIONDESCRIPTION();
         this.functionId = function.getFUNCTIONID().getFUNCTIONCODE();
+        this.systemFunctionId = function.getSYSTEMFUNCTION();
+        this.isHidden = decodeBoolean(function.getHIDEMENU());
         this.sequenceNumber = function.getSEQUENCENUMBER();
+        if (function.getUSERGROUPPERMISSIONS() != null) {
+            this.readAllowed = "?".equals(function.getUSERGROUPPERMISSIONS().getSELECTPERMISSION());
+            this.creationAllowed = "+".equals(function.getUSERGROUPPERMISSIONS().getINSERTPERMISSION());
+            this.updateAllowed = "*".equals(function.getUSERGROUPPERMISSIONS().getUPDATEPERMISSION());
+            this.deleteAllowed = "X".equals(function.getUSERGROUPPERMISSIONS().getDELETEPERMISSION());
+        }
     }
 
     public MenuEntryNode(ExtMenus entryAdded) {
@@ -104,4 +117,59 @@ public class MenuEntryNode extends DefaultMutableTreeNode {
         return (MenuEntryNode) this.getParent();
     }
 
+    public boolean isReadAllowed() {
+        return readAllowed;
+    }
+
+    public void setReadAllowed(boolean readAllowed) {
+        this.readAllowed = readAllowed;
+    }
+
+    public boolean isCreationAllowed() {
+        return creationAllowed;
+    }
+
+    public void setCreationAllowed(boolean creationAllowed) {
+        this.creationAllowed = creationAllowed;
+    }
+
+    public boolean isDeleteAllowed() {
+        return deleteAllowed;
+    }
+
+    public void setDeleteAllowed(boolean deleteAllowed) {
+        this.deleteAllowed = deleteAllowed;
+    }
+
+    public boolean isUpdateAllowed() {
+        return updateAllowed;
+    }
+
+    public void setUpdateAllowed(boolean updateAllowed) {
+        this.updateAllowed = updateAllowed;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setFunctionId(String functionId) {
+        this.functionId = functionId;
+    }
+
+    public String getSystemFunctionId() {
+        return systemFunctionId;
+    }
+
+    public void setSystemFunctionId(String systemFunctionId) {
+        this.systemFunctionId = systemFunctionId;
+    }
+
+    public boolean isHidden() {
+        return isHidden;
+    }
+
+    public void setHidden(boolean hidden) {
+        isHidden = hidden;
+    }
 }

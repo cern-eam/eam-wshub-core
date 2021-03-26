@@ -3,6 +3,7 @@ package ch.cern.eam.wshub.core.services.administration.impl;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.administration.UserGroupMenuService;
 import ch.cern.eam.wshub.core.services.administration.entities.MenuEntryNode;
+import ch.cern.eam.wshub.core.services.administration.entities.MenuRequestType;
 import ch.cern.eam.wshub.core.services.administration.entities.MenuSpecification;
 import ch.cern.eam.wshub.core.services.administration.entities.MenuType;
 import ch.cern.eam.wshub.core.services.entities.BatchResponse;
@@ -20,6 +21,7 @@ import net.datastream.wsdls.inforws.InforWebServicesPT;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class UserGroupMenuServiceImpl implements UserGroupMenuService {
     private Tools tools;
@@ -44,7 +46,7 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         UserGroupMenuService.validateInputNode(menuSpecification);
 
         // Get menu entries as tree
-        MenuEntryNode menuRoot = this.getExtMenuHierarchyAsTree(context, menuSpecification);
+        MenuEntryNode menuRoot = this.getExtMenuHierarchyAsTree(context, menuSpecification.getForUserGroup(), MenuRequestType.EXCLUDE_PERMISSIONSAND_TABS);
 
         // Check if path already exists; if so, continue
         List<String> pathList = menuSpecification.getMenuPath();
@@ -140,10 +142,11 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         return deleteFromMenuHierarchyBatch(context, menuSpecificationList);
     }
 
-    private ExtMenusHierarchy getExtMenuHierarchy(InforContext context, String userGroup) throws InforException {
+    private ExtMenusHierarchy getExtMenuHierarchy(InforContext context, String userGroup, MenuRequestType requestType) throws InforException {
         MP6005_GetExtMenusHierarchy_001 getExtMenusHierarchy = new MP6005_GetExtMenusHierarchy_001();
         getExtMenusHierarchy.setUSERGROUPID(new USERGROUPID_Type());
         getExtMenusHierarchy.getUSERGROUPID().setUSERGROUPCODE(userGroup);
+        getExtMenusHierarchy.setRequest(EXTMENUSHIERARCHYREQUEST_Type.fromValue(requestType.value()));
 
         ExtMenusHierarchy result =
                 tools.performInforOperation(context, inforws::getExtMenusHierarchyOp, getExtMenusHierarchy)
@@ -152,9 +155,9 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         return result;
     }
 
-    private MenuEntryNode getExtMenuHierarchyAsTree(InforContext context, MenuSpecification menuSpecification) throws InforException {
+    public MenuEntryNode getExtMenuHierarchyAsTree(InforContext context, String userGroup, MenuRequestType requestType) throws InforException {
         MenuEntryNode root = new MenuEntryNode();
-        ExtMenusHierarchy result = this.getExtMenuHierarchy(context, menuSpecification.getForUserGroup());
+        ExtMenusHierarchy result = this.getExtMenuHierarchy(context, userGroup, requestType);
 
         List<MENU_Type> menus = result.getMENU();
         for (MENU_Type menu : menus) {
@@ -265,7 +268,7 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         UserGroupMenuService.validateInputNode(menuSpecification);
 
         // Get menu entries as tree
-        MenuEntryNode menuRoot = this.getExtMenuHierarchyAsTree(context, menuSpecification);
+        MenuEntryNode menuRoot = this.getExtMenuHierarchyAsTree(context, menuSpecification.getForUserGroup(), MenuRequestType.EXCLUDE_PERMISSIONSAND_TABS);
 
         List<String> pathList = menuSpecification.getMenuPath();
         MenuEntryNode latestMenuEntryNodeFound = this.getLatestMenuEntryByPath(pathList, menuRoot);
@@ -320,4 +323,5 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         // With the request object created, perform the add operation
         tools.performInforOperation(context, inforws::deleteExtMenusOp, deleteExtMenus);
     }
+
 }
