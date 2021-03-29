@@ -110,12 +110,13 @@ public class ChecklistServiceImpl implements ChecklistService {
 
 		boolean noRequiredQualifications = reviewerQualification == null &&
 				                           performer1Qualification == null &&
-				                           performer2Qualification == null;
+				                           performer2Qualification == null &&
+										   viewerQualification == null;
 
-		boolean hasViewerQualification = noRequiredQualifications
-										 || viewerQualification != null && qualifications.contains(viewerQualification);
+		boolean isViewer = noRequiredQualifications
+			|| viewerQualification != null && qualifications.contains(viewerQualification);
 
-		boolean isPerformer1 = noRequiredQualifications || performer1Qualification == null
+		boolean isPerformer1 = noRequiredQualifications || performer1Qualification == null && isViewer
 							   || qualifications.contains(performer1Qualification);
 
 		boolean isPerformer2 = noRequiredQualifications || performer2Qualification == null && isPerformer1
@@ -127,35 +128,38 @@ public class ChecklistServiceImpl implements ChecklistService {
 
 		List<WorkOrderActivityChecklistSignatureResult> signatures = new LinkedList<>();
 
-		if(isPerformer1 || isReviewer || hasViewerQualification){
+		if (isPerformer1 || isReviewer || isViewer) {
 			WorkOrderActivityChecklistSignatureResult perf1 = new WorkOrderActivityChecklistSignatureResult();
 			perf1.setType("PB01");
 			perf1.setSigner(workOrderActivityCheckList.getPerformer1Name());
+			perf1.setViewAsViewer(isViewer);
 			perf1.setViewAsPerformer(isPerformer1);
-			perf1.setViewAsReviewer(isReviewer || hasViewerQualification);
+			perf1.setViewAsReviewer(isReviewer);
 			perf1.setTime(workOrderActivityCheckList.getTimePerf1() != null ? workOrderActivityCheckList.getTimePerf1() : null);
 			perf1.setResponsibilityCode(performer1Qualification);
 			signatures.add(perf1);
 		}
 
-		if(isPerformer2 || isReviewer || hasViewerQualification){
+		if (isPerformer2 || isReviewer || isViewer) {
 			WorkOrderActivityChecklistSignatureResult perf2 = new WorkOrderActivityChecklistSignatureResult();
 			perf2.setType("PB02");
 			perf2.setSigner(workOrderActivityCheckList.getPerformer2Name());
+			perf2.setViewAsViewer(isViewer);
 			perf2.setViewAsPerformer(isPerformer2);
-			perf2.setViewAsReviewer(isReviewer || hasViewerQualification);
+			perf2.setViewAsReviewer(isReviewer);
 			perf2.setTime(workOrderActivityCheckList.getTimePerf2() != null ?
 					workOrderActivityCheckList.getTimePerf2() : null);
 			perf2.setResponsibilityCode(performer2Qualification != null ? performer2Qualification : performer1Qualification);
 			signatures.add(perf2);
 		}
 
-		if(isReviewer || hasViewerQualification){
+		if (isPerformer1 || isPerformer2 || isReviewer || isViewer) {
 			WorkOrderActivityChecklistSignatureResult reviewer = new WorkOrderActivityChecklistSignatureResult();
 			reviewer.setType("RB01");
 			reviewer.setSigner(workOrderActivityCheckList.getReviewerName());
+			reviewer.setViewAsViewer(isViewer);
 			reviewer.setViewAsPerformer(isReviewer);
-			reviewer.setViewAsReviewer(hasViewerQualification);
+			reviewer.setViewAsReviewer(isReviewer);
 			reviewer.setTime(workOrderActivityCheckList.getTimeRev1() != null ? workOrderActivityCheckList.getTimeRev1() : null);
 			if(reviewerQualification == null && performer1Qualification != null && performer2Qualification == null)
 				reviewerQualification = performer1Qualification;

@@ -15,6 +15,8 @@ public class WorkOrderActivityChecklistSignatureResult implements Serializable {
 
     private String responsibilityDescription;
 
+    private Boolean viewAsViewer;
+
     private Boolean viewAsPerformer;
 
     private Boolean viewAsReviewer;
@@ -76,5 +78,13 @@ public class WorkOrderActivityChecklistSignatureResult implements Serializable {
 
     public void setResponsibilityDescription(String responsibilityDescription) {
         this.responsibilityDescription = responsibilityDescription;
+    }
+
+    public Boolean getViewAsViewer() {
+        return viewAsViewer;
+    }
+
+    public void setViewAsViewer(Boolean viewAsViewer) {
+        this.viewAsViewer = viewAsViewer;
     }
 }

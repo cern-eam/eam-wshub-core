@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Map;
 
 @Entity
 @NamedNativeQuery(name = "FINDACT", query = "select * from R5ACTIVITIES LEFT OUTER JOIN R5TASKS ON R5ACTIVITIES.ACT_TASK = R5TASKS.TSK_CODE WHERE ACT_EVENT = :workOrder ORDER BY ACT_ACT", resultClass = Activity.class)
@@ -78,7 +79,7 @@ public class Activity implements Serializable {
 	private WorkOrderActivityCheckList[] checklists;
 
 	@Transient
-	private WorkOrderActivityChecklistSignatureResult[] signatures;
+	private Map<String, WorkOrderActivityChecklistSignatureResult> signatures;
 
 	@Transient
 	private Boolean forceActivityExpansion;
@@ -197,11 +198,11 @@ public class Activity implements Serializable {
 
 	public void setActivityNote(String activityNote) {this.activityNote = activityNote; }
 
-	public WorkOrderActivityChecklistSignatureResult[] getSignatures() {
+	public Map<String, WorkOrderActivityChecklistSignatureResult> getSignatures() {
 		return signatures;
 	}
 
-	public void setSignatures(WorkOrderActivityChecklistSignatureResult[] signatures) {
+	public void setSignatures(Map<String, WorkOrderActivityChecklistSignatureResult> signatures) {
 		this.signatures = signatures;
 	}
 
@@ -230,6 +231,7 @@ public class Activity implements Serializable {
 				", tradeCode='" + tradeCode + '\'' +
 				", taskQty='" + taskQty + '\'' +
 				", checklists=" + Arrays.toString(checklists) +
+				"signatures=" + signatures +
 				'}';
 	}
 

@@ -28,11 +28,9 @@ import net.datastream.wsdls.inforws.InforWebServicesPT;
 import javax.persistence.EntityManager;
 import javax.xml.ws.Holder;
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Callable;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class LaborBookingServiceImpl implements LaborBookingService {
@@ -146,10 +144,15 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 								taskPlan.setCode(activity.getTaskCode());
 								taskPlan = taskPlanService.getTaskPlan(context, taskPlan);
 								WorkOrderActivityChecklistSignatureResult[] signatures = checklistService.getSignatures(context, workOrderNumber, activity.getActivityCode(), taskPlan);
-								if(signatures.length > 0) {
+								if (signatures.length > 0) {
 									activity.setChecklists(checklistService.readWorkOrderChecklists(context, activity));
-									if(taskPlan.getPerformedByRequired() || taskPlan.getReviewedByRequired()) {
-										activity.setSignatures(signatures);
+									if (taskPlan.getReviewedByRequired()) {
+										activity.setSignatures(Arrays.stream(signatures)
+												.collect(Collectors.toMap(WorkOrderActivityChecklistSignatureResult::getType, Function.identity())));
+									} else if (taskPlan.getPerformedByRequired()) {
+										activity.setSignatures(
+												Arrays.stream(signatures).filter(signature -> !signature.getType().equals("RB01"))
+														.collect(Collectors.toMap(WorkOrderActivityChecklistSignatureResult::getType, Function.identity())));
 									}
 									activity.setForceActivityExpansion(taskPlan.getUserDefinedFields().getUdfchkbox03());
 								}
