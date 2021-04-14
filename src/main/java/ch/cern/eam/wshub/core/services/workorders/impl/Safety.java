@@ -3,9 +3,12 @@ package ch.cern.eam.wshub.core.services.workorders.impl;
 import ch.cern.eam.wshub.core.annotations.GridField;
 import ch.cern.eam.wshub.core.annotations.InforField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Objects;
 
 public class Safety implements Serializable {
     private static final long serialVersionUID = -4988635355683432596L;
@@ -39,6 +42,15 @@ public class Safety implements Serializable {
     @InforField(xpath = "StandardUserDefinedFields")
     @GridField(name = "")
     private UserDefinedFields userDefinedFields;
+
+    @GridField(name = "sourcecode")
+    private String sourceCode;
+
+    @GridField(name = "sourceentity")
+    private String sourceEntity;
+
+    @GridField(name = "sourceorg")
+    private String sourceOrg;
 
     public String getId() {
         return id;
@@ -104,26 +116,64 @@ public class Safety implements Serializable {
         this.userDefinedFields = userDefinedFields;
     }
 
-    @Override
-    public boolean equals(Object otherObject) {
-        if (this == otherObject) {
-            return true;
-        }
+    public String getSourceCode() {
+        return sourceCode;
+    }
 
-        if (otherObject == null || getClass() != otherObject.getClass()) {
+    public void setSourceCode(String sourceCode) {
+        this.sourceCode = sourceCode;
+    }
+
+    public String getSourceEntity() {
+        return sourceEntity;
+    }
+
+    public void setSourceEntity(String sourceEntity) {
+        this.sourceEntity = sourceEntity;
+    }
+
+    public String getSourceOrg() {
+        return sourceOrg;
+    }
+
+    public void setSourceOrg(String sourceOrg) {
+        this.sourceOrg = sourceOrg;
+    }
+
+    @XmlTransient
+    @JsonIgnore
+    public boolean getReadOnly() {
+        return sourceEntity != null && !"".equals(sourceEntity);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Safety safety = (Safety) o;
+        return Objects.equals(id, safety.id)
+                && Objects.equals(hazardCode, safety.hazardCode)
+                && Objects.equals(hazardDescription, safety.hazardDescription)
+                && Objects.equals(hazardRevision, safety.hazardRevision)
+                && Objects.equals(precautionCode, safety.precautionCode)
+                && Objects.equals(precautionDescription, safety.precautionDescription)
+                && Objects.equals(precautionRevision, safety.precautionRevision)
+                && Objects.equals(userDefinedFields, safety.userDefinedFields);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, hazardCode, hazardDescription, hazardRevision, precautionCode, precautionDescription, precautionRevision, userDefinedFields);
+    }
+
+    public static boolean canBeChangedBy(Safety original, Safety modification) {
+        if (original == null
+                || modification == null
+                || !Objects.equals(original.getId(), modification.getId())
+                || modification.getUserDefinedFields() == null) {
             return false;
         }
 
-        Safety other = (Safety) otherObject;
-
-        return getId() != null && getId().equals(other.getId())
-                && getHazardCode() != null && getHazardCode().equals(other.getHazardCode())
-                && getPrecautionCode() != null && getPrecautionCode().equals(other.getPrecautionCode())
-
-                // It is not possible to get the hazard revision/precaution revision using the grid OSOBJA_ESF
-                // && getHazardRevision() != null && getHazardRevision().equals(other.getHazardRevision())
-                // && getPrecautionRevision() != null && getPrecautionRevision().equals(other.getPrecautionRevision())
-
-                && userDefinedFields != null && userDefinedFields.equals(other.getUserDefinedFields());
+        return UserDefinedFields.canBeChangedBy(original.getUserDefinedFields(), modification.getUserDefinedFields());
     }
 }
