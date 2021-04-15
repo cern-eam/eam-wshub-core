@@ -107,6 +107,10 @@ public class SafetyServiceImpl implements SafetyService {
             Safety currentSafety = currentSafetiesMap.get(id);
             currentSafetiesMap.remove(id);
 
+            if (safety.getReadOnly()) {
+                continue;
+            }
+
             if (currentSafety == null) {
                 // add new safeties
                 addSafety(context, entityType, entityCode, safety);
@@ -114,7 +118,7 @@ public class SafetyServiceImpl implements SafetyService {
             }
 
             // synchronize safeties that have not changed
-            if (!currentSafety.equals(safety)) {
+            if (Safety.canBeChangedBy(currentSafety, safety)) {
                 syncSafety(context, entityType, entityCode, safety);
             }
         };

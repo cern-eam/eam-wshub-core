@@ -5,17 +5,14 @@ import ch.cern.eam.wshub.core.adapters.BooleanAdapter;
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
 import ch.cern.eam.wshub.core.annotations.GridField;
 import ch.cern.eam.wshub.core.annotations.InforField;
-import ch.cern.eam.wshub.core.services.workorders.impl.Safety;
 
 import javax.persistence.Embeddable;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.StringJoiner;
-import java.util.function.BiPredicate;
-import java.util.function.Predicate;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Embeddable
 public class UserDefinedFields implements Serializable, Cloneable {
@@ -1735,96 +1732,107 @@ public class UserDefinedFields implements Serializable, Cloneable {
 				+ (udfdate10 != null ? "udfdate10=" + udfdate10 : "") + "]";
 	}
 
-	@Override
-	public boolean equals(Object otherObject) {
-		if (this == otherObject) {
-			return true;
-		}
-
-		if (otherObject == null || getClass() != otherObject.getClass()) {
+	public static boolean canBeChangedBy(UserDefinedFields original, UserDefinedFields modification) {
+		if (modification == null) {
 			return false;
 		}
 
-		BiPredicate<Object, Object> udfObjectComparison = (object1, object2) ->
-				(object1 == null && object2 == null)
-						|| (object1 != null ? object1.equals(object2) : object2.equals(object1));
+		return getters.stream().anyMatch(func -> {
+			Object changerValue = func.apply(modification);
+			return changerValue != null && (original == null || changerValue != func.apply(original));
+		});
+	}
 
-		UserDefinedFields other = (UserDefinedFields) otherObject;
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		UserDefinedFields that = (UserDefinedFields) o;
+		return getters.stream().allMatch(getter -> Objects.equals(getter.apply(this), getter.apply(that)));
+	}
 
-		return udfObjectComparison.test(getUdfchar01(), other.getUdfchar01())
-				&& udfObjectComparison.test(getUdfchar02(), other.getUdfchar02())
-				&& udfObjectComparison.test(getUdfchar03(), other.getUdfchar03())
-				&& udfObjectComparison.test(getUdfchar04(), other.getUdfchar04())
-				&& udfObjectComparison.test(getUdfchar05(), other.getUdfchar05())
-				&& udfObjectComparison.test(getUdfchar06(), other.getUdfchar06())
-				&& udfObjectComparison.test(getUdfchar07(), other.getUdfchar07())
-				&& udfObjectComparison.test(getUdfchar08(), other.getUdfchar08())
-				&& udfObjectComparison.test(getUdfchar09(), other.getUdfchar09())
-				&& udfObjectComparison.test(getUdfchar10(), other.getUdfchar10())
-				&& udfObjectComparison.test(getUdfchar11(), other.getUdfchar11())
-				&& udfObjectComparison.test(getUdfchar12(), other.getUdfchar12())
-				&& udfObjectComparison.test(getUdfchar13(), other.getUdfchar13())
-				&& udfObjectComparison.test(getUdfchar14(), other.getUdfchar14())
-				&& udfObjectComparison.test(getUdfchar15(), other.getUdfchar15())
-				&& udfObjectComparison.test(getUdfchar16(), other.getUdfchar16())
-				&& udfObjectComparison.test(getUdfchar17(), other.getUdfchar17())
-				&& udfObjectComparison.test(getUdfchar18(), other.getUdfchar18())
-				&& udfObjectComparison.test(getUdfchar19(), other.getUdfchar19())
-				&& udfObjectComparison.test(getUdfchar20(), other.getUdfchar20())
-				&& udfObjectComparison.test(getUdfchar21(), other.getUdfchar21())
-				&& udfObjectComparison.test(getUdfchar22(), other.getUdfchar22())
-				&& udfObjectComparison.test(getUdfchar23(), other.getUdfchar23())
-				&& udfObjectComparison.test(getUdfchar24(), other.getUdfchar24())
-				&& udfObjectComparison.test(getUdfchar25(), other.getUdfchar25())
-				&& udfObjectComparison.test(getUdfchar26(), other.getUdfchar26())
-				&& udfObjectComparison.test(getUdfchar27(), other.getUdfchar27())
-				&& udfObjectComparison.test(getUdfchar28(), other.getUdfchar28())
-				&& udfObjectComparison.test(getUdfchar29(), other.getUdfchar29())
-				&& udfObjectComparison.test(getUdfchar30(), other.getUdfchar30())
-				&& udfObjectComparison.test(getUdfchar31(), other.getUdfchar31())
-				&& udfObjectComparison.test(getUdfchar32(), other.getUdfchar32())
-				&& udfObjectComparison.test(getUdfchar33(), other.getUdfchar33())
-				&& udfObjectComparison.test(getUdfchar34(), other.getUdfchar34())
-				&& udfObjectComparison.test(getUdfchar35(), other.getUdfchar35())
-				&& udfObjectComparison.test(getUdfchar36(), other.getUdfchar36())
-				&& udfObjectComparison.test(getUdfchar37(), other.getUdfchar37())
-				&& udfObjectComparison.test(getUdfchar38(), other.getUdfchar38())
-				&& udfObjectComparison.test(getUdfchar39(), other.getUdfchar39())
-				&& udfObjectComparison.test(getUdfchar40(), other.getUdfchar40())
-				&& udfObjectComparison.test(getUdfchar41(), other.getUdfchar41())
-				&& udfObjectComparison.test(getUdfchar42(), other.getUdfchar42())
-				&& udfObjectComparison.test(getUdfchar43(), other.getUdfchar43())
-				&& udfObjectComparison.test(getUdfchar44(), other.getUdfchar44())
-				&& udfObjectComparison.test(getUdfchar45(), other.getUdfchar45())
-				&& udfObjectComparison.test(getUdfchkbox01(), other.getUdfchkbox01())
-				&& udfObjectComparison.test(getUdfchkbox02(), other.getUdfchkbox02())
-				&& udfObjectComparison.test(getUdfchkbox03(), other.getUdfchkbox03())
-				&& udfObjectComparison.test(getUdfchkbox04(), other.getUdfchkbox04())
-				&& udfObjectComparison.test(getUdfchkbox05(), other.getUdfchkbox05())
-				&& udfObjectComparison.test(getUdfchkbox06(), other.getUdfchkbox06())
-				&& udfObjectComparison.test(getUdfchkbox07(), other.getUdfchkbox07())
-				&& udfObjectComparison.test(getUdfchkbox08(), other.getUdfchkbox08())
-				&& udfObjectComparison.test(getUdfchkbox09(), other.getUdfchkbox09())
-				&& udfObjectComparison.test(getUdfchkbox10(), other.getUdfchkbox10())
-				&& udfObjectComparison.test(getUdfnum01(), other.getUdfnum01())
-				&& udfObjectComparison.test(getUdfnum02(), other.getUdfnum02())
-				&& udfObjectComparison.test(getUdfnum03(), other.getUdfnum03())
-				&& udfObjectComparison.test(getUdfnum04(), other.getUdfnum04())
-				&& udfObjectComparison.test(getUdfnum05(), other.getUdfnum05())
-				&& udfObjectComparison.test(getUdfnum06(), other.getUdfnum06())
-				&& udfObjectComparison.test(getUdfnum07(), other.getUdfnum07())
-				&& udfObjectComparison.test(getUdfnum08(), other.getUdfnum08())
-				&& udfObjectComparison.test(getUdfnum09(), other.getUdfnum09())
-				&& udfObjectComparison.test(getUdfnum10(), other.getUdfnum10())
-				&& udfObjectComparison.test(getUdfdate01(), other.getUdfdate01())
-				&& udfObjectComparison.test(getUdfdate02(), other.getUdfdate02())
-				&& udfObjectComparison.test(getUdfdate03(), other.getUdfdate03())
-				&& udfObjectComparison.test(getUdfdate04(), other.getUdfdate04())
-				&& udfObjectComparison.test(getUdfdate05(), other.getUdfdate05())
-				&& udfObjectComparison.test(getUdfdate06(), other.getUdfdate06())
-				&& udfObjectComparison.test(getUdfdate07(), other.getUdfdate07())
-				&& udfObjectComparison.test(getUdfdate08(), other.getUdfdate08())
-				&& udfObjectComparison.test(getUdfdate09(), other.getUdfdate09())
-				&& udfObjectComparison.test(getUdfdate10(), other.getUdfdate10());
+	@Override
+	public int hashCode() {
+		return Arrays.hashCode(getters.stream().map(getter -> getter.apply(this)).toArray());
+	}
+
+	final private static List<Function<UserDefinedFields, Object>> getters = new ArrayList<>();
+
+	static {
+		getters.add(UserDefinedFields::getUdfchar01);
+		getters.add(UserDefinedFields::getUdfchar02);
+		getters.add(UserDefinedFields::getUdfchar03);
+		getters.add(UserDefinedFields::getUdfchar04);
+		getters.add(UserDefinedFields::getUdfchar05);
+		getters.add(UserDefinedFields::getUdfchar06);
+		getters.add(UserDefinedFields::getUdfchar07);
+		getters.add(UserDefinedFields::getUdfchar08);
+		getters.add(UserDefinedFields::getUdfchar09);
+		getters.add(UserDefinedFields::getUdfchar10);
+		getters.add(UserDefinedFields::getUdfchar11);
+		getters.add(UserDefinedFields::getUdfchar12);
+		getters.add(UserDefinedFields::getUdfchar13);
+		getters.add(UserDefinedFields::getUdfchar14);
+		getters.add(UserDefinedFields::getUdfchar15);
+		getters.add(UserDefinedFields::getUdfchar16);
+		getters.add(UserDefinedFields::getUdfchar17);
+		getters.add(UserDefinedFields::getUdfchar18);
+		getters.add(UserDefinedFields::getUdfchar19);
+		getters.add(UserDefinedFields::getUdfchar20);
+		getters.add(UserDefinedFields::getUdfchar21);
+		getters.add(UserDefinedFields::getUdfchar22);
+		getters.add(UserDefinedFields::getUdfchar23);
+		getters.add(UserDefinedFields::getUdfchar24);
+		getters.add(UserDefinedFields::getUdfchar25);
+		getters.add(UserDefinedFields::getUdfchar26);
+		getters.add(UserDefinedFields::getUdfchar27);
+		getters.add(UserDefinedFields::getUdfchar28);
+		getters.add(UserDefinedFields::getUdfchar29);
+		getters.add(UserDefinedFields::getUdfchar30);
+		getters.add(UserDefinedFields::getUdfchar31);
+		getters.add(UserDefinedFields::getUdfchar32);
+		getters.add(UserDefinedFields::getUdfchar33);
+		getters.add(UserDefinedFields::getUdfchar34);
+		getters.add(UserDefinedFields::getUdfchar35);
+		getters.add(UserDefinedFields::getUdfchar36);
+		getters.add(UserDefinedFields::getUdfchar37);
+		getters.add(UserDefinedFields::getUdfchar38);
+		getters.add(UserDefinedFields::getUdfchar39);
+		getters.add(UserDefinedFields::getUdfchar40);
+		getters.add(UserDefinedFields::getUdfchar41);
+		getters.add(UserDefinedFields::getUdfchar42);
+		getters.add(UserDefinedFields::getUdfchar43);
+		getters.add(UserDefinedFields::getUdfchar44);
+		getters.add(UserDefinedFields::getUdfchar45);
+		getters.add(UserDefinedFields::getUdfchkbox01);
+		getters.add(UserDefinedFields::getUdfchkbox02);
+		getters.add(UserDefinedFields::getUdfchkbox03);
+		getters.add(UserDefinedFields::getUdfchkbox04);
+		getters.add(UserDefinedFields::getUdfchkbox05);
+		getters.add(UserDefinedFields::getUdfchkbox06);
+		getters.add(UserDefinedFields::getUdfchkbox07);
+		getters.add(UserDefinedFields::getUdfchkbox08);
+		getters.add(UserDefinedFields::getUdfchkbox09);
+		getters.add(UserDefinedFields::getUdfchkbox10);
+		getters.add(UserDefinedFields::getUdfnum01);
+		getters.add(UserDefinedFields::getUdfnum02);
+		getters.add(UserDefinedFields::getUdfnum03);
+		getters.add(UserDefinedFields::getUdfnum04);
+		getters.add(UserDefinedFields::getUdfnum05);
+		getters.add(UserDefinedFields::getUdfnum06);
+		getters.add(UserDefinedFields::getUdfnum07);
+		getters.add(UserDefinedFields::getUdfnum08);
+		getters.add(UserDefinedFields::getUdfnum09);
+		getters.add(UserDefinedFields::getUdfnum10);
+		getters.add(UserDefinedFields::getUdfdate01);
+		getters.add(UserDefinedFields::getUdfdate02);
+		getters.add(UserDefinedFields::getUdfdate03);
+		getters.add(UserDefinedFields::getUdfdate04);
+		getters.add(UserDefinedFields::getUdfdate05);
+		getters.add(UserDefinedFields::getUdfdate06);
+		getters.add(UserDefinedFields::getUdfdate07);
+		getters.add(UserDefinedFields::getUdfdate08);
+		getters.add(UserDefinedFields::getUdfdate09);
+		getters.add(UserDefinedFields::getUdfdate10);
 	}
 }
