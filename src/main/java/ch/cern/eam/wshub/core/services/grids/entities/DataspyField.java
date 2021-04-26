@@ -1,6 +1,7 @@
 package ch.cern.eam.wshub.core.services.grids.entities;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name="r5queryfield")
@@ -30,7 +31,7 @@ import javax.persistence.*;
 							, 
 				resultClass = DataspyField.class) 
 })
-public class DataspyField {
+public class DataspyField implements Serializable {
 
 	public static final String GETDATASPYFIELDS = "GridField.GETDATASPYFIELDS";
 	public static final String GETDATASPYVISIBLEFIELDS = "GridField.GETDATASPYVISIBLEFIELDS";
