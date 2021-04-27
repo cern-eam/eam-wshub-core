@@ -51,27 +51,27 @@ public class Part implements Serializable, UserDefinedListHelpable {
 	@InforField(xpath = "UOMID/UOMCODE")
 	private String UOM;
 	@Transient
-	@InforField(xpath = "UOMID/DESCRIPTION")
+	@InforField(xpath = "UOMID/DESCRIPTION", readOnly = true)
 	private String UOMDesc;
 
 	@Column(name = "PAR_CLASS")
 	@InforField(xpath = "CLASSID/CLASSCODE")
 	private String classCode;
 	@Transient
-	@InforField(xpath = "CLASSID/DESCRIPTION")
+	@InforField(xpath = "CLASSID/DESCRIPTION", readOnly = true)
 	private String classDesc;
 
 	@Transient
 	@InforField(xpath = "CATEGORYID/CATEGORYCODE")
 	private String categoryCode;
 	@Transient
-	@InforField(xpath = "CATEGORYID/DESCRIPTION")
+	@InforField(xpath = "CATEGORYID/DESCRIPTION", readOnly = true)
 	private String categoryDesc;
 	@Transient
 	@InforField(xpath = "PRIMARYCOMMODITY/COMMODITYCODE")
 	private String commodityCode;
 	@Transient
-	@InforField(xpath = "PRIMARYCOMMODITY/DESCRIPTION")
+	@InforField(xpath = "PRIMARYCOMMODITY/DESCRIPTION", readOnly = true)
 	private String commodityDesc;
 	@Transient
 	@InforField(xpath = "TRACKMETHOD/TYPECODE")
