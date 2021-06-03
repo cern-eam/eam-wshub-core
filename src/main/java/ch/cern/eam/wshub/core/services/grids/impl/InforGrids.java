@@ -356,7 +356,7 @@ public class InforGrids implements Serializable {
 			lovParameter.setTYPE("VARCHAR");
 			lovParameter.setALIAS_NAME(paramName);
 			if (paramValue != null) {
-				lovParameter.setVALUE(paramValue.toString());
+				lovParameter.setVALUE(paramValue);
 			}
 			lov.getLOV_PARAMETERS().getLOV_PARAMETER().add(lovParameter);
 		});
@@ -367,11 +367,8 @@ public class InforGrids implements Serializable {
 		if(gridRequest.getGridRequestSorts() != null && gridRequest.getGridRequestSorts().length > 0){
 			ADDON_SORT addon_sort = new ADDON_SORT();
 				GridRequestSort sort = gridRequest.getGridRequestSorts()[0];
-				if (sort.getSortType() != null && sort.getSortType().toUpperCase().equals("DESC")) {
-					addon_sort.setTYPE(SORT_TYPE.DESC);
-				} else {
-					addon_sort.setTYPE(SORT_TYPE.ASC);
-				}
+				SORT_TYPE sortType = "DESC".equalsIgnoreCase(sort.getSortType()) ? SORT_TYPE.DESC : SORT_TYPE.ASC;
+				addon_sort.setTYPE(sortType);
 			addon_sort.setALIAS_NAME(sort.getSortBy());
 			return addon_sort;
 		} else {

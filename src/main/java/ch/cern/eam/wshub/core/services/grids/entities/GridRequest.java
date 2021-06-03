@@ -43,7 +43,7 @@ public class GridRequest implements Serializable {
 	 */
 	private String departmentSecurityGridColumn = null;
 	
-	private Map<String, Object> params;
+	private Map<String, String> params;
 
 	private List<GridRequestFilter> gridRequestFilters;
 	private GridRequestSort[] gridRequestSorts;
@@ -198,7 +198,7 @@ public class GridRequest implements Serializable {
 	public Boolean getIncludeMetadata() {return includeMetadata; }
 	public void setIncludeMetadata(Boolean includeMetadata) {this.includeMetadata = includeMetadata; }
 
-	public Map<String, Object> getParams() {
+	public Map<String, String> getParams() {
 		if (params == null) {
 			params = new HashMap<>();
 		}
@@ -206,7 +206,7 @@ public class GridRequest implements Serializable {
 	}
 
 
-	public void setParams(Map<String, Object> params) {
+	public void setParams(Map<String, String> params) {
 		this.params = params;
 	}
 
@@ -280,7 +280,7 @@ public class GridRequest implements Serializable {
 	}
 
 	// PARAMS
-	public void addParam(String key, Object value) {
+	public void addParam(String key, String value) {
 		this.getParams().put(key, value);
 	}
 

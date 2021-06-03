@@ -707,7 +707,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 	public WorkOrderActivityCheckListDefinition getChecklistDefinition(InforContext context, TaskPlan taskPlan, String code) throws InforException {
 		GridRequest gridRequest = new GridRequest("WSTASK_TCH", 1);
 		gridRequest.addParam("param.task", taskPlan.getCode());
-		gridRequest.addParam("param.revision", taskPlan.getTaskRevision());
+		gridRequest.addParam("param.revision", taskPlan.getTaskRevision() == null ? null : taskPlan.getTaskRevision().toString());
 
 		gridRequest.addFilter("checklistitem", code, "EQUALS");
 
