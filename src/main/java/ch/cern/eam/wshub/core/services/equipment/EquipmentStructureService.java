@@ -9,7 +9,7 @@ import ch.cern.eam.wshub.core.tools.InforException;
 public interface EquipmentStructureService {
 
     @Operation(logOperation = INFOR_OPERATION.EQP_STR_C)
-    String addEquipmentToStructure(InforContext context, EquipmentStructure equipmentStructure) throws InforException;
+    EquipmentStructure addEquipmentToStructure(InforContext context, EquipmentStructure equipmentStructure) throws InforException;
 
     @Operation(logOperation = INFOR_OPERATION.EQP_STR_D)
     String removeEquipmentFromStructure(InforContext context, EquipmentStructure equipmentStructure) throws InforException;

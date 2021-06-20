@@ -1,6 +1,5 @@
 package ch.cern.eam.wshub.core.services.equipment.entities;
 
-import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
 import ch.cern.eam.wshub.core.adapters.BooleanAdapter;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -13,8 +12,14 @@ public class EquipmentStructure implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	private String childCode;
+	private String childDesc;
+	private String childType;
 	private String parentCode;
+	private String parentDesc;
+	private String parentType;
 	private String newParentCode;
+	private String newParentDesc;
+	private String newParentType;
 	private Boolean costRollUp = false;
 	private Boolean dependent = false;
 	private String sequenceNumber;
@@ -54,24 +59,72 @@ public class EquipmentStructure implements Serializable {
 	public void setSequenceNumber(String sequenceNumber) {
 		this.sequenceNumber = sequenceNumber;
 	}
-	@Override
-	public String toString() {
-		return "EquipmentStructure ["
-				+ (childCode != null ? "childCode=" + childCode + ", " : "")
-				+ (parentCode != null ? "parentCode=" + parentCode + ", " : "")
-				+ (newParentCode != null ? "newParentCode=" + newParentCode
-						+ ", " : "")
-				+ (costRollUp != null ? "costRollUp=" + costRollUp + ", " : "")
-				+ (dependent != null ? "dependent=" + dependent + ", " : "")
-				+ (sequenceNumber != null ? "sequenceNumber=" + sequenceNumber
-						: "") + "]";
-	}
+
 	public String getNewParentCode() {
 		return newParentCode;
 	}
 	public void setNewParentCode(String newParentCode) {
 		this.newParentCode = newParentCode;
 	}
-	
-	
+
+	public String getChildDesc() {
+		return childDesc;
+	}
+
+	public void setChildDesc(String childDesc) {
+		this.childDesc = childDesc;
+	}
+
+	public String getChildType() {
+		return childType;
+	}
+
+	public void setChildType(String childType) {
+		this.childType = childType;
+	}
+
+	public String getParentDesc() {
+		return parentDesc;
+	}
+
+	public void setParentDesc(String parentDesc) {
+		this.parentDesc = parentDesc;
+	}
+
+	public String getParentType() {
+		return parentType;
+	}
+
+	public void setParentType(String parentType) {
+		this.parentType = parentType;
+	}
+
+	public String getNewParentDesc() {
+		return newParentDesc;
+	}
+
+	public void setNewParentDesc(String newParentDesc) {
+		this.newParentDesc = newParentDesc;
+	}
+
+	public String getNewParentType() {
+		return newParentType;
+	}
+
+	public void setNewParentType(String newParentType) {
+		this.newParentType = newParentType;
+	}
+
+	@Override
+	public String toString() {
+		return "EquipmentStructure ["
+				+ (childCode != null ? "childCode=" + childCode + ", " : "")
+				+ (parentCode != null ? "parentCode=" + parentCode + ", " : "")
+				+ (newParentCode != null ? "newParentCode=" + newParentCode
+				+ ", " : "")
+				+ (costRollUp != null ? "costRollUp=" + costRollUp + ", " : "")
+				+ (dependent != null ? "dependent=" + dependent + ", " : "")
+				+ (sequenceNumber != null ? "sequenceNumber=" + sequenceNumber
+				: "") + "]";
+	}
 }
