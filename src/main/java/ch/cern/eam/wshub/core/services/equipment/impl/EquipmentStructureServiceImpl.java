@@ -9,14 +9,15 @@ import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_fields.EQUIPMENTID_Type;
 import net.datastream.schemas.mp_fields.EQUIPMENTSTRUCTUREID_Type;
+import net.datastream.schemas.mp_functions.SessionType;
 import net.datastream.schemas.mp_functions.mp0347_001.MP0347_UpdateEquipmentStructureProperties_001;
 import net.datastream.schemas.mp_functions.mp0356_001.MP0356_RemoveEquipmentFromStructure_001;
 import net.datastream.schemas.mp_functions.mp0356_001.ParentEquipment;
 import net.datastream.schemas.mp_functions.mp3057_001.MP3057_AddEquipmentStructure_001;
 import net.datastream.schemas.mp_functions.mp3058_001.MP3058_SyncEquipmentStructure_001;
 import net.datastream.schemas.mp_functions.mp3058_001.NewParentEquipment;
-import net.datastream.schemas.mp_results.mp3057_001.ResultData;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
+import javax.xml.ws.Holder;
 
 public class EquipmentStructureServiceImpl implements EquipmentStructureService {
 
@@ -30,7 +31,7 @@ public class EquipmentStructureServiceImpl implements EquipmentStructureService 
 		this.inforws = inforWebServicesToolkitClient;
 	}
 
-	public EquipmentStructure addEquipmentToStructure(InforContext context, EquipmentStructure equipmentStructure) throws InforException {
+	public String addEquipmentToStructure(InforContext context, EquipmentStructure equipmentStructure) throws InforException {
 
 		MP3057_AddEquipmentStructure_001 addEqStr = new MP3057_AddEquipmentStructure_001();
 
@@ -61,11 +62,9 @@ public class EquipmentStructureServiceImpl implements EquipmentStructureService 
 					.setSEQUENCENUMBER(tools.getDataTypeTools().encodeLong(equipmentStructure.getSequenceNumber(), "Sequence Number"));
 		}
 
-		ResultData result = tools.performInforOperation(context, inforws::addEquipmentStructureOp, addEqStr).getResultData();
+		tools.performInforOperation(context, inforws::addEquipmentStructureOp, addEqStr);
 
-		equipmentStructure.setChildDesc(result.getEQUIPMENTSTRUCTUREID().getEQUIPMENTID().getDESCRIPTION());
-		equipmentStructure.setNewParentDesc(result.getEQUIPMENTSTRUCTUREID().getEQUIPMENTID().getDESCRIPTION());
-		return equipmentStructure;
+		return "OK";
 	}
 
 	public String removeEquipmentFromStructure(InforContext context, EquipmentStructure equipmentStructure) throws InforException {
