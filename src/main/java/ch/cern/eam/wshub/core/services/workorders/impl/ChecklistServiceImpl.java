@@ -140,7 +140,9 @@ public class ChecklistServiceImpl implements ChecklistService {
 			signatures.add(perf1);
 		}
 
-		if (isPerformer2 || isReviewer || isViewer) {
+		// TODO: refactor the check below to move this CERN-specific logic to EAM Light
+		boolean performedBy2Hidden = taskPlan.getUserDefinedFields().getUdfchkbox02();
+		if (!performedBy2Hidden && (isPerformer2 || isReviewer || isViewer)) {
 			WorkOrderActivityChecklistSignatureResult perf2 = new WorkOrderActivityChecklistSignatureResult();
 			perf2.setType("PB02");
 			perf2.setSigner(workOrderActivityCheckList.getPerformer2Name());
