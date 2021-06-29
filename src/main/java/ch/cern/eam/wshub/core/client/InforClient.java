@@ -79,6 +79,7 @@ public class InforClient implements Serializable {
     private CommentService commentService;
     private WorkOrderService workOrderService;
     private StandardWorkOrderService standardWorkOrderService;
+    private StandardWorkOrderChildService standardWorkOrderChildService;
     private CaseService caseService;
     private CaseTaskService caseTaskService;
     private LaborBookingService laborBookingService;
@@ -231,6 +232,7 @@ public class InforClient implements Serializable {
             //
             inforClient.workOrderService = proxy(WorkOrderService.class, new WorkOrderServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.standardWorkOrderService = proxy(StandardWorkOrderService.class, new StandardWorkOrderServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
+            inforClient.standardWorkOrderChildService = proxy(StandardWorkOrderChildService.class, new StandardWorkOrderChildServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.commentService = proxy(CommentService.class, new CommentServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.caseService = proxy(CaseService.class, new CaseServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.caseTaskService = proxy(CaseTaskService.class, new CaseTaskServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
@@ -297,6 +299,14 @@ public class InforClient implements Serializable {
 
     public StandardWorkOrderService getStandardWorkOrderService() {
         return standardWorkOrderService;
+    }
+
+    public StandardWorkOrderChildService getStandardWorkOrderChildService() {
+        return standardWorkOrderChildService;
+    }
+
+    public void setStandardWorkOrderChildService(StandardWorkOrderChildService standardWorkOrderChildService) {
+        this.standardWorkOrderChildService = standardWorkOrderChildService;
     }
 
     public AssetService getAssetService() {
