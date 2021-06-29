@@ -129,6 +129,7 @@ public class InforClient implements Serializable {
     private MECService mecService;
 
     private SafetyService safetyService;
+    private CategoryService categoryService;
 
     // Prevent initializing the class without the builder
     private InforClient() {}
@@ -238,6 +239,7 @@ public class InforClient implements Serializable {
             inforClient.laborBookingService = proxy(LaborBookingService.class, new LaborBookingServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.workOrderMiscService = proxy(WorkOrderMiscService.class, new WorkOrderMiscServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.employeeService = proxy(EmployeeService.class, new EmployeeServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
+            inforClient.categoryService = proxy(CategoryService.class, new CategoryServiceImpl(tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.assetService = proxy(AssetService.class, new AssetServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.positionService = proxy(PositionService.class, new PositionServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.systemService = proxy(SystemService.class, new SystemServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
@@ -444,4 +446,8 @@ public class InforClient implements Serializable {
     public SalesPriceService getSalesPriceService() {return salesPriceService; }
 
     public UserDefinedScreenService getUserDefinedScreenService() {return userDefinedScreenService; }
+
+    public CategoryService getCategoryService() {
+        return categoryService;
+    }
 }
