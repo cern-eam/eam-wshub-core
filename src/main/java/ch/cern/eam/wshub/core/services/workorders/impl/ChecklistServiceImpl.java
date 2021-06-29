@@ -151,7 +151,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 			perf2.setViewAsReviewer(isReviewer);
 			perf2.setTime(workOrderActivityCheckList.getTimePerf2() != null ?
 					workOrderActivityCheckList.getTimePerf2() : null);
-			perf2.setResponsibilityCode(performer2Qualification != null ? performer2Qualification : performer1Qualification);
+			perf2.setResponsibilityCode(performer2Qualification);
 			signatures.add(perf2);
 		}
 
