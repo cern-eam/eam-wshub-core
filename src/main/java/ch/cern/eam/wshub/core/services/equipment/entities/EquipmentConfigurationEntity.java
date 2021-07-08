@@ -2,6 +2,7 @@ package ch.cern.eam.wshub.core.services.equipment.entities;
 
 import ch.cern.eam.wshub.core.annotations.InforField;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
+import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 
 import javax.persistence.Entity;
 import javax.persistence.Transient;
@@ -171,6 +172,13 @@ public class EquipmentConfigurationEntity implements Serializable {
     @InforField(xpath = "TrackingDetails/MODELREVISION")
     private String modelRevision;
 
+    @Transient
+    @InforField(xpath = "PARTID/PARTCODE")
+    private String partCode;
+
+    @Transient
+    @InforField(xpath = "UserDefinedFields")
+    private UserDefinedFields userDefinedFields;
 
     public String getEquipmentConfigCode() {
         return equipmentConfigCode;
@@ -476,6 +484,22 @@ public class EquipmentConfigurationEntity implements Serializable {
         this.modelRevision = modelRevision;
     }
 
+    public String getPartCode() {
+        return partCode;
+    }
+
+    public void setPartCode(String partCode) {
+        this.partCode = partCode;
+    }
+
+    public UserDefinedFields getUserDefinedFields() {
+        return userDefinedFields;
+    }
+
+    public void setUserDefinedFields(UserDefinedFields userDefinedFields) {
+        this.userDefinedFields = userDefinedFields;
+    }
+
     @Override
     public String toString() {
         return "EquipmentConfigurationEntity{" +
@@ -517,6 +541,8 @@ public class EquipmentConfigurationEntity implements Serializable {
                 ", manufacturerCode='" + manufacturerCode + '\'' +
                 ", model='" + model + '\'' +
                 ", modelRevision='" + modelRevision + '\'' +
+                ", partCode='" + partCode + '\'' +
+                ", userDefinedFields=" + userDefinedFields +
                 '}';
     }
 }
