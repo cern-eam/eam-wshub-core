@@ -3,14 +3,17 @@ package ch.cern.eam.wshub.core.services.workorders.entities;
 import ch.cern.eam.wshub.core.adapters.BigIntegerAdapter;
 import ch.cern.eam.wshub.core.adapters.BooleanAdapter;
 import ch.cern.eam.wshub.core.annotations.BooleanType;
+import ch.cern.eam.wshub.core.annotations.GridField;
 import ch.cern.eam.wshub.core.annotations.InforField;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestRow;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.math.BigInteger;
+import java.util.List;
 
 public class StandardWorkOrder {
 
