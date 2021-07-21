@@ -9,6 +9,7 @@ import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.util.*;
@@ -42,6 +43,7 @@ public class EAMUser implements Serializable {
 	@InforField(xpath = "USEREXPIREDATE")
 	private Date userIDExpirationDate;
 
+	@XmlTransient
 	@Transient
 	@InforField(xpath = "PASSWORD")
 	private String password;
