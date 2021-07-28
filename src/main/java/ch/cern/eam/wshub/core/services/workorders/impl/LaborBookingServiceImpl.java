@@ -28,6 +28,7 @@ import net.datastream.wsdls.inforws.InforWebServicesPT;
 import javax.persistence.EntityManager;
 import javax.xml.ws.Holder;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
@@ -178,6 +179,38 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 		//
 		activityInfor.setACTIVITYID(new ACTIVITYID());
 
+		//
+		if (activityParam.getTaskCode() != null && !activityParam.getTaskCode().trim().equals("")) {
+			activityInfor.setTASKSID(new TASKS_Type());
+			activityInfor.getTASKSID().setORGANIZATIONID(tools.getOrganization(context));
+			activityInfor.getTASKSID().setTASKCODE(activityParam.getTaskCode());
+			activityInfor.getTASKSID().setTASKREVISION((long) 0);
+			activityInfor.getTASKSID().setTASKQUANTITY(tools.getDataTypeTools().encodeQuantity(activityParam.getTaskQty(), "Task Quantity"));
+
+			TaskPlan search = new TaskPlan();
+			search.setCode(activityParam.getTaskCode());
+
+			TaskPlan retrievedPlan = taskPlanService.getTaskPlan(context, search);
+			if (retrievedPlan.getPeopleRequired() != null) {
+				activityInfor.setPERSONS(retrievedPlan.getPeopleRequired().longValue());
+			}
+
+			if (retrievedPlan.getMaterialList() != null) {
+				activityInfor.setMATLIST(new MATLIST_Type());
+				activityInfor.getMATLIST().setMTLCODE(retrievedPlan.getMaterialList());
+			}
+
+			if (retrievedPlan.getEstimatedHours() != null) {
+				activityInfor.setESTIMATEDHOURS(retrievedPlan.getEstimatedHours().doubleValue());
+			}
+
+			if (retrievedPlan.getTradeCode() != null) {
+				activityInfor.setTRADEID(new TRADEID_Type());
+				activityInfor.getTRADEID().setORGANIZATIONID(tools.getOrganization(context));
+				activityInfor.getTRADEID().setTRADECODE(retrievedPlan.getTradeCode());
+			}
+		}
+
 		if (activityParam.getWorkOrderNumber() != null) {
 			activityInfor.getACTIVITYID().setWORKORDERID(new WOID_Type());
 			activityInfor.getACTIVITYID().getWORKORDERID().setJOBNUM(activityParam.getWorkOrderNumber());
@@ -216,14 +249,6 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 		//
 		if (activityParam.getHoursRemaining() != null) {
 			activityInfor.setHOURSREMAINING(activityParam.getHoursRemaining().doubleValue());
-		}
-		//
-		if (activityParam.getTaskCode() != null && !activityParam.getTaskCode().trim().equals("")) {
-			activityInfor.setTASKSID(new TASKS_Type());
-			activityInfor.getTASKSID().setORGANIZATIONID(tools.getOrganization(context));
-			activityInfor.getTASKSID().setTASKCODE(activityParam.getTaskCode());
-			activityInfor.getTASKSID().setTASKREVISION((long) 0);
-			activityInfor.getTASKSID().setTASKQUANTITY(tools.getDataTypeTools().encodeQuantity(activityParam.getTaskQty(), "Task Quantity"));
 		}
 
 		//
