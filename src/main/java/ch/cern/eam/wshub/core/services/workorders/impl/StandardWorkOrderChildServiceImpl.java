@@ -1,6 +1,7 @@
 package ch.cern.eam.wshub.core.services.workorders.impl;
 
 import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.services.entities.BatchResponse;
 import ch.cern.eam.wshub.core.services.workorders.StandardWorkOrderChildService;
 import ch.cern.eam.wshub.core.services.workorders.entities.StandardWorkOrder;
 import ch.cern.eam.wshub.core.services.workorders.entities.StandardWorkOrderChild;
@@ -23,6 +24,8 @@ import net.datastream.schemas.mp_results.mp7746_001.MP7746_GetStandardWOChildDef
 import net.datastream.schemas.mp_results.mp7746_001.ResultData;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
+import java.util.List;
+
 public class StandardWorkOrderChildServiceImpl implements StandardWorkOrderChildService {
 
     private Tools tools;
@@ -33,6 +36,26 @@ public class StandardWorkOrderChildServiceImpl implements StandardWorkOrderChild
         this.applicationData = applicationData;
         this.tools = tools;
         this.inforws = inforWebServicesToolkitClient;
+    }
+
+    @Override
+    public BatchResponse<StandardWorkOrderChild> createStandardWorkOrderChildBatch(InforContext context, List<StandardWorkOrderChild> standardWorkOrderChildren) throws InforException {
+        return tools.batchOperation(context, this::createStandardWorkOrderChild, standardWorkOrderChildren);
+    }
+
+    @Override
+    public BatchResponse<StandardWorkOrderChild> readStandardWorkOrderChildBatch(InforContext context, List<String> standardWOCodes) throws InforException {
+        return tools.batchOperation(context, this::readStandardWorkOrderChild, standardWOCodes);
+    }
+
+    @Override
+    public BatchResponse<StandardWorkOrderChild> updateStandardWorkOrderChildBatch(InforContext context, List<StandardWorkOrderChild> standardWorkOrderChildren) throws InforException {
+        return tools.batchOperation(context, this::updateStandardWorkOrderChild, standardWorkOrderChildren);
+    }
+
+    @Override
+    public BatchResponse<StandardWorkOrderChild> deleteStandardWorkOrderChildBatch(InforContext context, List<String> standardWOCodes) throws InforException {
+        return tools.batchOperation(context, this::deleteStandardWorkOrderChild, standardWOCodes);
     }
 
     @Override
@@ -103,5 +126,17 @@ public class StandardWorkOrderChildServiceImpl implements StandardWorkOrderChild
         mp7275_deleteStandardWOChild_001.setSTANDARDWOCHILDID(standardwochildid_type);
         final MP7275_DeleteStandardWOChild_001_Result mp7275_deleteStandardWOChild_001_result = tools.performInforOperation(context, inforws::deleteStandardWOChildOp, mp7275_deleteStandardWOChild_001);
         return  tools.getInforFieldTools().transformInforObject(new StandardWorkOrderChild(), mp7275_deleteStandardWOChild_001_result.getResultData().getSTANDARDWOCHILDID());
+    }
+
+    private StandardWorkOrderChild readStandardWorkOrderChild(InforContext context, String code) throws InforException {
+        StandardWorkOrderChild standardWorkOrderChild = new StandardWorkOrderChild();
+        standardWorkOrderChild.setChildStandardWOCode(code);
+        return this.readStandardWorkOrderChild(context, standardWorkOrderChild);
+    }
+
+    private StandardWorkOrderChild deleteStandardWorkOrderChild(InforContext context, String code) throws InforException {
+        StandardWorkOrderChild standardWorkOrderChild = new StandardWorkOrderChild();
+        standardWorkOrderChild.setChildStandardWOCode(code);
+        return this.deleteStandardWorkOrderChild(context, standardWorkOrderChild);
     }
 }
