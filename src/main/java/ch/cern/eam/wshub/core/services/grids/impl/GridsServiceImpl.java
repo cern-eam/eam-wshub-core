@@ -1,6 +1,7 @@
 package ch.cern.eam.wshub.core.services.grids.impl;
 
 import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.services.entities.BatchResponse;
 import ch.cern.eam.wshub.core.services.grids.GridsService;
 
 import ch.cern.eam.wshub.core.services.grids.entities.*;
@@ -9,6 +10,7 @@ import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.isEmpty;
 
+import java.util.List;
 import java.util.stream.Collectors;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
@@ -35,6 +37,11 @@ public class GridsServiceImpl implements GridsService {
 		if (tools.isDatabaseConnectionConfigured()) {
 			jpaGrids = new JPAGrids(applicationData, tools, inforws);
 		}
+	}
+
+	@Override
+	public BatchResponse<GridRequestResult> executeQueryBatch(InforContext context, List<GridRequest> gridRequests) throws InforException {
+		return tools.batchOperation(context, this::executeQuery, gridRequests);
 	}
 
 	public GridRequestResult executeQuery(InforContext context, GridRequest gridRequest) throws InforException {
