@@ -26,6 +26,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -307,6 +308,44 @@ public class Tools {
 				.collect(Collectors.toList());
 
 		return processCallables(callableList);
+	}
+
+	/*
+		Use case:
+		You have a map, named map, of user codes to work order numbers Map<String, String>
+		You wish to get all work orders at once using a batch operation, but still have it in a map
+		of user codes to work orders: Map<String, WorkOrder>.
+		Doing it the normal way yields:
+		List<WorkOrder> = readWorkOrderBatch(context, map.values());
+
+		With this method, one can do:
+		List<String> workOrderNumbers = map.values();
+		List<WorkOrder> workOrders = readWorkOrderBatch(context, workOrderNumbers);
+		Map<String, WorkOrder> finalMap = batchOperationToMap(workOrderNumbers, workOrders, map);
+	 */
+	public <A, R, T> Map<T, R> batchOperationToMap(List<A> arguments, BatchResponse<R> results, Map<T, A> map) {
+		List<R> responses = results.getResponseList().stream()
+				.map(response -> response.getResponse()).collect(Collectors.toList());
+
+		if (arguments.size() != responses.size()) {
+			throw new RuntimeException("The size of the results and the arguments does not match");
+		}
+
+		Function<A, List<T>> getKeysFromValue = value -> map.entrySet().stream()
+				.filter(entry -> entry.getValue() == value)
+				.map(entry -> entry.getKey())
+				.collect(Collectors.toList());
+
+		Map<T, R> returnMap = new HashMap<>();
+
+		for(int i = 0; i < responses.size(); ++i) {
+			List<T> keys = getKeysFromValue.apply(arguments.get(i));
+			R result = responses.get(i);
+
+			keys.forEach(key -> returnMap.put(key, result));
+		}
+
+		return returnMap;
 	}
 
 	public <A, R> R performInforOperation(InforContext context, InforOperation<A, R> operation, A argument)

@@ -3,10 +3,15 @@ package ch.cern.eam.wshub.core.services.grids;
 import ch.cern.eam.wshub.core.annotations.Operation;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.INFOR_OPERATION;
+import ch.cern.eam.wshub.core.services.entities.BatchResponse;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.services.grids.entities.*;
 
+import java.util.List;
+
 public interface GridsService {
+	@Operation(logOperation = INFOR_OPERATION.GRID_BR)
+	BatchResponse<GridRequestResult> executeQueryBatch(InforContext context, List<GridRequest> gridRequests) throws InforException;
 
 	@Operation(logOperation = INFOR_OPERATION.GRID_R)
 	GridRequestResult executeQuery(InforContext context, GridRequest gridRequest) throws InforException;
