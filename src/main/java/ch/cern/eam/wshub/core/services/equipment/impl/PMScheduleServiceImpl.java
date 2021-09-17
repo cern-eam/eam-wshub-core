@@ -23,6 +23,7 @@ import net.datastream.schemas.mp_results.mp3014_001.MP3014_GetEquipmentPMSchedul
 import net.datastream.schemas.mp_results.mp7006_001.MP7006_DeletePMScheduleEquipment_001_Result;
 import net.datastream.schemas.mp_results.mp7433_001.MP7433_SyncReleasedPM_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
 
 import javax.persistence.EntityManager;
 import javax.xml.ws.Holder;
@@ -140,7 +141,7 @@ public class PMScheduleServiceImpl implements PMScheduleService {
 		}
 
 		// PPO_LOCATION
-		if (pmSchedule.getLocation() != null) {
+		if (isNotEmpty(pmSchedule.getLocation())) {
 			pmschedule.getPMScheduleData().setLOCATIONID(new LOCATIONID_Type());
 			pmschedule.getPMScheduleData().getLOCATIONID().setORGANIZATIONID(tools.getOrganization(context));
 			pmschedule.getPMScheduleData().getLOCATIONID().setLOCATIONCODE(pmSchedule.getLocation());

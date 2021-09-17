@@ -19,7 +19,15 @@ import java.util.*;
 public class DataTypeTools {
 
     private Tools tools;
-    private static String[] formatStrings = { "dd-MMM-yyyy HH:mm", "dd-MMM-yyyy", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM-dd", "dd/MM/yyyy HH:mm:ss", "dd/MM/yyyy" };
+    private static String[] formatStrings = { "dd-MMM-yyyy HH:mm",
+            "dd-MMM-yyyy",
+            "dd-MM-yyyy",
+            "dd-MM-yyyy HH:mm",
+            "yyyy-MM-dd HH:mm:ss",
+            "yyyy-MM-dd HH:mm",
+            "yyyy-MM-dd",
+            "dd/MM/yyyy HH:mm:ss",
+            "dd/MM/yyyy" };
 
     public static final Integer NULLIFY_VALUE =  Integer.MAX_VALUE;
 
