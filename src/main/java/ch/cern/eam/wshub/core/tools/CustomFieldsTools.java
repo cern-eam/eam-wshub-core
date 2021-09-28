@@ -184,21 +184,27 @@ public class CustomFieldsTools {
             return;
         }
 
-        Map<String, CustomField> wshubCustomFieldMap = Arrays.stream(customFields)
+        Map<String, List<CustomField>> wshubCustomFieldMap = Arrays.stream(customFields)
             .filter(cf -> cf != null && cf.getCode() != null)
-            .collect(Collectors.toMap(CustomField::getCode, cf -> cf));
+            .collect(Collectors.groupingBy(CustomField::getCode, Collectors.toList()));
 
         userdefinedarea.getCUSTOMFIELD().removeIf(inforCustomField -> {
-            CustomField wshubCustomField = wshubCustomFieldMap.get(inforCustomField.getPROPERTYCODE());
-            return wshubCustomField != null
-                && (wshubCustomField.getValue() == null || "".equals(wshubCustomField.getValue()));
+            List<CustomField> wshubCustomField = wshubCustomFieldMap.get(inforCustomField.getPROPERTYCODE());
+            if (wshubCustomField == null || wshubCustomField.size() == 0) {
+                return false;
+            }
+            final Optional<CustomField> cf =
+                    wshubCustomField.stream().filter(customField -> customField.getEntityCode() == null ||
+                            inforCustomField.getEntity().equals(customField.getEntityCode())).findFirst();
+            return cf.isPresent()
+                && (cf.get().getValue() == null || "".equals(cf.get().getValue()));
         });
 
         for (CUSTOMFIELD inforCustomField : userdefinedarea.getCUSTOMFIELD()) {
-            CustomField wshubCustomField = wshubCustomFieldMap.get(inforCustomField.getPROPERTYCODE());
-
-            if (wshubCustomField != null && hasChangedCustomField(inforCustomField, wshubCustomField)) {
-                encodeInforCustomField(inforCustomField, wshubCustomField);
+            final Optional<CustomField> wshubCustomField = wshubCustomFieldMap.getOrDefault(inforCustomField.getPROPERTYCODE(),
+                    new ArrayList<>()).stream().filter(cf -> cf.getEntityCode() == null || cf.getEntityCode().equals(inforCustomField.getEntity())).findFirst();
+            if (wshubCustomField.isPresent() && hasChangedCustomField(inforCustomField, wshubCustomField.get())) {
+                encodeInforCustomField(inforCustomField, wshubCustomField.get());
                 inforCustomField.setChanged("true");
             }
         }
