@@ -4,6 +4,7 @@ import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
 import ch.cern.eam.wshub.core.adapters.BigIntegerAdapter;
 import ch.cern.eam.wshub.core.adapters.BooleanAdapter;
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
+import ch.cern.eam.wshub.core.annotations.BooleanType;
 import ch.cern.eam.wshub.core.annotations.InforField;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
@@ -226,6 +227,15 @@ public class WorkOrder implements Serializable, UserDefinedListHelpable {
 
 	@Transient
 	private String copyFrom;
+
+	@InforField(xpath = "BILLABLE", booleanType = BooleanType.PLUS_MINUS)
+	private Boolean billable;
+
+	@InforField(xpath = "DEPEND", booleanType = BooleanType.TRUE_FALSE)
+	private Boolean depend;
+
+	@InforField(xpath = "EVTISSTYPE")
+	private String issType;
 
 	@Transient
 	private HashMap<String, ArrayList<UDLValue>> userDefinedList;
@@ -746,6 +756,32 @@ public class WorkOrder implements Serializable, UserDefinedListHelpable {
 
 	public void setLocationOrganization(String locationOrganization) {
 		this.locationOrganization = locationOrganization;
+	}
+
+	@XmlJavaTypeAdapter(BooleanAdapter.class)
+	public Boolean getBillable() {
+		return billable;
+	}
+
+	public void setBillable(final Boolean billable) {
+		this.billable = billable;
+	}
+
+	@XmlJavaTypeAdapter(BooleanAdapter.class)
+	public Boolean getDepend() {
+		return depend;
+	}
+
+	public void setDepend(final Boolean depend) {
+		this.depend = depend;
+	}
+
+	public String getIssType() {
+		return issType;
+	}
+
+	public void setIssType(final String issType) {
+		this.issType = issType;
 	}
 
 	@Override

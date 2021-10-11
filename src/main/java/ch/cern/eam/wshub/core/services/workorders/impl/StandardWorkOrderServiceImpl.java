@@ -75,12 +75,12 @@ public class StandardWorkOrderServiceImpl implements StandardWorkOrderService {
         net.datastream.schemas.mp_entities.standardworkorder_001.StandardWorkOrder inforStandardWorkOrder = readStandardWorkOrderInfor(context, standardWorkOrder.getCode());
 
         // Check Custom fields. If they change, or now we have them
-        inforStandardWorkOrder.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(
-            context,
-            toCodeString(inforStandardWorkOrder.getCLASSID()),
-            inforStandardWorkOrder.getUSERDEFINEDAREA(),
-            standardWorkOrder.getClassCode(),
-            "EVNT"));
+//        inforStandardWorkOrder.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(
+//            context,
+//            toCodeString(inforStandardWorkOrder.getCLASSID()),
+//            inforStandardWorkOrder.getUSERDEFINEDAREA(),
+//            standardWorkOrder.getClassCode(),
+//            "STWO"));
 
         tools.getInforFieldTools().transformWSHubObject(inforStandardWorkOrder, standardWorkOrder, context);
 
