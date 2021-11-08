@@ -6,7 +6,7 @@ import ch.cern.eam.wshub.core.annotations.GridField;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.math.BigDecimal;
 
-public class WorkOrderPart {
+public class WorkOrderPart implements Cloneable {
 
 	@GridField(name = "partcode")
 	private String partCode;
@@ -130,5 +130,10 @@ public class WorkOrderPart {
 
 	public void setPartUoM(String partUoM) {
 		this.partUoM = partUoM;
+	}
+
+	public Object clone() throws CloneNotSupportedException
+	{
+		return super.clone();
 	}
 }
