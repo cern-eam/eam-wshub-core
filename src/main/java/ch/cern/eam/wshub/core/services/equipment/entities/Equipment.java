@@ -151,6 +151,9 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
     @Transient
     @InforField(xpath = "ManufacturerInfo/ZCOORDINATE", nullifyParentLevel = 0)
     private BigDecimal zCoordinate;
+    @Transient
+    @InforField(xpath = "VENDOR", nullifyParentLevel = 0)
+    private String vendor;
 
     @Transient
     @InforField(xpath = "FacilityConditionIndex/COSTOFNEEDEDREPAIRS", nullifyParentLevel = 0)
@@ -1010,6 +1013,14 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
 
     public void setFacilityConditionIndex(BigDecimal facilityConditionIndex) {
         this.facilityConditionIndex = facilityConditionIndex;
+    }
+
+    public String getVendor() {
+        return vendor;
+    }
+
+    public void setVendor(String vendor) {
+        this.vendor = vendor;
     }
 
     @XmlJavaTypeAdapter(BigDecimalAdapter.class)
