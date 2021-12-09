@@ -237,6 +237,9 @@ public class WorkOrder implements Serializable, UserDefinedListHelpable {
 	@InforField(xpath = "EVTISSTYPE")
 	private String issType;
 
+	@InforField(xpath = "WARRANTY", booleanType = BooleanType.TRUE_FALSE)
+	private Boolean warranty;
+
 	@Transient
 	private HashMap<String, ArrayList<UDLValue>> userDefinedList;
 
@@ -782,6 +785,14 @@ public class WorkOrder implements Serializable, UserDefinedListHelpable {
 
 	public void setIssType(final String issType) {
 		this.issType = issType;
+	}
+
+	public Boolean getWarranty() {
+		return warranty;
+	}
+
+	public void setWarranty(final Boolean warranty) {
+		this.warranty = warranty;
 	}
 
 	@Override
