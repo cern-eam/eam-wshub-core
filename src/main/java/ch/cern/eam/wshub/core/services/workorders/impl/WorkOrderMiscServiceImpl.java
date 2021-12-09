@@ -20,8 +20,11 @@ import net.datastream.schemas.mp_functions.mp0071_001.MP0071_AddWorkOrderPart_00
 import net.datastream.schemas.mp_functions.mp0080_001.MP0080_AddTask_001;
 import net.datastream.schemas.mp_functions.mp7153_001.MP7153_AddRouteEquipment_001;
 import net.datastream.schemas.mp_functions.mp7156_001.MP7156_DeleteRouteEquipment_001;
+import net.datastream.schemas.mp_functions.mp7336_001.MP7336_GetWOEquipLinearDetails_001;
 import net.datastream.schemas.mp_functions.mp7593_001.MP7593_AddWorkOrderAdditionalCosts_001;
 import net.datastream.schemas.mp_results.mp0044_001.MP0044_AddMeterReading_001_Result;
+import net.datastream.schemas.mp_results.mp7336_001.AdditionalWOEquipDetails;
+import net.datastream.schemas.mp_results.mp7336_001.MP7336_GetWOEquipLinearDetails_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
 import javax.xml.ws.Holder;
@@ -310,6 +313,17 @@ public class WorkOrderMiscServiceImpl implements WorkOrderMiscService {
 
 		tools.performInforOperation(context, inforws::addTaskOp, addTask);
 		return "done";
+	}
+
+	@Override
+	public AdditionalWOEquipDetails getWOEquipLinearDetails(final InforContext context, final String eqCode) throws InforException {
+		MP7336_GetWOEquipLinearDetails_001 op = new MP7336_GetWOEquipLinearDetails_001();
+		op.setEQUIPMENTID(new EQUIPMENTID_Type());
+		op.getEQUIPMENTID().setEQUIPMENTCODE(eqCode);
+		op.getEQUIPMENTID().setORGANIZATIONID(tools.getOrganization(context));
+		op.setORGANIZATIONID(tools.getOrganization(context));
+		final MP7336_GetWOEquipLinearDetails_001_Result additionalWOEquipDetails = tools.performInforOperation(context, inforws::getWOEquipLinearDetailsOp, op);
+		return additionalWOEquipDetails.getResultData().getAdditionalWOEquipDetails();
 	}
 
 }
