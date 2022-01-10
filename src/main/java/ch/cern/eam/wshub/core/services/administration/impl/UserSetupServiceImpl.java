@@ -5,6 +5,7 @@ import ch.cern.eam.wshub.core.services.administration.UserSetupService;
 import ch.cern.eam.wshub.core.services.entities.BatchResponse;
 import ch.cern.eam.wshub.core.services.administration.entities.EAMUser;
 import ch.cern.eam.wshub.core.services.entities.Department;
+import ch.cern.eam.wshub.core.services.entities.LocaleInfo;
 import ch.cern.eam.wshub.core.services.grids.GridsService;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
@@ -27,6 +28,7 @@ import net.datastream.schemas.mp_results.mp0603_001.MP0603_SyncUserSetup_001_Res
 import net.datastream.schemas.mp_results.mp9532_001.MP9532_RunEmptyOp_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
+import javax.persistence.EntityManager;
 import javax.xml.ws.Holder;
 import java.math.BigDecimal;
 import java.util.List;
@@ -71,6 +73,10 @@ public class UserSetupServiceImpl implements UserSetupService {
 	}
 
 	public EAMUser readUserSetup(InforContext context, String userCode) throws InforException {
+		EAMUser cachedUser = Tools.getUser();
+		if (cachedUser != null ) {
+			return cachedUser;
+		}
 		// The user to be readed
 		MP0601_GetUserSetup_001 getUserSetup = new MP0601_GetUserSetup_001();
 		getUserSetup.setUSERID(new USERID_Type());
@@ -100,6 +106,12 @@ public class UserSetupServiceImpl implements UserSetupService {
 				"departmentcode",
 				null,
 				gridsService.executeQuery(context, departmentsGridRequest)));
+
+		EntityManager em = tools.getEntityManager();
+		LocaleInfo result = em.createNamedQuery(LocaleInfo.FIND_LOCALE_INFO, LocaleInfo.class).setParameter("code", user.getLocaleCode()).getSingleResult();
+		user.setLocaleInfo(result);
+
+		tools.setUser(user);
 
 		return user;
 	}

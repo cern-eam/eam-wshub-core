@@ -4,6 +4,7 @@ import ch.cern.eam.wshub.core.adapters.DateAdapter;
 import ch.cern.eam.wshub.core.annotations.InforField;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.entities.Department;
+import ch.cern.eam.wshub.core.services.entities.LocaleInfo;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 
 import javax.persistence.*;
@@ -79,7 +80,22 @@ public class EAMUser implements Serializable {
 	private UserDefinedFields userDefinedFields;
 
 	@Transient
+	@InforField(xpath = "LOCALE")
+	private String localeCode;
+
+	@Transient
+	private LocaleInfo localeInfo;
+
+	@Transient
 	private Map<String, Department> departmentalSecurity;
+
+	public LocaleInfo getLocaleInfo() {
+		return localeInfo;
+	}
+
+	public void setLocaleInfo(LocaleInfo localeInfo) {
+		this.localeInfo = localeInfo;
+	}
 
 	public String getUserCode() {
 		return userCode;
@@ -119,6 +135,14 @@ public class EAMUser implements Serializable {
 
 	public void setEmailAddress(String emailAddress) {
 		this.emailAddress = emailAddress;
+	}
+
+	public String getLocaleCode() {
+		return localeCode;
+	}
+
+	public void setLocaleCode(String localeCode) {
+		this.localeCode = localeCode;
 	}
 
 	public String getDepartment() {

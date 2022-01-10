@@ -1,6 +1,7 @@
 package ch.cern.eam.wshub.core.tools;
 
 import ch.cern.eam.wshub.core.annotations.BooleanType;
+import ch.cern.eam.wshub.core.services.entities.LocaleInfo;
 import net.datastream.schemas.mp_fields.CLASSID_Type;
 import net.datastream.schemas.mp_fields.LOCATIONID_Type;
 import org.openapplications.oagis_segments.AMOUNT;
@@ -267,9 +268,16 @@ public class DataTypeTools {
         if (isEmpty(stringValue)) {
             return null;
         }
-        // Remove commas used as the thousands separator
-        stringValue = stringValue.replace(",", "");
+        LocaleInfo userLocaleInfo = Tools.getUser().getLocaleInfo();
         BigDecimal bigDecimalValue = null;
+
+        if (userLocaleInfo != null) {
+            stringValue = stringValue.replace(userLocaleInfo.getGroupSeparator(), "");
+            stringValue = stringValue.replace(userLocaleInfo.getDecimalSeparator(), ".");
+        } else {
+            // Remove commas used as the thousands separator
+            stringValue = stringValue.replace(",", "");
+        }
         try {
             bigDecimalValue = new BigDecimal(stringValue);
         } catch (NumberFormatException e) {

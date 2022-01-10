@@ -1,6 +1,7 @@
 package ch.cern.eam.wshub.core.tools;
 
 import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.services.administration.entities.EAMUser;
 import ch.cern.eam.wshub.core.services.entities.BatchResponse;
 import ch.cern.eam.wshub.core.services.entities.BatchSingleResponse;
 import ch.cern.eam.wshub.core.services.entities.Credentials;
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
 public class Tools {
 
 	private ApplicationData applicationData;
+	private static EAMUser eamUser;
 	private InforWebServicesPT inforws;
 
 	private ExecutorService executorService;
@@ -374,5 +376,13 @@ public class Tools {
 		String tenant = getTenant(context);
 
 		return operation.apply(argument, organization, security, sessionTerminationScenario, holder, messageConfigType, tenant);
+	}
+
+	public void setUser(EAMUser user) {
+		eamUser = user;
+	}
+
+	public static EAMUser getUser() {
+		return eamUser;
 	}
 }
