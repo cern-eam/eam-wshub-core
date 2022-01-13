@@ -64,6 +64,10 @@ public class EAMUser implements Serializable {
 	@InforField(xpath = "CLASSID/CLASSCODE")
 	private String classCode;
 
+	@Column(name = "USR_LOCALE")
+	@InforField(xpath = "LOCALE")
+	private String locale;
+
 	@Transient
 	private String employeeCode;
 
@@ -145,6 +149,14 @@ public class EAMUser implements Serializable {
 
 	public void setClassCode(String classCode) {
 		this.classCode = classCode;
+	}
+
+	public String getLocale() {
+		return locale;
+	}
+
+	public void setLocale(final String locale) {
+		this.locale = locale;
 	}
 
 	@XmlJavaTypeAdapter(DateAdapter.class)
