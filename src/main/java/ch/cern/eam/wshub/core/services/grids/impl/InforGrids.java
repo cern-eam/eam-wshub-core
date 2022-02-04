@@ -1,8 +1,10 @@
 package ch.cern.eam.wshub.core.services.grids.impl;
 
+import ch.cern.eam.wshub.core.annotations.BooleanType;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.grids.entities.*;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
+import ch.cern.eam.wshub.core.tools.DataTypeTools;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_functions.gridrequest.*;
@@ -84,6 +86,7 @@ public class InforGrids implements Serializable {
 		//
 		MP0116_GetGridDataOnly_001 getgridd = new MP0116_GetGridDataOnly_001();
 		getgridd.setFUNCTION_REQUEST_INFO(funRequest);
+		getgridd.getFUNCTION_REQUEST_INFO().getGRID().setLOCALIZE_RESULT(DataTypeTools.encodeBoolean(gridRequest.getLocalizeResults(), BooleanType.TRUE_FALSE));
 		MP0116_GetGridDataOnly_001_Result result =
 			tools.performInforOperation(context, inforws::getGridDataOnlyOp, getgridd);
 

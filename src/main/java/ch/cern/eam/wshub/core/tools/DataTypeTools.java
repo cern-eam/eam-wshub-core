@@ -269,13 +269,11 @@ public class DataTypeTools {
         }
         // Remove commas used as the thousands separator
         stringValue = stringValue.replace(",", "");
-        BigDecimal bigDecimalValue = null;
         try {
-            bigDecimalValue = new BigDecimal(stringValue);
+           return new BigDecimal(stringValue);
         } catch (NumberFormatException e) {
             throw Tools.generateFault(valueLabel + " couldn't be parsed.");
         }
-        return bigDecimalValue;
     }
 
     public static String decodeBigDecimal(BigDecimal bigDecimalValue) {
@@ -286,18 +284,16 @@ public class DataTypeTools {
     // BIG INTEGER
     //
     public static BigInteger encodeBigInteger(String stringValue, String valueLabel) throws InforException {
-        if (stringValue == null || stringValue.trim().equals("")) {
+        if (isEmpty(stringValue)) {
             return null;
         }
         // Remove commas used as the thousands separator
         stringValue = stringValue.replace(",", "");
-        BigInteger bigIntegerValue = null;
         try {
-            bigIntegerValue = new BigInteger(stringValue);
+            return new BigInteger(stringValue);
         } catch (NumberFormatException e) {
             throw Tools.generateFault(valueLabel + " couldn't be parsed.");
         }
-        return bigIntegerValue;
     }
 
     public static String decodeBigInteger(BigInteger bigIntegerValue) {
