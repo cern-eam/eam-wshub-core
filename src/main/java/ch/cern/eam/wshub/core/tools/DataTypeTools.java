@@ -19,7 +19,8 @@ import java.util.*;
 public class DataTypeTools {
 
     private Tools tools;
-    private static String[] formatStrings = { "dd-MMM-yyyy HH:mm",
+    private static String[] formatStrings = {
+            "dd-MMM-yyyy HH:mm",
             "dd-MMM-yyyy",
             "dd-MM-yyyy",
             "dd-MM-yyyy HH:mm",
@@ -27,7 +28,8 @@ public class DataTypeTools {
             "yyyy-MM-dd HH:mm",
             "yyyy-MM-dd",
             "dd/MM/yyyy HH:mm:ss",
-            "dd/MM/yyyy" };
+            "dd/MM/yyyy"
+    };
 
     public static final Integer NULLIFY_VALUE =  Integer.MAX_VALUE;
 
@@ -43,17 +45,19 @@ public class DataTypeTools {
             return null;
         }
 
-        if (date.trim().toUpperCase().equals("SYSDATE")) {
+        if ("SYSDATE".equalsIgnoreCase(date.trim())) {
             return Calendar.getInstance();
         }
 
         for (String formatString : formatStrings) {
             try {
                 SimpleDateFormat formatter = new SimpleDateFormat(formatString, Locale.ENGLISH);
+                formatter.setLenient(false);
+                final Date parsedDate = formatter.parse(date);
                 Calendar calendar = Calendar.getInstance();
-                calendar.setTime(formatter.parse(date));
+                calendar.setTime(parsedDate);
                 return calendar;
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
         }
 
@@ -62,11 +66,7 @@ public class DataTypeTools {
 
     public static Date convertStringToDate(String date) {
         Calendar calendar = convertStringToCalendar(date);
-        if (calendar != null) {
-            return calendar.getTime();
-        } else {
-            return null;
-        }
+        return calendar != null ? calendar.getTime() : null;
     }
 
     public static DATETIME encodeInforDate(Date dateValue, String dateLabel) throws InforException {
