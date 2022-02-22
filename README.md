@@ -11,7 +11,7 @@ To use EAM WSHub Core in your project, you just need to add the following Maven 
 <dependency>
     <groupId>ch.cern.eam</groupId>
     <artifactId>eam-wshub-core</artifactId>
-    <version>11.4-0</version>
+    <version>11.6-15</version>
 </dependency>
 ```
 
@@ -80,9 +80,8 @@ public class UpdateWorkOrderExample {
         String password = "{YOUR-PASSWORD}";
         String workOrderNumber = "{YOUR-WORK-ORDER-NUMBER}";
 
-        InforClient inforClient = new InforClient.Builder(
-                inforEndpointUrl,
-                tenant)
+        InforClient inforClient = new InforClient.Builder(inforEndpointUrl)
+                .withDefaultTenant(applicationData.getTenant())
                 .withDefaultOrganizationCode(organizationCode)
                 .build();
 
