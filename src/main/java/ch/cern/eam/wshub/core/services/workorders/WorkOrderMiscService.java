@@ -10,6 +10,7 @@ import ch.cern.eam.wshub.core.services.workorders.entities.TaskPlan;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.services.entities.WorkOrderPart;
 import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrderAdditionalCosts;
+import net.datastream.schemas.mp_results.mp7336_001.AdditionalWOEquipDetails;
 
 public interface WorkOrderMiscService {
     @Operation(logOperation = INFOR_OPERATION.METERRREAD_C)
@@ -32,4 +33,7 @@ public interface WorkOrderMiscService {
 
     @Operation(logOperation = INFOR_OPERATION.TASKPLAN_C)
     String createTaskPlan(InforContext context, TaskPlan taskPlan) throws InforException;
+
+    @Operation(logOperation = INFOR_OPERATION.WO_EQP_LINEAR_DETAILS_R)
+    AdditionalWOEquipDetails getEquipLinearDetails(InforContext context, String eqCode) throws InforException;
 }
