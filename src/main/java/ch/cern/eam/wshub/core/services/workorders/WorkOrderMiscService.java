@@ -35,5 +35,5 @@ public interface WorkOrderMiscService {
     String createTaskPlan(InforContext context, TaskPlan taskPlan) throws InforException;
 
     @Operation(logOperation = INFOR_OPERATION.WO_EQP_LINEAR_DETAILS_R)
-    AdditionalWOEquipDetails getWOEquipLinearDetails(InforContext context, String eqCode) throws InforException;
+    AdditionalWOEquipDetails getEquipLinearDetails(InforContext context, String eqCode) throws InforException;
 }

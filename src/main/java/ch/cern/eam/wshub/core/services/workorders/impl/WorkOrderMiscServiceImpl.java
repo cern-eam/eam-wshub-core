@@ -316,13 +316,14 @@ public class WorkOrderMiscServiceImpl implements WorkOrderMiscService {
 	}
 
 	@Override
-	public AdditionalWOEquipDetails getWOEquipLinearDetails(final InforContext context, final String eqCode) throws InforException {
+	public AdditionalWOEquipDetails getEquipLinearDetails(final InforContext context, final String eqCode) throws InforException {
 		MP7336_GetWOEquipLinearDetails_001 op = new MP7336_GetWOEquipLinearDetails_001();
 		op.setEQUIPMENTID(new EQUIPMENTID_Type());
 		op.getEQUIPMENTID().setEQUIPMENTCODE(eqCode);
 		op.getEQUIPMENTID().setORGANIZATIONID(tools.getOrganization(context));
 		op.setORGANIZATIONID(tools.getOrganization(context));
-		final MP7336_GetWOEquipLinearDetails_001_Result additionalWOEquipDetails = tools.performInforOperation(context, inforws::getWOEquipLinearDetailsOp, op);
+		final MP7336_GetWOEquipLinearDetails_001_Result additionalWOEquipDetails =
+				tools.performInforOperation(context, inforws::getWOEquipLinearDetailsOp, op);
 		return additionalWOEquipDetails.getResultData().getAdditionalWOEquipDetails();
 	}
 
