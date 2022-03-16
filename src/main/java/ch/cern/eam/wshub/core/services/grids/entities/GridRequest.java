@@ -31,7 +31,7 @@ public class GridRequest implements Serializable {
 	private String lang = "EN";
 	private Boolean returnHeaderData = false;
 	private Boolean includeMetadata = false;
-	private Boolean localizeResults;
+	private Boolean localizeResults = true;
 	
 	/**
 	 * Flag to indicate if fetch all the results
