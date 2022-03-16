@@ -240,6 +240,9 @@ public class WorkOrder implements Serializable, UserDefinedListHelpable {
 	@InforField(xpath = "WARRANTY", booleanType = BooleanType.TRUE_FALSE)
 	private Boolean warranty;
 
+	@InforField(xpath = "VENDER")
+	private String vendor;
+
 	@Transient
 	private HashMap<String, ArrayList<UDLValue>> userDefinedList;
 
@@ -793,6 +796,14 @@ public class WorkOrder implements Serializable, UserDefinedListHelpable {
 
 	public void setWarranty(final Boolean warranty) {
 		this.warranty = warranty;
+	}
+
+	public String getVendor() {
+		return vendor;
+	}
+
+	public void setVendor(String vendor) {
+		this.vendor = vendor;
 	}
 
 	@Override

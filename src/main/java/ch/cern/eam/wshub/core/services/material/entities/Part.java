@@ -359,6 +359,7 @@ public class Part implements Serializable, UserDefinedListHelpable {
 		this.trackByLot = trackByLot;
 	}
 
+	@XmlJavaTypeAdapter(BooleanAdapter.class)
 	public Boolean getPreventReorders() {
 		return preventReorders;
 	}
