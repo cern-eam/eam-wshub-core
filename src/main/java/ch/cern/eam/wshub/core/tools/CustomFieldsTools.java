@@ -1,6 +1,7 @@
 package ch.cern.eam.wshub.core.tools;
 
 import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.exceptions.OperationFailedException;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
 import net.datastream.schemas.mp_fields.*;
 import net.datastream.schemas.mp_functions.SessionType;
@@ -110,26 +111,28 @@ public class CustomFieldsTools {
     }
 
     // MIDDLE TIER CUSTOM FIELD -> INFOR CUSTOM FIELD
-    public CUSTOMFIELD encodeInforCustomField(CUSTOMFIELD customFieldInfor, CustomField customField)
-            throws InforException {
-        //
-        // DATE TIME
-        //
-        if (customFieldInfor.getType().toUpperCase().equals("DATI")) {
-            if (customField.getValue() != null) {
-                customFieldInfor.setDATETIMEFIELD(tools.getDataTypeTools().formatDate(customField.getValue(),
-                        "Custom field '" + customFieldInfor.getPROPERTYLABEL() + "'"));
+    public CUSTOMFIELD encodeInforCustomField(CUSTOMFIELD customFieldInfor, CustomField customField) throws InforException, OperationFailedException {
+
+
+        try {
+            // DATE TIME
+            if ("DATI".equalsIgnoreCase(customFieldInfor.getType())) {
+                if (customField.getValue() != null) {
+                    customFieldInfor.setDATETIMEFIELD(DataTypeTools.formatDate(customField.getValue(),
+                            "Custom field '" + customFieldInfor.getPROPERTYLABEL() + "'"));
+                }
             }
-        }
-        //
-        // DATE
-        //
-        if (customFieldInfor.getType().toUpperCase().equals("DATE")) {
-            if (customField.getValue() != null) {
-                customFieldInfor.setDATEFIELD(tools.getDataTypeTools().formatDate(customField.getValue(),
-                        "Custom field '" + customFieldInfor.getPROPERTYLABEL() + "'"));
+            // DATE
+            if ("DATE".equalsIgnoreCase(customFieldInfor.getType())) {
+                if (customField.getValue() != null) {
+                    customFieldInfor.setDATEFIELD(DataTypeTools.formatDate(customField.getValue(),
+                            "Custom field '" + customFieldInfor.getPROPERTYLABEL() + "'"));
+                }
             }
+        } catch (InforException e) {
+            throw new OperationFailedException(e.getMessage());
         }
+
         //
         // ENTITY
         //
@@ -170,8 +173,7 @@ public class CustomFieldsTools {
         return customFieldInfor;
     }
 
-    public void updateInforCustomFields(USERDEFINEDAREA userdefinedarea, CustomField[] customFields)
-            throws InforException {
+    public void updateInforCustomFields(USERDEFINEDAREA userdefinedarea, CustomField[] customFields) throws InforException, OperationFailedException {
         if (userdefinedarea == null
                 || userdefinedarea.getCUSTOMFIELD() == null
                 || userdefinedarea.getCUSTOMFIELD().size() == 0) {

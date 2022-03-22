@@ -2,6 +2,7 @@ package ch.cern.eam.wshub.core.tools;
 
 import ch.cern.eam.wshub.core.annotations.InforField;
 import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.exceptions.OperationFailedException;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import net.datastream.schemas.mp_fields.USERDEFINEDAREA;
@@ -43,12 +44,25 @@ public class InforFieldTools {
      * @param <W>
      * @return
      */
-    public <I,W> I transformWSHubObject(I inforObject, W wshubObject, InforContext context) {
+    public <I,W> I transformWSHubObject(I inforObject, W wshubObject, InforContext context) throws InforException {
+        final List<OperationFailedException> exceptionList = new ArrayList<>();
         Arrays.stream(wshubObject.getClass().getDeclaredFields())
                 .filter(wshubField -> wshubField.getAnnotation(InforField.class) != null)
                 .filter(wshubField -> !wshubField.getAnnotation(InforField.class).readOnly())
                 .sorted(Comparator.comparing(field -> field.getAnnotation(InforField.class).nullifyParentLevel()))
-                .forEach(wshubField -> setInforValue(wshubObject, wshubField, inforObject, context));
+                .forEach(wshubField -> {
+                    try {
+                        setInforValue(wshubObject, wshubField, inforObject, context);
+                    } catch (OperationFailedException e) {
+                        exceptionList.add(e);
+                    }
+                });
+        if (!exceptionList.isEmpty()) {
+            final String message = exceptionList.stream()
+                    .map(OperationFailedException::getMessage)
+                    .reduce("", (t, acc) -> acc + "; " + t);
+            throw Tools.generateFault(message);
+        }
         return inforObject;
     }
 
@@ -78,13 +92,15 @@ public class InforFieldTools {
      * @param <I>
      * @param <W>
      */
-    private <I,W> void setInforValue(W wshubObject, Field wshubField, I inforObject, InforContext context ) {
+    private <I,W> void setInforValue(W wshubObject, Field wshubField, I inforObject, InforContext context ) throws OperationFailedException {
         InforField inforField = wshubField.getAnnotation(InforField.class);
         List<String> fieldNamePath = convertXPathToPropertyChain(inforObject.getClass(), inforField.xpath()[0], inforField.enforceValidXpath());
         try {
             wshubField.setAccessible(true);
             Object wshubFieldValue = wshubField.get(wshubObject);
             setInforFieldByPath(inforObject, fieldNamePath, wshubFieldValue, wshubField, context);
+        } catch (OperationFailedException exception) {
+            throw exception;
         } catch (Exception exception ) {
             exception.printStackTrace();
             System.out.println("Problem: " + exception.getMessage());
@@ -263,7 +279,7 @@ public class InforFieldTools {
      * @param wshubField
      * @param context
      */
-    private void setSingleField(Object inforObject, String inforFieldName, Object wshubFieldValue, Field wshubField, InforContext context) {
+    private void setSingleField(Object inforObject, String inforFieldName, Object wshubFieldValue, Field wshubField, InforContext context) throws OperationFailedException {
         try {
             Field inforField = inforObject.getClass().getDeclaredField(inforFieldName);
             inforField.setAccessible(true);
@@ -274,7 +290,7 @@ public class InforFieldTools {
                 if (dateValue.getTime() == 0) {
                     inforField.set(inforObject, null);
                 } else {
-                    inforField.set(inforObject, tools.getDataTypeTools().encodeInforDate(dateValue, inforFieldName));
+                    inforField.set(inforObject, DataTypeTools.encodeInforDate(dateValue, inforFieldName));
                 }
             } else if (wshubFieldValue.getClass().equals(BigDecimal.class)) {
                 // BIG DECIMAL -> AMOUNT / QUANTITY
@@ -316,6 +332,8 @@ public class InforFieldTools {
             }
 
             setOrganizationField(inforObject, context);
+        } catch (OperationFailedException exception) {
+            throw new OperationFailedException("Error in setSingleField: " + exception.getMessage());
         } catch (Exception exception) {
             System.out.println("Error in setSingleField: " + exception.getMessage());
         }
@@ -350,7 +368,7 @@ public class InforFieldTools {
     }
 
     private void setInforFieldByPath(Object inforObject, List<String> path,
-                                     Object wshubFieldValue, Field wshubField, InforContext context) {
+                                     Object wshubFieldValue, Field wshubField, InforContext context) throws OperationFailedException {
         try {
             String fieldName = path.get(0);
             Field inforField = inforObject.getClass().getDeclaredField(fieldName);
@@ -375,6 +393,8 @@ public class InforFieldTools {
             }
             setOrganizationField(inforObject, context);
             setInforFieldByPath(inforField.get(inforObject), path.subList(1, path.size()), wshubFieldValue, wshubField, context);
+        } catch (OperationFailedException exception) {
+            throw exception;
         } catch (Exception exception) {
             // Error not allowed here
         }
