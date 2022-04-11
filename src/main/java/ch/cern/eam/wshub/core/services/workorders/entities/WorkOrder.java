@@ -77,6 +77,7 @@ public class WorkOrder implements Serializable, UserDefinedListHelpable {
 	@Transient
 	@InforField(xpath = "DEPARTMENTID/DESCRIPTION", readOnly = true)
 	private String departmentDesc;
+	@Transient
 	@InforField(xpath = "DEPARTMENTID/ORGANIZATIONID/ORGANIZATIONCODE")
 	private String departmentOrganization;
 	//
@@ -228,19 +229,24 @@ public class WorkOrder implements Serializable, UserDefinedListHelpable {
 	@Transient
 	private String copyFrom;
 
+	@Column(name = "EVT_BILLABLE")
 	@InforField(xpath = "BILLABLE", booleanType = BooleanType.PLUS_MINUS)
 	private Boolean billable;
 
+	@Transient
 	@InforField(xpath = "DEPEND", booleanType = BooleanType.TRUE_FALSE)
 	private Boolean depend;
 
+	@Column(name = "EVT_ISSTYPE")
 	@InforField(xpath = "EVTISSTYPE")
 	private String issType;
 
+	@Column(name = "EVT_WARRANTY")
 	@InforField(xpath = "WARRANTY", booleanType = BooleanType.TRUE_FALSE)
 	private Boolean warranty;
 
-	@InforField(xpath = "VENDER")
+	@Transient
+	@InforField(xpath = "VENDOR")
 	private String vendor;
 
 	@Transient
