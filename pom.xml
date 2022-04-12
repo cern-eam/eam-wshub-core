@@ -174,7 +174,7 @@
                 <configuration>
                     <serverId>oss-cern-eam</serverId>
                     <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>false</autoReleaseAfterClose>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
                 </configuration>
             </plugin>
 
