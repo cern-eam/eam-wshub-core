@@ -13,9 +13,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Array;
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
@@ -43,12 +41,27 @@ public class InforFieldTools {
      * @param <W>
      * @return
      */
-    public <I,W> I transformWSHubObject(I inforObject, W wshubObject, InforContext context) {
-        Arrays.stream(wshubObject.getClass().getDeclaredFields())
+    public <I,W> I transformWSHubObject(I inforObject, W wshubObject, InforContext context) throws InforException {
+    	final List<InforException> exceptionList = new ArrayList<>();
+    	Arrays.stream(wshubObject.getClass().getDeclaredFields())
                 .filter(wshubField -> wshubField.getAnnotation(InforField.class) != null)
                 .filter(wshubField -> !wshubField.getAnnotation(InforField.class).readOnly())
                 .sorted(Comparator.comparing(field -> field.getAnnotation(InforField.class).nullifyParentLevel()))
-                .forEach(wshubField -> setInforValue(wshubObject, wshubField, inforObject, context));
+                .forEach(wshubField -> {
+                    try {
+                        setInforValue(wshubObject, wshubField, inforObject, context);
+                    } catch (InforException e) {
+                        exceptionList.add(e);
+                    }
+                });
+    	
+    	if (!exceptionList.isEmpty()) {
+            final String message = exceptionList.stream()
+                    .map(InforException::getMessage)
+                    .reduce("", (t, acc) -> acc + "; " + t);
+            throw Tools.generateFault(message);
+        }
+    	
         return inforObject;
     }
 
@@ -78,14 +91,18 @@ public class InforFieldTools {
      * @param <I>
      * @param <W>
      */
-    private <I,W> void setInforValue(W wshubObject, Field wshubField, I inforObject, InforContext context ) {
+    private <I,W> void setInforValue(W wshubObject, Field wshubField, I inforObject, InforContext context ) throws InforException {
         InforField inforField = wshubField.getAnnotation(InforField.class);
         List<String> fieldNamePath = convertXPathToPropertyChain(inforObject.getClass(), inforField.xpath()[0], inforField.enforceValidXpath());
         try {
             wshubField.setAccessible(true);
             Object wshubFieldValue = wshubField.get(wshubObject);
             setInforFieldByPath(inforObject, fieldNamePath, wshubFieldValue, wshubField, context);
-        } catch (Exception exception ) {
+        } 
+        catch (InforException exception) {
+        	throw exception;
+        }
+        catch (Exception exception ) {
             exception.printStackTrace();
             System.out.println("Problem: " + exception.getMessage());
         }
@@ -263,7 +280,7 @@ public class InforFieldTools {
      * @param wshubField
      * @param context
      */
-    private void setSingleField(Object inforObject, String inforFieldName, Object wshubFieldValue, Field wshubField, InforContext context) {
+    private void setSingleField(Object inforObject, String inforFieldName, Object wshubFieldValue, Field wshubField, InforContext context) throws InforException {
         try {
             Field inforField = inforObject.getClass().getDeclaredField(inforFieldName);
             inforField.setAccessible(true);
@@ -316,41 +333,17 @@ public class InforFieldTools {
             }
 
             setOrganizationField(inforObject, context);
-        } catch (Exception exception) {
+        } 
+        catch (InforException exception) {
+        	throw exception;
+        }
+        catch (Exception exception) {
             System.out.println("Error in setSingleField: " + exception.getMessage());
         }
     }
 
-    /**
-     *
-     * @param inforObject
-     * @param fieldNameWrapper
-     * @param fieldNameValue
-     * @param wshubFieldValue
-     * @param wshubField
-     * @param context
-     */
-    private void setComplexField(Object inforObject, String fieldNameWrapper, String fieldNameValue, Object wshubFieldValue, Field wshubField, InforContext context) {
-        try {
-            Field inforField = inforObject.getClass().getDeclaredField(fieldNameWrapper);
-            inforField.setAccessible(true);
-
-            if (wshubFieldValue.equals("")) {
-                inforField.set(inforObject, null);
-            } else {
-                if (inforField.get(inforObject) == null) {
-                    inforField.set(inforObject, inforField.getType().newInstance());
-                }
-                setOrganizationField(inforObject, context);
-                setSingleField(inforField.get(inforObject), fieldNameValue, wshubFieldValue, wshubField, context);
-            }
-        } catch (Exception exception) {
-            // Error not allowed here
-        }
-    }
-
     private void setInforFieldByPath(Object inforObject, List<String> path,
-                                     Object wshubFieldValue, Field wshubField, InforContext context) {
+                                     Object wshubFieldValue, Field wshubField, InforContext context) throws InforException {
         try {
             String fieldName = path.get(0);
             Field inforField = inforObject.getClass().getDeclaredField(fieldName);
@@ -375,7 +368,11 @@ public class InforFieldTools {
             }
             setOrganizationField(inforObject, context);
             setInforFieldByPath(inforField.get(inforObject), path.subList(1, path.size()), wshubFieldValue, wshubField, context);
-        } catch (Exception exception) {
+        } 
+        catch (InforException exception) {
+        	throw exception;
+        }
+        catch (Exception exception) {
             // Error not allowed here
         }
     }

@@ -146,7 +146,7 @@ public class CustomFieldsTools {
         //
         if (customFieldInfor.getType().toUpperCase().equals("NUM")) {
             if (customField.getValue() != null) {
-                customFieldInfor.setNUMBERFIELD(tools.getDataTypeTools().encodeQuantity(encodeBigDecimal(customField.getValue(), "Custom Field"),
+                customFieldInfor.setNUMBERFIELD(tools.getDataTypeTools().encodeQuantity(encodeBigDecimal(customField.getValue(), "Custom field '" + customFieldInfor.getPROPERTYLABEL() + "'"),
                         "Custom field '" + customFieldInfor.getPROPERTYLABEL() + "'"));
             }
         }
