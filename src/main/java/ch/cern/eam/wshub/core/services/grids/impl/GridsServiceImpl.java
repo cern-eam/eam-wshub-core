@@ -1,6 +1,7 @@
 package ch.cern.eam.wshub.core.services.grids.impl;
 
 import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.services.administration.impl.UserSetupServiceImpl;
 import ch.cern.eam.wshub.core.services.entities.BatchResponse;
 import ch.cern.eam.wshub.core.services.grids.GridsService;
 
@@ -27,11 +28,13 @@ public class GridsServiceImpl implements GridsService {
 
 	private InforGrids inforGrids;
 	private JPAGrids jpaGrids;
+	private ApplicationData applicationData;
 	public static final Map<String, GridMetadataRequestResult> gridIdCache = new ConcurrentHashMap<>();
 
 	public GridsServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
 		this.tools = tools;
 		this.inforws = inforWebServicesToolkitClient;
+		this.applicationData = applicationData;
 		inforGrids = new InforGrids(applicationData, tools, inforws);
 		// Init JPA Grids only when DB connection is present
 		if (tools.isDatabaseConnectionConfigured()) {
@@ -55,6 +58,11 @@ public class GridsServiceImpl implements GridsService {
 				gridRequest.setGridName(gridMetadataInfor.getGridName());
 				if (gridRequest.getDataspyID() == null) gridRequest.setDataspyID(gridMetadataInfor.getDataSpyId());
 				if (gridRequest.getUserFunctionName() == null) gridRequest.setUserFunctionName(gridMetadataInfor.getGridName());
+			}
+			
+			if (applicationData.getWithJPAGridsAuthentication()) {
+				// Invoke the EAM login web service before JPA Grid invocation
+				UserSetupServiceImpl.login(context, null, tools, inforws);
 			}
 			GridRequestResult gridRequestResult = jpaGrids.executeQuery(context, gridRequest);
 			return gridRequestResult;

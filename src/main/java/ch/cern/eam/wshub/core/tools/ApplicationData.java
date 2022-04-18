@@ -5,6 +5,7 @@ public class ApplicationData {
 	private String url;
 	private String tenant;
 	private String organization;
+	private Boolean withJPAGridsAuthentication = false;
 
 	public String getUrl() {
 		return url;
@@ -48,6 +49,14 @@ public class ApplicationData {
 
 	public String getDateTimeDBFormat() {
 		return "MM/dd/yyyy HH:mm";
+	}
+
+	public Boolean getWithJPAGridsAuthentication() {
+		return withJPAGridsAuthentication;
+	}
+
+	public void setWithJPAGridsAuthentication(Boolean withJPAGridsAuthentication) {
+		this.withJPAGridsAuthentication = withJPAGridsAuthentication;
 	}
 
 	public Long getQueryMaxNumberOfRows() {

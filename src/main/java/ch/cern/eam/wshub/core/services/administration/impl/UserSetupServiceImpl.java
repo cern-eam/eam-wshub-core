@@ -50,6 +50,10 @@ public class UserSetupServiceImpl implements UserSetupService {
 	}
 
 	public String login(InforContext context, String userCode) throws InforException {
+		return login(context, userCode, tools, inforws);
+	}
+	
+	public static String login(InforContext context, String userCode, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) throws InforException {
 		MP9532_RunEmptyOp_001 runEmptyOp = new MP9532_RunEmptyOp_001();
 		if (context != null && context.getCredentials() != null) {
 			String sessionTerminationScenario = "terminate";
@@ -57,7 +61,7 @@ public class UserSetupServiceImpl implements UserSetupService {
 				sessionTerminationScenario = null;
 			}
 			Holder<SessionType> sessionTypeHolder = new Holder<>();
-			MP9532_RunEmptyOp_001_Result result =  inforws.runEmptyOpOp(runEmptyOp, tools.getOrganizationCode(context),
+			MP9532_RunEmptyOp_001_Result result =  inforWebServicesToolkitClient.runEmptyOpOp(runEmptyOp, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), sessionTerminationScenario, sessionTypeHolder, null,
 					tools.getTenant(context));
 			if (sessionTypeHolder.value != null && sessionTypeHolder.value.getSessionId() != null) {
