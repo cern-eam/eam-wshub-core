@@ -221,7 +221,7 @@ public class WorkOrder implements Serializable, UserDefinedListHelpable {
 	private UserDefinedFields userDefinedFields;
 
 	@Transient
-	private Boolean confirmedIncompleteChecklist = false;
+	private Boolean confirmedIncompleteChecklist;
 
 	@Column(name = "EVT_ORIGWO")
 	private String origWO;

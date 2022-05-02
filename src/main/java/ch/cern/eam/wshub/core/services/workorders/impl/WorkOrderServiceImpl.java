@@ -322,7 +322,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		MP0025_SyncWorkOrder_001 syncWO = new MP0025_SyncWorkOrder_001();
 		syncWO.setWorkOrder(inforWorkOrder);
 
-		if (workorderParam.isConfirmedIncompleteChecklist()) {
+		if (workorderParam.isConfirmedIncompleteChecklist() != null && workorderParam.isConfirmedIncompleteChecklist()) {
 			syncWO.setConfirmincompletechecklist("confirmed");
 		}
 
