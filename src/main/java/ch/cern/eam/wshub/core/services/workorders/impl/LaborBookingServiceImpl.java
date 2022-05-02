@@ -9,6 +9,7 @@ import ch.cern.eam.wshub.core.services.workorders.LaborBookingService;
 import ch.cern.eam.wshub.core.services.workorders.TaskPlanService;
 import ch.cern.eam.wshub.core.services.workorders.entities.*;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
+import ch.cern.eam.wshub.core.tools.GridTools;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_fields.*;
@@ -58,8 +59,9 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 		gridRequest.getParams().put("param.jobnum", workOrderNumber);
 		gridRequest.getParams().put("param.headeractivity", "0");
 		gridRequest.getParams().put("param.headerjob", "0");
+		gridRequest.setRowCount(500);
 
-		return tools.getGridTools().convertGridResultToObject(LaborBooking.class, null, gridsService.executeQuery(context, gridRequest));
+		return GridTools.convertGridResultToObject(LaborBooking.class, null, gridsService.executeQuery(context, gridRequest));
 	}
 
 	public String createLaborBooking(InforContext context, LaborBooking laborBookingParam) throws InforException {
