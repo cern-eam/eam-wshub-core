@@ -479,7 +479,8 @@ public class ChecklistServiceImpl implements ChecklistService {
 		// Fetch the data
 		GridRequest gridRequest = new GridRequest("3315", "WSJOBS_ACK", "3369");
 		gridRequest.setRowCount(2000);
-		gridRequest.setUseNative(false);
+		gridRequest.setUseNative(true);
+		gridRequest.setUserFunctionName("WSJOBS");
 		gridRequest.getParams().put("param.workordernum", activity.getWorkOrderNumber());
 		gridRequest.getParams().put("param.activity", activity.getActivityCode());
 		gridRequest.getParams().put("param.jobseq", "0");
