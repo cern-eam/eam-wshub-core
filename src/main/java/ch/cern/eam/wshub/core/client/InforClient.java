@@ -63,6 +63,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.cxf.frontend.ClientProxy;
+import org.apache.cxf.transport.http.HTTPConduit;
+import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
+
 
 /**
  * Client for Infor services
@@ -146,6 +150,7 @@ public class InforClient implements Serializable {
         private EntityManagerFactory entityManagerFactory;
         private Logger logger;
         private Boolean withJPAGridsAuthentication = false;
+        private Boolean withChunkedTransferEncodingAllowed = false;
 
         public Builder(String url) {
             this.url = url;
@@ -196,6 +201,11 @@ public class InforClient implements Serializable {
         	return this;
         }
 
+        public Builder withChunkedTransferEncodingAllowed() {
+            this.withChunkedTransferEncodingAllowed = true;
+            return this;
+        }
+
         private <T> T proxy(Class<T> targetClass, T target, InforInterceptor inforInterceptor, Tools tools) {
             return (T) Proxy.newProxyInstance(targetClass.getClassLoader(), new Class[] { targetClass }, new InforInvocationHandler<>(target, inforInterceptor, tools));
         }
@@ -220,6 +230,13 @@ public class InforClient implements Serializable {
             inforClient.bindingProvider = (BindingProvider) inforWebServicesToolkitClient;
             inforClient.bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, applicationData.getUrl());
             inforClient.bindingProvider.getRequestContext().put("set-jaxb-validation-event-handler", false);
+
+            if (!this.withChunkedTransferEncodingAllowed) {
+                // Avoid 'Chunked transfer encoding is currently not supported' error which might be thrown by some web servers
+                HTTPConduit conduit = (HTTPConduit) ClientProxy.getClient(inforWebServicesToolkitClient).getConduit();
+                HTTPClientPolicy client = conduit.getClient();
+                client.setAllowChunking(false);
+            }
 
             if (this.executorService != null) {
                 // Init new Executor Service
