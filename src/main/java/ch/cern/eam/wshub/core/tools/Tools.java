@@ -127,7 +127,12 @@ public class Tools {
 
 	public SessionType createInforSession(InforContext context) {
 		SessionType session = new SessionType();
-		session.setSessionId(context.getSessionID());
+		if (context.getSessionID() != null) {
+			session.setSessionId(context.getSessionID());
+		} else if (context.getAuthToken() != null) {
+			// Set it temporarily in order to read it (and remove from the SOAP Envelope) in the AuthenticationHandler
+			session.setSessionId("Bearer " + context.getAuthToken());
+		}
 		return session;
 	}
 

@@ -59,6 +59,7 @@ import javax.xml.ws.handler.HandlerResolver;
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -222,6 +223,10 @@ public class InforClient implements Serializable {
             inforClient.bindingProvider = (BindingProvider) inforWebServicesToolkitClient;
             inforClient.bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, applicationData.getUrl());
             inforClient.bindingProvider.getRequestContext().put("set-jaxb-validation-event-handler", false);
+
+            List handlerChain = inforClient.bindingProvider.getBinding().getHandlerChain();
+            handlerChain.add(0, new AuthenticationHandler());
+            inforClient.bindingProvider.getBinding().setHandlerChain(handlerChain);
 
             if (this.executorService != null) {
                 // Init new Executor Service
