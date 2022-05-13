@@ -25,6 +25,7 @@ public class WorkOrderActivityCheckList implements Serializable {
 		public static final String OK_ADJUSTED_MEASUREMENT = "10";
 		public static final String NONCONFORMITY_CHECK = "11";
 		public static final String NONCONFORMITY_MEASUREMENT = "12";
+		public static final String FREE_TEXT = "15";
 	}
 
 	public static final class ReturnType {
@@ -66,6 +67,7 @@ public class WorkOrderActivityCheckList implements Serializable {
 	private Boolean requiredToClose = false;
 	private Boolean hideFollowUp;
 	private String color;
+	private String freeText;
 
 	private String newCheckListCode;
 	private String newWorkOrderCode;
@@ -357,6 +359,10 @@ public class WorkOrderActivityCheckList implements Serializable {
 		this.checklistDefinitionCode = checklistDefinitionCode;
 	}
 
+	public String getFreeText() { return freeText; }
+
+	public void setFreeText(String freeText) { this.freeText = freeText; }
+
 	@Override
 	public String toString() {
 		return "WorkOrderActivityCheckList{" +
@@ -387,6 +393,7 @@ public class WorkOrderActivityCheckList implements Serializable {
 				", maximumValue='" + maximumValue + '\'' +
 				", notApplicableOption='" + notApplicableOption + '\'' +
 				", checklistDefinitionCode='" + checklistDefinitionCode + '\'' +
+				", freeText='" + freeText + '\'' +
 				'}';
 	}
 }

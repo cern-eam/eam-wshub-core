@@ -355,6 +355,9 @@ public class ChecklistServiceImpl implements ChecklistService {
 				workOrderActivityCheckListInfor.setOKFLAG(getStringBool.apply(ReturnType.OK));
 				workOrderActivityCheckListInfor.setNONCONFORMITYFLAG(getStringBool.apply(ReturnType.NONCONFORMITY));
 				break;
+			case CheckListType.FREE_TEXT:
+				workOrderActivityCheckListInfor.setCHECKLISTFREETEXT(workOrderActivityCheckList.getFreeText());
+				break;
 		}
 
 		if (workOrderActivityCheckList.getNotes() != null) {
@@ -630,6 +633,9 @@ public class ChecklistServiceImpl implements ChecklistService {
 				} else {
 					checklist.setResult(ReturnType.NULL);
 				}
+				break;
+			case CheckListType.FREE_TEXT:
+				checklist.setFreeText(getCellContent("checklistfreetext", row));
 				break;
 		}
 
