@@ -242,7 +242,7 @@ public class WorkOrder implements Serializable, UserDefinedListHelpable {
 	private String issType;
 
 	@Column(name = "EVT_WARRANTY")
-	@InforField(xpath = "WARRANTY", booleanType = BooleanType.TRUE_FALSE)
+	@InforField(xpath = "WARRANTY", booleanType = BooleanType.YES_NO)
 	private Boolean warranty;
 
 	@Transient
@@ -796,6 +796,7 @@ public class WorkOrder implements Serializable, UserDefinedListHelpable {
 		this.issType = issType;
 	}
 
+	@XmlJavaTypeAdapter(BooleanAdapter.class)
 	public Boolean getWarranty() {
 		return warranty;
 	}
