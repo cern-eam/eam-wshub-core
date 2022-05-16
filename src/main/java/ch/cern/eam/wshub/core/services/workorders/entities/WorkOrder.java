@@ -229,7 +229,8 @@ public class WorkOrder implements Serializable, UserDefinedListHelpable {
 	@Transient
 	private String copyFrom;
 
-	@Column(name = "EVT_BILLABLE")
+
+	@Transient
 	@InforField(xpath = "BILLABLE", booleanType = BooleanType.PLUS_MINUS)
 	private Boolean billable;
 
@@ -237,12 +238,12 @@ public class WorkOrder implements Serializable, UserDefinedListHelpable {
 	@InforField(xpath = "DEPEND", booleanType = BooleanType.TRUE_FALSE)
 	private Boolean depend;
 
-	@Column(name = "EVT_ISSTYPE")
+	@Transient
 	@InforField(xpath = "EVTISSTYPE")
 	private String issType;
 
-	@Column(name = "EVT_WARRANTY")
-	@InforField(xpath = "WARRANTY", booleanType = BooleanType.YES_NO)
+	@Transient
+	@InforField(xpath = "WARRANTY", booleanType = BooleanType.TRUE_FALSE)
 	private Boolean warranty;
 
 	@Transient
