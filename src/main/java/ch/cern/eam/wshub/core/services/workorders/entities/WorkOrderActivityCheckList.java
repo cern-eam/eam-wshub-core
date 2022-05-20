@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -25,6 +26,8 @@ public class WorkOrderActivityCheckList implements Serializable {
 		public static final String OK_ADJUSTED_MEASUREMENT = "10";
 		public static final String NONCONFORMITY_CHECK = "11";
 		public static final String NONCONFORMITY_MEASUREMENT = "12";
+		public static final String DATE = "13";
+		public static final String DATETIME = "14";
 		public static final String FREE_TEXT = "15";
 	}
 
@@ -68,6 +71,8 @@ public class WorkOrderActivityCheckList implements Serializable {
 	private Boolean hideFollowUp;
 	private String color;
 	private String freeText;
+	private Date date;
+	private Date dateTime;
 
 	private String newCheckListCode;
 	private String newWorkOrderCode;
@@ -363,6 +368,14 @@ public class WorkOrderActivityCheckList implements Serializable {
 
 	public void setFreeText(String freeText) { this.freeText = freeText; }
 
+	public Date getDate() { return date; }
+
+	public void setDate(Date date) { this.date = date; }
+
+	public Date getDateTime() { return dateTime; }
+
+	public void setDateTime(Date dateTime) { this.dateTime = dateTime; }
+
 	@Override
 	public String toString() {
 		return "WorkOrderActivityCheckList{" +
@@ -394,6 +407,8 @@ public class WorkOrderActivityCheckList implements Serializable {
 				", notApplicableOption='" + notApplicableOption + '\'' +
 				", checklistDefinitionCode='" + checklistDefinitionCode + '\'' +
 				", freeText='" + freeText + '\'' +
+				", date='" + date + '\'' +
+				", dateTime='" + dateTime + '\'' +
 				'}';
 	}
 }

@@ -355,6 +355,12 @@ public class ChecklistServiceImpl implements ChecklistService {
 				workOrderActivityCheckListInfor.setOKFLAG(getStringBool.apply(ReturnType.OK));
 				workOrderActivityCheckListInfor.setNONCONFORMITYFLAG(getStringBool.apply(ReturnType.NONCONFORMITY));
 				break;
+			case CheckListType.DATE:
+				workOrderActivityCheckListInfor.setCHECKLISTDATE(tools.getDataTypeTools().encodeInforDate(workOrderActivityCheckList.getDate(), ""));
+				break;
+			case CheckListType.DATETIME:
+				workOrderActivityCheckListInfor.setCHECKLISTDATETIME(tools.getDataTypeTools().encodeInforDate(workOrderActivityCheckList.getDateTime(), ""));
+				break;
 			case CheckListType.FREE_TEXT:
 				workOrderActivityCheckListInfor.setCHECKLISTFREETEXT(workOrderActivityCheckList.getFreeText());
 				break;
@@ -633,6 +639,12 @@ public class ChecklistServiceImpl implements ChecklistService {
 				} else {
 					checklist.setResult(ReturnType.NULL);
 				}
+				break;
+			case CheckListType.DATE:
+				checklist.setDate(tools.getDataTypeTools().convertStringToDate(getCellContent("checklistdate", row)));
+				break;
+			case CheckListType.DATETIME:
+				checklist.setDateTime(tools.getDataTypeTools().convertStringToDate(getCellContent("checklistdatetime", row)));
 				break;
 			case CheckListType.FREE_TEXT:
 				checklist.setFreeText(getCellContent("checklistfreetext", row));
