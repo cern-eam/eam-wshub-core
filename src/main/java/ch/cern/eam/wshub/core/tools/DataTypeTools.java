@@ -161,7 +161,12 @@ public class DataTypeTools {
     // QUANTITY
     //
     public static QUANTITY encodeQuantity(BigDecimal numberValue, String numberLabel) throws InforException {
-        if (numberValue == null ) {
+        if (numberValue == null) {
+            return null;
+        }
+
+        // Special value used to nullify the field
+        if (numberValue.toBigInteger().intValue() == NULLIFY_VALUE) {
             return null;
         }
 
