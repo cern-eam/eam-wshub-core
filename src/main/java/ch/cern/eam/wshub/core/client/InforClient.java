@@ -132,6 +132,8 @@ public class InforClient implements Serializable {
     private SafetyService safetyService;
     private CategoryService categoryService;
 
+    private EquipmentReservationService equipmentReservationService;
+
     // Prevent initializing the class without the builder
     private InforClient() {}
 
@@ -285,6 +287,7 @@ public class InforClient implements Serializable {
             inforClient.taskPlanService = proxy(TaskPlanService.class, new TaskPlanServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.salesPriceService = proxy(SalesPriceService.class, new SalesPricesImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.userDefinedScreenService = proxy(UserDefinedScreenService.class, new UserDefinedScreenServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
+            inforClient.equipmentReservationService = proxy(EquipmentReservationService.class, new EquipmentReservationServiceImpl(applicationData, tools, inforWebServicesToolkitClient),inforInterceptor, tools);
             if (!tools.isDatabaseConnectionConfigured()) {
                 logger.log(Level.WARNING, "Some of the services might require a database connection.");
             }
@@ -467,4 +470,6 @@ public class InforClient implements Serializable {
     public CategoryService getCategoryService() {
         return categoryService;
     }
+
+    public EquipmentReservationService getEquipmentReservationService() { return equipmentReservationService; }
 }
