@@ -74,6 +74,7 @@ public class SafetyServiceImpl implements SafetyService {
             request.setUserFunctionName("WSJOBS");
         } else if (isObject(entityType)) {
             request.setGridName("OSOBJA_ESF");
+            request.setUserFunctionName("OSOBJA");
             request.addParam("parameter.object", entityCode);
             request.addParam("parameter.objorganization", tools.getOrganizationCode(context));
         } else {
