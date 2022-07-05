@@ -34,6 +34,10 @@ public class EquipmentReservation {
     private Date issuedDate;
     @InforField(xpath = "IssueDetails/ESTIMATEDISSUEDATE")
     private Date estimatedIssueDate;
+    @InforField(xpath = "IssueDetails/ISSUELOCATION/LOCATIONCODE")
+    private String issueLocation;
+    @InforField(xpath = "RentalDetails/VEHICLETYPE/TYPECODE")
+    private String vehicleType;
 
     // Return Details
     @InforField(xpath = "ReturnDetails/RETURNDATE")
@@ -45,79 +49,153 @@ public class EquipmentReservation {
     @InforField(xpath = "StandardUserDefinedFields")
     private UserDefinedFields userDefinedFields;
 
-    public Date getEstimatedReturnDate() { return estimatedReturnDate; }
+    public String getCode() {
+        return code;
+    }
 
-    public void setEstimatedReturnDate(Date estimatedReturnDate) { this.estimatedReturnDate = estimatedReturnDate; }
+    public void setCode(final String code) {
+        this.code = code;
+    }
 
-    public String getReference() { return reference; }
+    public String getOrganizationCode() {
+        return organizationCode;
+    }
 
-    public void setReference(String reference) { this.reference = reference; }
+    public void setOrganizationCode(final String organizationCode) {
+        this.organizationCode = organizationCode;
+    }
 
-    public UserDefinedFields getUserDefinedFields() { return userDefinedFields; }
+    public String getDescription() {
+        return description;
+    }
 
-    public void setUserDefinedFields(UserDefinedFields userDefinedFields) { this.userDefinedFields = userDefinedFields; }
+    public void setDescription(final String description) {
+        this.description = description;
+    }
 
-    public String getClassCode() { return classCode; }
+    public String getRentalType() {
+        return rentalType;
+    }
 
-    public void setClassCode(String classCode) { this.classCode = classCode; }
+    public void setRentalType(final String rentalType) {
+        this.rentalType = rentalType;
+    }
 
-    public String getCode() { return code; }
+    public String getStatus() {
+        return status;
+    }
 
-    public void setCode(String code) { this.code = code; }
+    public void setStatus(final String status) {
+        this.status = status;
+    }
 
-    public String getOrganizationCode() { return organizationCode; }
+    public String getEquipmentCode() {
+        return equipmentCode;
+    }
 
-    public void setOrganizationCode(String organizationCode) { this.organizationCode = organizationCode; }
+    public void setEquipmentCode(final String equipmentCode) {
+        this.equipmentCode = equipmentCode;
+    }
 
-    public String getDescription() { return description; }
+    public String getLocationCode() {
+        return locationCode;
+    }
 
-    public void setDescription(String description) { this.description = description; }
+    public void setLocationCode(final String locationCode) {
+        this.locationCode = locationCode;
+    }
 
-    public String getRentalType() { return rentalType; }
+    public String getClassCode() {
+        return classCode;
+    }
 
-    public void setRentalType(String rentalType) { this.rentalType = rentalType; }
+    public void setClassCode(final String classCode) {
+        this.classCode = classCode;
+    }
 
-    public String getStatus() { return status; }
+    public String getReference() {
+        return reference;
+    }
 
-    public void setStatus(String status) { this.status = status; }
+    public void setReference(final String reference) {
+        this.reference = reference;
+    }
 
-    public String getEquipmentCode() { return equipmentCode; }
+    public Date getIssuedDate() {
+        return issuedDate;
+    }
 
-    public void setEquipmentCode(String equipmentCode) { this.equipmentCode = equipmentCode; }
+    public void setIssuedDate(final Date issuedDate) {
+        this.issuedDate = issuedDate;
+    }
 
-    public String getLocationCode() { return locationCode; }
+    public Date getEstimatedIssueDate() {
+        return estimatedIssueDate;
+    }
 
-    public void setLocationCode(String locationCode) { this.locationCode = locationCode; }
+    public void setEstimatedIssueDate(final Date estimatedIssueDate) {
+        this.estimatedIssueDate = estimatedIssueDate;
+    }
 
-    public Date getIssuedDate() { return issuedDate; }
+    public String getIssueLocation() {
+        return issueLocation;
+    }
 
-    public void setIssuedDate(Date issuedDate) { this.issuedDate = issuedDate; }
+    public void setIssueLocation(final String issueLocation) {
+        this.issueLocation = issueLocation;
+    }
 
-    public Date getEstimatedIssueDate() { return estimatedIssueDate; }
+    public String getVehicleType() {
+        return vehicleType;
+    }
 
-    public void setEstimatedIssueDate(Date estimatedIssueDate) { this.estimatedIssueDate = estimatedIssueDate; }
+    public void setVehicleType(final String vehicleType) {
+        this.vehicleType = vehicleType;
+    }
 
-    public Date getReturnDate() { return returnDate; }
+    public Date getReturnDate() {
+        return returnDate;
+    }
 
-    public void setReturnDate(Date returnDate) { this.returnDate = returnDate; }
+    public void setReturnDate(final Date returnDate) {
+        this.returnDate = returnDate;
+    }
+
+    public Date getEstimatedReturnDate() {
+        return estimatedReturnDate;
+    }
+
+    public void setEstimatedReturnDate(final Date estimatedReturnDate) {
+        this.estimatedReturnDate = estimatedReturnDate;
+    }
+
+    public UserDefinedFields getUserDefinedFields() {
+        return userDefinedFields;
+    }
+
+    public void setUserDefinedFields(final UserDefinedFields userDefinedFields) {
+        this.userDefinedFields = userDefinedFields;
+    }
 
     @Override
     public String toString() {
-        return "EquipmentReservation ["
-                + (code != null ? "code=" + code + ", " : "")
-                + (organizationCode != null ? "organizationCode=" + organizationCode + ", " : "")
-                + (description != null ? "description=" + description + ", " : "")
-                + (rentalType != null ? "rentalType=" + rentalType + ", " : "")
-                + (status != null ? "status=" + status + ", " : "")
-                + (equipmentCode != null ? "equipmentCode=" + equipmentCode + ", " : "")
-                + (locationCode != null ? "locationCode=" + locationCode + ", " : "")
-                + (classCode != null ? "classCode=" + classCode + ", " : "")
-                + (reference != null ? "reference=" + reference + ", " : "")
-                + (issuedDate != null ? "issuedDate=" + issuedDate + ", " : "")
-                + (estimatedIssueDate != null ? "estimatedIssueDate=" + estimatedIssueDate + ", " : "")
-                + (returnDate != null ? "returnDate=" + returnDate + ", " : "")
-                + (estimatedReturnDate != null ? "estimatedReturnDate=" + estimatedReturnDate + ", " : "")
-                + (userDefinedFields != null ? "userDefinedFields=" + userDefinedFields + ", " : "")
-                + "]";
+        return "EquipmentReservation{" +
+                "code='" + code + '\'' +
+                ", organizationCode='" + organizationCode + '\'' +
+                ", description='" + description + '\'' +
+                ", rentalType='" + rentalType + '\'' +
+                ", status='" + status + '\'' +
+                ", equipmentCode='" + equipmentCode + '\'' +
+                ", locationCode='" + locationCode + '\'' +
+                ", classCode='" + classCode + '\'' +
+                ", reference='" + reference + '\'' +
+                ", issuedDate=" + issuedDate +
+                ", estimatedIssueDate=" + estimatedIssueDate +
+                ", issueLocation='" + issueLocation + '\'' +
+                ", vehicleType='" + vehicleType + '\'' +
+                ", returnDate=" + returnDate +
+                ", estimatedReturnDate=" + estimatedReturnDate +
+                ", userDefinedFields=" + userDefinedFields +
+                '}';
     }
 }
