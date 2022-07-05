@@ -25,6 +25,7 @@ import net.datastream.schemas.mp_results.mp0038_001.MP0038_SyncActivity_001_Resu
 import net.datastream.schemas.mp_results.mp0039_001.MP0039_DeleteActivity_001_Result;
 import net.datastream.schemas.mp_results.mp0042_001.MP0042_AddLaborBooking_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
+import org.openapplications.oagis_segments.AMOUNT;
 
 import javax.persistence.EntityManager;
 import javax.xml.ws.Holder;
@@ -67,47 +68,21 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 	public String createLaborBooking(InforContext context, LaborBooking laborBookingParam) throws InforException {
 		net.datastream.schemas.mp_entities.laborbooking_001.LaborBooking laborBookingInfor = new net.datastream.schemas.mp_entities.laborbooking_001.LaborBooking();
 
-		//
-		if (laborBookingParam.getEmployeeCode() != null) {
-			laborBookingInfor.setEMPLOYEE(new PERSONID_Type());
-			laborBookingInfor.getEMPLOYEE().setPERSONCODE(laborBookingParam.getEmployeeCode());
+		tools.getInforFieldTools().transformWSHubObject(laborBookingInfor, laborBookingParam, context);
+
+		if (
+				laborBookingInfor.getHOURSWORKED() == null
+				&& laborBookingParam.getStartTime() != null
+				&& laborBookingParam.getEndTime() != null
+		) {
+			laborBookingInfor.setHOURSWORKED(
+					tools.getDataTypeTools().encodeAmount(
+						BigDecimal.valueOf((laborBookingParam.getEndTime().intValue() - laborBookingParam.getStartTime().intValue()) / 3600), "Hours Worked")
+			);
 		}
 
-		//
-		if (laborBookingParam.getDepartmentCode() != null) {
-			laborBookingInfor.setDEPARTMENTID(new DEPARTMENTID_Type());
-			laborBookingInfor.getDEPARTMENTID().setORGANIZATIONID(tools.getOrganization(context));
-			laborBookingInfor.getDEPARTMENTID().setDEPARTMENTCODE(laborBookingParam.getDepartmentCode());
-		}
-
-		//
-		if (laborBookingParam.getDateWorked() != null) {
-			laborBookingInfor.setDATEWORKED(tools.getDataTypeTools().encodeInforDate(laborBookingParam.getDateWorked(), "Date Worked"));
-		}
-
-		//
-		if (laborBookingParam.getHoursWorked() != null) {
-			laborBookingInfor.setHOURSWORKED(tools.getDataTypeTools().encodeAmount(laborBookingParam.getHoursWorked(),"Hours Worked"));
-		}
-
-		//
 		laborBookingInfor.setTRADERATE(tools.getDataTypeTools().encodeAmount(BigDecimal.ZERO,"Trade Rate"));
 
-		//
-		if (laborBookingParam.getTypeOfHours() != null) {
-			laborBookingInfor.setOCCUPATIONTYPE(new OCCUPATIONTYPEID_Type());
-			laborBookingInfor.getOCCUPATIONTYPE().setOCCUPATIONTYPECODE(laborBookingParam.getTypeOfHours());
-		}
-
-		//
-		if (laborBookingParam.getTradeCode() != null) {
-			laborBookingInfor.setTRADEID(new TRADEID_Type());
-			laborBookingInfor.getTRADEID().setORGANIZATIONID(tools.getOrganization(context));
-			laborBookingInfor.getTRADEID().setTRADECODE(laborBookingParam.getTradeCode());
-		}
-
-		//
-		laborBookingInfor.setACTIVITYID(new ACTIVITYID());
 		if (laborBookingParam.getActivityCode() != null) {
 			laborBookingInfor.getACTIVITYID().setACTIVITYCODE(new ACTIVITYCODE());
 			laborBookingInfor.getACTIVITYID().getACTIVITYCODE().setValue(Long.parseLong(laborBookingParam.getActivityCode()));
@@ -123,8 +98,7 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 		MP0042_AddLaborBooking_001 addLaborBoking = new MP0042_AddLaborBooking_001();
 		addLaborBoking.setLaborBooking(laborBookingInfor);
 
-		MP0042_AddLaborBooking_001_Result result =
-			tools.performInforOperation(context, inforws::addLaborBookingOp, addLaborBoking);
+		tools.performInforOperation(context, inforws::addLaborBookingOp, addLaborBoking);
 		return laborBookingParam.getActivityCode();
 	}
 
