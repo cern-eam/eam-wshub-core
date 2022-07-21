@@ -52,6 +52,7 @@ public class DateAdapter extends XmlAdapter<String, Date> {
         for (String formatString : formatStrings) {
             try {
                 SimpleDateFormat formatter = new SimpleDateFormat(formatString, Locale.ENGLISH);
+                formatter.setLenient(false);
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(formatter.parse(date));
                 return calendar.getTime();
