@@ -516,6 +516,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 		checklist.setEquipmentDesc(getCellContent("equipmentdesc", row));
 		checklist.setType(getCellContent("checklisttype", row));
 		checklist.setColor(getCellContent("color", row));
+		checklist.setResponsibility(getCellContent("responsibility", row));
 
 		// FOLLOW-UP
 		checklist.setFollowUp(decodeBoolean(getCellContent("followup", row)));

@@ -4,6 +4,7 @@ import ch.cern.eam.wshub.core.adapters.DateAdapter;
 import ch.cern.eam.wshub.core.annotations.InforField;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.entities.Department;
+import ch.cern.eam.wshub.core.services.entities.Responsibility;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 
 import javax.persistence.*;
@@ -84,6 +85,9 @@ public class EAMUser implements Serializable {
 
 	@Transient
 	private Map<String, Department> departmentalSecurity;
+
+	@Transient
+	private Map<String, Responsibility> responsibilities;
 
 	public String getUserCode() {
 		return userCode;
@@ -231,6 +235,10 @@ public class EAMUser implements Serializable {
 		this.departmentalSecurity = departmentalSecurity;
 	}
 
+	public Map<String, Responsibility> getResponsibilities() { return responsibilities; }
+
+	public void setResponsibilities(Map<String, Responsibility> responsibilities) { this.responsibilities = responsibilities; }
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -248,6 +256,7 @@ public class EAMUser implements Serializable {
 				+ (department != null ? "department=" + department + ", " : "")
 				+ (classCode != null ? "classCode=" + classCode + ", " : "")
 				+ (customFields != null ? "customFields=" + Arrays.toString(customFields) + ", " : "")
+				+ (responsibilities != null ? "responsibilities=" + responsibilities + ", " : "")
 				+ (userDefinedFields != null ? "userDefinedFields=" + userDefinedFields : "") + "]";
 	}
 

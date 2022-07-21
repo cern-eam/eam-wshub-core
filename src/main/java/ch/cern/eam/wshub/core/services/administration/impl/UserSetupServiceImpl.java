@@ -5,6 +5,7 @@ import ch.cern.eam.wshub.core.services.administration.UserSetupService;
 import ch.cern.eam.wshub.core.services.entities.BatchResponse;
 import ch.cern.eam.wshub.core.services.administration.entities.EAMUser;
 import ch.cern.eam.wshub.core.services.entities.Department;
+import ch.cern.eam.wshub.core.services.entities.Responsibility;
 import ch.cern.eam.wshub.core.services.grids.GridsService;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
@@ -31,6 +32,7 @@ import javax.xml.ws.Holder;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.toCodeString;
@@ -75,7 +77,7 @@ public class UserSetupServiceImpl implements UserSetupService {
 	}
 
 	public EAMUser readUserSetup(InforContext context, String userCode) throws InforException {
-		// The user to be readed
+		// The user to be read
 		MP0601_GetUserSetup_001 getUserSetup = new MP0601_GetUserSetup_001();
 		getUserSetup.setUSERID(new USERID_Type());
 		getUserSetup.getUSERID().setUSERCODE(userCode);
@@ -88,24 +90,58 @@ public class UserSetupServiceImpl implements UserSetupService {
 		// Populate 'EAMUser' Object
 		EAMUser user = tools.getInforFieldTools().transformInforObject(new EAMUser(), userInfor);
 
-		// Fetch corresponding employee code and description
-		GridRequest employeeGridRequest = new GridRequest("WSEMPS", GridRequest.GRIDTYPE.LIST);
-		employeeGridRequest.setUseNative(false);
-		employeeGridRequest.addFilter("associateduser", userCode, "=");
-		GridRequestResult employeeGridResult = gridsService.executeQuery(context, employeeGridRequest);
-		user.setEmployeeCode(extractSingleResult(employeeGridResult, "employee"));
-		user.setEmployeeDesc(extractSingleResult(employeeGridResult, "employeedescription"));
-
-		// Fetch user's departmental security rights
-		GridRequest departmentsGridRequest = new GridRequest("BSUSER_DSE", GridRequest.GRIDTYPE.LIST, 1000);
-		departmentsGridRequest.setUseNative(false);
-		departmentsGridRequest.addParam("param.usercode", userCode);
-		user.setDepartmentalSecurity(convertGridResultToMap(Department.class,
-				"departmentcode",
-				null,
-				gridsService.executeQuery(context, departmentsGridRequest)));
+		tools.processRunnables(
+				// Fetch corresponding employee code and description
+				() -> {
+					String[] filterArgs = {"associateduser", "="};
+					GridRequestResult employeeGridResult =
+							readUserSetupHelperFilterRequest("WSEMPS", userCode, filterArgs, context);
+					user.setEmployeeCode(extractSingleResult(employeeGridResult, "employee"));
+					user.setEmployeeDesc(extractSingleResult(employeeGridResult, "employeedescription"));
+				},
+				// Fetch user's departmental security rights
+				() -> {
+					user.setDepartmentalSecurity(convertGridResultToMap(
+							Department.class,
+							"departmentcode",
+							null,
+							readUserSetupHelperParamRequest("BSUSER_DSE", userCode, context)));
+				},
+				// Fetch user's responsibilities
+				() -> {
+					user.setResponsibilities(convertGridResultToMap(
+							Responsibility.class,
+							"responsibilitycode",
+							null,
+							readUserSetupHelperParamRequest("BSUSER_URS", userCode, context)));
+				}
+		);
 
 		return user;
+	}
+
+	private GridRequestResult readUserSetupHelperParamRequest(String gridName, String userCode, InforContext context) {
+		GridRequest	gridRequest = new GridRequest(gridName, GridRequest.GRIDTYPE.LIST, 1000);
+		gridRequest.setUseNative(false);
+		gridRequest.addParam("param.usercode", userCode);
+		try {
+			return gridsService.executeQuery(context, gridRequest);
+		} catch (InforException e) {
+			tools.log(Level.SEVERE, "Couldn't perform request for grid " + gridName);
+			return null;
+		}
+	}
+
+	private GridRequestResult readUserSetupHelperFilterRequest(String gridName, String userCode, String[] filterArgs, InforContext context) {
+		GridRequest gridRequest = new GridRequest(gridName, GridRequest.GRIDTYPE.LIST);
+		gridRequest.setUseNative(false);
+		gridRequest.addFilter(filterArgs[0], userCode, filterArgs[1]);
+		try {
+			return gridsService.executeQuery(context, gridRequest);
+		} catch (InforException e) {
+			tools.log(Level.SEVERE, "Couldn't perform request for grid " + gridName);
+			return null;
+		}
 	}
 
 	public String createUserSetup(InforContext context, EAMUser userParam) throws InforException {
