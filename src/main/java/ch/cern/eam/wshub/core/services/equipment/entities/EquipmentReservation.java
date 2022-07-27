@@ -28,6 +28,10 @@ public class EquipmentReservation {
     private String classCode;
     @InforField(xpath = "RentalDetails/REFERENCE")
     private String reference;
+    @InforField(xpath = "RentalDetails/VEHICLETYPE/TYPECODE")
+    private String vehicleType;
+    @InforField(xpath = "RentalDetails/ISSUETO/PERSONCODE")
+    private String issueTo;
 
     // Issue Details
     @InforField(xpath = "IssueDetails/ISSUEDDATE")
@@ -36,8 +40,6 @@ public class EquipmentReservation {
     private Date estimatedIssueDate;
     @InforField(xpath = "IssueDetails/ISSUELOCATION/LOCATIONCODE")
     private String issueLocation;
-    @InforField(xpath = "RentalDetails/VEHICLETYPE/TYPECODE")
-    private String vehicleType;
 
     // Return Details
     @InforField(xpath = "ReturnDetails/RETURNDATE")
@@ -151,6 +153,14 @@ public class EquipmentReservation {
 
     public void setVehicleType(final String vehicleType) {
         this.vehicleType = vehicleType;
+    }
+
+    public String getIssueTo() {
+        return issueTo;
+    }
+
+    public void setIssueTo(final String issueTo) {
+        this.issueTo = issueTo;
     }
 
     public Date getReturnDate() {
