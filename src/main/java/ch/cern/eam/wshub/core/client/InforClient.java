@@ -149,6 +149,8 @@ public class InforClient implements Serializable {
         private Logger logger;
         private Boolean withJPAGridsAuthentication = false;
 
+        private Boolean localizeResults = true;
+
         public Builder(String url) {
             this.url = url;
         }
@@ -198,6 +200,11 @@ public class InforClient implements Serializable {
         	return this;
         }
 
+        public Builder localizeResults(Boolean localizeResults) {
+            this.localizeResults = localizeResults;
+            return this;
+        }
+
         private <T> T proxy(Class<T> targetClass, T target, InforInterceptor inforInterceptor, Tools tools) {
             return (T) Proxy.newProxyInstance(targetClass.getClassLoader(), new Class[] { targetClass }, new InforInvocationHandler<>(target, inforInterceptor, tools));
         }
@@ -211,6 +218,7 @@ public class InforClient implements Serializable {
             applicationData.setOrganization(this.defaultOrganizationCode);
             applicationData.setTenant(this.tenant);
             applicationData.setWithJPAGridsAuthentication(withJPAGridsAuthentication);
+            ApplicationData.localizeResults = localizeResults;
 
             // Infor Web Services Client
             Service service = Service.create(new QName("inforws"));
