@@ -7,6 +7,8 @@ public class ApplicationData {
 	private String organization;
 	private Boolean withJPAGridsAuthentication = false;
 
+	public static Boolean localizeResults = true;
+
 	public String getUrl() {
 		return url;
 	}

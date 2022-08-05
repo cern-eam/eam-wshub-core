@@ -1,5 +1,7 @@
 package ch.cern.eam.wshub.core.adapters;
 
+import ch.cern.eam.wshub.core.tools.ApplicationData;
+
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -12,8 +14,13 @@ public class DateAdapter extends XmlAdapter<String, Date> {
     public String marshal(Date date) throws Exception {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
-        SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy HH:mm", Locale.ENGLISH);
-        return formatter.format(cal.getTime()).toUpperCase();
+        if (ApplicationData.localizeResults) {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MMM-yyyy HH:mm", Locale.ENGLISH);
+            return simpleDateFormat.format(cal.getTime()).toUpperCase();
+        } else {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+            return simpleDateFormat.format(date);
+        }
     }
 
     @Override
@@ -38,7 +45,14 @@ public class DateAdapter extends XmlAdapter<String, Date> {
         if (date.trim().equalsIgnoreCase("SYSDATE")) {
             return Calendar.getInstance().getTime();
         }
-        String[] formatStrings = {"dd-MMM-yyyy HH:mm:ss",
+
+        String[] formatStrings = {
+                // https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
+                "yyyy-MM-dd'T'HH:mm:ss.SSS",
+                "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
+                "yyyy-MM-dd'T'HH:mm:ss.SSSXXX",
+                //
+                "dd-MMM-yyyy HH:mm:ss",
                 "dd-MMM-yyyy HH:mm",
                 "dd-MMM-yyyy",
                 "yyyy-MM-dd HH:mm:ss",
