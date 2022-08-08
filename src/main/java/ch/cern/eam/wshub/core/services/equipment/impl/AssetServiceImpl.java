@@ -138,11 +138,21 @@ public class AssetServiceImpl implements AssetService {
         tools.getInforFieldTools().transformWSHubObject(assetEquipment, assetParam, context);
 
         // PART ASSOCIATION
-        if (assetParam.getPartCode() != null && assetParam.getPartCode().equals("")
+        if (assetParam.getPartCode() != null) {
+            if (assetParam.getPartCode().equals("")
                     && assetEquipment.getPartAssociation() != null) {
-            assetEquipment.getPartAssociation().setSTORELOCATION(null);
-            assetEquipment.getPartAssociation().getPARTID().getORGANIZATIONID().setORGANIZATIONCODE("");
+                assetEquipment.getPartAssociation().setSTORELOCATION(null);
+                assetEquipment.getPartAssociation().getPARTID().getORGANIZATIONID().setORGANIZATIONCODE("");
+            } else if (!"".equals(assetParam.getPartCode())) {
+                if (assetEquipment.getPartAssociation().getSTORELOCATION() == null) {
+                    assetEquipment.getPartAssociation().setSTORELOCATION(new STORELOCATION());
+                }
+                if (assetEquipment.getPartAssociation().getSTORELOCATION().getLOT() == null) {
+                    assetEquipment.getPartAssociation().getSTORELOCATION().setLOT("*");
+                }
+            }
         }
+
         //
         // UPDATE EQUIPMENT
         //
