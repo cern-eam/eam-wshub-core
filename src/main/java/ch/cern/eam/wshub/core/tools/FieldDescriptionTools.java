@@ -147,6 +147,15 @@ public class FieldDescriptionTools {
 		return getDescription(inforContext, gridRequest, "usercodedescription");
 	}
 
+	public String readSystemCodeForUserCode(InforContext inforContext, String entity, String userCode) {
+		if (isEmpty(userCode)) return null;
+		GridRequest gridRequest = new GridRequest("BSUCOD_HDR", GridRequest.GRIDTYPE.LOV, 1);
+		gridRequest.addParam("param.entitycode", entity);
+		gridRequest.setUserFunctionName("BSUCOD");
+		gridRequest.addFilter("usercode", userCode, "EQUALS");
+		return getDescription(inforContext, gridRequest, "systemcode");
+	}
+
 	/**
 	 * Reads the description of a custom field value
 	 * 

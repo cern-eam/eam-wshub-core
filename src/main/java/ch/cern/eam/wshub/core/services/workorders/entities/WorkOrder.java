@@ -63,6 +63,9 @@ public class WorkOrder implements Serializable, UserDefinedListHelpable {
 	@Transient
 	@InforField(xpath = "STATUS/DESCRIPTION", readOnly = true)
 	private String statusDesc;
+
+	@Transient
+	private String systemStatusCode;
 	//
 	@Transient
 	@InforField(xpath = "TYPE/TYPECODE")
@@ -812,6 +815,14 @@ public class WorkOrder implements Serializable, UserDefinedListHelpable {
 
 	public void setVendor(String vendor) {
 		this.vendor = vendor;
+	}
+
+	public String getSystemStatusCode() {
+		return systemStatusCode;
+	}
+
+	public void setSystemStatusCode(String systemStatusCode) {
+		this.systemStatusCode = systemStatusCode;
 	}
 
 	@Override

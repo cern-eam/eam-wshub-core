@@ -76,6 +76,7 @@ public class AssetServiceImpl implements AssetService {
         tools.processRunnables(
                 () -> asset.setManufacturerDesc(tools.getFieldDescriptionsTools().readManufacturerDesc(context, asset.getManufacturerCode())),
                 () -> asset.setBinDesc(tools.getFieldDescriptionsTools().readBinDesc(context, asset.getStoreCode(), asset.getBin())),
+                () -> asset.setSystemStatusCode(tools.getFieldDescriptionsTools().readSystemCodeForUserCode(context, "OBST", asset.getStatusCode())),
                 () -> userDefinedListService.readUDLToEntity(context, asset, new EntityId("OBJ", assetCode))
         );
 

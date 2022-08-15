@@ -77,6 +77,18 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
     @Transient
     @InforField(xpath = "STATUS/DESCRIPTION", readOnly = true)
     private String statusDesc;
+
+    @Transient
+    private String systemStatusCode;
+
+    public String getSystemStatusCode() {
+        return systemStatusCode;
+    }
+
+    public void setSystemStatusCode(String systemStatusCode) {
+        this.systemStatusCode = systemStatusCode;
+    }
+
     //
     @Transient
     @InforField(xpath = "COSTCODEID/COSTCODE", nullifyParentLevel = 1)

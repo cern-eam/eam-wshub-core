@@ -87,8 +87,11 @@ public class SystemServiceImpl implements SystemService {
 		}
 		system.setHierarchyPrimarySystemDependent(systemEquipment.getSystemParentHierarchy().getDEPENDENTPRIMARYSYSTEM() != null);
 
+		tools.processRunnables(
+				() -> userDefinedListService.readUDLToEntity(context, system, new EntityId("OBJ", systemCode)),
+				() -> system.setSystemStatusCode(tools.getFieldDescriptionsTools().readSystemCodeForUserCode(context, "OBST", system.getStatusCode()))
+		);
 
-		userDefinedListService.readUDLToEntity(context, system, new EntityId("OBJ", systemCode));
 		return system;
 	}
 

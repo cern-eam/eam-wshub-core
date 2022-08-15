@@ -95,6 +95,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			() -> workOrder.setDepartmentDesc(tools.getFieldDescriptionsTools().readDepartmentDesc(context, workOrder.getDepartmentCode())),
 			() -> workOrder.setClassDesc(tools.getFieldDescriptionsTools().readClassDesc(context, "EVNT", workOrder.getClassCode())),
 			() -> workOrder.setCostCodeDesc(tools.getFieldDescriptionsTools().readCostCodeDesc(context, workOrder.getCostCode())),
+			() -> workOrder.setSystemStatusCode(tools.getFieldDescriptionsTools().readSystemCodeForUserCode(context, "EVST", workOrder.getStatusCode())),
 			() -> userDefinedListService.readUDLToEntity(context, workOrder, new EntityId("EVNT", number))
 		);
 
