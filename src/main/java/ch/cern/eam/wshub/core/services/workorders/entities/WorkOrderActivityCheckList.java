@@ -1,9 +1,11 @@
 package ch.cern.eam.wshub.core.services.workorders.entities;
 
+import ch.cern.eam.wshub.core.adapters.DateAdapter;
 import ch.cern.eam.wshub.core.annotations.InforField;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -71,7 +73,9 @@ public class WorkOrderActivityCheckList implements Serializable {
 	private Boolean hideFollowUp;
 	private String color;
 	private String freeText;
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	private Date date;
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	private Date dateTime;
 
 	private String newCheckListCode;
