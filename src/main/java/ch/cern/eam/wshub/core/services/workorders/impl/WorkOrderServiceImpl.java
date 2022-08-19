@@ -319,6 +319,9 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		// SET ALL PROPERTIES
 		tools.getInforFieldTools().transformWSHubObject(inforWorkOrder, workorderParam, context);
 
+		// Has to be nullified, otherwise the activity dates are not updated correctly (EAM Incident 16467875)
+		inforWorkOrder.setActivities(null);
+
 		// CALL INFOR WEB SERVICE
 		MP0025_SyncWorkOrder_001 syncWO = new MP0025_SyncWorkOrder_001();
 		syncWO.setWorkOrder(inforWorkOrder);
