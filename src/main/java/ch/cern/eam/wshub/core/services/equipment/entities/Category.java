@@ -33,6 +33,7 @@ public class Category implements Serializable {
     private String manufacturerCode;
 
     @Transient
+    @InforField(xpath = "MANUFACTURERID/DESCRIPTION")
     private String manufacturerDesc;
 
     @Transient
