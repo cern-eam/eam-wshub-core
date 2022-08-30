@@ -48,9 +48,9 @@ public class DateAdapter extends XmlAdapter<String, Date> {
 
         String[] formatStrings = {
                 // https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
-                "yyyy-MM-dd'T'HH:mm:ss.SSS",
                 "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
                 "yyyy-MM-dd'T'HH:mm:ss.SSSXXX",
+                "yyyy-MM-dd'T'HH:mm:ss.SSS",
                 //
                 "dd-MMM-yyyy HH:mm:ss",
                 "dd-MMM-yyyy HH:mm",
