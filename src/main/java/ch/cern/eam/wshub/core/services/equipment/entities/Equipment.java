@@ -487,6 +487,18 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
     @Transient
     private HashMap<String, ArrayList<UDLValue>> userDefinedList;
 
+    @Transient
+    @InforField(xpath = "FleetVehicleInfo/ISVEHICLE", nullifyParentLevel = 0)
+    private Boolean vehicle;
+
+    @Transient
+    @InforField(xpath = "FleetVehicleInfo/ISRENTAL", nullifyParentLevel = 0)
+    private Boolean rental;
+
+    @Transient
+    @InforField(xpath = "FleetVehicleInfo/VEHICLETYPE/TYPECODE", nullifyParentLevel = 1)
+    private String vehicleTypeCode;
+
     public String getDescription() {
         return description;
     }
@@ -1368,6 +1380,32 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
     @Override
     public void setUserDefinedList(HashMap<String, ArrayList<UDLValue>> userDefinedList) {
         this.userDefinedList = userDefinedList;
+    }
+
+    @XmlJavaTypeAdapter(BooleanAdapter.class)
+    public Boolean getVehicle() {
+        return vehicle;
+    }
+
+    public void setVehicle(Boolean vehicle) {
+        this.vehicle = vehicle;
+    }
+
+    @XmlJavaTypeAdapter(BooleanAdapter.class)
+    public Boolean getRental() {
+        return rental;
+    }
+
+    public void setRental(Boolean rental) {
+        this.rental = rental;
+    }
+
+    public String getVehicleTypeCode() {
+        return vehicleTypeCode;
+    }
+
+    public void setVehicleTypeCode(String vehicleTypeCode) {
+        this.vehicleTypeCode = vehicleTypeCode;
     }
 
     @Override
