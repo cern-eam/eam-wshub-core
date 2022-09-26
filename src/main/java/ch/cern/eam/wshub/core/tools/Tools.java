@@ -31,6 +31,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.isEmpty;
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
+
 public class Tools {
 
 	private ApplicationData applicationData;
@@ -152,12 +155,22 @@ public class Tools {
 	//
 	public ORGANIZATIONID_Type getOrganization(InforContext inforContext) {
 		ORGANIZATIONID_Type org = new ORGANIZATIONID_Type();
-		if (inforContext != null && inforContext.getOrganizationCode() != null) {
-			org.setORGANIZATIONCODE(inforContext.getOrganizationCode());
-		} else {
-			org.setORGANIZATIONCODE(applicationData.getOrganization());
-		}
+		org.setORGANIZATIONCODE(getOrganizationCode(inforContext));
 		return org;
+	}
+
+	public ORGANIZATIONID_Type getOrganization(InforContext inforContext, String organizationCode) {
+		ORGANIZATIONID_Type org = new ORGANIZATIONID_Type();
+		org.setORGANIZATIONCODE(getOrganizationCode(inforContext, organizationCode));
+		return org;
+	}
+
+	public String getOrganizationCode(InforContext context, String organizationCode) {
+		if (isNotEmpty(organizationCode)) {
+			return organizationCode;
+		}
+
+		return getOrganizationCode(context);
 	}
 
 	public String getOrganizationCode(InforContext inforContext) {
@@ -166,6 +179,20 @@ public class Tools {
 		} else {
 			return applicationData.getOrganization();
 		}
+	}
+
+	public static String extractEntityCode(String code) {
+		if (isNotEmpty(code) && code.contains("#")) {
+			return code.split("#")[0];
+		}
+		return code;
+	}
+
+	public static String extractOrganizationCode(String code) {
+		if (isNotEmpty(code) && code.contains("#") && code.split("#").length > 1) {
+			return code.split("#")[1];
+		}
+		return null;
 	}
 
 	//

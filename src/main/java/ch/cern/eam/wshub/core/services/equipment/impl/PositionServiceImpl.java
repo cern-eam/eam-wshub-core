@@ -57,7 +57,7 @@ public class PositionServiceImpl implements PositionService {
 			"OBJ"));
 
 		//
-		initializePositionObject(context, positionEquipment, positionParam, true);
+		initializePositionObject(context, positionEquipment, positionParam);
 		tools.getInforFieldTools().transformWSHubObject(positionEquipment, positionParam, context);
 		//
 		MP0306_AddPositionEquipment_001 addPosition = new MP0306_AddPositionEquipment_001();
@@ -69,11 +69,11 @@ public class PositionServiceImpl implements PositionService {
 		return equipmentCode;
 	}
 
-	public String deletePosition(InforContext context, String positionCode) throws InforException {
+	public String deletePosition(InforContext context, String positionCode, String organization) throws InforException {
 
 		MP0309_DeletePositionEquipment_001 deletePosition = new MP0309_DeletePositionEquipment_001();
 		deletePosition.setPOSITIONID(new EQUIPMENTID_Type());
-		deletePosition.getPOSITIONID().setORGANIZATIONID(tools.getOrganization(context));
+		deletePosition.getPOSITIONID().setORGANIZATIONID(tools.getOrganization(context, organization));
 		deletePosition.getPOSITIONID().setEQUIPMENTCODE(positionCode);
 
 		tools.performInforOperation(context, inforws::deletePositionEquipmentOp, deletePosition);
@@ -81,12 +81,12 @@ public class PositionServiceImpl implements PositionService {
 		return positionCode;
 	}
 
-	private PositionParentHierarchy readInforPositionParentHierarchy(InforContext context, String assetCode) throws InforException {
+	private PositionParentHierarchy readInforPositionParentHierarchy(InforContext context, String positionCode, String organization) throws InforException {
 
 		MP0328_GetPositionParentHierarchy_002 getpositionph = new MP0328_GetPositionParentHierarchy_002();
 		getpositionph.setPOSITIONID(new EQUIPMENTID_Type());
-		getpositionph.getPOSITIONID().setORGANIZATIONID(tools.getOrganization(context));
-		getpositionph.getPOSITIONID().setEQUIPMENTCODE(assetCode);
+		getpositionph.getPOSITIONID().setORGANIZATIONID(tools.getOrganization(context, organization));
+		getpositionph.getPOSITIONID().setEQUIPMENTCODE(positionCode);
 
 		MP0328_GetPositionParentHierarchy_002_Result result =
 			tools.performInforOperation(context, inforws::getPositionParentHierarchyOp, getpositionph);
@@ -97,31 +97,19 @@ public class PositionServiceImpl implements PositionService {
 	public Equipment readPositionDefault(InforContext context, String organization) throws InforException {
 
 		MP0310_GetPositionEquipmentDefault_001 getPositionEquipmentDefault_001 = new MP0310_GetPositionEquipmentDefault_001();
-		if (isEmpty(organization)) {
-			getPositionEquipmentDefault_001.setORGANIZATIONID(tools.getOrganization(context));
-		} else {
-			getPositionEquipmentDefault_001.setORGANIZATIONID(new ORGANIZATIONID_Type());
-			getPositionEquipmentDefault_001.getORGANIZATIONID().setORGANIZATIONCODE(organization);
-		}
+		getPositionEquipmentDefault_001.setORGANIZATIONID(tools.getOrganization(context , organization));
 
-		MP0310_GetPositionEquipmentDefault_001_Result result =
-				tools.performInforOperation(context, inforws::getPositionEquipmentDefaultOp, getPositionEquipmentDefault_001);
+		MP0310_GetPositionEquipmentDefault_001_Result result = tools.performInforOperation(context, inforws::getPositionEquipmentDefaultOp, getPositionEquipmentDefault_001);
 
 		Equipment equipment = tools.getInforFieldTools().transformInforObject(new Equipment(), result.getResultData().getPositionEquipment());
 		equipment.setUserDefinedList(new HashMap<>());
 		return equipment;
 	}
 
-	public Equipment readPosition(InforContext context, String positionCode) throws InforException {
-		PositionEquipment positionEquipment = readInforPosition(context, positionCode);
+	public Equipment readPosition(InforContext context, String positionCode, String organization) throws InforException {
+		PositionEquipment positionEquipment = readInforPosition(context, positionCode, organization);
 		Equipment position = tools.getInforFieldTools().transformInforObject(new Equipment(), positionEquipment);
 		position.setSystemTypeCode("P");
-
-		// POSITION ID
-		if (positionEquipment.getPOSITIONID() != null) {
-			position.setCode(positionEquipment.getPOSITIONID().getEQUIPMENTCODE());
-			position.setDescription(positionEquipment.getPOSITIONID().getDESCRIPTION());
-		}
 
 		// HIERARCHY
 		if (positionEquipment.getPositionParentHierarchy().getLOCATIONID() != null) {
@@ -140,20 +128,20 @@ public class PositionServiceImpl implements PositionService {
 		return position;
 	}
 
-	private PositionEquipment readInforPosition(InforContext context, String positionCode) throws InforException {
+	private PositionEquipment readInforPosition(InforContext context, String positionCode, String organization) throws InforException {
 		MP0307_GetPositionEquipment_001 getPosition = new MP0307_GetPositionEquipment_001();
 		getPosition.setPOSITIONID(new EQUIPMENTID_Type());
-		getPosition.getPOSITIONID().setORGANIZATIONID(tools.getOrganization(context));
+		getPosition.getPOSITIONID().setORGANIZATIONID(tools.getOrganization(context, organization));
 		getPosition.getPOSITIONID().setEQUIPMENTCODE(positionCode);
 		MP0307_GetPositionEquipment_001_Result getAssetResult = tools.performInforOperation(context, inforws::getPositionEquipmentOp, getPosition);
-		getAssetResult.getResultData().getPositionEquipment().setPositionParentHierarchy(readInforPositionParentHierarchy(context, positionCode));
+		getAssetResult.getResultData().getPositionEquipment().setPositionParentHierarchy(readInforPositionParentHierarchy(context, positionCode, organization));
 
 		return getAssetResult.getResultData().getPositionEquipment();
 	}
 
 	public String updatePosition(InforContext context, Equipment positionParam) throws InforException {
 		// Read position
-		PositionEquipment positionEquipment = readInforPosition(context, positionParam.getCode());
+		PositionEquipment positionEquipment = readInforPosition(context, positionParam.getCode(), positionParam.getOrganization());
 		//
 		//
 		//
@@ -164,7 +152,7 @@ public class PositionServiceImpl implements PositionService {
 			positionParam.getClassCode(),
 			"OBJ"));
 
-		initializePositionObject(context, positionEquipment, positionParam, false);
+		initializePositionObject(context, positionEquipment, positionParam);
 		tools.getInforFieldTools().transformWSHubObject(positionEquipment, positionParam, context);
 		// Update it
 		MP0308_SyncPositionEquipment_001 syncPosition = new MP0308_SyncPositionEquipment_001();
@@ -175,11 +163,11 @@ public class PositionServiceImpl implements PositionService {
 		return positionParam.getCode();
 	}
 
-	private void initializePositionObject(InforContext context, PositionEquipment positionInfor, Equipment positionParam, boolean creationRequest) throws InforException {
+	private void initializePositionObject(InforContext context, PositionEquipment positionInfor, Equipment positionParam) throws InforException {
 		// == null means Position creation
 		if (positionInfor.getPOSITIONID() == null) {
 			positionInfor.setPOSITIONID(new EQUIPMENTID_Type());
-			positionInfor.getPOSITIONID().setORGANIZATIONID(tools.getOrganization(context));
+			positionInfor.getPOSITIONID().setORGANIZATIONID(tools.getOrganization(context, positionParam.getOrganization()));
 			positionInfor.getPOSITIONID().setEQUIPMENTCODE(positionParam.getCode().toUpperCase().trim());
 		}
 

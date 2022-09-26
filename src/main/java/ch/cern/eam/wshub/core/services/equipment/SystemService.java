@@ -8,11 +8,11 @@ public interface SystemService {
 
     String createSystem(InforContext context, Equipment systemParam) throws InforException;
 
-    Equipment readSystem(InforContext context, String systemCode) throws InforException;
+    Equipment readSystem(InforContext context, String systemCode, String organization) throws InforException;
 
     String updateSystem(InforContext context, Equipment systemParam) throws InforException;
 
-    String deleteSystem(InforContext context, String systemCode) throws InforException;
+    String deleteSystem(InforContext context, String systemCode, String organization) throws InforException;
 
     Equipment readSystemDefault(InforContext context, String organizationCode) throws InforException;
 }

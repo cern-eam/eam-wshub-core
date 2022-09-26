@@ -24,6 +24,7 @@ import net.datastream.schemas.mp_results.mp0327_001.MP0327_GetAssetParentHierarc
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.*;
 import static ch.cern.eam.wshub.core.services.equipment.impl.EquipmentHierarchyTools.*;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
@@ -43,34 +44,20 @@ public class AssetServiceImpl implements AssetService {
     }
 
     public Equipment readAssetDefault(InforContext context, String organization) throws InforException {
-
         MP0305_GetAssetEquipmentDefault_001 getAssetEquipmentDefault_001 = new MP0305_GetAssetEquipmentDefault_001();
-        if (isEmpty(organization)) {
-            getAssetEquipmentDefault_001.setORGANIZATIONID(tools.getOrganization(context));
-        } else {
-            getAssetEquipmentDefault_001.setORGANIZATIONID(new ORGANIZATIONID_Type());
-            getAssetEquipmentDefault_001.getORGANIZATIONID().setORGANIZATIONCODE(organization);
-        }
-
-        MP0305_GetAssetEquipmentDefault_001_Result result =
-                tools.performInforOperation(context, inforws::getAssetEquipmentDefaultOp, getAssetEquipmentDefault_001);
+        getAssetEquipmentDefault_001.setORGANIZATIONID(tools.getOrganization(context , organization));
+        MP0305_GetAssetEquipmentDefault_001_Result result = tools.performInforOperation(context, inforws::getAssetEquipmentDefaultOp, getAssetEquipmentDefault_001);
 
         Equipment equipment = tools.getInforFieldTools().transformInforObject(new Equipment(), result.getResultData().getAssetEquipment());
         equipment.setUserDefinedList(new HashMap<>());
         return equipment;
     }
 
-    public Equipment readAsset(InforContext context, String assetCode) throws InforException {
-        AssetEquipment assetEquipment = readInforAsset(context, assetCode);
+    public Equipment readAsset(InforContext context, String assetCode, String organization) throws InforException {
+        AssetEquipment assetEquipment = readInforAsset(context, assetCode, organization);
         //
         Equipment asset = tools.getInforFieldTools().transformInforObject(new Equipment(), assetEquipment);
         asset.setSystemTypeCode("A");
-
-        // ID
-        if (assetEquipment.getASSETID() != null) {
-            asset.setCode(assetEquipment.getASSETID().getEQUIPMENTCODE());
-            asset.setDescription(assetEquipment.getASSETID().getDESCRIPTION());
-        }
 
         // DESCRIPTIONS
         tools.processRunnables(
@@ -92,10 +79,10 @@ public class AssetServiceImpl implements AssetService {
         return asset;
     }
 
-    private AssetParentHierarchy readInforAssetHierarchy(InforContext context, String assetCode) throws InforException {
+    private AssetParentHierarchy readInforAssetHierarchy(InforContext context, String assetCode, String organization) throws InforException {
         MP0327_GetAssetParentHierarchy_001 getassetph = new MP0327_GetAssetParentHierarchy_001();
         getassetph.setASSETID(new EQUIPMENTID_Type());
-        getassetph.getASSETID().setORGANIZATIONID(tools.getOrganization(context));
+        getassetph.getASSETID().setORGANIZATIONID(tools.getOrganization(context, organization));
         getassetph.getASSETID().setEQUIPMENTCODE(assetCode);
 
         MP0327_GetAssetParentHierarchy_001_Result result = tools.performInforOperation(context, inforws::getAssetParentHierarchyOp, getassetph);
@@ -103,28 +90,21 @@ public class AssetServiceImpl implements AssetService {
         return result.getResultData().getAssetParentHierarchy();
     }
 
-    private AssetEquipment readInforAsset(InforContext context, String assetCode)
+    private AssetEquipment readInforAsset(InforContext context, String assetCode, String organization)
             throws InforException {
         MP0302_GetAssetEquipment_001 getAsset = new MP0302_GetAssetEquipment_001();
         getAsset.setASSETID(new EQUIPMENTID_Type());
-        getAsset.getASSETID().setORGANIZATIONID(tools.getOrganization(context));
+        getAsset.getASSETID().setORGANIZATIONID(tools.getOrganization(context, organization));
         getAsset.getASSETID().setEQUIPMENTCODE(assetCode);
 
         MP0302_GetAssetEquipment_001_Result getAssetResult = tools.performInforOperation(context, inforws::getAssetEquipmentOp, getAsset);
-        getAssetResult.getResultData().getAssetEquipment().setAssetParentHierarchy(readInforAssetHierarchy(context, assetCode));
+        getAssetResult.getResultData().getAssetEquipment().setAssetParentHierarchy(readInforAssetHierarchy(context, assetCode, organization));
 
         return getAssetResult.getResultData().getAssetEquipment();
     }
 
-    private void updateInforAsset(InforContext context, AssetEquipment assetEquipment)
-            throws InforException {
-        MP0303_SyncAssetEquipment_001 syncAsset = new MP0303_SyncAssetEquipment_001();
-        syncAsset.setAssetEquipment(assetEquipment);
-        tools.performInforOperation(context, inforws::syncAssetEquipmentOp, syncAsset);
-    }
-
     public String updateAsset(InforContext context, Equipment assetParam) throws InforException {
-        AssetEquipment assetEquipment = readInforAsset(context, assetParam.getCode());
+        AssetEquipment assetEquipment = readInforAsset(context, assetParam.getCode(), assetParam.getOrganization());
 
         //
         assetEquipment.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(
@@ -157,7 +137,9 @@ public class AssetServiceImpl implements AssetService {
         //
         // UPDATE EQUIPMENT
         //
-        this.updateInforAsset(context, assetEquipment);
+        MP0303_SyncAssetEquipment_001 syncAsset = new MP0303_SyncAssetEquipment_001();
+        syncAsset.setAssetEquipment(assetEquipment);
+        tools.performInforOperation(context, inforws::syncAssetEquipmentOp, syncAsset);
         userDefinedListService.writeUDLToEntity(context, assetParam, new EntityId("OBJ", assetParam.getCode()));
 
         return assetParam.getCode();
@@ -187,10 +169,10 @@ public class AssetServiceImpl implements AssetService {
         return equipmentCode;
     }
 
-    public String deleteAsset(InforContext context, String assetCode) throws InforException {
+    public String deleteAsset(InforContext context, String assetCode, String organization) throws InforException {
         MP0304_DeleteAssetEquipment_001 deleteAsset = new MP0304_DeleteAssetEquipment_001();
         deleteAsset.setASSETID(new EQUIPMENTID_Type());
-        deleteAsset.getASSETID().setORGANIZATIONID(tools.getOrganization(context));
+        deleteAsset.getASSETID().setORGANIZATIONID(tools.getOrganization(context, organization));
         deleteAsset.getASSETID().setEQUIPMENTCODE(assetCode);
 
         tools.performInforOperation(context, inforws::deleteAssetEquipmentOp, deleteAsset);
@@ -202,7 +184,7 @@ public class AssetServiceImpl implements AssetService {
         // == null means Asset creation
         if (assetInfor.getASSETID() == null) {
             assetInfor.setASSETID(new EQUIPMENTID_Type());
-            assetInfor.getASSETID().setORGANIZATIONID(tools.getOrganization(context));
+            assetInfor.getASSETID().setORGANIZATIONID(tools.getOrganization(context, assetParam.getOrganization()));
             assetInfor.getASSETID().setEQUIPMENTCODE(assetParam.getCode().toUpperCase().trim());
         }
 

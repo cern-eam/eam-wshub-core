@@ -10,6 +10,8 @@ import net.datastream.wsdls.inforws.InforWebServicesPT;
 import ch.cern.eam.wshub.core.services.equipment.entities.Equipment;
 import java.util.List;
 
+import static ch.cern.eam.wshub.core.tools.Tools.*;
+
 public class EquipmentFacadeServiceImpl implements EquipmentFacadeService {
 
     private Tools tools;
@@ -60,7 +62,7 @@ public class EquipmentFacadeServiceImpl implements EquipmentFacadeService {
     public String updateEquipment(InforContext inforContext, Equipment equipment) throws InforException {
 
         if (equipment.getSystemTypeCode() == null) {
-            equipment.setSystemTypeCode(equipmentTools.getEquipmentSystemTypeForEquipment(inforContext, equipment.getCode()));
+            equipment.setSystemTypeCode(equipmentTools.getEquipmentSystemTypeForEquipment(inforContext, equipment.getCode(), equipment.getOrganization()));
         }
 
         switch (equipment.getSystemTypeCode()) {
@@ -102,18 +104,19 @@ public class EquipmentFacadeServiceImpl implements EquipmentFacadeService {
     }
 
     @Override
-    public Equipment readEquipment(InforContext inforContext, String equipmentCode)
-            throws InforException {
+    public Equipment readEquipment(InforContext inforContext, String equipmentCode) throws InforException {
+        String code = extractEntityCode(equipmentCode);
+        String organization = extractOrganizationCode(equipmentCode);
 
-        String equipmentTypeCode = equipmentTools.getEquipmentSystemTypeForEquipment(inforContext, equipmentCode);
+        String equipmentTypeCode = equipmentTools.getEquipmentSystemTypeForEquipment(inforContext, code, organization);
 
         switch (equipmentTypeCode) {
             case "A":
-                return assetService.readAsset(inforContext, equipmentCode);
+                return assetService.readAsset(inforContext, code, organization);
             case "P":
-                return positionService.readPosition(inforContext, equipmentCode);
+                return positionService.readPosition(inforContext, code, organization);
             case "S": // System
-                return systemService.readSystem(inforContext, equipmentCode);
+                return systemService.readSystem(inforContext, code, organization);
             case "L": // Location
                 throw tools.generateFault("Locations are no longer available here. Use LocationService.");
             default:
@@ -123,16 +126,18 @@ public class EquipmentFacadeServiceImpl implements EquipmentFacadeService {
 
     @Override
     public String deleteEquipment(InforContext inforContext, String equipmentCode) throws InforException {
+        String code = extractEntityCode(equipmentCode);
+        String organization = extractOrganizationCode(equipmentCode);
 
-        String equipmentTypeCode = equipmentTools.getEquipmentSystemTypeForEquipment(inforContext, equipmentCode);
+        String equipmentTypeCode = equipmentTools.getEquipmentSystemTypeForEquipment(inforContext, code, organization);
 
         switch (equipmentTypeCode) {
             case "A":
-                return assetService.deleteAsset(inforContext, equipmentCode);
+                return assetService.deleteAsset(inforContext, code, organization);
             case "P":
-                return positionService.deletePosition(inforContext, equipmentCode);
+                return positionService.deletePosition(inforContext, code, organization);
             case "S": // System
-                return systemService.deleteSystem(inforContext, equipmentCode);
+                return systemService.deleteSystem(inforContext, code, organization);
             case "L": // Location
                 throw tools.generateFault("Locations are no longer available here. Use LocationService.");
             default:
@@ -142,7 +147,7 @@ public class EquipmentFacadeServiceImpl implements EquipmentFacadeService {
 
     @Override
     public String readEquipmentType(InforContext inforContext, String equipmentCode) throws InforException {
-        return equipmentTools.getEquipmentSystemTypeForEquipment(inforContext, equipmentCode);
+        return equipmentTools.getEquipmentSystemTypeForEquipment(inforContext, extractEntityCode(equipmentCode), extractOrganizationCode(equipmentCode));
     }
 
 }

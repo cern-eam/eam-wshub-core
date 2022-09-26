@@ -44,41 +44,30 @@ public class SystemServiceImpl implements SystemService {
 	public Equipment readSystemDefault(InforContext context, String organization) throws InforException {
 
 		MP0315_GetSystemEquipmentDefault_001 getSystemEquipmentDefault_001 = new MP0315_GetSystemEquipmentDefault_001();
-		if (isEmpty(organization)) {
-			getSystemEquipmentDefault_001.setORGANIZATIONID(tools.getOrganization(context));
-		} else {
-			getSystemEquipmentDefault_001.setORGANIZATIONID(new ORGANIZATIONID_Type());
-			getSystemEquipmentDefault_001.getORGANIZATIONID().setORGANIZATIONCODE(organization);
-		}
+		getSystemEquipmentDefault_001.setORGANIZATIONID(tools.getOrganization(context , organization));
 
-		MP0315_GetSystemEquipmentDefault_001_Result result =
-				tools.performInforOperation(context, inforws::getSystemEquipmentDefaultOp, getSystemEquipmentDefault_001);
+		MP0315_GetSystemEquipmentDefault_001_Result result = tools.performInforOperation(context, inforws::getSystemEquipmentDefaultOp, getSystemEquipmentDefault_001);
 
 		Equipment equipment = tools.getInforFieldTools().transformInforObject(new Equipment(), result.getResultData().getSystemEquipment());
 		equipment.setUserDefinedList(new HashMap<>());
 		return equipment;
 	}
 
-	private SystemParentHierarchy readHierarchyInfor(InforContext context, String systemCode) throws InforException {
+	private SystemParentHierarchy readHierarchyInfor(InforContext context, String systemCode, String organization) throws InforException {
 		MP0329_GetSystemParentHierarchy_001 getsystemh = new MP0329_GetSystemParentHierarchy_001();
 		getsystemh.setSYSTEMID(new EQUIPMENTID_Type());
 		getsystemh.getSYSTEMID().setEQUIPMENTCODE(systemCode);
-		getsystemh.getSYSTEMID().setORGANIZATIONID(tools.getOrganization(context));
+		getsystemh.getSYSTEMID().setORGANIZATIONID(tools.getOrganization(context, organization));
 		MP0329_GetSystemParentHierarchy_001_Result result = tools.performInforOperation(context, inforws::getSystemParentHierarchyOp, getsystemh);
 		return result.getResultData().getSystemParentHierarchy();
 	}
 
-	public Equipment readSystem(InforContext context, String systemCode) throws InforException {
+	public Equipment readSystem(InforContext context, String systemCode, String organization) throws InforException {
 
-		SystemEquipment systemEquipment = readSystemInfor(context, systemCode);
+		SystemEquipment systemEquipment = readSystemInfor(context, systemCode, organization);
 
 		Equipment system = tools.getInforFieldTools().transformInforObject(new Equipment(), systemEquipment);
 		system.setSystemTypeCode("S");
-
-		if (systemEquipment.getSYSTEMID() != null) {
-			system.setCode(systemEquipment.getSYSTEMID().getEQUIPMENTCODE());
-			system.setDescription(systemEquipment.getSYSTEMID().getDESCRIPTION());
-		}
 
 		// HIERARCHY
 		if (systemEquipment.getSystemParentHierarchy().getLOCATIONID() != null) {
@@ -95,20 +84,20 @@ public class SystemServiceImpl implements SystemService {
 		return system;
 	}
 
-	public SystemEquipment readSystemInfor(InforContext context, String systemCode) throws InforException {
+	public SystemEquipment readSystemInfor(InforContext context, String systemCode, String organization) throws InforException {
 		MP0312_GetSystemEquipment_001 getSystem = new MP0312_GetSystemEquipment_001();
 		getSystem.setSYSTEMID(new EQUIPMENTID_Type());
-		getSystem.getSYSTEMID().setORGANIZATIONID(tools.getOrganization(context));
+		getSystem.getSYSTEMID().setORGANIZATIONID(tools.getOrganization(context, organization));
 		getSystem.getSYSTEMID().setEQUIPMENTCODE(systemCode);
 		MP0312_GetSystemEquipment_001_Result getAssetResult =
 			tools.performInforOperation(context, inforws::getSystemEquipmentOp, getSystem);
-		getAssetResult.getResultData().getSystemEquipment().setSystemParentHierarchy(readHierarchyInfor(context, systemCode));
+		getAssetResult.getResultData().getSystemEquipment().setSystemParentHierarchy(readHierarchyInfor(context, systemCode, organization));
 		return getAssetResult.getResultData().getSystemEquipment();
 	}
 
 	public String updateSystem(InforContext context, Equipment systemParam) throws InforException {
 
-			SystemEquipment systemEquipment = readSystemInfor(context, systemParam.getCode());
+			SystemEquipment systemEquipment = readSystemInfor(context, systemParam.getCode(), systemParam.getOrganization());
 			//
 			systemEquipment.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(
 				context,
@@ -153,11 +142,11 @@ public class SystemServiceImpl implements SystemService {
 		return systemCode;
 	}
 
-	public String deleteSystem(InforContext context, String systemCode) throws InforException {
+	public String deleteSystem(InforContext context, String systemCode, String organization) throws InforException {
 
 		MP0314_DeleteSystemEquipment_001 deleteSystem = new MP0314_DeleteSystemEquipment_001();
 		deleteSystem.setSYSTEMID(new EQUIPMENTID_Type());
-		deleteSystem.getSYSTEMID().setORGANIZATIONID(tools.getOrganization(context));
+		deleteSystem.getSYSTEMID().setORGANIZATIONID(tools.getOrganization(context, organization));
 		deleteSystem.getSYSTEMID().setEQUIPMENTCODE(systemCode);
 
 		tools.performInforOperation(context, inforws::deleteSystemEquipmentOp, deleteSystem);
@@ -168,7 +157,7 @@ public class SystemServiceImpl implements SystemService {
 	private void initializeSystemObject(SystemEquipment systemInfor, Equipment systemParam, InforContext context) throws InforException {
 		if (systemInfor.getSYSTEMID() == null) {
 			systemInfor.setSYSTEMID(new EQUIPMENTID_Type());
-			systemInfor.getSYSTEMID().setORGANIZATIONID(tools.getOrganization(context));
+			systemInfor.getSYSTEMID().setORGANIZATIONID(tools.getOrganization(context, systemParam.getOrganization()));
 			systemInfor.getSYSTEMID().setEQUIPMENTCODE(systemParam.getCode());
 		}
 

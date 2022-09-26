@@ -8,9 +8,9 @@ public interface PositionService {
 
     String createPosition(InforContext context, Equipment positionParam) throws InforException;
 
-    Equipment readPosition(InforContext context, String positionCode) throws InforException;
+    Equipment readPosition(InforContext context, String positionCode, String organization) throws InforException;
 
-    String deletePosition(InforContext context, String positionCode) throws InforException;
+    String deletePosition(InforContext context, String positionCode, String organization) throws InforException;
 
     String updatePosition(InforContext context, Equipment positionParam) throws InforException;
 

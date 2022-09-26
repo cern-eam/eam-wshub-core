@@ -29,10 +29,28 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
     private static final long serialVersionUID = 7865040704362527306L;
 
     @Column(name = "OBJ_DESC")
+    @InforField(xpath = {
+            "ASSETID/DESCRIPTION",
+            "POSITIONID/DESCRIPTION",
+            "SYSTEMID/DESCRIPTION"
+    }, readOnly = true)
     private String description;
     @Id
     @Column(name = "OBJ_CODE")
+    @InforField(xpath = {
+            "ASSETID/EQUIPMENTCODE",
+            "POSITIONID/EQUIPMENTCODE",
+            "SYSTEMID/EQUIPMENTCODE"
+    }, readOnly = true)
     private String code;
+
+    @Transient
+    @InforField(xpath = {
+            "ASSETID/ORGANIZATIONID/ORGANIZATIONCODE",
+            "POSITIONID/ORGANIZATIONID/ORGANIZATIONCODE",
+            "SYSTEMID/ORGANIZATIONID/ORGANIZATIONCODE"
+    }, readOnly = true)
+    private String organization;
 
     @Column(name = "OBJ_OBTYPE")
     @InforField(xpath = "TYPE/TYPECODE")
@@ -451,6 +469,14 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
     @Transient
     @InforField(xpath = "ORIGINALINSTALLDATE")
     private Date originalInstallDate;
+
+    public String getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(String organization) {
+        this.organization = organization;
+    }
 
     @Transient
     @InforField(xpath = "XLOCATION")

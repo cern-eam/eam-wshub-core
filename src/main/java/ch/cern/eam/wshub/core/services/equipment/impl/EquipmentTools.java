@@ -9,8 +9,10 @@ import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
+
 import static ch.cern.eam.wshub.core.tools.GridTools.convertGridResultToMap;
 import static ch.cern.eam.wshub.core.tools.GridTools.extractSingleResult;
+
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
 import java.util.Map;
@@ -46,10 +48,11 @@ public class EquipmentTools {
         return equimentSystemTypesCache.get(equipmentUserType);
     }
 
-    public String getEquipmentSystemTypeForEquipment(InforContext inforContext, String equipmentCode) throws InforException {
+    public String getEquipmentSystemTypeForEquipment(InforContext inforContext, String equipmentCode, String organization) throws InforException {
         //TODO: Find more suitable grid to fetch equipment type
         GridRequest gridRequest = new GridRequest("LVREPCOGALLEQUIPMENT", GridRequest.GRIDTYPE.LOV);
-        gridRequest.getGridRequestFilters().add(new GridRequestFilter("code", equipmentCode, "="));
+        gridRequest.addFilter("code", equipmentCode, "=", GridRequestFilter.JOINER.AND);
+        gridRequest.addFilter("organization", tools.getOrganizationCode(inforContext, organization), "=");
         String typeDescription = extractSingleResult(gridsService.executeQuery(inforContext, gridRequest), "type");
 
         if(typeDescription == null) {
