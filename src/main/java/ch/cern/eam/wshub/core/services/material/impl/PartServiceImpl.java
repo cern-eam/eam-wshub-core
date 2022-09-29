@@ -28,6 +28,8 @@ import java.util.List;
 
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.isEmpty;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.toCodeString;
+import static ch.cern.eam.wshub.core.tools.Tools.extractEntityCode;
+import static ch.cern.eam.wshub.core.tools.Tools.extractOrganizationCode;
 
 public class PartServiceImpl implements PartService {
 
@@ -85,7 +87,7 @@ public class PartServiceImpl implements PartService {
 	}
 
 	public Part readPart(InforContext context, String partCode) throws InforException {
-		Part part = tools.getInforFieldTools().transformInforObject(new Part(), readPartInfor(context, partCode));
+		Part part = tools.getInforFieldTools().transformInforObject(new Part(), readPartInfor(context, extractEntityCode(partCode), extractOrganizationCode(partCode)));
 
 		// Fetched missing descriptions not returned by Infor web service
 		tools.processRunnables(
@@ -93,16 +95,16 @@ public class PartServiceImpl implements PartService {
 			() -> part.setCategoryDesc(tools.getFieldDescriptionsTools().readCategoryDesc(context, part.getCategoryCode())),
 			() -> part.setUOMDesc(tools.getFieldDescriptionsTools().readUOMDesc(context, part.getUOM())),
 			() -> part.setCommodityDesc(tools.getFieldDescriptionsTools().readCommodityDesc(context,  part.getCommodityCode())),
-			() -> userDefinedListService.readUDLToEntity(context, part, new EntityId("PART", partCode))
+			() -> userDefinedListService.readUDLToEntity(context, part, new EntityId("PART", extractEntityCode(partCode)))
 		);
 
 		return part;
 	}
 
-	private net.datastream.schemas.mp_entities.part_001.Part readPartInfor(InforContext context, String partCode) throws InforException {
+	private net.datastream.schemas.mp_entities.part_001.Part readPartInfor(InforContext context, String partCode, String organization) throws InforException {
 		MP0241_GetPart_001 getPart = new MP0241_GetPart_001();
 		getPart.setPARTID(new PARTID_Type());
-		getPart.getPARTID().setORGANIZATIONID(tools.getOrganization(context));
+		getPart.getPARTID().setORGANIZATIONID(tools.getOrganization(context, organization));
 		getPart.getPARTID().setPARTCODE(partCode);
 
 		MP0241_GetPart_001_Result getPartResult =
@@ -145,11 +147,11 @@ public class PartServiceImpl implements PartService {
 			changePartNumber.setChangePartNumber(new ChangePartNumber());
 
 			changePartNumber.getChangePartNumber().setOLDPARTID(new PARTID_Type());
-			changePartNumber.getChangePartNumber().getOLDPARTID().setORGANIZATIONID(tools.getOrganization(context));
+			changePartNumber.getChangePartNumber().getOLDPARTID().setORGANIZATIONID(tools.getOrganization(context, partParam.getOrganization()));
 			changePartNumber.getChangePartNumber().getOLDPARTID().setPARTCODE(partParam.getCode());
 
 			changePartNumber.getChangePartNumber().setNEWPARTID(new PARTID_Type());
-			changePartNumber.getChangePartNumber().getNEWPARTID().setORGANIZATIONID(tools.getOrganization(context));
+			changePartNumber.getChangePartNumber().getNEWPARTID().setORGANIZATIONID(tools.getOrganization(context, partParam.getOrganization()));
 			changePartNumber.getChangePartNumber().getNEWPARTID().setPARTCODE(partParam.getNewCode());
 
 			tools.performInforOperation(context, inforws::changePartNumberOp, changePartNumber);
@@ -158,7 +160,7 @@ public class PartServiceImpl implements PartService {
 
 		}
 
-		net.datastream.schemas.mp_entities.part_001.Part inforPart = readPartInfor(context, partParam.getCode());
+		net.datastream.schemas.mp_entities.part_001.Part inforPart = readPartInfor(context, partParam.getCode(), partParam.getOrganization());
 
 		inforPart.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(
 			context,
@@ -187,8 +189,8 @@ public class PartServiceImpl implements PartService {
 	public String deletePart(InforContext context, String partCode) throws InforException {
 		MP0243_DeletePart_001 deletePart = new MP0243_DeletePart_001();
 		deletePart.setPARTID(new PARTID_Type());
-		deletePart.getPARTID().setORGANIZATIONID(tools.getOrganization(context));
-		deletePart.getPARTID().setPARTCODE(partCode);
+		deletePart.getPARTID().setORGANIZATIONID(tools.getOrganization(context, extractOrganizationCode(partCode)));
+		deletePart.getPARTID().setPARTCODE(extractEntityCode(partCode));
 
 		tools.performInforOperation(context, inforws::deletePartOp, deletePart);
 		userDefinedListService.deleteUDLFromEntity(context, new EntityId("PART", partCode));
