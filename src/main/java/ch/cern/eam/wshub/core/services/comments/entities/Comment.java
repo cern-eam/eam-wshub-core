@@ -22,8 +22,6 @@ public class Comment implements Serializable {
 	private String entityKeyCode;
 	private String entityCode;
 	private Boolean print;
-
-	private String organization;
 	
 	public String getPk() {
 		return this.getEntityKeyCode() + "C" + this.getLineNumber();
@@ -106,15 +104,6 @@ public class Comment implements Serializable {
 	public void setEntityKeyCode(String entityKeyCode) {
 		this.entityKeyCode = entityKeyCode;
 	}
-
-	public String getOrganization() {
-		return organization;
-	}
-
-	public void setOrganization(String organization) {
-		this.organization = organization;
-	}
-
 	@Override
 	public String toString() {
 		return "Comment ["
