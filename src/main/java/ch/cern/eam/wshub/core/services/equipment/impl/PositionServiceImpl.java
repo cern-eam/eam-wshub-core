@@ -189,7 +189,7 @@ public class PositionServiceImpl implements PositionService {
 
 		hierarchy.setPOSITIONID(new EQUIPMENTID_Type());
 		hierarchy.getPOSITIONID().setEQUIPMENTCODE(positionParam.getCode());
-		hierarchy.getPOSITIONID().setORGANIZATIONID(tools.getOrganization(context));
+		hierarchy.getPOSITIONID().setORGANIZATIONID(tools.getOrganization(context, positionParam.getOrganization()));
 		hierarchy.setTYPE(new TYPE_Type());
 		hierarchy.getTYPE().setTYPECODE("A");
 
@@ -202,9 +202,9 @@ public class PositionServiceImpl implements PositionService {
 		HIERARCHY_TYPE currentHierarchyType = readHierarchyType(positionInfor.getPositionParentHierarchy());
 
 		// Incorporate user changes into the parent types
-		assetParent = createAssetParent(tools.getOrganizationCode(context), positionParam.getHierarchyAssetCode(), positionParam.getHierarchyAssetCostRollUp(), assetParent);
-		positionParent = createPositionParent(tools.getOrganizationCode(context), positionParam.getHierarchyPositionCode(), positionParam.getHierarchyPositionCostRollUp(), positionParent);
-		primarySystemParent = createPrimarySystemParent(tools.getOrganizationCode(context), positionParam.getHierarchyPrimarySystemCode(), positionParam.getHierarchyPrimarySystemCostRollUp(), primarySystemParent);
+		assetParent = createAssetParent(tools.getOrganizationCode(context, positionParam.getHierarchyAssetOrg()), positionParam.getHierarchyAssetCode(), positionParam.getHierarchyAssetCostRollUp(), assetParent);
+		positionParent = createPositionParent(tools.getOrganizationCode(context, positionParam.getHierarchyPositionOrg()), positionParam.getHierarchyPositionCode(), positionParam.getHierarchyPositionCostRollUp(), positionParent);
+		primarySystemParent = createPrimarySystemParent(tools.getOrganizationCode(context, positionParam.getHierarchyPrimarySystemOrg()), positionParam.getHierarchyPrimarySystemCode(), positionParam.getHierarchyPrimarySystemCostRollUp(), primarySystemParent);
 		locationParent = createLocationParent(tools.getOrganizationCode(context), positionParam.getHierarchyLocationCode(), locationParent);
 
 		// Init new hierarchy

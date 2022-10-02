@@ -237,6 +237,24 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
             "PositionParentHierarchy/NonDependentParents/NONDEPENDENTASSET/ASSETID/DESCRIPTION"},
             readOnly = true)
     private String hierarchyAssetDesc;
+
+    @Transient
+    @InforField(xpath = {
+            "AssetParentHierarchy/AssetDependency/DEPENDENTASSET/ASSETID/ORGANIZATIONID/ORGANIZATIONCODE",
+            "AssetParentHierarchy/PositionDependency/NONDEPENDENTASSET/ASSETID/ORGANIZATIONID/ORGANIZATIONCODE",
+            "AssetParentHierarchy/PrimarySystemDependency/NONDEPENDENTASSET/ASSETID/ORGANIZATIONID/ORGANIZATIONCODE",
+            "AssetParentHierarchy/SystemDependency/NONDEPENDENTASSET/ASSETID/ORGANIZATIONID/ORGANIZATIONCODE",
+            "AssetParentHierarchy/LocationDependency/NONDEPENDENTASSET/ASSETID/ORGANIZATIONID/ORGANIZATIONCODE",
+            "AssetParentHierarchy/NonDependentParents/NONDEPENDENTASSET/ASSETID/ORGANIZATIONID/ORGANIZATIONCODE",
+
+            "PositionParentHierarchy/AssetDependency/DEPENDENTASSET/ASSETID/ORGANIZATIONID/ORGANIZATIONCODE",
+            "PositionParentHierarchy/PositionDependency/NONDEPENDENTASSET/ASSETID/ORGANIZATIONID/ORGANIZATIONCODE",
+            "PositionParentHierarchy/PrimarySystemDependency/NONDEPENDENTASSET/ASSETID/ORGANIZATIONID/ORGANIZATIONCODE",
+            "PositionParentHierarchy/SystemDependency/NONDEPENDENTASSET/ASSETID/ORGANIZATIONID/ORGANIZATIONCODE",
+            "PositionParentHierarchy/LocationDependency/NONDEPENDENTASSET/ASSETID/ORGANIZATIONID/ORGANIZATIONCODE",
+            "PositionParentHierarchy/NonDependentParents/NONDEPENDENTASSET/ASSETID/ORGANIZATIONID/ORGANIZATIONCODE"},
+            readOnly = true)
+    private String hierarchyAssetOrg;
     @Transient
     private Boolean hierarchyAssetDependent;
     @Transient
@@ -291,6 +309,24 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
             "PositionParentHierarchy/NonDependentParents/NONDEPENDENTPOSITION/POSITIONID/DESCRIPTION"},
             readOnly = true)
     private String hierarchyPositionDesc;
+
+    @Transient
+    @InforField(xpath = {
+            "AssetParentHierarchy/AssetDependency/NONDEPENDENTPOSITION/POSITIONID/ORGANIZATIONID/ORGANIZATIONCODE",
+            "AssetParentHierarchy/PositionDependency/DEPENDENTPOSITION/POSITIONID/ORGANIZATIONID/ORGANIZATIONCODE",
+            "AssetParentHierarchy/PrimarySystemDependency/NONDEPENDENTPOSITION/POSITIONID/ORGANIZATIONID/ORGANIZATIONCODE",
+            "AssetParentHierarchy/SystemDependency/NONDEPENDENTPOSITION/POSITIONID/ORGANIZATIONID/ORGANIZATIONCODE",
+            "AssetParentHierarchy/LocationDependency/NONDEPENDENTPOSITION/POSITIONID/ORGANIZATIONID/ORGANIZATIONCODE",
+            "AssetParentHierarchy/NonDependentParents/NONDEPENDENTPOSITION/POSITIONID/ORGANIZATIONID/ORGANIZATIONCODE",
+
+            "PositionParentHierarchy/AssetDependency/NONDEPENDENTPOSITION/POSITIONID/ORGANIZATIONID/ORGANIZATIONCODE",
+            "PositionParentHierarchy/PositionDependency/DEPENDENTPOSITION/POSITIONID/ORGANIZATIONID/ORGANIZATIONCODE",
+            "PositionParentHierarchy/PrimarySystemDependency/NONDEPENDENTPOSITION/POSITIONID/ORGANIZATIONID/ORGANIZATIONCODE",
+            "PositionParentHierarchy/SystemDependency/NONDEPENDENTPOSITION/POSITIONID/ORGANIZATIONID/ORGANIZATIONCODE",
+            "PositionParentHierarchy/LocationDependency/NONDEPENDENTPOSITION/POSITIONID/ORGANIZATIONID/ORGANIZATIONCODE",
+            "PositionParentHierarchy/NonDependentParents/NONDEPENDENTPOSITION/POSITIONID/ORGANIZATIONID/ORGANIZATIONCODE"},
+            readOnly = true)
+    private String hierarchyPositionOrg;
     @Transient
     private Boolean hierarchyPositionDependent;
     @Transient
@@ -351,6 +387,27 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
             "SystemParentHierarchy/DEPENDENTPRIMARYSYSTEM/SYSTEMID/DESCRIPTION"},
             readOnly = true)
     private String hierarchyPrimarySystemDesc;
+
+    @Transient
+    @InforField(xpath = {
+            "AssetParentHierarchy/AssetDependency/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/ORGANIZATIONID/ORGANIZATIONCODE",
+            "AssetParentHierarchy/PositionDependency/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/ORGANIZATIONID/ORGANIZATIONCODE",
+            "AssetParentHierarchy/PrimarySystemDependency/DEPENDENTPRIMARYSYSTEM/SYSTEMID/ORGANIZATIONID/ORGANIZATIONCODE",
+            "AssetParentHierarchy/SystemDependency/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/ORGANIZATIONID/ORGANIZATIONCODE",
+            "AssetParentHierarchy/LocationDependency/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/ORGANIZATIONID/ORGANIZATIONCODE",
+            "AssetParentHierarchy/NonDependentParents/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/ORGANIZATIONID/ORGANIZATIONCODE",
+
+            "PositionParentHierarchy/AssetDependency/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/ORGANIZATIONID/ORGANIZATIONCODE",
+            "PositionParentHierarchy/PositionDependency/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/ORGANIZATIONID/ORGANIZATIONCODE",
+            "PositionParentHierarchy/PrimarySystemDependency/DEPENDENTPRIMARYSYSTEM/SYSTEMID/ORGANIZATIONID/ORGANIZATIONCODE",
+            "PositionParentHierarchy/SystemDependency/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/ORGANIZATIONID/ORGANIZATIONCODE",
+            "PositionParentHierarchy/LocationDependency/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/ORGANIZATIONID/ORGANIZATIONCODE",
+            "PositionParentHierarchy/NonDependentParents/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/ORGANIZATIONID/ORGANIZATIONCODE",
+
+            "SystemParentHierarchy/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/ORGANIZATIONID/ORGANIZATIONCODE",
+            "SystemParentHierarchy/DEPENDENTPRIMARYSYSTEM/SYSTEMID/ORGANIZATIONID/ORGANIZATIONCODE"},
+            readOnly = true)
+    private String hierarchyPrimarySystemOrg;
     @Transient
     private Boolean hierarchyPrimarySystemDependent;
     @Transient
@@ -1432,6 +1489,30 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
 
     public void setVehicleTypeCode(String vehicleTypeCode) {
         this.vehicleTypeCode = vehicleTypeCode;
+    }
+
+    public String getHierarchyAssetOrg() {
+        return hierarchyAssetOrg;
+    }
+
+    public void setHierarchyAssetOrg(String hierarchyAssetOrg) {
+        this.hierarchyAssetOrg = hierarchyAssetOrg;
+    }
+
+    public String getHierarchyPositionOrg() {
+        return hierarchyPositionOrg;
+    }
+
+    public void setHierarchyPositionOrg(String hierarchyPositionOrg) {
+        this.hierarchyPositionOrg = hierarchyPositionOrg;
+    }
+
+    public String getHierarchyPrimarySystemOrg() {
+        return hierarchyPrimarySystemOrg;
+    }
+
+    public void setHierarchyPrimarySystemOrg(String hierarchyPrimarySystemOrg) {
+        this.hierarchyPrimarySystemOrg = hierarchyPrimarySystemOrg;
     }
 
     @Override
