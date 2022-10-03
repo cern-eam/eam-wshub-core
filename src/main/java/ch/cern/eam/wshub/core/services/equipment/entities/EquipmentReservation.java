@@ -1,9 +1,11 @@
 package ch.cern.eam.wshub.core.services.equipment.entities;
 
+import ch.cern.eam.wshub.core.adapters.DateAdapter;
 import ch.cern.eam.wshub.core.annotations.InforField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.Date;
 
 public class EquipmentReservation {
@@ -123,6 +125,7 @@ public class EquipmentReservation {
         this.reference = reference;
     }
 
+    @XmlJavaTypeAdapter(DateAdapter.class)
     public Date getIssuedDate() {
         return issuedDate;
     }
@@ -131,6 +134,7 @@ public class EquipmentReservation {
         this.issuedDate = issuedDate;
     }
 
+    @XmlJavaTypeAdapter(DateAdapter.class)
     public Date getEstimatedIssueDate() {
         return estimatedIssueDate;
     }
@@ -163,6 +167,7 @@ public class EquipmentReservation {
         this.issueTo = issueTo;
     }
 
+    @XmlJavaTypeAdapter(DateAdapter.class)
     public Date getReturnDate() {
         return returnDate;
     }
@@ -171,6 +176,7 @@ public class EquipmentReservation {
         this.returnDate = returnDate;
     }
 
+    @XmlJavaTypeAdapter(DateAdapter.class)
     public Date getEstimatedReturnDate() {
         return estimatedReturnDate;
     }

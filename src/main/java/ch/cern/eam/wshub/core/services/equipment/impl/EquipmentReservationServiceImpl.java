@@ -31,12 +31,10 @@ public class EquipmentReservationServiceImpl implements EquipmentReservationServ
 
     @Override
     public String createEquipmentReservation(InforContext context, EquipmentReservation reservationParam) throws InforException {
+        reservationParam.setCode("0");
+
         CustomerRental reservation = new CustomerRental();
         tools.getInforFieldTools().transformWSHubObject(reservation, reservationParam, context);
-
-        if (reservation.getCUSTOMERRENTALID().getCUSTOMERRENTALCODE() == null) {
-            reservation.getCUSTOMERRENTALID().setCUSTOMERRENTALCODE("");
-        }
 
         MP7833_AddCustomerRental_001 addReservation = new MP7833_AddCustomerRental_001();
         addReservation.setCustomerRental(reservation);
