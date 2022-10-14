@@ -49,17 +49,17 @@ public class EquipmentTools {
     }
 
     public String getEquipmentSystemTypeForEquipment(InforContext inforContext, String equipmentCode, String organization) throws InforException {
-        //TODO: Find more suitable grid to fetch equipment type
-        GridRequest gridRequest = new GridRequest("LVREPCOGALLEQUIPMENT", GridRequest.GRIDTYPE.LOV);
-        gridRequest.addFilter("code", equipmentCode, "=", GridRequestFilter.JOINER.AND);
-        gridRequest.addFilter("organization", tools.getOrganizationCode(inforContext, organization), "=");
-        String typeDescription = extractSingleResult(gridsService.executeQuery(inforContext, gridRequest), "type");
+        GridRequest gridRequest = new GridRequest("OCOBJC", GridRequest.GRIDTYPE.LIST);
+        gridRequest.addFilter("obj_code", equipmentCode, "=", GridRequestFilter.JOINER.AND);
+        gridRequest.addFilter("obj_org", tools.getOrganizationCode(inforContext, organization), "=");
+        gridRequest.addParam("parameter.lastupdated", "31-JAN-1970");
+        String systemType = extractSingleResult(gridsService.executeQuery(inforContext, gridRequest), "obj_obrtype");
 
-        if(typeDescription == null) {
+        if(systemType == null) {
             throw tools.generateFault("The equipment record couldn't be found.");
         }
 
-        return getEquipmentSystemTypeForUserType(inforContext, typeDescription);
+        return systemType;
     }
 
 }
