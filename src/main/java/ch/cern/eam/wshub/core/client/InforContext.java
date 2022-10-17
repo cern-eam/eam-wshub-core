@@ -16,6 +16,7 @@ public class InforContext implements Serializable {
     private String tenant;
     private Signature signature;
     private Boolean keepSession;
+    private String authToken;
 
     public InforContext () { }
 
@@ -67,5 +68,13 @@ public class InforContext implements Serializable {
 
     public void setKeepSession(Boolean keepSession) {
         this.keepSession = keepSession;
+    }
+
+    public String getAuthToken() {
+        return authToken;
+    }
+
+    public void setAuthToken(String authToken) {
+        this.authToken = authToken;
     }
 }
