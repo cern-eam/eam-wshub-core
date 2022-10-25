@@ -1,5 +1,6 @@
 package ch.cern.eam.wshub.core.tools;
 
+import ch.cern.eam.wshub.core.adapters.DateAdapter;
 import ch.cern.eam.wshub.core.annotations.BooleanType;
 import net.datastream.schemas.mp_fields.CLASSID_Type;
 import net.datastream.schemas.mp_fields.LOCATIONID_Type;
@@ -19,17 +20,6 @@ import java.util.*;
 public class DataTypeTools {
 
     private Tools tools;
-    private static String[] formatStrings = {
-            "dd-MMM-yyyy HH:mm",
-            "dd-MMM-yyyy",
-            "dd-MM-yyyy",
-            "dd-MM-yyyy HH:mm",
-            "yyyy-MM-dd HH:mm:ss",
-            "yyyy-MM-dd HH:mm",
-            "yyyy-MM-dd",
-            "dd/MM/yyyy HH:mm:ss",
-            "dd/MM/yyyy"
-    };
 
     public static final Integer NULLIFY_VALUE =  Integer.MAX_VALUE;
 
@@ -49,7 +39,7 @@ public class DataTypeTools {
             return Calendar.getInstance();
         }
 
-        for (String formatString : formatStrings) {
+        for (String formatString : DateAdapter.formatStrings) {
             try {
                 SimpleDateFormat formatter = new SimpleDateFormat(formatString, Locale.ENGLISH);
                 formatter.setLenient(false);

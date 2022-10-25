@@ -10,6 +10,22 @@ import java.util.Locale;
 
 public class DateAdapter extends XmlAdapter<String, Date> {
 
+    public static String[] formatStrings = {
+            // https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
+            "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
+            "yyyy-MM-dd'T'HH:mm:ss.SSSXXX",
+            "yyyy-MM-dd'T'HH:mm:ss.SSS",
+            //
+            "dd-MMM-yyyy HH:mm:ss",
+            "dd-MMM-yyyy HH:mm",
+            "dd-MMM-yyyy",
+            "yyyy-MM-dd HH:mm:ss",
+            "yyyy-MM-dd HH:mm",
+            "yyyy-MM-dd",
+            "dd/MM/yyyy HH:mm:ss",
+            "dd/MM/yyyy HH:mm",
+            "dd/MM/yyyy"};
+
     @Override
     public String marshal(Date date) throws Exception {
         Calendar cal = Calendar.getInstance();
@@ -45,22 +61,6 @@ public class DateAdapter extends XmlAdapter<String, Date> {
         if (date.trim().equalsIgnoreCase("SYSDATE")) {
             return Calendar.getInstance().getTime();
         }
-
-        String[] formatStrings = {
-                // https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
-                "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
-                "yyyy-MM-dd'T'HH:mm:ss.SSSXXX",
-                "yyyy-MM-dd'T'HH:mm:ss.SSS",
-                //
-                "dd-MMM-yyyy HH:mm:ss",
-                "dd-MMM-yyyy HH:mm",
-                "dd-MMM-yyyy",
-                "yyyy-MM-dd HH:mm:ss",
-                "yyyy-MM-dd HH:mm",
-                "yyyy-MM-dd",
-                "dd/MM/yyyy HH:mm:ss",
-                "dd/MM/yyyy HH:mm",
-                "dd/MM/yyyy"};
 
         Exception exception = null;
         for (String formatString : formatStrings) {
