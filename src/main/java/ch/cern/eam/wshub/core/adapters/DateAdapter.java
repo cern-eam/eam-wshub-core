@@ -10,7 +10,7 @@ import java.util.Locale;
 
 public class DateAdapter extends XmlAdapter<String, Date> {
 
-    public static String[] formatStrings = {
+    public static final String[] DATE_FORMAT_STRINGS = {
             // https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
             "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
             "yyyy-MM-dd'T'HH:mm:ss.SSSXXX",
@@ -26,6 +26,8 @@ public class DateAdapter extends XmlAdapter<String, Date> {
             "dd/MM/yyyy HH:mm",
             "dd/MM/yyyy"};
 
+    public static final String DATE_ISO_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+
     @Override
     public String marshal(Date date) throws Exception {
         Calendar cal = Calendar.getInstance();
@@ -34,7 +36,7 @@ public class DateAdapter extends XmlAdapter<String, Date> {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MMM-yyyy HH:mm", Locale.ENGLISH);
             return simpleDateFormat.format(cal.getTime()).toUpperCase();
         } else {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_ISO_FORMAT);
             return simpleDateFormat.format(date);
         }
     }
@@ -63,7 +65,7 @@ public class DateAdapter extends XmlAdapter<String, Date> {
         }
 
         Exception exception = null;
-        for (String formatString : formatStrings) {
+        for (String formatString : DATE_FORMAT_STRINGS) {
             try {
                 SimpleDateFormat formatter = new SimpleDateFormat(formatString, Locale.ENGLISH);
                 formatter.setLenient(false);

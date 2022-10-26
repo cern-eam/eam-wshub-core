@@ -39,7 +39,7 @@ public class DataTypeTools {
             return Calendar.getInstance();
         }
 
-        for (String formatString : DateAdapter.formatStrings) {
+        for (String formatString : DateAdapter.DATE_FORMAT_STRINGS) {
             try {
                 SimpleDateFormat formatter = new SimpleDateFormat(formatString, Locale.ENGLISH);
                 formatter.setLenient(false);

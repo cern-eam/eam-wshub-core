@@ -1,5 +1,6 @@
 package ch.cern.eam.wshub.core.tools;
 
+import ch.cern.eam.wshub.core.adapters.DateAdapter;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
 import net.datastream.schemas.mp_fields.*;
@@ -60,13 +61,15 @@ public class CustomFieldsTools {
         //
         //
         if (customFieldInfor.getType().toUpperCase().equals("DATI") && customFieldInfor.getDATETIMEFIELD() != null) {
-            customField.setValue(tools.getDataTypeTools().retrieveDate(customFieldInfor.getDATETIMEFIELD(), "dd-MMM-yyyy HH:mm"));
+            customField.setValue(tools.getDataTypeTools().retrieveDate(customFieldInfor.getDATETIMEFIELD(),
+                    ApplicationData.localizeResults ? "dd-MMM-yyyy HH:mm" : DateAdapter.DATE_ISO_FORMAT));
         }
         //
         //
         //
         else if (customFieldInfor.getType().toUpperCase().equals("DATE") && customFieldInfor.getDATEFIELD() != null) {
-            customField.setValue(tools.getDataTypeTools().retrieveDate(customFieldInfor.getDATEFIELD(), "dd-MMM-yyyy"));
+            customField.setValue(tools.getDataTypeTools().retrieveDate(customFieldInfor.getDATEFIELD(),
+                    ApplicationData.localizeResults ? "dd-MMM-yyyy" : DateAdapter.DATE_ISO_FORMAT));
         }
         //
         //
