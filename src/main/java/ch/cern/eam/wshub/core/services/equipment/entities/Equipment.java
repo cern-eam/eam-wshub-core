@@ -582,6 +582,16 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
     @InforField(xpath = "FleetVehicleInfo/VEHICLETYPE/TYPECODE", nullifyParentLevel = 1)
     private String vehicleTypeCode;
 
+    @Transient
+    @InforField(xpath = "FleetVehicleInfo/AVAILABILITYSTATUS/STATUSCODE", nullifyParentLevel = 1)
+    private String availabilityStatus;
+
+    @Transient
+    @InforField(xpath = "FleetVehicleInfo/ISSUETO/PERSONCODE", nullifyParentLevel = 1)
+    private String issueTo;
+
+
+
     public String getDescription() {
         return description;
     }
@@ -1513,6 +1523,22 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
 
     public void setHierarchyPrimarySystemOrg(String hierarchyPrimarySystemOrg) {
         this.hierarchyPrimarySystemOrg = hierarchyPrimarySystemOrg;
+    }
+
+    public String getAvailabilityStatus() {
+        return availabilityStatus;
+    }
+
+    public void setAvailabilityStatus(final String availabilityStatus) {
+        this.availabilityStatus = availabilityStatus;
+    }
+
+    public String getIssueTo() {
+        return issueTo;
+    }
+
+    public void setIssueTo(final String issueTo) {
+        this.issueTo = issueTo;
     }
 
     @Override
