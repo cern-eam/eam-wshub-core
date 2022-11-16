@@ -23,8 +23,6 @@ public class CustomField implements Serializable {
 	private String systemEntity;
 	private String UOM;
 	private String rentCodeValue;
-	private String[] cfc;
-	private String[] cfd;
 	private String minValue;
 	private String maxValue;
 	private String entityCode;
@@ -87,26 +85,6 @@ public class CustomField implements Serializable {
 
 	public void setUOM(String uOM) {
 		UOM = uOM;
-	}
-
-	@XmlElementWrapper(name = "possibleCodes")
-	@XmlElement(name = "pcode")
-	public String[] getCfc() {
-		return cfc;
-	}
-
-	public void setCfc(String[] cfc) {
-		this.cfc = cfc;
-	}
-
-	@XmlElementWrapper(name = "possibleDescs")
-	@XmlElement(name = "pdesc")
-	public String[] getCfd() {
-		return cfd;
-	}
-
-	public void setCfd(String[] cfd) {
-		this.cfd = cfd;
 	}
 
 	public String getRentCodeValue() {
@@ -190,8 +168,6 @@ public class CustomField implements Serializable {
 				+ (systemEntity != null ? "systemEntity=" + systemEntity + ", " : "")
 				+ (UOM != null ? "UOM=" + UOM + ", " : "")
 				+ (rentCodeValue != null ? "rentCodeValue=" + rentCodeValue + ", " : "")
-				+ (cfc != null ? "cfc=" + Arrays.toString(cfc) + ", " : "")
-				+ (cfd != null ? "cfd=" + Arrays.toString(cfd) + ", " : "")
 				+ (minValue != null ? "minValue=" + minValue + ", " : "")
 				+ (maxValue != null ? "maxValue=" + maxValue + ", " : "")
 				+ (entityCode != null ? "entityCode=" + entityCode + ", " : "")
@@ -199,5 +175,4 @@ public class CustomField implements Serializable {
 				+ (lovType != null ? "lovType=" + lovType + ", " : "")
 				+ (lovValidate != null ? "lovValidate=" + lovValidate : "") + "]";
 	}
-
 }

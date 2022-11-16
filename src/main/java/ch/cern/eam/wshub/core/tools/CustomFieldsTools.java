@@ -91,13 +91,6 @@ public class CustomFieldsTools {
         else if (customFieldInfor.getType().toUpperCase().equals("CODE") && customFieldInfor.getCODEDESCFIELD() != null) {
             customField.setValue(customFieldInfor.getCODEDESCFIELD().getCODEVALUE());
             customField.setValueDesc(customFieldInfor.getCODEDESCFIELD().getDESCRIPTION());
-            try {
-                String[][] cf = getCFValues(customFieldInfor.getCLASSID().getCLASSCODE(),
-                        customFieldInfor.getPROPERTYCODE(), "EN");
-                customField.setCfc(cf[0]);
-                customField.setCfd(cf[1]);
-            } catch (Exception e) {
-            }
         }
         //
         //
@@ -302,50 +295,6 @@ public class CustomFieldsTools {
     public CustomField[] getWSHubCustomFields(InforContext context, String entity, String inforClass)
             throws InforException {
         return readInforCustomFields(getInforCustomFields(context, entity, inforClass), context);
-    }
-
-    public String[][] getCFValues(String classCode, String propertyCode, String language) throws SQLException {
-        String[][] values = new String[2][];
-        if (map.containsKey(propertyCode)) {
-            return map.get(classCode + "_" + propertyCode + "_" + language);
-        }
-        String sqlq = "select distinct prv_value val,"
-                + " (NVL((SELECT TRA_TEXT FROM U5TRANSLATIONS WHERE TRA_LANGUAGE = '" + language
-                + "' and TRA_PAGENAME = '" + propertyCode
-                + "' and UPPER(TRA_ELEMENTID) = UPPER(PVD_VALUE)),NVL(PVD_DESC, PVD_VALUE))) des, PRV_SEQNO"
-                + " from r5propertyvalues, r5pvdescriptions where prv_property = '" + propertyCode
-                + "' and prv_code is null and pvd_property(+)=prv_property and pvd_value(+)=prv_value AND COALESCE(prv_notused, '-') <> '+' order by PRV_SEQNO ASC";
-        Connection v_connection = null;
-        Statement stmt = null;
-        ResultSet v_result = null;
-        try {
-            v_connection = tools.getDataSource().getConnection();
-            stmt = v_connection.createStatement();
-            v_result = stmt.executeQuery(sqlq);
-
-            LinkedList<String> listCode = new LinkedList<String>();
-            listCode.add("");
-            LinkedList<String> listDesc = new LinkedList<String>();
-            listDesc.add("");
-            while (v_result.next()) {
-                listCode.add(v_result.getString(1));
-                listDesc.add(v_result.getString(2));
-            }
-
-            values[0] = listCode.toArray(new String[0]);
-            values[1] = listDesc.toArray(new String[0]);
-            map.put(classCode + "_" + propertyCode + "_" + language, values);
-        } catch (Exception e) {
-            //TODO log(Level.FATAL, "Failure in getCFValues: " + e.getMessage());
-        } finally {
-            if (v_result != null)
-                v_result.close();
-            if (stmt != null)
-                stmt.close();
-            if (v_connection != null)
-                v_connection.close();
-        }
-        return values;
     }
 
     public USERDEFINEDAREA getInforCustomFields(
