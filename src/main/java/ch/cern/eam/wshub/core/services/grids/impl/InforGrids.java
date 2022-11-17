@@ -86,7 +86,7 @@ public class InforGrids implements Serializable {
 		//
 		MP0116_GetGridDataOnly_001 getgridd = new MP0116_GetGridDataOnly_001();
 		getgridd.setFUNCTION_REQUEST_INFO(funRequest);
-		getgridd.getFUNCTION_REQUEST_INFO().getGRID().setLOCALIZE_RESULT(DataTypeTools.encodeBoolean(gridRequest.getLocalizeResults(), BooleanType.TRUE_FALSE));
+		getgridd.getFUNCTION_REQUEST_INFO().getGRID().setLOCALIZE_RESULT(DataTypeTools.encodeBoolean(context.getLocalizeResults(), BooleanType.TRUE_FALSE));
 		MP0116_GetGridDataOnly_001_Result result =
 			tools.performInforOperation(context, inforws::getGridDataOnlyOp, getgridd);
 
@@ -187,7 +187,7 @@ public class InforGrids implements Serializable {
 		//
 		MP0118_GetGridHeaderData_001 getgridd = new MP0118_GetGridHeaderData_001();
 		getgridd.setFUNCTION_REQUEST_INFO(funRequest);
-		getgridd.getFUNCTION_REQUEST_INFO().getGRID().setLOCALIZE_RESULT(DataTypeTools.encodeBoolean(gridRequest.getLocalizeResults(), BooleanType.TRUE_FALSE));
+		getgridd.getFUNCTION_REQUEST_INFO().getGRID().setLOCALIZE_RESULT(DataTypeTools.encodeBoolean(context.getLocalizeResults(), BooleanType.TRUE_FALSE));
 		MP0118_GetGridHeaderData_001_Result result =
 			tools.performInforOperation(context, inforws::getGridHeaderDataOp, getgridd);
 

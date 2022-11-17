@@ -18,6 +18,8 @@ public class InforContext implements Serializable {
     private Boolean keepSession;
     private String authToken;
 
+    private Boolean localizeResults = true;
+
     public InforContext () { }
 
     public InforContext(Credentials credentials) {
@@ -76,5 +78,13 @@ public class InforContext implements Serializable {
 
     public void setAuthToken(String authToken) {
         this.authToken = authToken;
+    }
+
+    public Boolean getLocalizeResults() {
+        return localizeResults;
+    }
+
+    public void setLocalizeResults(Boolean localizeResults) {
+        this.localizeResults = localizeResults;
     }
 }

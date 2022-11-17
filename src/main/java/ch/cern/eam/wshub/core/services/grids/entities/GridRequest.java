@@ -31,8 +31,7 @@ public class GridRequest implements Serializable {
 	private String lang = "EN";
 	private Boolean returnHeaderData = false;
 	private Boolean includeMetadata = false;
-	private Boolean localizeResults = true;
-	
+
 	/**
 	 * Flag to indicate if fetch all the results
 	 */
@@ -283,14 +282,6 @@ public class GridRequest implements Serializable {
 	// PARAMS
 	public void addParam(String key, String value) {
 		this.getParams().put(key, value);
-	}
-
-	public Boolean getLocalizeResults() {
-		return localizeResults;
-	}
-
-	public void setLocalizeResults(final Boolean localizeResults) {
-		this.localizeResults = localizeResults;
 	}
 
 	@Override
