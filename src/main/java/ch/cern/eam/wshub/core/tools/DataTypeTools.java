@@ -264,6 +264,7 @@ public class DataTypeTools {
         }
         // Remove commas used as the thousands separator
         stringValue = stringValue.replace(",", "");
+        stringValue = stringValue.replace("'", "");
         try {
            return new BigDecimal(stringValue);
         } catch (NumberFormatException e) {
@@ -284,6 +285,7 @@ public class DataTypeTools {
         }
         // Remove commas used as the thousands separator
         stringValue = stringValue.replace(",", "");
+        stringValue = stringValue.replace("'", "");
         try {
             return new BigInteger(stringValue);
         } catch (NumberFormatException e) {
