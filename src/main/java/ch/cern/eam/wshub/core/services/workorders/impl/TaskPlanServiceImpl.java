@@ -34,7 +34,7 @@ public class TaskPlanServiceImpl implements TaskPlanService {
                 tools.performInforOperation(context, inforws::getTaskOp, getTaskPlan);
 
         TaskPlan res = new TaskPlan();
-        tools.getInforFieldTools().transformInforObject(res, getTask_001_result.getResultData().getTask());
+        tools.getInforFieldTools().transformInforObject(res, getTask_001_result.getResultData().getTask(), context);
         return res;
     }
 }

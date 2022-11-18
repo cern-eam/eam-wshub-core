@@ -89,7 +89,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		// Get Infor Work Order
 		net.datastream.schemas.mp_entities.workorder_001.WorkOrder inforWorkOrder = readWorkOrderInfor(context, extractEntityCode(number), extractOrganizationCode(number));
 		//
-		WorkOrder workOrder = tools.getInforFieldTools().transformInforObject(new WorkOrder(), inforWorkOrder);
+		WorkOrder workOrder = tools.getInforFieldTools().transformInforObject(new WorkOrder(), inforWorkOrder, context);
 
 		// Fetching missing descriptions and UDL not returned by Infor web service
 		tools.processRunnables(

@@ -48,7 +48,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 		MP7037_GetEmployee_001_Result result = tools.performInforOperation(context, inforws::getEmployeeOp, request);
 
-		Employee employee = tools.getInforFieldTools().transformInforObject(new Employee(), result.getResultData().getEmployee());
+		Employee employee = tools.getInforFieldTools().transformInforObject(new Employee(), result.getResultData().getEmployee(), context);
 		employee.setSupervisor(employee.getUserDefinedFields().getUdfnum01());
 		employee.setPersonID(employee.getUserDefinedFields().getUdfnum01());
 

@@ -63,7 +63,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 		MP7999_GetWorkOrderActivityCheckListDefault_001_Result getResult = getSignatureWS(context, workOrderCode, activityCode);
 		WorkOrderActivityCheckListDefaultResult workOrderActivityCheckListDefaultResult = new WorkOrderActivityCheckListDefaultResult();
 		tools.getInforFieldTools().transformInforObject(workOrderActivityCheckListDefaultResult,
-				getResult.getResultData().getWorkOrderActivityCheckListDefault());
+				getResult.getResultData().getWorkOrderActivityCheckListDefault(), context);
 
 		WorkOrderActivityChecklistSignatureResult[] res = filterSignatures(workOrderActivityCheckListDefaultResult, taskPlan);
 		getResponsibilityDescriptions(context, res);

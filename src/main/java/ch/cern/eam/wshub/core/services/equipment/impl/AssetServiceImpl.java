@@ -48,7 +48,7 @@ public class AssetServiceImpl implements AssetService {
         getAssetEquipmentDefault_001.setORGANIZATIONID(tools.getOrganization(context , organization));
         MP0305_GetAssetEquipmentDefault_001_Result result = tools.performInforOperation(context, inforws::getAssetEquipmentDefaultOp, getAssetEquipmentDefault_001);
 
-        Equipment equipment = tools.getInforFieldTools().transformInforObject(new Equipment(), result.getResultData().getAssetEquipment());
+        Equipment equipment = tools.getInforFieldTools().transformInforObject(new Equipment(), result.getResultData().getAssetEquipment(), context);
         equipment.setUserDefinedList(new HashMap<>());
         return equipment;
     }
@@ -56,7 +56,7 @@ public class AssetServiceImpl implements AssetService {
     public Equipment readAsset(InforContext context, String assetCode, String organization) throws InforException {
         AssetEquipment assetEquipment = readInforAsset(context, assetCode, organization);
         //
-        Equipment asset = tools.getInforFieldTools().transformInforObject(new Equipment(), assetEquipment);
+        Equipment asset = tools.getInforFieldTools().transformInforObject(new Equipment(), assetEquipment, context);
         asset.setSystemTypeCode("A");
 
         // DESCRIPTIONS

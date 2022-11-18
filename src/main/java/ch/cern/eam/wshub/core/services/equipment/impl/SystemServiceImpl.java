@@ -48,7 +48,7 @@ public class SystemServiceImpl implements SystemService {
 
 		MP0315_GetSystemEquipmentDefault_001_Result result = tools.performInforOperation(context, inforws::getSystemEquipmentDefaultOp, getSystemEquipmentDefault_001);
 
-		Equipment equipment = tools.getInforFieldTools().transformInforObject(new Equipment(), result.getResultData().getSystemEquipment());
+		Equipment equipment = tools.getInforFieldTools().transformInforObject(new Equipment(), result.getResultData().getSystemEquipment(), context);
 		equipment.setUserDefinedList(new HashMap<>());
 		return equipment;
 	}
@@ -66,7 +66,7 @@ public class SystemServiceImpl implements SystemService {
 
 		SystemEquipment systemEquipment = readSystemInfor(context, systemCode, organization);
 
-		Equipment system = tools.getInforFieldTools().transformInforObject(new Equipment(), systemEquipment);
+		Equipment system = tools.getInforFieldTools().transformInforObject(new Equipment(), systemEquipment, context);
 		system.setSystemTypeCode("S");
 
 		// HIERARCHY

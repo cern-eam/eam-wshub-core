@@ -55,7 +55,7 @@ public class PhysicalInventoryServiceImpl implements PhysicalInventoryService {
             tools.performInforOperation(context, inforws::addInventoryTransactionOp, addInventoryTransaction);
 
         return tools.getInforFieldTools()
-            .transformInforObject(new PhysicalInventory(), result.getResultData().getInventoryTransaction());
+            .transformInforObject(new PhysicalInventory(), result.getResultData().getInventoryTransaction(), context);
     }
 
     @Override
@@ -63,7 +63,7 @@ public class PhysicalInventoryServiceImpl implements PhysicalInventoryService {
         ResultData resultData = getInventoryResultData(context, code);
         PhysicalInventory physicalInventory = tools.getInforFieldTools().transformInforObject(
             new PhysicalInventory(),
-            resultData.getInventoryTransaction());
+            resultData.getInventoryTransaction(), context);
 
         if (resultData.getCREATEDBY() != null) {
             physicalInventory.setCreatedBy(resultData.getCREATEDBY().getUSERCODE());
@@ -91,7 +91,7 @@ public class PhysicalInventoryServiceImpl implements PhysicalInventoryService {
             tools.performInforOperation(context, inforws::syncInventoryTransactionOp, syncInventoryTransaction)
                 .getResultData().getInventoryTransaction();
 
-        return tools.getInforFieldTools().transformInforObject(new PhysicalInventory(), result);
+        return tools.getInforFieldTools().transformInforObject(new PhysicalInventory(), result, context);
     }
 
     private ResultData getInventoryResultData(InforContext context, String code) throws InforException {
@@ -109,7 +109,7 @@ public class PhysicalInventoryServiceImpl implements PhysicalInventoryService {
     public PhysicalInventoryRow readPhysicalInventoryLine(InforContext context, PhysicalInventoryRow row) throws InforException {
         return tools.getInforFieldTools().transformInforObject(
             new PhysicalInventoryRow(),
-            getLine(context, row.getPhysicalInventoryCode(), row.getLineNumber()));
+            getLine(context, row.getPhysicalInventoryCode(), row.getLineNumber()), context);
     }
 
     @Override
@@ -130,7 +130,7 @@ public class PhysicalInventoryServiceImpl implements PhysicalInventoryService {
         PhysicalInventoryLine result = tools.performInforOperation(context, inforws::syncPhysicalInventoryLineOp, syncPhysicalInventoryLine)
             .getResultData().getPhysicalInventoryLine();
 
-        return tools.getInforFieldTools().transformInforObject(new PhysicalInventoryRow(), result);
+        return tools.getInforFieldTools().transformInforObject(new PhysicalInventoryRow(), result, context);
     }
 
     private PhysicalInventoryLine getLine(InforContext context, String code, BigInteger lineNumber)
@@ -163,6 +163,6 @@ public class PhysicalInventoryServiceImpl implements PhysicalInventoryService {
                 tools.performInforOperation(context, inforws::getInventoryTransactionDefaultOp, getInventoryTransactionDefault)
                         .getResultData().getInventoryTransactionDefault();
 
-        return tools.getInforFieldTools().transformInforObject(new PhysicalInventory(), inventoryTransactionDefault);
+        return tools.getInforFieldTools().transformInforObject(new PhysicalInventory(), inventoryTransactionDefault, context);
     }
 }

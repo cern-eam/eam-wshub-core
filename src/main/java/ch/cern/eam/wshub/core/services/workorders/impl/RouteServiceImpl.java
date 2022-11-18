@@ -31,7 +31,7 @@ public class RouteServiceImpl implements RouteService {
         getWorkRoute.setROUTEID(new ROUTE_Type());
 
         MP7064_GetWorkRoute_001_Result result = tools.performInforOperation(inforContext, inforws::getWorkRouteOp, getWorkRoute);
-        return tools.getInforFieldTools().transformInforObject(new Route(), result.getResultData().getWorkRoute());
+        return tools.getInforFieldTools().transformInforObject(new Route(), result.getResultData().getWorkRoute(), inforContext);
     }
 
     public String createRoute(InforContext inforContext, Route route) throws InforException {

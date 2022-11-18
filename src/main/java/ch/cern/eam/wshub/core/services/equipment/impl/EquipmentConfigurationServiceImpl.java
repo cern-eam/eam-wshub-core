@@ -93,7 +93,7 @@ public class EquipmentConfigurationServiceImpl implements EquipmentConfiguration
     @Override
     public EquipmentConfigurationEntity readEquipmentConfiguration(InforContext context, EquipmentConfigurationId equipmentConfigurationId) throws InforException {
         EquipmentConfiguration inforEquipmentConfiguration = readInforEquipmentConfiguration(context, equipmentConfigurationId);
-        EquipmentConfigurationEntity equipmentConfiguration = tools.getInforFieldTools().transformInforObject(new EquipmentConfigurationEntity(), inforEquipmentConfiguration);
+        EquipmentConfigurationEntity equipmentConfiguration = tools.getInforFieldTools().transformInforObject(new EquipmentConfigurationEntity(), inforEquipmentConfiguration, context);
 
         tools.processRunnables(
                 () -> equipmentConfiguration.setConfigurationCategoryDesc(tools.getFieldDescriptionsTools().readCategoryDesc(context, equipmentConfiguration.getConfigurationCategoryCode())),

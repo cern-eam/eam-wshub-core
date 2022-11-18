@@ -101,14 +101,14 @@ public class PositionServiceImpl implements PositionService {
 
 		MP0310_GetPositionEquipmentDefault_001_Result result = tools.performInforOperation(context, inforws::getPositionEquipmentDefaultOp, getPositionEquipmentDefault_001);
 
-		Equipment equipment = tools.getInforFieldTools().transformInforObject(new Equipment(), result.getResultData().getPositionEquipment());
+		Equipment equipment = tools.getInforFieldTools().transformInforObject(new Equipment(), result.getResultData().getPositionEquipment(), context);
 		equipment.setUserDefinedList(new HashMap<>());
 		return equipment;
 	}
 
 	public Equipment readPosition(InforContext context, String positionCode, String organization) throws InforException {
 		PositionEquipment positionEquipment = readInforPosition(context, positionCode, organization);
-		Equipment position = tools.getInforFieldTools().transformInforObject(new Equipment(), positionEquipment);
+		Equipment position = tools.getInforFieldTools().transformInforObject(new Equipment(), positionEquipment, context);
 		position.setSystemTypeCode("P");
 
 		// HIERARCHY

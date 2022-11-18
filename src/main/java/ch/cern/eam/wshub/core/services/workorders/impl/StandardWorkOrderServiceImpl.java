@@ -38,7 +38,7 @@ public class StandardWorkOrderServiceImpl implements StandardWorkOrderService {
     }
 
     public StandardWorkOrder readStandardWorkOrder(InforContext context, String number) throws InforException {
-        return tools.getInforFieldTools().transformInforObject(new StandardWorkOrder(), readStandardWorkOrderInfor(context, number));
+        return tools.getInforFieldTools().transformInforObject(new StandardWorkOrder(), readStandardWorkOrderInfor(context, number), context);
     }
 
     public net.datastream.schemas.mp_entities.standardworkorder_001.StandardWorkOrder readStandardWorkOrderInfor(InforContext context, String number) throws InforException {

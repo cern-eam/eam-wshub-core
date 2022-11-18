@@ -41,7 +41,7 @@ public class CustomFieldsTools {
     //
 
     // INFOR CUSTOM FIELD -> MIDDLE TIER CUSTOM FIELD
-    public CustomField decodeInforCustomField(CUSTOMFIELD customFieldInfor) {
+    public CustomField decodeInforCustomField(CUSTOMFIELD customFieldInfor, InforContext inforContext) {
         CustomField customField = new CustomField();
 
         customField.setGroupLabel(customFieldInfor.getGROUPLABEL());
@@ -62,14 +62,14 @@ public class CustomFieldsTools {
         //
         if (customFieldInfor.getType().toUpperCase().equals("DATI") && customFieldInfor.getDATETIMEFIELD() != null) {
             customField.setValue(tools.getDataTypeTools().retrieveDate(customFieldInfor.getDATETIMEFIELD(),
-                    ApplicationData.localizeResults ? "dd-MMM-yyyy HH:mm" : DateAdapter.DATE_ISO_FORMAT));
+                    inforContext.getLocalizeResults() ? "dd-MMM-yyyy HH:mm" : DateAdapter.DATE_ISO_FORMAT));
         }
         //
         //
         //
         else if (customFieldInfor.getType().toUpperCase().equals("DATE") && customFieldInfor.getDATEFIELD() != null) {
             customField.setValue(tools.getDataTypeTools().retrieveDate(customFieldInfor.getDATEFIELD(),
-                    ApplicationData.localizeResults ? "dd-MMM-yyyy" : DateAdapter.DATE_ISO_FORMAT));
+                    inforContext.getLocalizeResults() ? "dd-MMM-yyyy" : DateAdapter.DATE_ISO_FORMAT));
         }
         //
         //
@@ -272,11 +272,11 @@ public class CustomFieldsTools {
         return !value1.equals(value2);
     }
 
-    public CustomField[] readInforCustomFields(USERDEFINEDAREA userdefinedarea) {
+    public CustomField[] readInforCustomFields(USERDEFINEDAREA userdefinedarea, InforContext inforContext) {
         if (userdefinedarea == null || userdefinedarea.getCUSTOMFIELD() == null) {
             return new CustomField[0];
         }
-        return userdefinedarea.getCUSTOMFIELD().stream().sorted(comparing(CUSTOMFIELD::getIndex)).map(cf -> decodeInforCustomField(cf)).toArray(CustomField[]::new);
+        return userdefinedarea.getCUSTOMFIELD().stream().sorted(comparing(CUSTOMFIELD::getIndex)).map(cf -> decodeInforCustomField(cf, inforContext)).toArray(CustomField[]::new);
     }
 
     public USERDEFINEDAREA getInforCustomFields(InforContext context, String entity, String inforClass)
@@ -301,7 +301,7 @@ public class CustomFieldsTools {
 
     public CustomField[] getWSHubCustomFields(InforContext context, String entity, String inforClass)
             throws InforException {
-        return readInforCustomFields(getInforCustomFields(context, entity, inforClass));
+        return readInforCustomFields(getInforCustomFields(context, entity, inforClass), context);
     }
 
     public String[][] getCFValues(String classCode, String propertyCode, String language) throws SQLException {

@@ -133,7 +133,7 @@ public class CaseTaskServiceImpl implements CaseTaskService {
 		//
 		// CUSTOM FIELDS
 		//
-		caseTaskMT.setCustomFields(tools.getCustomFieldsTools().readInforCustomFields(caseTaskInfor.getUSERDEFINEDAREA()));
+		caseTaskMT.setCustomFields(tools.getCustomFieldsTools().readInforCustomFields(caseTaskInfor.getUSERDEFINEDAREA(), context));
 		//
 		// USER DEFINED FIELDS
 		//

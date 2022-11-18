@@ -51,7 +51,7 @@ public class EquipmentMeterReadingServiceImpl implements EquipmentMeterReadingSe
     @Override
     public EqpMeterReading readEquipmentMeterReading(final InforContext context, String readingCode) throws InforException {
         final EquipmentMeterReading equipmentMeterReading = readEquipmentMeterReadingInternal(context, readingCode);
-        final EqpMeterReading eqpMeterReading = tools.getInforFieldTools().transformInforObject(new EqpMeterReading(), equipmentMeterReading);
+        final EqpMeterReading eqpMeterReading = tools.getInforFieldTools().transformInforObject(new EqpMeterReading(), equipmentMeterReading, context);
         return eqpMeterReading;
     }
 
@@ -114,7 +114,7 @@ public class EquipmentMeterReadingServiceImpl implements EquipmentMeterReadingSe
                 = mp9133_getEquipmentMeterReadingDefault_001_result.getResultData().getEquipmentMeterReadingDefault();
 
         final EqpMeterReading equipmentMeterReading =
-                tools.getInforFieldTools().transformInforObject(new EqpMeterReading(), equipmentMeterReadingDefault);
+                tools.getInforFieldTools().transformInforObject(new EqpMeterReading(), equipmentMeterReadingDefault, context);
         return equipmentMeterReading;
     }
 }

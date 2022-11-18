@@ -86,7 +86,7 @@ public class UserSetupServiceImpl implements UserSetupService {
 		net.datastream.schemas.mp_entities.usersetup_001.UserSetup userInfor = getUserSetupResult.getResultData().getUserSetup();
 
 		// Populate 'EAMUser' Object
-		EAMUser user = tools.getInforFieldTools().transformInforObject(new EAMUser(), userInfor);
+		EAMUser user = tools.getInforFieldTools().transformInforObject(new EAMUser(), userInfor, context);
 
 		// Fetch corresponding employee code and description
 		GridRequest employeeGridRequest = new GridRequest("WSEMPS", GridRequest.GRIDTYPE.LIST);

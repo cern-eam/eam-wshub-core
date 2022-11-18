@@ -49,7 +49,7 @@ public class CaseServiceImpl implements CaseService {
 			tools.performInforOperation(context, inforws::getCaseManagementOp, getCase);
 
 		CaseManagement caseManagement = result.getResultData().getCaseManagement();
-		InforCase caseMT = tools.getInforFieldTools().transformInforObject(new InforCase(), caseManagement);
+		InforCase caseMT = tools.getInforFieldTools().transformInforObject(new InforCase(), caseManagement, context);
 		//
 		// DESCRIPTION
 		//
@@ -126,7 +126,7 @@ public class CaseServiceImpl implements CaseService {
 		//
 		// CUSTOM FIELDS
 		//
-		caseMT.setCustomFields(tools.getCustomFieldsTools().readInforCustomFields(caseManagement.getUSERDEFINEDAREA()));
+		caseMT.setCustomFields(tools.getCustomFieldsTools().readInforCustomFields(caseManagement.getUSERDEFINEDAREA(), context));
 
 		//
 		//

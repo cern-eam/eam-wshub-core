@@ -67,7 +67,7 @@ public class LocationServiceImpl implements LocationService {
 		net.datastream.schemas.mp_entities.location_001.Location locationInfor =
 			getLocationResult.getResultData().getLocation();
 
-		Location location = tools.getInforFieldTools().transformInforObject(new Location(), locationInfor);
+		Location location = tools.getInforFieldTools().transformInforObject(new Location(), locationInfor, context);
 
 		if(locationInfor.getParentLocationID() != null) {
 			location.setHierarchyLocationCode(locationInfor.getParentLocationID().getLOCATIONCODE());

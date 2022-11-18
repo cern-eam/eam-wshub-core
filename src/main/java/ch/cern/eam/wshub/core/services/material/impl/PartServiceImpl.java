@@ -81,13 +81,13 @@ public class PartServiceImpl implements PartService {
 		MP0244_GetPartDefault_001_Result result =
 				tools.performInforOperation(context, inforws::getPartDefaultOp, getPartDefault_001);
 
-		Part part = tools.getInforFieldTools().transformInforObject(new Part(), result.getResultData().getPartDefault());
+		Part part = tools.getInforFieldTools().transformInforObject(new Part(), result.getResultData().getPartDefault(), context);
 		part.setUserDefinedList(new HashMap<>());
 		return part;
 	}
 
 	public Part readPart(InforContext context, String partCode) throws InforException {
-		Part part = tools.getInforFieldTools().transformInforObject(new Part(), readPartInfor(context, extractEntityCode(partCode), extractOrganizationCode(partCode)));
+		Part part = tools.getInforFieldTools().transformInforObject(new Part(), readPartInfor(context, extractEntityCode(partCode), extractOrganizationCode(partCode)), context);
 
 		// Fetched missing descriptions not returned by Infor web service
 		tools.processRunnables(

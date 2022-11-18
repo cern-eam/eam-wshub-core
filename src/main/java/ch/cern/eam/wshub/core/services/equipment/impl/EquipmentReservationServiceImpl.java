@@ -51,7 +51,7 @@ public class EquipmentReservationServiceImpl implements EquipmentReservationServ
     public EquipmentReservation readEquipmentReservation(InforContext context, String customerRentalCode) throws InforException {
         CustomerRental reservation = readEquipmentReservationInfor(context, customerRentalCode);
 
-        return tools.getInforFieldTools().transformInforObject(new EquipmentReservation(), reservation);
+        return tools.getInforFieldTools().transformInforObject(new EquipmentReservation(), reservation, context);
     }
 
     private CustomerRental readEquipmentReservationInfor(InforContext context, String customerRentalCode) throws InforException {

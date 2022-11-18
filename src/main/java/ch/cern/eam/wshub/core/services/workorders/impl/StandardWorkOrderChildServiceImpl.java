@@ -43,7 +43,7 @@ public class StandardWorkOrderChildServiceImpl implements StandardWorkOrderChild
         op.getSTANDARDWO().setSTDWOCODE(standardWOCode);
         final MP7746_GetStandardWOChildDefault_001_Result mp7746_getStandardWOChildDefault_001_result = tools.performInforOperation(context, inforws::getStandardWOChildDefaultOp, op);
         final ResultData resultData = mp7746_getStandardWOChildDefault_001_result.getResultData();
-        final StandardWorkOrder standardWorkOrder = tools.getInforFieldTools().transformInforObject(new StandardWorkOrder(), resultData);
+        final StandardWorkOrder standardWorkOrder = tools.getInforFieldTools().transformInforObject(new StandardWorkOrder(), resultData, context);
         return standardWorkOrder;
     }
 
@@ -56,7 +56,7 @@ public class StandardWorkOrderChildServiceImpl implements StandardWorkOrderChild
         mp7273_addStandardWOChild_001.getStandardWOChild().setSTANDARDWOCHILDID(standardwochildid_type);
 
         final MP7273_AddStandardWOChild_001_Result mp7273_addStandardWOChild_001_result = tools.performInforOperation(context, inforws::addStandardWOChildOp, mp7273_addStandardWOChild_001);
-        return tools.getInforFieldTools().transformInforObject(new StandardWorkOrderChild(), mp7273_addStandardWOChild_001_result.getResultData().getSTANDARDWOCHILDID());
+        return tools.getInforFieldTools().transformInforObject(new StandardWorkOrderChild(), mp7273_addStandardWOChild_001_result.getResultData().getSTANDARDWOCHILDID(), context);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class StandardWorkOrderChildServiceImpl implements StandardWorkOrderChild
         mp7271_getStandardWOChild_001.setSTANDARDWOCHILDID(standardwochildid_type);
 
         final MP7271_GetStandardWOChild_001_Result mp7271_getStandardWOChild_001_result = tools.performInforOperation(context, inforws::getStandardWOChildOp, mp7271_getStandardWOChild_001);
-        return tools.getInforFieldTools().transformInforObject(new StandardWorkOrderChild(), mp7271_getStandardWOChild_001_result.getResultData().getStandardWOChild().getSTANDARDWOCHILDID());
+        return tools.getInforFieldTools().transformInforObject(new StandardWorkOrderChild(), mp7271_getStandardWOChild_001_result.getResultData().getStandardWOChild().getSTANDARDWOCHILDID(), context);
     }
 
     @Override
@@ -93,7 +93,7 @@ public class StandardWorkOrderChildServiceImpl implements StandardWorkOrderChild
         mp7274_syncStandardWOChild_001.getStandardWOChild().setSTANDARDWOCHILDID(standardwochildid_type);
 
         final MP7274_SyncStandardWOChild_001_Result mp7274_syncStandardWOChild_001_result1 = tools.performInforOperation(context, inforws::syncStandardWOChildOp, mp7274_syncStandardWOChild_001);
-        return tools.getInforFieldTools().transformInforObject(new StandardWorkOrderChild(), mp7274_syncStandardWOChild_001_result1.getResultData().getSTANDARDWOCHILDID());
+        return tools.getInforFieldTools().transformInforObject(new StandardWorkOrderChild(), mp7274_syncStandardWOChild_001_result1.getResultData().getSTANDARDWOCHILDID(), context);
     }
 
     @Override
@@ -102,6 +102,6 @@ public class StandardWorkOrderChildServiceImpl implements StandardWorkOrderChild
         final MP7275_DeleteStandardWOChild_001 mp7275_deleteStandardWOChild_001 = new MP7275_DeleteStandardWOChild_001();
         mp7275_deleteStandardWOChild_001.setSTANDARDWOCHILDID(standardwochildid_type);
         final MP7275_DeleteStandardWOChild_001_Result mp7275_deleteStandardWOChild_001_result = tools.performInforOperation(context, inforws::deleteStandardWOChildOp, mp7275_deleteStandardWOChild_001);
-        return  tools.getInforFieldTools().transformInforObject(new StandardWorkOrderChild(), mp7275_deleteStandardWOChild_001_result.getResultData().getSTANDARDWOCHILDID());
+        return  tools.getInforFieldTools().transformInforObject(new StandardWorkOrderChild(), mp7275_deleteStandardWOChild_001_result.getResultData().getSTANDARDWOCHILDID(), context);
     }
 }

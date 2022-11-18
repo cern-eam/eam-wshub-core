@@ -30,7 +30,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category readCategory(InforContext context, String categoryCode) throws InforException {
-        Category category = tools.getInforFieldTools().transformInforObject(new Category(), readInforCategory(context, categoryCode));
+        Category category = tools.getInforFieldTools().transformInforObject(new Category(), readInforCategory(context, categoryCode), context);
         return category;
     }
 

@@ -74,10 +74,10 @@ public class InforFieldTools {
      * @param <W>
      * @return
      */
-    public <I,W> W transformInforObject(W wshubObject, I inforObject) {
+    public <I,W> W transformInforObject(W wshubObject, I inforObject, InforContext inforContext) {
         Arrays.stream(wshubObject.getClass().getDeclaredFields())
                 .filter(wshubField -> wshubField.getAnnotation(InforField.class) != null)
-                .forEach(wshubField -> setWSHubValue(wshubObject, wshubField, inforObject));
+                .forEach(wshubField -> setWSHubValue(wshubObject, wshubField, inforObject, inforContext));
         return wshubObject;
     }
 
@@ -116,7 +116,7 @@ public class InforFieldTools {
      * @param <I>
      * @param <W>
      */
-    private <I,W> void setWSHubValue(W wshubObject, Field wshubField, I inforObject) {
+    private <I,W> void setWSHubValue(W wshubObject, Field wshubField, I inforObject, InforContext inforContext) {
 
         try {
             Object inforValue = getValue(inforObject, wshubField.getAnnotation(InforField.class));
@@ -142,13 +142,13 @@ public class InforFieldTools {
                 wshubField.set(wshubObject, decodeQuantity(quantityValue));
             } else if (inforValue.getClass().equals(USERDEFINEDAREA.class)) {
                 USERDEFINEDAREA userDefinedAreaValue = (USERDEFINEDAREA) inforValue;
-                wshubField.set(wshubObject, customFieldsTools.readInforCustomFields(userDefinedAreaValue));
+                wshubField.set(wshubObject, customFieldsTools.readInforCustomFields(userDefinedAreaValue, inforContext));
             } else if (inforValue.getClass().equals(Long.class) || inforValue.getClass().equals(Long.TYPE)) {
                 Long longValue = (Long) inforValue;
                 wshubField.set(wshubObject, BigInteger.valueOf(longValue));
             } else if ("UserDefinedFields".equals(wshubField.getAnnotation(InforField.class).xpath()[0]) ||
                        "StandardUserDefinedFields".equals(wshubField.getAnnotation(InforField.class).xpath()[0])) {
-                wshubField.set(wshubObject, transformInforObject(new UserDefinedFields(), inforValue));
+                wshubField.set(wshubObject, transformInforObject(new UserDefinedFields(), inforValue, inforContext));
             } else if(List.class.isAssignableFrom(inforValue.getClass())){
                 List inforValueAsList = (List) inforValue;
                 if(wshubField.getGenericType() instanceof ParameterizedType) {
@@ -157,7 +157,7 @@ public class InforFieldTools {
                     List rawWSHubList = new ArrayList();
                     for (int i = 0; i < inforValueAsList.size(); i++) {
                         rawWSHubList.add(itemsType.newInstance());
-                        transformInforObject(rawWSHubList.get(i), inforValueAsList.get(i));
+                        transformInforObject(rawWSHubList.get(i), inforValueAsList.get(i), inforContext);
                     }
                     wshubField.set(wshubObject, rawWSHubList);
                 }

@@ -140,14 +140,14 @@ public class SafetyServiceImpl implements SafetyService {
             EntitySafety inforSafety = tools.performInforOperation(context, inforws::getEntitySafetyOp, getEntitySafety)
                     .getResultData().getEntitySafety();
             Safety safety = new Safety();
-            return tools.getInforFieldTools().transformInforObject(safety, inforSafety);
+            return tools.getInforFieldTools().transformInforObject(safety, inforSafety, context);
         } else if(isWorkOrder(entityType)) {
             MP7983_GetWorkSafety_001 getWorkSafety = new MP7983_GetWorkSafety_001();
             getWorkSafety.setSAFETYCODE(safetyCode);
             WorkSafety workSafety = tools.performInforOperation(context, inforws::getWorkSafetyOp, getWorkSafety)
                     .getResultData().getWorkSafety();
             Safety safety = new Safety();
-            return tools.getInforFieldTools().transformInforObject(safety, workSafety);
+            return tools.getInforFieldTools().transformInforObject(safety, workSafety, context);
         } else {
             throw Tools.generateFault("Invalid entityType");
         }

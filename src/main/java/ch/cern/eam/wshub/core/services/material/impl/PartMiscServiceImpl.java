@@ -385,7 +385,7 @@ public class PartMiscServiceImpl implements PartMiscService {
 
 		StoreBin result = mp0282_getStoreBin_001_result.getResultData().getStoreBin();
 
-		return tools.getInforFieldTools().transformInforObject(new Bin(), result);
+		return tools.getInforFieldTools().transformInforObject(new Bin(), result, context);
 	}
 
 	@Override
