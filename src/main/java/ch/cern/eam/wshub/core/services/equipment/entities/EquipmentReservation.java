@@ -47,6 +47,9 @@ public class EquipmentReservation {
     @InforField(xpath = "ReturnDetails/ESTIMATEDRETURNDATE")
     private Date estimatedReturnDate;
 
+    @InforField(xpath = "ReturnDetails/RETURNLOCATION/LOCATIONCODE")
+    private String returnLocation;
+
     @Transient
     @InforField(xpath = "StandardUserDefinedFields")
     private UserDefinedFields userDefinedFields;
@@ -177,6 +180,14 @@ public class EquipmentReservation {
 
     public void setEstimatedReturnDate(final Date estimatedReturnDate) {
         this.estimatedReturnDate = estimatedReturnDate;
+    }
+
+    public String getReturnLocation() {
+        return returnLocation;
+    }
+
+    public void setReturnLocation(final String returnLocation) {
+        this.returnLocation = returnLocation;
     }
 
     public UserDefinedFields getUserDefinedFields() {
