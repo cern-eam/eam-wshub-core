@@ -294,7 +294,7 @@ public class InforFieldTools {
                     inforField.set(inforObject, tools.getDataTypeTools().encodeInforDate(dateValue, inforFieldName));
                 }
             } else if (wshubFieldValue.getClass().equals(BigDecimal.class)) {
-                // BIG DECIMAL -> AMOUNT / QUANTITY
+                // BIG DECIMAL -> AMOUNT / QUANTITY / Double
                 BigDecimal bigDecimalValue = (BigDecimal) wshubFieldValue;
                 if (bigDecimalValue.equals(BigDecimal.valueOf(DataTypeTools.NULLIFY_VALUE))) {
                     inforField.set(inforObject, null);
@@ -302,6 +302,8 @@ public class InforFieldTools {
                     inforField.set(inforObject, encodeAmount(bigDecimalValue, inforFieldName));
                 } else if (inforField.getType().equals(QUANTITY.class)) {
                     inforField.set(inforObject, encodeQuantity(bigDecimalValue, inforFieldName));
+                } else if (inforField.getType().equals(Double.class)) {
+                    inforField.set(inforObject, bigDecimalValue.doubleValue());
                 }
             } else if (wshubFieldValue.getClass().equals(BigInteger.class)) {
                 // BIG INTEGER -> LONG
