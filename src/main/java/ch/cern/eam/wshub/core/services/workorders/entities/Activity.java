@@ -4,7 +4,7 @@ import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
 import ch.cern.eam.wshub.core.adapters.BigIntegerAdapter;
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
 import ch.cern.eam.wshub.core.annotations.GridField;
-import ch.cern.eam.wshub.core.services.entities.Signature;
+import ch.cern.eam.wshub.core.annotations.InforField;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -26,53 +26,66 @@ public class Activity implements Serializable {
 	@Id
 	@Column(name = "ACT_ACT")
 	@GridField(name="activity")
-	private String activityCode;
+	@InforField(xpath = "ACTIVITYID/ACTIVITYCODE/value")
+	private BigInteger activityCode;
 
 	@Column(name = "ACT_NOTE")
 	@GridField(name="activitynote")
+	@InforField(xpath = "ACTIVITYID/ACTIVITYNOTE")
 	private String activityNote;
 
 	@Column(name = "ACT_EVENT")
 	@GridField(name="workordernum")
+	@InforField(xpath = "ACTIVITYID/WORKORDERID/JOBNUM")
 	private String workOrderNumber;
 
 	@Column(name = "ACT_PERSONS")
 	@GridField(name="personsreq")
+	@InforField(xpath = "PERSONS")
 	private BigInteger peopleRequired;
 
 	@Column(name = "ACT_EST")
 	@GridField(name="esthrs")
+	@InforField(xpath = "ESTIMATEDHOURS")
 	private BigDecimal estimatedHours;
 
 	@Column(name = "ACT_REM")
 	@GridField(name="hrsremain")
+	@InforField(xpath = "HOURSREMAINING")
 	private BigDecimal hoursRemaining;
 
 	@Column(name = "ACT_START")
 	@GridField(name="actstartdate")
+	@InforField(xpath = "ACTIVITYSTARTDATE")
 	private Date startDate;
 
 	@Transient
 	@GridField(name="actenddate")
+	@InforField(xpath = "ACTIVITYENDDATE")
 	private Date endDate;
 
 	@Column(name = "ACT_MATLIST")
 	@GridField(name="matlcode")
+	@InforField(xpath = "MATLIST/MTLCODE")
 	private String materialList;
 
 	@Column(name = "ACT_TASK")
 	@GridField(name="task")
+	@InforField(xpath = "TASKSID/TASKCODE")
 	private String taskCode;
 
 	@Column(name = "TSK_DESC")
+	@InforField(xpath = "TASKSID/DESCRIPTION")
 	private String taskDesc;
 
 	@Column(name = "ACT_TRADE")
 	@GridField(name="trade")
+	@InforField(xpath = "TRADEID/TRADECODE")
 	private String tradeCode;
 
 	@Column(name = "ACT_QTY")
 	@GridField(name="taskqty")
+	@InforField(xpath = "TASKSID/TASKQUANTITY")
 	private BigDecimal taskQty;
 
 	@Transient
@@ -161,11 +174,12 @@ public class Activity implements Serializable {
 		this.hoursRemaining = hoursRemaining;
 	}
 
-	public String getActivityCode() {
+	@XmlJavaTypeAdapter(BigIntegerAdapter.class)
+	public BigInteger getActivityCode() {
 		return activityCode;
 	}
 
-	public void setActivityCode(String activityCode) {
+	public void setActivityCode(BigInteger activityCode) {
 		this.activityCode = activityCode;
 	}
 
