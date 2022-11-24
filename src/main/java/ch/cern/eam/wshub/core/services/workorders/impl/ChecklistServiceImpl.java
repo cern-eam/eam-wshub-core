@@ -706,18 +706,11 @@ public class ChecklistServiceImpl implements ChecklistService {
 	public Long createFollowUpWorkOrders(InforContext context, Activity activity) throws InforException {
 		MP8000_CreateFollowUpWorkOrder_001 createFUWO = new MP8000_CreateFollowUpWorkOrder_001();
 
-		Long activityNumber;
-		try {
-			activityNumber = Long.valueOf( activity.getActivityCode().toString());
-		} catch(Exception e) {
-			throw new InforException("Activity code '" + activity.getActivityCode() + "' is not a valid number.", e.getCause(), null);
-		}
-
 		createFUWO.setACTIVITYID(new ACTIVITYID());
 		createFUWO.getACTIVITYID().setWORKORDERID(new WOID_Type());
 		createFUWO.getACTIVITYID().getWORKORDERID().setJOBNUM(activity.getWorkOrderNumber());
 		createFUWO.getACTIVITYID().setACTIVITYCODE(new ACTIVITYCODE());
-		createFUWO.getACTIVITYID().getACTIVITYCODE().setValue(activityNumber);
+		createFUWO.getACTIVITYID().getACTIVITYCODE().setValue(activity.getActivityCode().longValue());
 		createFUWO.getACTIVITYID().getWORKORDERID().setORGANIZATIONID(tools.getOrganization(context));
 
 		MP8000_CreateFollowUpWorkOrder_001_Result createFUWOResult =
