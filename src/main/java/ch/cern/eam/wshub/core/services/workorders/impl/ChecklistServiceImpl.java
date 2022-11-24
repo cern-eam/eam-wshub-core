@@ -491,7 +491,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 		gridRequest.setUseNative(true);
 		gridRequest.setUserFunctionName("WSJOBS");
 		gridRequest.getParams().put("param.workordernum", activity.getWorkOrderNumber());
-		gridRequest.getParams().put("param.activity", activity.getActivityCode());
+		gridRequest.getParams().put("param.activity", activity.getActivityCode().toString());
 		gridRequest.getParams().put("param.jobseq", "0");
 		GridRequestResult gridRequestResult = gridsService.executeQuery(context, gridRequest);
 
@@ -508,7 +508,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 	private WorkOrderActivityCheckList getCheckList(InforContext context, GridRequestRow row, Activity activity) throws InforException {
 		WorkOrderActivityCheckList checklist = new WorkOrderActivityCheckList();
 		checklist.setWorkOrderCode(activity.getWorkOrderNumber());
-		checklist.setActivityCode(activity.getActivityCode());
+		checklist.setActivityCode(activity.getActivityCode().toString());
 		checklist.setCheckListCode(getCellContent("checklistcode", row));
 		//checklistTemp.setOccurrence(v_result.getString("ack_occurrence"));
 		checklist.setSequence(getCellContent("checklistsequence", row));
@@ -708,7 +708,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 
 		Long activityNumber;
 		try {
-			activityNumber = Long.valueOf( activity.getActivityCode());
+			activityNumber = Long.valueOf( activity.getActivityCode().toString());
 		} catch(Exception e) {
 			throw new InforException("Activity code '" + activity.getActivityCode() + "' is not a valid number.", e.getCause(), null);
 		}

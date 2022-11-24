@@ -146,7 +146,7 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 								TaskPlan taskPlan = new TaskPlan();
 								taskPlan.setCode(activity.getTaskCode());
 								taskPlan = taskPlanService.getTaskPlan(context, taskPlan);
-								WorkOrderActivityChecklistSignatureResult[] signatures = checklistService.getSignatures(context, workOrderNumber, activity.getActivityCode(), taskPlan);
+								WorkOrderActivityChecklistSignatureResult[] signatures = checklistService.getSignatures(context, workOrderNumber, activity.getActivityCode().toString(), taskPlan);
 								if (signatures.length > 0) {
 									activity.setChecklists(checklistService.readWorkOrderChecklists(context, activity));
 									if (taskPlan.getReviewedByRequired()) {
@@ -176,92 +176,13 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 		}
 	}
 
-	public String createActivity(InforContext context, Activity activityParam) throws InforException {
+	public String createActivity (InforContext context, Activity activityParam) throws InforException {
 		net.datastream.schemas.mp_entities.activity_001.Activity activityInfor = new net.datastream.schemas.mp_entities.activity_001.Activity();
-		//
-		activityInfor.setACTIVITYID(new ACTIVITYID());
 
-		//
+		tools.getInforFieldTools().transformWSHubObject(activityInfor, activityParam, context);
+
 		if (activityParam.getTaskCode() != null && !activityParam.getTaskCode().trim().equals("")) {
-			activityInfor.setTASKSID(new TASKS_Type());
-			activityInfor.getTASKSID().setORGANIZATIONID(tools.getOrganization(context));
-			activityInfor.getTASKSID().setTASKCODE(activityParam.getTaskCode());
-			activityInfor.getTASKSID().setTASKREVISION((long) 0);
-			activityInfor.getTASKSID().setTASKQUANTITY(tools.getDataTypeTools().encodeQuantity(activityParam.getTaskQty(), "Task Quantity"));
-
-			TaskPlan search = new TaskPlan();
-			search.setCode(activityParam.getTaskCode());
-
-			TaskPlan retrievedPlan = taskPlanService.getTaskPlan(context, search);
-			if (retrievedPlan.getPeopleRequired() != null) {
-				activityInfor.setPERSONS(retrievedPlan.getPeopleRequired().longValue());
-			}
-
-			if (retrievedPlan.getMaterialList() != null) {
-				activityInfor.setMATLIST(new MATLIST_Type());
-				activityInfor.getMATLIST().setMTLCODE(retrievedPlan.getMaterialList());
-			}
-
-			if (retrievedPlan.getEstimatedHours() != null) {
-				activityInfor.setESTIMATEDHOURS(retrievedPlan.getEstimatedHours().doubleValue());
-			}
-
-			if (retrievedPlan.getTradeCode() != null) {
-				activityInfor.setTRADEID(new TRADEID_Type());
-				activityInfor.getTRADEID().setORGANIZATIONID(tools.getOrganization(context));
-				activityInfor.getTRADEID().setTRADECODE(retrievedPlan.getTradeCode());
-			}
-		}
-
-		if (activityParam.getWorkOrderNumber() != null) {
-			activityInfor.getACTIVITYID().setWORKORDERID(new WOID_Type());
-			activityInfor.getACTIVITYID().getWORKORDERID().setJOBNUM(activityParam.getWorkOrderNumber());
-			activityInfor.getACTIVITYID().getWORKORDERID().setORGANIZATIONID(tools.getOrganization(context));
-		}
-
-		if (activityParam.getActivityCode() != null) {
-			activityInfor.getACTIVITYID().setACTIVITYCODE(new ACTIVITYCODE());
-			activityInfor.getACTIVITYID().getACTIVITYCODE()
-					.setValue(tools.getDataTypeTools().encodeLong(activityParam.getActivityCode(), "Activity ID"));
-		}
-		//
-		if (activityParam.getTradeCode() != null) {
-			activityInfor.setTRADEID(new TRADEID_Type());
-			activityInfor.getTRADEID().setORGANIZATIONID(tools.getOrganization(context));
-			activityInfor.getTRADEID().setTRADECODE(activityParam.getTradeCode());
-		}
-		//
-		if (activityParam.getPeopleRequired() != null) {
-			activityInfor.setPERSONS(activityParam.getPeopleRequired().longValue());
-		}
-		//
-		if (activityParam.getEstimatedHours() != null) {
-			activityInfor.setESTIMATEDHOURS(activityParam.getEstimatedHours().doubleValue());
-		}
-		//
-		if (activityParam.getStartDate() != null) {
-			activityInfor
-					.setACTIVITYSTARTDATE(tools.getDataTypeTools().encodeInforDate(activityParam.getStartDate(), "Activity Start Date"));
-		}
-		//
-		if (activityParam.getEndDate() != null) {
-			activityInfor.setACTIVITYENDDATE(tools.getDataTypeTools().encodeInforDate(activityParam.getEndDate(), "Activity End Date"));
-		}
-
-		//
-		if (activityParam.getHoursRemaining() != null) {
-			activityInfor.setHOURSREMAINING(activityParam.getHoursRemaining().doubleValue());
-		}
-
-		//
-		if (activityParam.getMaterialList() != null && !activityParam.getMaterialList().trim().equals("")) {
-			activityInfor.setMATLIST(new MATLIST_Type());
-			activityInfor.getMATLIST().setMTLCODE(activityParam.getMaterialList());
-		}
-
-		// NOTE
-		if (tools.getDataTypeTools().isNotEmpty(activityParam.getActivityNote())) {
-			activityInfor.getACTIVITYID().setACTIVITYNOTE(activityParam.getActivityNote());
+			activityInfor.getTASKSID().setTASKREVISION(0L);
 		}
 
 		// CALL THE WS
@@ -282,7 +203,7 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 		getActivity.setACTIVITYID(new ACTIVITYID());
 		try {
 			getActivity.getACTIVITYID().setACTIVITYCODE(new ACTIVITYCODE());
-			getActivity.getACTIVITYID().getACTIVITYCODE().setValue(Long.parseLong(activityParam.getActivityCode()));
+			getActivity.getACTIVITYID().getACTIVITYCODE().setValue(Long.parseLong(activityParam.getActivityCode().toString()));
 		} catch (Exception e) {
 
 		}
@@ -296,64 +217,7 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 
 		net.datastream.schemas.mp_entities.activity_001.Activity activityInfor = getresult.getResultData().getActivity();
 
-		//
-		if (activityParam.getTradeCode() != null) {
-			if (activityInfor.getTRADEID() == null) {
-				activityInfor.setTRADEID(new TRADEID_Type());
-				activityInfor.getTRADEID().setORGANIZATIONID(tools.getOrganization(context));
-			}
-
-			activityInfor.getTRADEID().setTRADECODE(activityParam.getTradeCode());
-		}
-
-		//
-		if (activityParam.getPeopleRequired() != null) {
-			activityInfor.setPERSONS(activityParam.getPeopleRequired().longValue());
-		}
-		//
-		if (activityParam.getEstimatedHours() != null) {
-			activityInfor.setESTIMATEDHOURS(activityParam.getEstimatedHours().doubleValue());
-		}
-		//
-		if (activityParam.getStartDate() != null) {
-			activityInfor
-					.setACTIVITYSTARTDATE(tools.getDataTypeTools().encodeInforDate(activityParam.getStartDate(), "Activity Start Date"));
-		}
-		//
-		if (activityParam.getEndDate() != null) {
-			activityInfor.setACTIVITYENDDATE(tools.getDataTypeTools().encodeInforDate(activityParam.getEndDate(), "Activity End Date"));
-		}
-
-		//
-		if (activityParam.getHoursRemaining() != null) {
-			activityInfor.setHOURSREMAINING(activityParam.getHoursRemaining().doubleValue());
-		}
-
-		//
-		if (activityParam.getTaskCode() != null) {
-			if (activityInfor.getTASKSID() == null) {
-				activityInfor.setTASKSID(new TASKS_Type());
-				activityInfor.getTASKSID().setORGANIZATIONID(tools.getOrganization(context));
-				activityInfor.getTASKSID().setTASKREVISION((long) 0);
-			}
-			activityInfor.getTASKSID().setTASKCODE(activityParam.getTaskCode());
-			activityInfor.getTASKSID().setTASKQUANTITY(tools.getDataTypeTools().encodeQuantity(activityParam.getTaskQty(), "Task Quantity"));
-		}
-
-		//
-		if (activityParam.getMaterialList() != null) {
-			if (activityParam.getMaterialList().trim().equals("")) {
-				activityInfor.setMATLIST(null);
-			} else {
-				activityInfor.setMATLIST(new MATLIST_Type());
-				activityInfor.getMATLIST().setMTLCODE(activityParam.getMaterialList());
-			}
-		}
-
-		// NOTE
-		if (activityParam.getActivityNote() != null) {
-			activityInfor.getACTIVITYID().setACTIVITYNOTE(activityParam.getActivityNote());
-		}
+		tools.getInforFieldTools().transformWSHubObject(activityInfor, activityParam, context);
 
 		//
 		// CALL THE WS
@@ -373,7 +237,7 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 		MP0039_DeleteActivity_001 deleteActivity = new MP0039_DeleteActivity_001();
 		deleteActivity.setACTIVITYID(new ACTIVITYID());
 		deleteActivity.getACTIVITYID().setACTIVITYCODE(new ACTIVITYCODE());
-		deleteActivity.getACTIVITYID().getACTIVITYCODE().setValue(tools.getDataTypeTools().encodeLong(activityParam.getActivityCode(), "Activity Code"));
+		deleteActivity.getACTIVITYID().getACTIVITYCODE().setValue(tools.getDataTypeTools().encodeLong(activityParam.getActivityCode().toString(), "Activity Code"));
 		deleteActivity.getACTIVITYID().setWORKORDERID(new WOID_Type());
 		deleteActivity.getACTIVITYID().getWORKORDERID().setORGANIZATIONID(tools.getOrganization(context));
 		deleteActivity.getACTIVITYID().getWORKORDERID().setJOBNUM(activityParam.getWorkOrderNumber());
