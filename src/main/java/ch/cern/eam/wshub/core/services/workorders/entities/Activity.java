@@ -31,7 +31,7 @@ public class Activity implements Serializable {
 
 	@Column(name = "ACT_NOTE")
 	@GridField(name="activitynote")
-	@InforField(xpath = "ACTIVITYID/ACTIVITYNOTE")
+	@InforField(xpath = "ACTIVITYID/ACTIVITYNOTE", nullifyParentLevel = 0)
 	private String activityNote;
 
 	@Column(name = "ACT_EVENT")
