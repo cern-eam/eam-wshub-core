@@ -230,17 +230,17 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 		return syncresult.getResultData().getACTIVITYID().getACTIVITYCODE().getValue() + "";
 	}
 
-	public String deleteActivity(InforContext context, Activity activityParam) throws InforException {
+	public String deleteActivity(InforContext context, String workorderNumber, String activityCode) throws InforException {
 		//
 		// CALL THE WS
 		//
 		MP0039_DeleteActivity_001 deleteActivity = new MP0039_DeleteActivity_001();
 		deleteActivity.setACTIVITYID(new ACTIVITYID());
 		deleteActivity.getACTIVITYID().setACTIVITYCODE(new ACTIVITYCODE());
-		deleteActivity.getACTIVITYID().getACTIVITYCODE().setValue(tools.getDataTypeTools().encodeLong(activityParam.getActivityCode().toString(), "Activity Code"));
+		deleteActivity.getACTIVITYID().getACTIVITYCODE().setValue(Long.parseLong(activityCode));
 		deleteActivity.getACTIVITYID().setWORKORDERID(new WOID_Type());
 		deleteActivity.getACTIVITYID().getWORKORDERID().setORGANIZATIONID(tools.getOrganization(context));
-		deleteActivity.getACTIVITYID().getWORKORDERID().setJOBNUM(activityParam.getWorkOrderNumber());
+		deleteActivity.getACTIVITYID().getWORKORDERID().setJOBNUM(workorderNumber);
 		deleteActivity.setConfirmdeletechecklist("true");
 
 		MP0039_DeleteActivity_001_Result result =
