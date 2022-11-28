@@ -237,7 +237,7 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 		MP0039_DeleteActivity_001 deleteActivity = new MP0039_DeleteActivity_001();
 		deleteActivity.setACTIVITYID(new ACTIVITYID());
 		deleteActivity.getACTIVITYID().setACTIVITYCODE(new ACTIVITYCODE());
-		deleteActivity.getACTIVITYID().getACTIVITYCODE().setValue(tools.getDataTypeTools().encodeLong(activityParam.getActivityCode().toString(), "Activity Code"));
+		deleteActivity.getACTIVITYID().getACTIVITYCODE().setValue(activityParam.getActivityCode().longValue());
 		deleteActivity.getACTIVITYID().setWORKORDERID(new WOID_Type());
 		deleteActivity.getACTIVITYID().getWORKORDERID().setORGANIZATIONID(tools.getOrganization(context));
 		deleteActivity.getACTIVITYID().getWORKORDERID().setJOBNUM(activityParam.getWorkOrderNumber());
