@@ -1,62 +1,85 @@
 package ch.cern.eam.wshub.core.services.workorders.entities;
 
 import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
+import ch.cern.eam.wshub.core.adapters.BigIntegerAdapter;
+import ch.cern.eam.wshub.core.adapters.DateAdapter;
+import ch.cern.eam.wshub.core.annotations.InforField;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.Date;
 
 public class WorkOrderAdditionalCosts {
 
-	private String CostDescription;
-	private String ActivityCode;
-	private String TradeCode;
-	private String CostType;
-	private String Date;
-	private BigDecimal Cost;
-	private String WorkOrderNumber;
+	@InforField(xpath = "DESCRIPTION")
+	private String costDescription;
+
+	@InforField(xpath = "ACTIVITYID/ACTIVITYCODE/value")
+	private BigInteger activityCode;
+
+	@InforField(xpath = "COSTTYPEID/COSTTYPECODE")
+	private String costType;
+
+	@InforField(xpath = "CREATEDDATE")
+	private Date date;
+
+	@InforField(xpath = "UNITPRICE")
+	private BigDecimal cost;
+
+	@InforField(xpath = "ACTIVITYID/WORKORDERID/JOBNUM")
+	private String workOrderNumber;
+
+	@InforField(xpath = "WOADDITIONALCOSTQTY")
+	private BigDecimal quantity;
+
 	public String getCostDescription() {
-		return CostDescription;
+		return costDescription;
 	}
 	public void setCostDescription(String costDescription) {
-		CostDescription = costDescription;
-	}
-	public String getTradeCode() {
-		return TradeCode;
-	}
-	public void setTradeCode(String tradeCode) {
-		TradeCode = tradeCode;
+		this.costDescription = costDescription;
 	}
 	public String getCostType() {
-		return CostType;
+		return costType;
 	}
 	public void setCostType(String costType) {
-		CostType = costType;
+		this.costType = costType;
 	}
-	public String getDate() {
-		return Date;
+	@XmlJavaTypeAdapter(DateAdapter.class)
+	public Date getDate() {
+		return date;
 	}
-	public void setDate(String date) {
-		Date = date;
+	public void setDate(Date date) {
+		this.date = date;
 	}
 	public String getWorkOrderNumber() {
-		return WorkOrderNumber;
+		return workOrderNumber;
 	}
 	public void setWorkOrderNumber(String workOrderNumber) {
-		WorkOrderNumber = workOrderNumber;
+		this.workOrderNumber = workOrderNumber;
 	}
 
 	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
 	public BigDecimal getCost() {
-		return Cost;
+		return cost;
 	}
 	public void setCost(BigDecimal cost) {
-		Cost = cost;
+		this.cost = cost;
 	}
-	public String getActivityCode() {
-		return ActivityCode;
+	@XmlJavaTypeAdapter(BigIntegerAdapter.class)
+	public BigInteger getActivityCode() {
+		return activityCode;
 	}
-	public void setActivityCode(String activityCode) {
-		ActivityCode = activityCode;
+	public void setActivityCode(BigInteger activityCode) {
+		this.activityCode = activityCode;
+	}
+
+	@XmlJavaTypeAdapter(BigDecimalAdapter.class)
+	public BigDecimal getQuantity() {
+		return quantity;
+	}
+	public void setQuantity(BigDecimal quantity) {
+		this.quantity = quantity;
 	}
 	
 	
