@@ -77,27 +77,7 @@ public class WorkOrderMiscServiceImpl implements WorkOrderMiscService {
 												ch.cern.eam.wshub.core.services.workorders.entities.WorkOrderAdditionalCosts workOrderAddCostsParam) throws InforException {
 		WorkOrderAdditionalCosts workOrderAddCosts = new WorkOrderAdditionalCosts();
 
-		// ACTIVITY AND WORK ORDER NUMBER
-		workOrderAddCosts.setACTIVITYID(new ACTIVITYID());
-		workOrderAddCosts.getACTIVITYID().setACTIVITYCODE(new ACTIVITYCODE());
-		workOrderAddCosts.getACTIVITYID().getACTIVITYCODE()
-				.setValue(tools.getDataTypeTools().encodeLong(workOrderAddCostsParam.getActivityCode(), "Activity Code"));
-		workOrderAddCosts.getACTIVITYID().setWORKORDERID(new WOID_Type());
-		workOrderAddCosts.getACTIVITYID().getWORKORDERID().setORGANIZATIONID(tools.getOrganization(context));
-		workOrderAddCosts.getACTIVITYID().getWORKORDERID().setJOBNUM(workOrderAddCostsParam.getWorkOrderNumber());
-
-		// COST TYPE
-		workOrderAddCosts.setCOSTTYPEID(new COSTTYPEID_Type());
-		workOrderAddCosts.getCOSTTYPEID().setCOSTTYPECODE(workOrderAddCostsParam.getCostType());
-
-		// CREATED DATE
-		workOrderAddCosts.setCREATEDDATE(tools.getDataTypeTools().formatDate(workOrderAddCostsParam.getDate(), "Created Date"));
-
-		// DESCRIPTION
-		workOrderAddCosts.setDESCRIPTION(workOrderAddCostsParam.getCostDescription());
-
-		// UNIT PRICE
-		workOrderAddCosts.setUNITPRICE(tools.getDataTypeTools().encodeAmount(workOrderAddCostsParam.getCost(), "Cost Value"));
+		tools.getInforFieldTools().transformWSHubObject(workOrderAddCosts, workOrderAddCostsParam, context);
 
 		workOrderAddCosts.setWOADDITIONALCOSTQTY(tools.getDataTypeTools().encodeQuantity(BigDecimal.ONE, "Additional Quantity"));
 
@@ -105,8 +85,8 @@ public class WorkOrderMiscServiceImpl implements WorkOrderMiscService {
 		addCost.setWorkOrderAdditionalCosts(workOrderAddCosts);
 
 		tools.performInforOperation(context, inforws::addWorkOrderAdditionalCostsOp, addCost);
-		return "done";
 
+		return "done";
 	}
 
 	public String createMaterialList(InforContext context, MaterialList materialList) throws InforException {
