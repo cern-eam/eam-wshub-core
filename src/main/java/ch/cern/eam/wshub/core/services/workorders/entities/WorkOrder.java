@@ -254,6 +254,14 @@ public class WorkOrder implements Serializable, UserDefinedListHelpable {
 	private String vendor;
 
 	@Transient
+	private Boolean jtAuthCanUpdate = true;
+
+	@Transient
+	private Boolean jtAuthCanInsert = true;
+
+	@Transient
+	private Boolean jtAuthCanDelete = true;
+	@Transient
 	private HashMap<String, ArrayList<UDLValue>> userDefinedList;
 
 	public String getNumber() {
@@ -823,6 +831,30 @@ public class WorkOrder implements Serializable, UserDefinedListHelpable {
 
 	public void setSystemStatusCode(String systemStatusCode) {
 		this.systemStatusCode = systemStatusCode;
+	}
+
+	public Boolean getJtAuthCanUpdate() {
+		return jtAuthCanUpdate;
+	}
+
+	public void setJtAuthCanUpdate(Boolean jtAuthCanUpdate) {
+		this.jtAuthCanUpdate = jtAuthCanUpdate;
+	}
+
+	public Boolean getJtAuthCanInsert() {
+		return jtAuthCanInsert;
+	}
+
+	public void setJtAuthCanInsert(Boolean jtAuthCanInsert) {
+		this.jtAuthCanInsert = jtAuthCanInsert;
+	}
+
+	public Boolean getJtAuthCanDelete() {
+		return jtAuthCanDelete;
+	}
+
+	public void setJtAuthCanDelete(Boolean jtAuthCanDelete) {
+		this.jtAuthCanDelete = jtAuthCanDelete;
 	}
 
 	@Override

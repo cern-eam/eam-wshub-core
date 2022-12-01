@@ -142,7 +142,7 @@ public class MECServiceImpl implements MECService {
     @Override
     public WorkOrderEquipment getWorkOrderMecInfor(InforContext context, String workorderID) throws InforException{
         WorkOrderServiceImpl wos = new WorkOrderServiceImpl(applicationData, tools, this.inforws); // Creating service here so it is easily removed when infor ws is implemented later
-        net.datastream.schemas.mp_entities.workorder_001.WorkOrder res = wos.readWorkOrderInfor(context, extractEntityCode(workorderID), extractOrganizationCode(workorderID));
+        net.datastream.schemas.mp_entities.workorder_001.WorkOrder res = wos.readWorkOrderInfor(context, extractEntityCode(workorderID), extractOrganizationCode(workorderID)).getResultData().getWorkOrder();
         WorkOrderEquipment woeq = new WorkOrderEquipment();
         woeq.setWORKORDERID(res.getPARENTWO());
         woeq.setEQUIPMENTID(res.getEQUIPMENTID());

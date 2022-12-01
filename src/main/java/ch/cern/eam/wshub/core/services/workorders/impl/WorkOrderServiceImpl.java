@@ -37,6 +37,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.decodeBoolean;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.toCodeString;
 import static ch.cern.eam.wshub.core.tools.Tools.extractEntityCode;
 import static ch.cern.eam.wshub.core.tools.Tools.extractOrganizationCode;
@@ -87,9 +88,10 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 	//
 	public WorkOrder readWorkOrder(InforContext context, String number) throws InforException {
 		// Get Infor Work Order
-		net.datastream.schemas.mp_entities.workorder_001.WorkOrder inforWorkOrder = readWorkOrderInfor(context, extractEntityCode(number), extractOrganizationCode(number));
+		MP0024_GetWorkOrder_001_Result result = readWorkOrderInfor(context, extractEntityCode(number), extractOrganizationCode(number));
 		//
-		WorkOrder workOrder = tools.getInforFieldTools().transformInforObject(new WorkOrder(), inforWorkOrder, context);
+		WorkOrder workOrder = tools.getInforFieldTools().transformInforObject(new WorkOrder(), result.getResultData().getWorkOrder(), context);
+		workOrder.setJtAuthCanUpdate(decodeBoolean(result.getJtauth_Can_Update()));
 
 		// Fetching missing descriptions and UDL not returned by Infor web service
 		tools.processRunnables(
@@ -104,15 +106,13 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		return workOrder;
 	}
 
-	public net.datastream.schemas.mp_entities.workorder_001.WorkOrder readWorkOrderInfor(InforContext context, String number, String organization) throws InforException {
+	public MP0024_GetWorkOrder_001_Result readWorkOrderInfor(InforContext context, String number, String organization) throws InforException {
 		MP0024_GetWorkOrder_001 getWorkOrder = new MP0024_GetWorkOrder_001();
 		getWorkOrder.setWORKORDERID(new WOID_Type());
 		getWorkOrder.getWORKORDERID().setJOBNUM(number);
 		getWorkOrder.getWORKORDERID().setORGANIZATIONID(tools.getOrganization(context, organization));
 
-		MP0024_GetWorkOrder_001_Result result =
-			tools.performInforOperation(context, inforws::getWorkOrderOp, getWorkOrder);
-		return result.getResultData().getWorkOrder();
+		return tools.performInforOperation(context, inforws::getWorkOrderOp, getWorkOrder);
 	}
 
 	public WorkOrder readWorkOrderDefault(InforContext context, String number) throws InforException {
@@ -274,7 +274,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			InforContext context,
 			String workOrderCode)
 				throws InforException {
-		net.datastream.schemas.mp_entities.workorder_001.WorkOrder workOrder = readWorkOrderInfor(context, extractEntityCode(workOrderCode), extractOrganizationCode(workOrderCode));
+		net.datastream.schemas.mp_entities.workorder_001.WorkOrder workOrder = readWorkOrderInfor(context, extractEntityCode(workOrderCode), extractOrganizationCode(workOrderCode)).getResultData().getWorkOrder();
 
 		// As this work order is read directly from Infor, we can assume that workOrder.getWORKORDERID is not null,
 		// and thus there is no need for a null check
@@ -307,7 +307,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 	}
 
 	public String updateWorkOrder(InforContext context, WorkOrder workorderParam) throws InforException {
-		net.datastream.schemas.mp_entities.workorder_001.WorkOrder inforWorkOrder = readWorkOrderInfor(context, workorderParam.getNumber(), workorderParam.getOrganization());
+		net.datastream.schemas.mp_entities.workorder_001.WorkOrder inforWorkOrder = readWorkOrderInfor(context, workorderParam.getNumber(), workorderParam.getOrganization()).getResultData().getWorkOrder();
 
 		// Check Custom fields. If they change, or now we have them
 		inforWorkOrder.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(
