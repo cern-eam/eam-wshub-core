@@ -833,6 +833,7 @@ public class WorkOrder implements Serializable, UserDefinedListHelpable {
 		this.systemStatusCode = systemStatusCode;
 	}
 
+	@XmlJavaTypeAdapter(BooleanAdapter.class)
 	public Boolean getJtAuthCanUpdate() {
 		return jtAuthCanUpdate;
 	}
@@ -841,6 +842,7 @@ public class WorkOrder implements Serializable, UserDefinedListHelpable {
 		this.jtAuthCanUpdate = jtAuthCanUpdate;
 	}
 
+	@XmlJavaTypeAdapter(BooleanAdapter.class)
 	public Boolean getJtAuthCanInsert() {
 		return jtAuthCanInsert;
 	}
@@ -849,6 +851,7 @@ public class WorkOrder implements Serializable, UserDefinedListHelpable {
 		this.jtAuthCanInsert = jtAuthCanInsert;
 	}
 
+	@XmlJavaTypeAdapter(BooleanAdapter.class)
 	public Boolean getJtAuthCanDelete() {
 		return jtAuthCanDelete;
 	}
