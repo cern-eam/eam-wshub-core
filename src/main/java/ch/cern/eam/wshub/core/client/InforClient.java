@@ -137,6 +137,8 @@ public class InforClient implements Serializable {
 
     private EquipmentMeterReadingService equipmentMeterReadingService;
 
+    private NonconformityService nonconformityService;
+
     // Prevent initializing the class without the builder
     private InforClient() {}
 
@@ -303,6 +305,7 @@ public class InforClient implements Serializable {
             inforClient.salesPriceService = proxy(SalesPriceService.class, new SalesPricesImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.userDefinedScreenService = proxy(UserDefinedScreenService.class, new UserDefinedScreenServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.equipmentReservationService = proxy(EquipmentReservationService.class, new EquipmentReservationServiceImpl(applicationData, tools, inforWebServicesToolkitClient),inforInterceptor, tools);
+            inforClient.nonconformityService = proxy(NonconformityService.class, new NonconformityServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.equipmentMeterReadingService = proxy(EquipmentMeterReadingService.class,
                     new EquipmentMeterReadingServiceImpl(applicationData, tools, inforWebServicesToolkitClient),
                     inforInterceptor, tools);
@@ -493,5 +496,9 @@ public class InforClient implements Serializable {
 
     public EquipmentMeterReadingService getEquipmentMeterReadingService() {
         return equipmentMeterReadingService;
+    }
+
+    public NonconformityService getNonconformityService() {
+        return nonconformityService;
     }
 }
