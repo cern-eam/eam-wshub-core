@@ -7,10 +7,12 @@ import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_fields.STANDARDENTITYID_Type;
+import net.datastream.schemas.mp_functions.mp3396_001.MP3396_GetNonconformityDefault_001;
 import net.datastream.schemas.mp_functions.mp3397_001.MP3397_AddNonconformity_001;
 import net.datastream.schemas.mp_functions.mp3398_001.MP3398_SyncNonconformity_001;
 import net.datastream.schemas.mp_functions.mp3399_001.MP3399_DeleteNonconformity_001;
 import net.datastream.schemas.mp_functions.mp3400_001.MP3400_GetNonconformity_001;
+import net.datastream.schemas.mp_results.mp3396_001.MP3396_GetNonconformityDefault_001_Result;
 import net.datastream.schemas.mp_results.mp3397_001.MP3397_AddNonconformity_001_Result;
 import net.datastream.schemas.mp_results.mp3398_001.MP3398_SyncNonconformity_001_Result;
 import net.datastream.schemas.mp_results.mp3400_001.MP3400_GetNonconformity_001_Result;
@@ -42,6 +44,20 @@ public class NonconformityServiceImpl implements NonconformityService {
                 tools.performInforOperation(context, inforws::addNonconformityOp, addNonconformity);
 
         return result.getResultData().getNONCONFORMITYID().getSTANDARDENTITYCODE();
+    }
+
+    @Override
+    public Nonconformity readNonconformityDefault(InforContext context) throws InforException {
+        MP3396_GetNonconformityDefault_001 getNonconformityDefault = new MP3396_GetNonconformityDefault_001();
+
+        getNonconformityDefault.setORGANIZATIONID(tools.getOrganization(context));
+
+        MP3396_GetNonconformityDefault_001_Result result =
+                tools.performInforOperation(context, inforws::getNonconformityDefaultOp, getNonconformityDefault);
+
+        return tools.getInforFieldTools().transformInforObject(
+                new Nonconformity(), result.getResultData().getNonconformityDefault(), context
+        );
     }
 
     @Override
