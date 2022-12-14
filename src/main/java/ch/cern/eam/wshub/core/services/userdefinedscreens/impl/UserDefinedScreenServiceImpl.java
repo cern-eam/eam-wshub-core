@@ -33,7 +33,7 @@ public class UserDefinedScreenServiceImpl implements UserDefinedScreenService {
     }
 
     public String createUserDefinedScreenRow(InforContext inforContext, String screenName, UDTRow udtRow) throws InforException {
-        tools.performInforOperation(inforContext, inforws::processUserDefinedScreenServiceOp, getUserDefinedScreenService(screenName, "ADD", udtRow));
+        tools.performInforOperation(inforContext, inforws::processUserDefinedScreenServiceOp, getUserDefinedScreenService(screenName, "GET", null));
         return screenName;
     }
 
