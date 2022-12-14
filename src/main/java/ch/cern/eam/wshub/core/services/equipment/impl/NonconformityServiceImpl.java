@@ -31,6 +31,20 @@ public class NonconformityServiceImpl implements NonconformityService {
     }
 
     @Override
+    public Nonconformity readNonconformityDefault(InforContext context) throws InforException {
+        MP3396_GetNonconformityDefault_001 getNonconformityDefault = new MP3396_GetNonconformityDefault_001();
+
+        getNonconformityDefault.setORGANIZATIONID(tools.getOrganization(context));
+
+        MP3396_GetNonconformityDefault_001_Result result =
+                tools.performInforOperation(context, inforws::getNonconformityDefaultOp, getNonconformityDefault);
+
+        return tools.getInforFieldTools().transformInforObject(
+                new Nonconformity(), result.getResultData().getNonconformityDefault(), context
+        );
+    }
+
+    @Override
     public String createNonconformity(InforContext context, Nonconformity nonconformityParam) throws InforException {
         net.datastream.schemas.mp_entities.nonconformity_001.Nonconformity nonconformity =
                 new net.datastream.schemas.mp_entities.nonconformity_001.Nonconformity();
@@ -44,20 +58,6 @@ public class NonconformityServiceImpl implements NonconformityService {
                 tools.performInforOperation(context, inforws::addNonconformityOp, addNonconformity);
 
         return result.getResultData().getNONCONFORMITYID().getSTANDARDENTITYCODE();
-    }
-
-    @Override
-    public Nonconformity readNonconformityDefault(InforContext context) throws InforException {
-        MP3396_GetNonconformityDefault_001 getNonconformityDefault = new MP3396_GetNonconformityDefault_001();
-
-        getNonconformityDefault.setORGANIZATIONID(tools.getOrganization(context));
-
-        MP3396_GetNonconformityDefault_001_Result result =
-                tools.performInforOperation(context, inforws::getNonconformityDefaultOp, getNonconformityDefault);
-
-        return tools.getInforFieldTools().transformInforObject(
-                new Nonconformity(), result.getResultData().getNonconformityDefault(), context
-        );
     }
 
     @Override
