@@ -205,7 +205,6 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 			getActivity.getACTIVITYID().setACTIVITYCODE(new ACTIVITYCODE());
 			getActivity.getACTIVITYID().getACTIVITYCODE().setValue(Long.parseLong(activityParam.getActivityCode().toString()));
 		} catch (Exception e) {
-
 		}
 
 		getActivity.getACTIVITYID().setWORKORDERID(new WOID_Type());
