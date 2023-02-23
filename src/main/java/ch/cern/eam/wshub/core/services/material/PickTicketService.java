@@ -10,6 +10,9 @@ import ch.cern.eam.wshub.core.tools.InforException;
 
 public interface PickTicketService {
 
+    @Operation(logOperation = INFOR_OPERATION.PARTSTOCK_R)
+    PickTicket readPickTicket(InforContext context, String pickTicketCode) throws InforException;
+
     @Operation(logOperation = INFOR_OPERATION.PARTSTOCK_U)
     String createPickTicket(InforContext context, PickTicket pickTicketParam) throws InforException;
 

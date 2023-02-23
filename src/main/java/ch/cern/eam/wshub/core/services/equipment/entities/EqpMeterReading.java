@@ -10,6 +10,7 @@ import net.datastream.schemas.mp_fields.StandardUserDefinedFields;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Objects;
 
 public class EqpMeterReading {
     @InforField(xpath = "EQUIPMETERID/STANDARDENTITYCODE")
@@ -122,5 +123,35 @@ public class EqpMeterReading {
 
     public void setUserDefinedFields(final UserDefinedFields userDefinedFields) {
         this.userDefinedFields = userDefinedFields;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final EqpMeterReading that = (EqpMeterReading) o;
+        return Objects.equals(readingCode, that.readingCode) && Objects.equals(equipmentCode, that.equipmentCode) && Objects.equals(type, that.type) && Objects.equals(readingType, that.readingType) && Objects.equals(UOM, that.UOM) && Objects.equals(readingDate, that.readingDate) && Objects.equals(quantity, that.quantity) && Objects.equals(workorderId, that.workorderId) && Objects.equals(relatedWorkorderId, that.relatedWorkorderId) && Objects.equals(childReading, that.childReading) && Objects.equals(userDefinedFields, that.userDefinedFields);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(readingCode, equipmentCode, type, readingType, UOM, readingDate, quantity, workorderId, relatedWorkorderId, childReading, userDefinedFields);
+    }
+
+    @Override
+    public String toString() {
+        return "EqpMeterReading{" +
+                "readingCode='" + readingCode + '\'' +
+                ", equipmentCode='" + equipmentCode + '\'' +
+                ", type='" + type + '\'' +
+                ", readingType='" + readingType + '\'' +
+                ", UOM='" + UOM + '\'' +
+                ", readingDate=" + readingDate +
+                ", quantity=" + quantity +
+                ", workorderId='" + workorderId + '\'' +
+                ", relatedWorkorderId='" + relatedWorkorderId + '\'' +
+                ", childReading='" + childReading + '\'' +
+                ", userDefinedFields=" + userDefinedFields +
+                '}';
     }
 }

@@ -7,6 +7,7 @@ import ch.cern.eam.wshub.core.services.material.entities.PickTicketPart;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
+import net.datastream.schemas.mp_entities.assetequipment_001.AssetEquipment;
 import net.datastream.schemas.mp_entities.picklist_001.PickList;
 import net.datastream.schemas.mp_entities.picklistpart_001.PickListPart;
 import net.datastream.schemas.mp_fields.*;
@@ -24,6 +25,8 @@ import org.openapplications.oagis_segments.QUANTITY;
 import javax.xml.ws.Holder;
 import java.math.BigDecimal;
 
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.toCodeString;
+
 public class PickTicketServiceImpl implements PickTicketService {
 
     private Tools tools;
@@ -37,94 +40,41 @@ public class PickTicketServiceImpl implements PickTicketService {
     }
 
     public String createPickTicket(InforContext context, PickTicket pickTicketParam) throws InforException {
+        PickList pickList = new PickList();
+        pickList.setUSERDEFINEDAREA(
+            tools.getCustomFieldsTools().getInforCustomFields(
+                context,
+                toCodeString(pickList.getCLASSID()),
+                pickList.getUSERDEFINEDAREA(),
+                pickTicketParam.getClassCode(),
+                "PICK"
+            )
+        );
+        tools.getInforFieldTools().transformWSHubObject(pickList, pickTicketParam, context);
+        if (pickList.getPICKLISTID() != null) {
+            pickList.getPICKLISTID().setPICKLIST("");
+        }
         MP0296_AddPickList_001 createPickTicket = new MP0296_AddPickList_001();
-
-        pickTicketParam.setCode("");
-        createPickTicket.setPickList(pickTicket2pickList(context, pickTicketParam));
-
+        createPickTicket.setPickList(pickList);
         MP0296_AddPickList_001_Result result =
             tools.performInforOperation(context, inforws::addPickListOp, createPickTicket);
         return result.getPICKLISTID().getPICKLIST();
     }
 
-    private PickList pickTicket2pickList(InforContext context, PickTicket pickTicket) throws InforException {
-        PickList pickList = new PickList();
-        pickList.setDATEREQUIRED(tools.getDataTypeTools().encodeInforDate(pickTicket.getRequestedEndDate(), "Date Required"));
-
-        // Store
-        pickList.setSTOREID(new STOREID_Type());
-        pickList.getSTOREID().setORGANIZATIONID(tools.getOrganization(context));
-        pickList.getSTOREID().setSTORECODE(pickTicket.getStoreCode());
-
-        // Status
-        pickList.setSTATUS(new STATUS_Type());
-        pickList.getSTATUS().setSTATUSCODE(pickTicket.getStatus());
-
-        // Description
-        pickList.setPICKLISTID(new PICKLIST_Type());
-        pickList.getPICKLISTID().setPICKLISTDESC(pickTicket.getDescription());
-        pickList.getPICKLISTID().setPICKLIST(pickTicket.getCode());
-
-        //Next step is either an equipment (location, asset or employee's asset) or an acitvity from a work order
-        // Equipment
-        if (pickTicket.getAssetCode() != null) {
-            pickList.setASSETID(new EQUIPMENTID_Type());
-            pickList.getASSETID().setEQUIPMENTCODE(pickTicket.getAssetCode());
-            pickList.getASSETID().setORGANIZATIONID(tools.getOrganization(context));
-        }
-
-        // Workorder activity
-        if (pickTicket.getWorkorderCode() != null) {
-            pickList.setWORKORDERACTIVITY(new WORKORDERACTIVITY());
-            pickList.getWORKORDERACTIVITY().setACTIVITYID(new ACTIVITYID());
-
-            pickList.getWORKORDERACTIVITY().getACTIVITYID().setACTIVITYCODE(
-                    new ACTIVITYCODE());
-            pickList.getWORKORDERACTIVITY().getACTIVITYID().getACTIVITYCODE()
-                    .setValue(pickTicket.getActivityNumber());
-            pickList.getWORKORDERACTIVITY().getACTIVITYID().setWORKORDERID(new WOID_Type());
-            pickList.getWORKORDERACTIVITY().getACTIVITYID().getWORKORDERID()
-                    .setJOBNUM(pickTicket.getWorkorderCode());
-        }
-
-        if (pickTicket.getClassCode() != null) {
-            pickList.setCLASSID(new CLASSID_Type());
-            pickList.getCLASSID().setORGANIZATIONID(tools.getOrganization(context));
-            pickList.getCLASSID().setCLASSCODE(pickTicket.getClassCode());
-        }
-
-        // Origin
-        pickList.setORIGINID(new USERID_Type());
-        pickList.getORIGINID().setUSERCODE(pickTicket.getOriginCode());
-        return pickList;
-    }
-
-    private PickTicket pickList2pickTicket(PickList pickList) throws InforException {
-        PickTicket pickTicket = new PickTicket();
-        pickTicket.setRequestedEndDate(pickTicket.getRequestedEndDate());
-
-        pickTicket.setStoreCode(pickList.getSTOREID().getSTORECODE());
-        pickTicket.setStatus(pickList.getSTATUS().getSTATUSCODE());
-        pickTicket.setCode(pickList.getPICKLISTID().getPICKLIST());
-        pickTicket.setDescription(pickList.getPICKLISTID().getPICKLISTDESC());
-        pickTicket.setAssetCode(pickList.getASSETID().getEQUIPMENTCODE());
-        pickTicket.setWorkorderCode(pickList.getWORKORDERACTIVITY().getACTIVITYID().getWORKORDERID().getJOBNUM());
-        pickTicket.setActivityNumber(pickList.getWORKORDERACTIVITY().getACTIVITYID().getACTIVITYCODE().getValue());
-        pickTicket.setClassCode(pickList.getCLASSID().getCLASSCODE());
-        pickTicket.setOriginCode(pickList.getORIGINID().getUSERCODE());
-
-        return pickTicket;
-    }
-
-    //ONLY WORKS FOR UPDATING STATUS
     public String updatePickTicket(InforContext context, PickTicket pickTicketParam) throws InforException {
+        PickList pickList = readPickList(context, pickTicketParam.getCode());
+        pickList.setUSERDEFINEDAREA(
+            tools.getCustomFieldsTools().getInforCustomFields(
+                context,
+                toCodeString(pickList.getCLASSID()),
+                pickList.getUSERDEFINEDAREA(),
+                pickTicketParam.getClassCode(),
+                "PICK"
+            )
+        );
+        tools.getInforFieldTools().transformWSHubObject(pickList, pickTicketParam, context);
+
         MP0297_SyncPickList_001 syncPickTicket = new MP0297_SyncPickList_001();
-
-        PickList pickList = readPickTicket(context, pickTicketParam.getCode());
-
-        if (pickTicketParam.getStatus() != null) {
-            pickList.getSTATUS().setSTATUSCODE(pickTicketParam.getStatus());
-        }
         syncPickTicket.setPickList(pickList);
 
         MP0297_SyncPickList_001_Result result =
@@ -132,7 +82,7 @@ public class PickTicketServiceImpl implements PickTicketService {
         return result.getResultData().getPICKLISTID().getPICKLIST();
     }
 
-    public PickList readPickTicket(InforContext context, String code) throws InforException {
+    public PickList readPickList(InforContext context, String code) throws InforException {
         MP0211_GetPickList_001 getPickList = new MP0211_GetPickList_001();
         getPickList.setPICKLISTID(new PICKLIST_Type());
         getPickList.getPICKLISTID().setPICKLIST(code);
@@ -140,6 +90,13 @@ public class PickTicketServiceImpl implements PickTicketService {
             tools.performInforOperation(context, inforws::getPickListOp, getPickList);
         return pickListResult.getResultData().getPickList();
     }
+
+    public PickTicket readPickTicket(InforContext context, String code) throws InforException {
+        PickList pickList = readPickList(context, code);
+        final PickTicket pickTicket = tools.getInforFieldTools().transformInforObject(new PickTicket(), pickList, context);
+        return pickTicket;
+    }
+
 
     public String addPartToPickTicket(InforContext context, PickTicketPart pickTicketPartParam) throws InforException {
         MP1223_AddPickListPart_001 addPickListPart = new MP1223_AddPickListPart_001();
