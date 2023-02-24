@@ -47,11 +47,27 @@ public class ElementInfo {
 	private boolean readonly;
 	private boolean notValid;
 
+	@GridField(name = "plo_elementtype")
+	private String elementType;
+
+	@GridField(name = "plo_fieldconttype")
+	private String fieldContType;
+
+	@GridField(name = "plo_positioningroup")
+	private BigInteger positionInGroup;
+
+	@GridField(name = "plo_tabindex")
+	private BigInteger tabIndex;
+
+	@GridField(name = "pld_onlookup")
+	private String onLookup;
+
+
 	public String getElementId() {
 		return elementId;
 	}
 
-	public void setElementId(String elementId) {
+	public void setElementId(final String elementId) {
 		this.elementId = elementId;
 	}
 
@@ -59,7 +75,7 @@ public class ElementInfo {
 		return pageName;
 	}
 
-	public void setPageName(String pageName) {
+	public void setPageName(final String pageName) {
 		this.pageName = pageName;
 	}
 
@@ -67,7 +83,7 @@ public class ElementInfo {
 		return xpath;
 	}
 
-	public void setXpath(String xpath) {
+	public void setXpath(final String xpath) {
 		this.xpath = xpath;
 	}
 
@@ -75,7 +91,7 @@ public class ElementInfo {
 		return maxLength;
 	}
 
-	public void setMaxLength(String maxLength) {
+	public void setMaxLength(final String maxLength) {
 		this.maxLength = maxLength;
 	}
 
@@ -83,7 +99,7 @@ public class ElementInfo {
 		return characterCase;
 	}
 
-	public void setCharacterCase(String characterCase) {
+	public void setCharacterCase(final String characterCase) {
 		this.characterCase = characterCase;
 	}
 
@@ -91,7 +107,7 @@ public class ElementInfo {
 		return attribute;
 	}
 
-	public void setAttribute(String attribute) {
+	public void setAttribute(final String attribute) {
 		this.attribute = attribute;
 	}
 
@@ -99,7 +115,7 @@ public class ElementInfo {
 		return userGroup;
 	}
 
-	public void setUserGroup(String userGroup) {
+	public void setUserGroup(final String userGroup) {
 		this.userGroup = userGroup;
 	}
 
@@ -107,7 +123,7 @@ public class ElementInfo {
 		return fieldType;
 	}
 
-	public void setFieldType(String fieldType) {
+	public void setFieldType(final String fieldType) {
 		this.fieldType = fieldType;
 	}
 
@@ -115,131 +131,147 @@ public class ElementInfo {
 		return defaultValue;
 	}
 
-	public void setDefaultValue(String defaultValue) {
+	public void setDefaultValue(final String defaultValue) {
 		this.defaultValue = defaultValue;
-	}
-
-	/**
-	 * @return the text
-	 */
-	public String getText() {
-		return text;
-	}
-
-	/**
-	 * @param text
-	 *            the text to set
-	 */
-	public void setText(String text) {
-		this.text = text;
-	}
-
-	public boolean isReadonly() {
-		return this.readonly || "P".equals(attribute);
-	}
-
-	public void setReadonly(boolean readOnly) {
-		this.readonly = readOnly;
-	}
-
-	public boolean isNotValid() {
-		return notValid;
-	}
-
-	public void setNotValid(boolean notValid) {
-		this.notValid = notValid;
-	}
-
-	/**
-	 * @return the udfLookupType
-	 */
-	public String getUdfLookupType() {
-		return udfLookupType;
-	}
-
-	/**
-	 * @param udfLookupType
-	 *            the udfLookupType to set
-	 */
-	public void setUdfLookupType(String udfLookupType) {
-		this.udfLookupType = udfLookupType;
-	}
-
-	/**
-	 * @return the udfLookupEntity
-	 */
-	public String getUdfLookupEntity() {
-		return udfLookupEntity;
-	}
-
-	/**
-	 * @param udfLookupEntity
-	 *            the udfLookupEntity to set
-	 */
-	public void setUdfLookupEntity(String udfLookupEntity) {
-		this.udfLookupEntity = udfLookupEntity;
-	}
-
-	/**
-	 * @return the udfUom
-	 */
-	public String getUdfUom() {
-		return udfUom;
-	}
-
-	/**
-	 * @param udfUom
-	 *            the udfUom to set
-	 */
-	public void setUdfUom(String udfUom) {
-		this.udfUom = udfUom;
 	}
 
 	public String getPresentInJSP() {
 		return presentInJSP;
 	}
 
-	public void setPresentInJSP(String presentInJSP) {
+	public void setPresentInJSP(final String presentInJSP) {
 		this.presentInJSP = presentInJSP;
-	}
-
-	public BigInteger getFieldGroup() {
-		return fieldGroup;
-	}
-
-	public void setFieldGroup(BigInteger fieldGroup) {
-		this.fieldGroup = fieldGroup;
 	}
 
 	public String getFieldContainer() {
 		return fieldContainer;
 	}
 
-	public void setFieldContainer(String fieldContainer) {
+	public void setFieldContainer(final String fieldContainer) {
 		this.fieldContainer = fieldContainer;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return "ElementInfo [" + (elementId != null ? "elementId=" + elementId + ", " : "")
-				+ (pageName != null ? "pageName=" + pageName + ", " : "")
-				+ (xpath != null ? "xpath=" + xpath + ", " : "")
-				+ (maxLength != null ? "maxLength=" + maxLength + ", " : "")
-				+ (characterCase != null ? "characterCase=" + characterCase + ", " : "")
-				+ (attribute != null ? "attribute=" + attribute + ", " : "")
-				+ (userGroup != null ? "userGroup=" + userGroup + ", " : "")
-				+ (fieldType != null ? "fieldType=" + fieldType + ", " : "")
-				+ (defaultValue != null ? "defaultValue=" + defaultValue + ", " : "")
-				+ (text != null ? "text=" + text + ", " : "")
-				+ (udfLookupType != null ? "udfLookupType=" + udfLookupType + ", " : "")
-				+ (udfLookupEntity != null ? "udfLookupEntity=" + udfLookupEntity + ", " : "")
-				+ (udfUom != null ? "udfUom=" + udfUom + ", " : "") + "readonly=" + readonly + ", notValid=" + notValid
-				+ "]";
+	public BigInteger getFieldGroup() {
+		return fieldGroup;
 	}
 
+	public void setFieldGroup(final BigInteger fieldGroup) {
+		this.fieldGroup = fieldGroup;
+	}
+
+	public String getText() {
+		return text;
+	}
+
+	public void setText(final String text) {
+		this.text = text;
+	}
+
+	public String getUdfLookupType() {
+		return udfLookupType;
+	}
+
+	public void setUdfLookupType(final String udfLookupType) {
+		this.udfLookupType = udfLookupType;
+	}
+
+	public String getUdfLookupEntity() {
+		return udfLookupEntity;
+	}
+
+	public void setUdfLookupEntity(final String udfLookupEntity) {
+		this.udfLookupEntity = udfLookupEntity;
+	}
+
+	public String getUdfUom() {
+		return udfUom;
+	}
+
+	public void setUdfUom(final String udfUom) {
+		this.udfUom = udfUom;
+	}
+
+	public boolean isReadonly() {
+		return this.readonly || "P".equals(attribute);
+	}
+
+	public void setReadonly(final boolean readonly) {
+		this.readonly = readonly;
+	}
+
+	public boolean isNotValid() {
+		return notValid;
+	}
+
+	public void setNotValid(final boolean notValid) {
+		this.notValid = notValid;
+	}
+
+	public String getElementType() {
+		return elementType;
+	}
+
+	public void setElementType(final String elementType) {
+		this.elementType = elementType;
+	}
+
+	public String getFieldContType() {
+		return fieldContType;
+	}
+
+	public void setFieldContType(final String fieldContType) {
+		this.fieldContType = fieldContType;
+	}
+
+	public BigInteger getPositionInGroup() {
+		return positionInGroup;
+	}
+
+	public void setPositionInGroup(final BigInteger positionInGroup) {
+		this.positionInGroup = positionInGroup;
+	}
+
+	public BigInteger getTabIndex() {
+		return tabIndex;
+	}
+
+	public void setTabIndex(final BigInteger tabIndex) {
+		this.tabIndex = tabIndex;
+	}
+
+	public String getOnLookup() {
+		return onLookup;
+	}
+
+	public void setOnLookup(final String onLookup) {
+		this.onLookup = onLookup;
+	}
+
+	@Override
+	public String toString() {
+		return "ElementInfo{" +
+				"elementId='" + elementId + '\'' +
+				", pageName='" + pageName + '\'' +
+				", xpath='" + xpath + '\'' +
+				", maxLength='" + maxLength + '\'' +
+				", characterCase='" + characterCase + '\'' +
+				", attribute='" + attribute + '\'' +
+				", userGroup='" + userGroup + '\'' +
+				", fieldType='" + fieldType + '\'' +
+				", defaultValue='" + defaultValue + '\'' +
+				", presentInJSP='" + presentInJSP + '\'' +
+				", fieldContainer='" + fieldContainer + '\'' +
+				", fieldGroup=" + fieldGroup +
+				", text='" + text + '\'' +
+				", udfLookupType='" + udfLookupType + '\'' +
+				", udfLookupEntity='" + udfLookupEntity + '\'' +
+				", udfUom='" + udfUom + '\'' +
+				", readonly=" + readonly +
+				", notValid=" + notValid +
+				", elementType='" + elementType + '\'' +
+				", fieldContType='" + fieldContType + '\'' +
+				", positionInGroup=" + positionInGroup +
+				", tabIndex=" + tabIndex +
+				'}';
+	}
 }

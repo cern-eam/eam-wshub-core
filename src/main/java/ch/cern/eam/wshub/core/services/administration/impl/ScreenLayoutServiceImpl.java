@@ -78,7 +78,7 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
 
     private  Map<String, Tab> getTabs(InforContext context, List<String> tabCodes, String userGroup, String systemFunction, String userFunction, String entity) throws InforException {
         Map<String, Tab> result = new HashMap<>();
-        tabCodes.stream().forEach(tabCode -> {
+        tabCodes.forEach(tabCode -> {
             Tab tab = new Tab();
             try {
                 tab.setFields(getTabLayout(context, userGroup, systemFunction + "_" + tabCode, userFunction + "_" + tabCode, entity));
@@ -98,7 +98,8 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
         gridRequestLayout.addFilter("plo_usergroup", userGroup, "=", GridRequestFilter.JOINER.AND);
         gridRequestLayout.addFilter("plo_pagename", userFunction, "=", GridRequestFilter.JOINER.AND);
         gridRequestLayout.addFilter("pld_pagename", systemFunction, "=", GridRequestFilter.JOINER.AND);
-        List<ElementInfo> elements = tools.getGridTools().convertGridResultToObject(ElementInfo.class, null, gridsService.executeQuery(context, gridRequestLayout));
+        final GridRequestResult gridRequestResult = gridsService.executeQuery(context, gridRequestLayout);
+        List<ElementInfo> elements = GridTools.convertGridResultToObject(ElementInfo.class, null, gridRequestResult);
         Map<String, UserDefinedFieldDescription> udfDetails = getUdfDetails(context, entity);
         elements.stream()
                 .map(element -> bindUdfDescription(udfDetails.getOrDefault(element.getElementId(), null), element))
