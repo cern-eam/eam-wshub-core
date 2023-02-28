@@ -10,6 +10,8 @@ import ch.cern.eam.wshub.core.services.administration.impl.DataspyServiceImpl;
 import ch.cern.eam.wshub.core.services.administration.impl.ScreenLayoutServiceImpl;
 import ch.cern.eam.wshub.core.services.administration.impl.UserGroupMenuServiceImpl;
 import ch.cern.eam.wshub.core.services.administration.impl.UserSetupServiceImpl;
+import ch.cern.eam.wshub.core.services.casemanagement.CaseManagementService;
+import ch.cern.eam.wshub.core.services.casemanagement.impl.CaseManagementServiceImpl;
 import ch.cern.eam.wshub.core.services.comments.CommentService;
 import ch.cern.eam.wshub.core.services.comments.impl.CommentServiceImpl;
 import ch.cern.eam.wshub.core.services.documents.DocumentsService;
@@ -143,6 +145,8 @@ public class InforClient implements Serializable {
     private NonconformityService nonconformityService;
 
     private Store2StoreTransferService store2StoreTransferService;
+
+    private CaseManagementService caseManagementService;
 
     // Prevent initializing the class without the builder
     private InforClient() {}
@@ -313,6 +317,10 @@ public class InforClient implements Serializable {
             inforClient.equipmentReservationService = proxy(EquipmentReservationService.class, new EquipmentReservationServiceImpl(applicationData, tools, inforWebServicesToolkitClient),inforInterceptor, tools);
             inforClient.nonconformityService = proxy(NonconformityService.class, new NonconformityServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.store2StoreTransferService = proxy(Store2StoreTransferService.class, new Store2StoreTransferServiceImpl(
+                    applicationData,
+                    tools,
+                    inforWebServicesToolkitClient), inforInterceptor, tools);
+            inforClient.caseManagementService = proxy(CaseManagementService.class, new CaseManagementServiceImpl(
                     applicationData,
                     tools,
                     inforWebServicesToolkitClient), inforInterceptor, tools);
@@ -516,5 +524,13 @@ public class InforClient implements Serializable {
 
     public Store2StoreTransferService getStore2StoreTransferService() {
         return store2StoreTransferService;
+    }
+
+    public CaseManagementService getCaseManagementService() {
+        return caseManagementService;
+    }
+
+    public void setCaseManagementService(CaseManagementService caseManagementService) {
+        this.caseManagementService = caseManagementService;
     }
 }

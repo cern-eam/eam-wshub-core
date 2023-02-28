@@ -6,7 +6,6 @@ import java.math.BigInteger;
 
 public class ElementInfo {
 
-
 	@GridField(name="plo_elementid")
 	private String elementId;
 	@GridField(name="plo_pagename")
@@ -62,12 +61,11 @@ public class ElementInfo {
 	@GridField(name = "pld_onlookup")
 	private String onLookup;
 
-
 	public String getElementId() {
 		return elementId;
 	}
 
-	public void setElementId(final String elementId) {
+	public void setElementId(String elementId) {
 		this.elementId = elementId;
 	}
 
@@ -75,7 +73,7 @@ public class ElementInfo {
 		return pageName;
 	}
 
-	public void setPageName(final String pageName) {
+	public void setPageName(String pageName) {
 		this.pageName = pageName;
 	}
 
@@ -83,7 +81,7 @@ public class ElementInfo {
 		return xpath;
 	}
 
-	public void setXpath(final String xpath) {
+	public void setXpath(String xpath) {
 		this.xpath = xpath;
 	}
 
@@ -91,7 +89,7 @@ public class ElementInfo {
 		return maxLength;
 	}
 
-	public void setMaxLength(final String maxLength) {
+	public void setMaxLength(String maxLength) {
 		this.maxLength = maxLength;
 	}
 
@@ -99,7 +97,7 @@ public class ElementInfo {
 		return characterCase;
 	}
 
-	public void setCharacterCase(final String characterCase) {
+	public void setCharacterCase(String characterCase) {
 		this.characterCase = characterCase;
 	}
 
@@ -107,7 +105,7 @@ public class ElementInfo {
 		return attribute;
 	}
 
-	public void setAttribute(final String attribute) {
+	public void setAttribute(String attribute) {
 		this.attribute = attribute;
 	}
 
@@ -115,7 +113,7 @@ public class ElementInfo {
 		return userGroup;
 	}
 
-	public void setUserGroup(final String userGroup) {
+	public void setUserGroup(String userGroup) {
 		this.userGroup = userGroup;
 	}
 
@@ -123,7 +121,7 @@ public class ElementInfo {
 		return fieldType;
 	}
 
-	public void setFieldType(final String fieldType) {
+	public void setFieldType(String fieldType) {
 		this.fieldType = fieldType;
 	}
 
@@ -131,7 +129,7 @@ public class ElementInfo {
 		return defaultValue;
 	}
 
-	public void setDefaultValue(final String defaultValue) {
+	public void setDefaultValue(String defaultValue) {
 		this.defaultValue = defaultValue;
 	}
 
@@ -139,7 +137,7 @@ public class ElementInfo {
 		return presentInJSP;
 	}
 
-	public void setPresentInJSP(final String presentInJSP) {
+	public void setPresentInJSP(String presentInJSP) {
 		this.presentInJSP = presentInJSP;
 	}
 
@@ -147,7 +145,7 @@ public class ElementInfo {
 		return fieldContainer;
 	}
 
-	public void setFieldContainer(final String fieldContainer) {
+	public void setFieldContainer(String fieldContainer) {
 		this.fieldContainer = fieldContainer;
 	}
 
@@ -155,7 +153,7 @@ public class ElementInfo {
 		return fieldGroup;
 	}
 
-	public void setFieldGroup(final BigInteger fieldGroup) {
+	public void setFieldGroup(BigInteger fieldGroup) {
 		this.fieldGroup = fieldGroup;
 	}
 
@@ -163,7 +161,7 @@ public class ElementInfo {
 		return text;
 	}
 
-	public void setText(final String text) {
+	public void setText(String text) {
 		this.text = text;
 	}
 
@@ -171,7 +169,7 @@ public class ElementInfo {
 		return udfLookupType;
 	}
 
-	public void setUdfLookupType(final String udfLookupType) {
+	public void setUdfLookupType(String udfLookupType) {
 		this.udfLookupType = udfLookupType;
 	}
 
@@ -179,7 +177,7 @@ public class ElementInfo {
 		return udfLookupEntity;
 	}
 
-	public void setUdfLookupEntity(final String udfLookupEntity) {
+	public void setUdfLookupEntity(String udfLookupEntity) {
 		this.udfLookupEntity = udfLookupEntity;
 	}
 
@@ -187,7 +185,7 @@ public class ElementInfo {
 		return udfUom;
 	}
 
-	public void setUdfUom(final String udfUom) {
+	public void setUdfUom(String udfUom) {
 		this.udfUom = udfUom;
 	}
 
@@ -195,7 +193,7 @@ public class ElementInfo {
 		return this.readonly || "P".equals(attribute);
 	}
 
-	public void setReadonly(final boolean readonly) {
+	public void setReadonly(boolean readonly) {
 		this.readonly = readonly;
 	}
 
@@ -203,7 +201,7 @@ public class ElementInfo {
 		return notValid;
 	}
 
-	public void setNotValid(final boolean notValid) {
+	public void setNotValid(boolean notValid) {
 		this.notValid = notValid;
 	}
 
@@ -211,7 +209,7 @@ public class ElementInfo {
 		return elementType;
 	}
 
-	public void setElementType(final String elementType) {
+	public void setElementType(String elementType) {
 		this.elementType = elementType;
 	}
 
@@ -219,7 +217,7 @@ public class ElementInfo {
 		return fieldContType;
 	}
 
-	public void setFieldContType(final String fieldContType) {
+	public void setFieldContType(String fieldContType) {
 		this.fieldContType = fieldContType;
 	}
 
@@ -227,7 +225,7 @@ public class ElementInfo {
 		return positionInGroup;
 	}
 
-	public void setPositionInGroup(final BigInteger positionInGroup) {
+	public void setPositionInGroup(BigInteger positionInGroup) {
 		this.positionInGroup = positionInGroup;
 	}
 
@@ -235,7 +233,7 @@ public class ElementInfo {
 		return tabIndex;
 	}
 
-	public void setTabIndex(final BigInteger tabIndex) {
+	public void setTabIndex(BigInteger tabIndex) {
 		this.tabIndex = tabIndex;
 	}
 
@@ -243,9 +241,10 @@ public class ElementInfo {
 		return onLookup;
 	}
 
-	public void setOnLookup(final String onLookup) {
+	public void setOnLookup(String onLookup) {
 		this.onLookup = onLookup;
 	}
+
 
 	@Override
 	public String toString() {
@@ -272,6 +271,7 @@ public class ElementInfo {
 				", fieldContType='" + fieldContType + '\'' +
 				", positionInGroup=" + positionInGroup +
 				", tabIndex=" + tabIndex +
+				", onLookup='" + onLookup + '\'' +
 				'}';
 	}
 }
