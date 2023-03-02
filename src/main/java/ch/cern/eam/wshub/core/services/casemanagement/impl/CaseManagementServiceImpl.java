@@ -17,7 +17,6 @@ import net.datastream.wsdls.inforws.InforWebServicesPT;
 
 import java.util.Arrays;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class CaseManagementServiceImpl implements CaseManagementService {
@@ -33,7 +32,6 @@ public class CaseManagementServiceImpl implements CaseManagementService {
 	}
 
 	public EAMCaseManagement readCase(InforContext context, String caseCode) throws InforException {
-
 		final CaseManagement caseManagement = readCaseEAM(context, caseCode);
 		EAMCaseManagement eamCaseManagement = tools.getInforFieldTools().transformInforObject(new EAMCaseManagement(),
 				caseManagement, context);
@@ -78,6 +76,9 @@ public class CaseManagementServiceImpl implements CaseManagementService {
 				"CASE"
 			)
 		);
+
+		// The system code is set by EAM, but it is still required. User status shall be used always instead
+		eamCaseManagement.setSystemStatusCode("O");
 
 		final CaseManagement caseManagement1 = tools.getInforFieldTools().transformWSHubObject(
 				caseManagement,
