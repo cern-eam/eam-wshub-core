@@ -2,10 +2,7 @@ package ch.cern.eam.wshub.core.services.administration.impl;
 
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.administration.ScreenLayoutService;
-import ch.cern.eam.wshub.core.services.administration.entities.ElementInfo;
-import ch.cern.eam.wshub.core.services.administration.entities.ScreenLayout;
-import ch.cern.eam.wshub.core.services.administration.entities.Tab;
-import ch.cern.eam.wshub.core.services.administration.entities.UserDefinedFieldDescription;
+import ch.cern.eam.wshub.core.services.administration.entities.*;
 import ch.cern.eam.wshub.core.services.grids.GridsService;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
@@ -18,10 +15,7 @@ import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -74,6 +68,38 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
         screenLayoutCache.put(layoutCacheKey, screenLayout);
 
         return  screenLayout;
+    }
+
+    public List<Map<String, String>> getGenericLov(InforContext context, GenericLov genericLov
+                ) throws InforException {
+        GridRequest gridRequest = new GridRequest(genericLov.getLovName());
+        gridRequest.getParams().putAll(genericLov.getInputParams());
+        gridRequest.setGridType(GridRequest.GRIDTYPE.LOV);
+        gridRequest.setUserFunctionName(genericLov.getRentity());
+        gridRequest.setRowCount(genericLov.getRowCount() != null ? genericLov.getRowCount().intValue() : 10);
+        gridRequest.setQueryTimeout(false);
+        List<String> listReturnFields = new ArrayList<>(genericLov.getReturnFields().values());
+        final Map<String, String> returnFields = genericLov.getReturnFields();
+        GridRequestFilter filter = new GridRequestFilter(
+                listReturnFields.get(0),
+                genericLov.getHint().toUpperCase(),
+                genericLov.isExact() ? "EQUALS" : "BEGINS",
+                GridRequestFilter.JOINER.AND
+        );
+        gridRequest.setGridRequestFilters(Collections.singletonList(filter));
+
+        final GridRequestResult gridRequestResult =
+                gridsService.executeQuery(context, gridRequest);
+        List<Map<String, String>> response = Arrays.stream(gridRequestResult.getRows()).map(row -> {
+            Map<String, String> map = new LinkedHashMap<>();
+            map.put("code", GridTools.getCellContent(listReturnFields.get(0), row));
+            if (returnFields.size() > 1) {
+                map.put("desc", GridTools.getCellContent(listReturnFields.get(1), row));
+            }
+            listReturnFields.forEach(str -> map.put(str, GridTools.getCellContent(str, row)));
+            return map;
+        }).collect(Collectors.toList());
+        return response;
     }
 
     private  Map<String, Tab> getTabs(InforContext context, List<String> tabCodes, String userGroup, String systemFunction, String userFunction, String entity) throws InforException {
