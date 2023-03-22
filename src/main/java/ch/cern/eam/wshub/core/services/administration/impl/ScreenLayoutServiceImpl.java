@@ -4,10 +4,7 @@ import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.administration.ScreenLayoutService;
 import ch.cern.eam.wshub.core.services.administration.entities.*;
 import ch.cern.eam.wshub.core.services.grids.GridsService;
-import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
-import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
-import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
-import ch.cern.eam.wshub.core.services.grids.entities.GridRequestRow;
+import ch.cern.eam.wshub.core.services.grids.entities.*;
 import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.GridTools;
@@ -70,6 +67,8 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
         return  screenLayout;
     }
 
+    private static final List<String> ALLOW_SEARCH_DESC = Collections.singletonList("LVPERS");
+
     public List<Map<String, String>> getGenericLov(InforContext context, GenericLov genericLov
                 ) throws InforException {
         GridRequest gridRequest = new GridRequest(genericLov.getLovName());
@@ -80,21 +79,40 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
         gridRequest.setQueryTimeout(false);
         List<String> listReturnFields = new ArrayList<>(genericLov.getReturnFields().values());
         final Map<String, String> returnFields = genericLov.getReturnFields();
+
+        boolean searchOnDesc = ALLOW_SEARCH_DESC.contains(genericLov.getLovName());
+
         GridRequestFilter filter = new GridRequestFilter(
                 listReturnFields.get(0),
                 genericLov.getHint().toUpperCase(),
                 genericLov.isExact() ? "EQUALS" : "BEGINS",
-                GridRequestFilter.JOINER.AND
+                searchOnDesc ? GridRequestFilter.JOINER.OR : GridRequestFilter.JOINER.AND
         );
-        gridRequest.setGridRequestFilters(Collections.singletonList(filter));
+        gridRequest.getGridRequestFilters().add(filter);
+
+        if (searchOnDesc) {
+            Arrays.stream(genericLov.getHint().split(" ")).forEach(name -> {
+                gridRequest.addFilter("description", " " + name, "CONTAINS",
+                        GridRequestFilter.JOINER.OR, true, false);
+
+                gridRequest.addFilter("description", name, "BEGINS",
+                        GridRequestFilter.JOINER.AND, false, true);
+            });
+        }
 
         final GridRequestResult gridRequestResult =
                 gridsService.executeQuery(context, gridRequest);
         List<Map<String, String>> response = Arrays.stream(gridRequestResult.getRows()).map(row -> {
             Map<String, String> map = new LinkedHashMap<>();
             map.put("code", GridTools.getCellContent(listReturnFields.get(0), row));
-            if (returnFields.size() > 1) {
+
+            final Optional<String> desc = returnFields.keySet().stream().filter(s -> s.endsWith("desc")).findFirst();
+            if (desc.isPresent()) {
+                map.put("desc", GridTools.getCellContent(returnFields.get(desc.get()), row));
+            } else if (returnFields.size() > 1) {
                 map.put("desc", GridTools.getCellContent(listReturnFields.get(1), row));
+            } else if ( GridTools.getCellContent("des_text", row) != null) {
+                map.put("desc", GridTools.getCellContent("des_text", row));
             }
             listReturnFields.forEach(str -> map.put(str, GridTools.getCellContent(str, row)));
             return map;
