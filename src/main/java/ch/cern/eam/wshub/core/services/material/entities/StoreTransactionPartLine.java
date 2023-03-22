@@ -1,5 +1,6 @@
 package ch.cern.eam.wshub.core.services.material.entities;
 
+import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
 import ch.cern.eam.wshub.core.annotations.InforField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import net.datastream.schemas.mp_fields.*;
@@ -7,6 +8,7 @@ import org.openapplications.oagis_segments.AMOUNT;
 import org.openapplications.oagis_segments.QUANTITY;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -52,6 +54,7 @@ public class StoreTransactionPartLine implements Serializable {
         this.repairable = repairable;
     }
 
+    @XmlJavaTypeAdapter(BigDecimalAdapter.class)
     public BigDecimal getTransactionQuantity() {
         return transactionQuantity;
     }
@@ -60,6 +63,7 @@ public class StoreTransactionPartLine implements Serializable {
         this.transactionQuantity = transactionQuantity;
     }
 
+    @XmlJavaTypeAdapter(BigDecimalAdapter.class)
     public BigDecimal getRepairQuantity() {
         return repairQuantity;
     }
@@ -92,6 +96,7 @@ public class StoreTransactionPartLine implements Serializable {
         this.lotCode = lotCode;
     }
 
+    @XmlJavaTypeAdapter(BigDecimalAdapter.class)
     public BigDecimal getPrice() {
         return price;
     }
