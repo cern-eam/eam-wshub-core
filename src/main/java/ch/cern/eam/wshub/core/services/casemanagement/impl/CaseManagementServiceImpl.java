@@ -40,7 +40,8 @@ public class CaseManagementServiceImpl implements CaseManagementService {
 		final CustomField[] customFields = eamCaseManagement.getCustomFields();
 		if (customFields != null) {
 			final Map<String, String> collect =
-					Arrays.stream(customFields).collect(Collectors.toMap(CustomField::getCode, CustomField::getValue));
+					Arrays.stream(customFields).collect(Collectors.toMap(CustomField::getCode,
+							s -> s.getValue() != null ? s.getValue() : ""));
 			eamCaseManagement.setCustomFieldMap(collect);
 		}
 
