@@ -48,6 +48,9 @@ public class GridField implements Serializable {
 	@Column(name = "dqf_columnorder")
 	private Integer order;
 
+	@Transient
+	private Boolean visible;
+
 	public String getId() {
 		return id;
 	}
@@ -110,6 +113,14 @@ public class GridField implements Serializable {
 
 	public void setOrder(Integer order) {
 		this.order = order;
+	}
+
+	public Boolean getVisible() {
+		return visible;
+	}
+
+	public void setVisible(Boolean visible) {
+		this.visible = visible;
 	}
 
 	/*

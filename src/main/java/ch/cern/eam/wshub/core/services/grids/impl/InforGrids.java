@@ -31,6 +31,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.decodeBoolean;
+
 public class InforGrids implements Serializable {
 	private static final long serialVersionUID = 5957161022766799698L;
 
@@ -413,6 +415,7 @@ public class InforGrids implements Serializable {
 		gridField.setOrder(Integer.parseInt(field.getOrder()));
 		gridField.setWidth(field.getWidth());
 		gridField.setLabel(field.getLabel());
+		gridField.setVisible(decodeBoolean(field.getVisible()));
 		return gridField;
 	}
 
