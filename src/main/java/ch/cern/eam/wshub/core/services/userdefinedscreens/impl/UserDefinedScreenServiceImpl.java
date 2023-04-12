@@ -12,9 +12,11 @@ import net.datastream.schemas.mp_fields.USERDEFINEDSCREENFIELDDATA_Type;
 import net.datastream.schemas.mp_fields.USERDEFINEDSCREENFIELDVALUELIST;
 import net.datastream.schemas.mp_fields.USERDEFINEDSCREENFIELDVALUEPAIR;
 import net.datastream.schemas.mp_functions.mp6441_001.MP6441_ProcessUserDefinedScreenService_001;
+import net.datastream.schemas.mp_results.mp6441_001.MP6441_ProcessUserDefinedScreenService_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -33,36 +35,52 @@ public class UserDefinedScreenServiceImpl implements UserDefinedScreenService {
     }
 
     public String createUserDefinedScreenRow(InforContext inforContext, String screenName, UDTRow udtRow) throws InforException {
-        tools.performInforOperation(inforContext, inforws::processUserDefinedScreenServiceOp, getUserDefinedScreenService(screenName, "GET", null));
+        MP6441_ProcessUserDefinedScreenService_001 userDefinedScreenService = initUserDefinedScreenService(screenName, "ADD");
+        addFields(userDefinedScreenService, udtRow);
+        tools.performInforOperation(inforContext, inforws::processUserDefinedScreenServiceOp, userDefinedScreenService);
         return screenName;
     }
 
-    // TODO
-    //public String updateUserDefinedScreenRow(InforContext inforContext, String screenName, UDTRow udtRow) throws InforException {
-    //    tools.performInforOperation(inforContext, inforws::processUserDefinedScreenServiceOp, getUserDefinedScreenService(screenName, "UPDATE", udtRow));
-    //    return screenName;
-    //}
+    public String updateUserDefinedScreenRow(InforContext inforContext, String screenName, UDTRow fieldsToUpdate, UDTRow filters) throws InforException {
+        // Fetch the UDS row based on the primary keys
+        MP6441_ProcessUserDefinedScreenService_001 userDefinedScreenServiceGet = initUserDefinedScreenService(screenName, "GET");
+        addFields(userDefinedScreenServiceGet, filters);
+        MP6441_ProcessUserDefinedScreenService_001_Result result = tools.performInforOperation(inforContext, inforws::processUserDefinedScreenServiceOp, userDefinedScreenServiceGet);
+
+        // Modify the fetched UDS row so it can be used for the update
+        MP6441_ProcessUserDefinedScreenService_001 userDefinedScreenServiceUpdate = new MP6441_ProcessUserDefinedScreenService_001();
+        userDefinedScreenServiceUpdate.setUserDefinedScreenService(result.getResultData().getUserDefinedScreenService());
+        userDefinedScreenServiceUpdate.getUserDefinedScreenService().setUSERDEFINEDSERVICEACTION("UPDATE");
+        userDefinedScreenServiceUpdate.getUserDefinedScreenService().getUSERDEFINEDSCREENFIELDVALUELIST().getUSERDEFINEDSCREENFIELDVALUEPAIR().removeIf(pair ->  fieldsToUpdate.getAllKeys().contains(pair.getUSERDEFINEDSCREENFIELDNAME()));
+        addFields(userDefinedScreenServiceUpdate, fieldsToUpdate);
+
+        tools.performInforOperation(inforContext, inforws::processUserDefinedScreenServiceOp, userDefinedScreenServiceUpdate);
+        return screenName;
+    }
 
     public String deleteUserDefinedScreenRow(InforContext inforContext, String screenName, UDTRow udtRow) throws InforException {
-        tools.performInforOperation(inforContext, inforws::processUserDefinedScreenServiceOp, getUserDefinedScreenService(screenName, "DELETE", udtRow));
+        MP6441_ProcessUserDefinedScreenService_001 userDefinedScreenService= initUserDefinedScreenService(screenName, "DELETE");
+        addFields(userDefinedScreenService, udtRow);
+        tools.performInforOperation(inforContext, inforws::processUserDefinedScreenServiceOp, userDefinedScreenService);
         return screenName;
     }
 
     //
     // HELPER METHODS
     //
-    private MP6441_ProcessUserDefinedScreenService_001 getUserDefinedScreenService(String screenName, String screenAction, UDTRow udtRow) throws InforException {
+    private void addFields(MP6441_ProcessUserDefinedScreenService_001 processUserDefinedScreenService, UDTRow row) throws InforException {
+        List<USERDEFINEDSCREENFIELDVALUEPAIR> udsFieldsFilter = processUserDefinedScreenService.getUserDefinedScreenService().getUSERDEFINEDSCREENFIELDVALUELIST().getUSERDEFINEDSCREENFIELDVALUEPAIR();
+        udsFieldsFilter.addAll(getPairList(row.getStrings()));
+        udsFieldsFilter.addAll(getPairList(row.getDates()));
+        udsFieldsFilter.addAll(getPairList(row.getDecimals()));
+    }
+
+    private MP6441_ProcessUserDefinedScreenService_001 initUserDefinedScreenService(String screenName, String screenAction) {
         MP6441_ProcessUserDefinedScreenService_001 userDefinedScreenService = new MP6441_ProcessUserDefinedScreenService_001();
         userDefinedScreenService.setUserDefinedScreenService(new net.datastream.schemas.mp_entities.userdefinedscreenservice_001.UserDefinedScreenService());
         userDefinedScreenService.getUserDefinedScreenService().setUSERDEFINEDSCREENNAME(screenName);
         userDefinedScreenService.getUserDefinedScreenService().setUSERDEFINEDSERVICEACTION(screenAction);
-
         userDefinedScreenService.getUserDefinedScreenService().setUSERDEFINEDSCREENFIELDVALUELIST(new USERDEFINEDSCREENFIELDVALUELIST());
-        List<USERDEFINEDSCREENFIELDVALUEPAIR> udsFields = userDefinedScreenService.getUserDefinedScreenService().getUSERDEFINEDSCREENFIELDVALUELIST().getUSERDEFINEDSCREENFIELDVALUEPAIR();
-        udsFields.addAll(getPairList(udtRow.getStrings()));
-        udsFields.addAll(getPairList(udtRow.getDates()));
-        udsFields.addAll(getPairList(udtRow.getDates()));
-
         return userDefinedScreenService;
     }
 

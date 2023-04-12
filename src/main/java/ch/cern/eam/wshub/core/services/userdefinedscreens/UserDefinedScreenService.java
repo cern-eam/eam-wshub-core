@@ -15,9 +15,8 @@ public interface UserDefinedScreenService {
     @Operation(logOperation = INFOR_OPERATION.USERDEFINEDTABLE_C, logDataReference1 = LogDataReferenceType.INPUT)
     String createUserDefinedScreenRow(InforContext inforContext, String screenName, UDTRow udtRow) throws InforException;
 
-    // TODO
-    //@Operation(logOperation = INFOR_OPERATION.USERDEFINEDTABLE_U, logDataReference1 = LogDataReferenceType.INPUT)
-    //String updateUserDefinedScreenRow(InforContext inforContext, String screenName, UDTRow udtRow) throws InforException;
+    @Operation(logOperation = INFOR_OPERATION.USERDEFINEDTABLE_U, logDataReference1 = LogDataReferenceType.INPUT)
+    String updateUserDefinedScreenRow(InforContext inforContext, String screenName, UDTRow udtRow, UDTRow filter) throws InforException;
 
     @Operation(logOperation = INFOR_OPERATION.USERDEFINEDTABLE_D, logDataReference1 = LogDataReferenceType.INPUT)
     String deleteUserDefinedScreenRow(InforContext inforContext, String screenName, UDTRow udtRow) throws InforException;
