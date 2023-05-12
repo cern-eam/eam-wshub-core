@@ -21,7 +21,7 @@ public class UDTRow implements Serializable {
     private HashMap<String, BigInteger> integers = new LinkedHashMap<>();
     private HashMap<String, BigDecimal> decimals = new LinkedHashMap<>();
 
-    @XmlJavaTypeAdapter(DateHashMapAdapter.class)
+    //@XmlJavaTypeAdapter(DateHashMapAdapter.class)
     public HashMap<String, Date> getDates() {
         return dates;
     }
@@ -30,7 +30,7 @@ public class UDTRow implements Serializable {
         this.dates = dates;
     }
 
-    @XmlJavaTypeAdapter(StringHashMapAdapter.class)
+    //@XmlJavaTypeAdapter(StringHashMapAdapter.class)
     public HashMap<String, String> getStrings() {
         return strings;
     }
@@ -39,7 +39,7 @@ public class UDTRow implements Serializable {
         this.strings = strings;
     }
 
-   // @XmlJavaTypeAdapter(XmlHashMapAdapter.class)
+    //@XmlJavaTypeAdapter(XmlHashMapAdapter.class)
     public HashMap<String, BigInteger> getIntegers() {
         return integers;
     }

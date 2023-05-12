@@ -93,7 +93,9 @@ public class UserDefinedScreenServiceImpl implements UserDefinedScreenService {
 
         // Use imperative approach due to the exception handling
         for(String value : values.keySet()) {
-            result.add(getPair(value, values.get(value)));
+            if (values.get(value) != null) {
+                result.add(getPair(value, values.get(value)));
+            }
         }
 
         return result;
