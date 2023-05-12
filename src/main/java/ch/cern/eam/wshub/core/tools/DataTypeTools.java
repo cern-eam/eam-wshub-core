@@ -200,6 +200,11 @@ public class DataTypeTools {
             return null;
         }
 
+        // Special value used to nullify the field
+        if (numberValue.toBigInteger().intValue() == NULLIFY_VALUE) {
+            return null;
+        }
+
         numberValue = numberValue.stripTrailingZeros();
         int numberOfDec = Math.max(0, numberValue.scale());
         numberValue = numberValue.scaleByPowerOfTen(numberOfDec);
