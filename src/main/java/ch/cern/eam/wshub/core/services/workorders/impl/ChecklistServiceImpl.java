@@ -530,7 +530,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 
 		// REQUIRED
 		String required = getCellContent("requiredtoclosedocument", row);
-		if ("Yes".equals(required)) {
+		if ("Yes".equalsIgnoreCase(required)) {
 			checklist.setRequiredToClose(true);
 		} else {
 			checklist.setRequiredToClose(false);
