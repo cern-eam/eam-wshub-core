@@ -81,6 +81,14 @@ public class WorkOrderMiscServiceImpl implements WorkOrderMiscService {
 
 		workOrderAddCosts.setWOADDITIONALCOSTQTY(tools.getDataTypeTools().encodeQuantity(BigDecimal.ONE, "Additional Quantity"));
 
+		// This is required so that the equipment is set as 'WO Header Equipment'
+		MULTIEQUIPSPLITINFO multiEquipSplitInfo = new MULTIEQUIPSPLITINFO();
+		WOID_Type woIdType = new WOID_Type();
+		woIdType.setJOBNUM(workOrderAddCostsParam.getWorkOrderNumber());
+		multiEquipSplitInfo.setRELATEDWORKORDERID(woIdType);
+
+		workOrderAddCosts.setMULTIEQUIPSPLITINFO(multiEquipSplitInfo);
+
 		MP7593_AddWorkOrderAdditionalCosts_001 addCost = new MP7593_AddWorkOrderAdditionalCosts_001();
 		addCost.setWorkOrderAdditionalCosts(workOrderAddCosts);
 
