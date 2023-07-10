@@ -218,7 +218,12 @@ public class InforGrids implements Serializable {
 		}
 
 		grr.setGridDataspies(result.getGRIDRESULT().getTOOLBAR().getFIELDVALUES().getROW().getDataspylist_Options().getOption().stream()
-				.map(option -> new GridDataspy(option.getValue().get(0), option.getDisplay().get(0))).collect(Collectors.toList()));
+				.map(option -> new GridDataspy(
+						option.getValue().get(0),
+						option.getValue().get(0).equals(result.getGRIDRESULT().getDATASPY().getId()) ?
+							result.getGRIDRESULT().getDATASPY().getLabel()
+							: option.getDisplay().get(0))
+				).collect(Collectors.toList()));
 
 		grr.setGridFields(result.getGRIDRESULT().getGRID().getFIELDS().getFIELD().stream()
 				.filter(field -> Integer.parseInt(field.getOrder()) >= 0)
