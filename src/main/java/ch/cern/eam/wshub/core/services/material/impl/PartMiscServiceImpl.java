@@ -38,7 +38,9 @@ import net.datastream.schemas.mp_results.mp0283_001.MP0283_SyncStoreBin_001_Resu
 import net.datastream.schemas.mp_results.mp0284_001.MP0284_DeleteStoreBin_001_Result;
 import net.datastream.schemas.mp_results.mp0612_001.MP0612_AddPartsAssociated_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
+
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.decodeBoolean;
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
 
 import javax.persistence.EntityManager;
 import javax.xml.ws.BindingProvider;
@@ -237,6 +239,15 @@ public class PartMiscServiceImpl implements PartMiscService {
 
 			issueReturnTransactionInfor.getIssueReturnTransactionLines().getIssueReturnTransactionLine()
 					.add(issueReturnTransactionLine);
+
+			if (isNotEmpty(line.getAssetIDCode())
+					&& issueReturnPartTransaction.getTransactionType().equalsIgnoreCase("ISSUE")
+					&& issueReturnPartTransaction.getTransactionOn().equals(IssueReturnPartTransactionType.WORKORDER)) {
+				issueReturnTransactionLine.setATTACHEQUIPMENT("true");
+				issueReturnTransactionLine.setATTACHTOEQUIPMENT(new EQUIPMENTID_Type());
+				issueReturnTransactionLine.getATTACHTOEQUIPMENT().setEQUIPMENTCODE(issueReturnPartTransaction.getEquipmentCode().toUpperCase());
+				issueReturnTransactionLine.getATTACHTOEQUIPMENT().setORGANIZATIONID(tools.getOrganization(context));
+			}
 		}
 
 		if (issueReturnPartTransaction.getRelatedWorkOrder() != null) {
@@ -493,7 +504,7 @@ public class PartMiscServiceImpl implements PartMiscService {
 			binStockInfor.setBIN(transactionLine.getBin());
 			binStockInfor.setLOT(transactionLine.getLot());
 
-			if (DataTypeTools.isNotEmpty(transactionLine.getAssetIDCode())) {
+			if (isNotEmpty(transactionLine.getAssetIDCode())) {
 				bin2BinTransferInfor.setASSETID(new EQUIPMENTID_Type());
 				bin2BinTransferInfor.getASSETID().setEQUIPMENTCODE(transactionLine.getAssetIDCode());
 				bin2BinTransferInfor.getASSETID().setORGANIZATIONID(tools.getOrganization(context));
