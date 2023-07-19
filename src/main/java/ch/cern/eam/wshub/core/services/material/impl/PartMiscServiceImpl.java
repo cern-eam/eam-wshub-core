@@ -241,8 +241,8 @@ public class PartMiscServiceImpl implements PartMiscService {
 					.add(issueReturnTransactionLine);
 
 			if (isNotEmpty(line.getAssetIDCode())
-					&& issueReturnPartTransaction.getTransactionType().equalsIgnoreCase("ISSUE")
-					&& issueReturnPartTransaction.getTransactionOn().equals(IssueReturnPartTransactionType.WORKORDER)) {
+					&& "ISSUE".equalsIgnoreCase(issueReturnPartTransaction.getTransactionType())
+					&& IssueReturnPartTransactionType.WORKORDER.equals(issueReturnPartTransaction.getTransactionOn())) {
 				issueReturnTransactionLine.setATTACHEQUIPMENT("true");
 				issueReturnTransactionLine.setATTACHTOEQUIPMENT(new EQUIPMENTID_Type());
 				issueReturnTransactionLine.getATTACHTOEQUIPMENT().setEQUIPMENTCODE(issueReturnPartTransaction.getEquipmentCode().toUpperCase());
