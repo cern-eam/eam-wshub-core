@@ -32,6 +32,12 @@ public class LaborBooking implements Serializable, Comparable<LaborBooking> {
 	@GridField(name="hours")
 	private BigDecimal hoursWorked;
 
+	@Column(name = "BOO_ON")
+	private BigDecimal startTime;
+
+	@Column(name = "BOO_OFF")
+	private BigDecimal endTime;
+
 	@Column(name = "BOO_DATE")
 	@GridField(name="boodate")
 	private Date dateWorked;
@@ -127,11 +133,29 @@ public class LaborBooking implements Serializable, Comparable<LaborBooking> {
 		this.workOrderNumber = workOrderNumber;
 	}
 
+	public BigDecimal getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(BigDecimal startTime) {
+		this.startTime = startTime;
+	}
+
+	public BigDecimal getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(BigDecimal endTime) {
+		this.endTime = endTime;
+	}
+
 	@Override
 	public String toString() {
 		return "LaborBooking [" + (typeOfHours != null ? "typeOfHours=" + typeOfHours + ", " : "")
 				+ (hoursWorked != null ? "hoursWorked=" + hoursWorked + ", " : "")
 				+ (dateWorked != null ? "dateWorked=" + dateWorked + ", " : "")
+				+ (startTime != null ? "startTime=" + startTime + ", " : "")
+				+ (endTime != null ? "endTime=" + endTime + ", " : "")
 				+ (departmentCode != null ? "departmentCode=" + departmentCode + ", " : "")
 				+ (employeeCode != null ? "employeeCode=" + employeeCode + ", " : "")
 				+ (activityCode != null ? "activityCode=" + activityCode + ", " : "")
