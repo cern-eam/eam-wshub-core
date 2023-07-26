@@ -86,6 +86,16 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 		}
 
 		//
+		if (laborBookingParam.getStartTime() != null) {
+			laborBookingInfor.setSTARTTIME(tools.getDataTypeTools().encodeAmount(laborBookingParam.getStartTime(), "Start Time"));
+		}
+
+		//
+		if (laborBookingParam.getEndTime() != null) {
+			laborBookingInfor.setENDTIME(tools.getDataTypeTools().encodeAmount(laborBookingParam.getEndTime(), "End Time"));
+		}
+
+		//
 		if (laborBookingParam.getHoursWorked() != null) {
 			laborBookingInfor.setHOURSWORKED(tools.getDataTypeTools().encodeAmount(laborBookingParam.getHoursWorked(),"Hours Worked"));
 		}
