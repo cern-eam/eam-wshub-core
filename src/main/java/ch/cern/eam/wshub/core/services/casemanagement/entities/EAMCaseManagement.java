@@ -5,6 +5,7 @@ import ch.cern.eam.wshub.core.annotations.InforField;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import net.datastream.schemas.mp_fields.StandardUserDefinedFields;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -171,6 +172,34 @@ public class EAMCaseManagement implements Serializable {
 	@InforField(xpath = "FollowupWODetails/FOLLOWUPWORKORDER/JOBNUM", nullifyParentLevel = 1)
 	protected String followupWorkOrder;
 	// --- //
+
+	// Root Cause Details
+	@InforField(xpath = "RouteCauseAnalysisDetails/DOWNTIMEHOURS", nullifyParentLevel = 0)
+	private BigDecimal downtimehours;
+	@InforField(xpath = "RouteCauseAnalysisDetails/DOWNTIMECOSTVALUE", nullifyParentLevel = 0)
+	private BigDecimal downtimecostvalue;
+	@InforField(xpath = "RouteCauseAnalysisDetails/TOTALCOST", nullifyParentLevel = 0)
+	private BigDecimal totalcost;
+	@InforField(xpath = "RouteCauseAnalysisDetails/LOSTPRODUCTIVITYHOURS", nullifyParentLevel = 0)
+	private BigDecimal lostproductivityhours;
+	@InforField(xpath = "RouteCauseAnalysisDetails/PROBLEMDESCRIPTION", nullifyParentLevel = 0)
+	private String problemdescription;
+	@InforField(xpath = "RouteCauseAnalysisDetails/WHATHAPPENED", nullifyParentLevel = 0)
+	private String whathappened;
+	@InforField(xpath = "RouteCauseAnalysisDetails/WHY1", nullifyParentLevel = 0)
+	private String why1;
+	@InforField(xpath = "RouteCauseAnalysisDetails/WHY2", nullifyParentLevel = 0)
+	private String why2;
+	@InforField(xpath = "RouteCauseAnalysisDetails/WHY3", nullifyParentLevel = 0)
+	private String why3;
+	@InforField(xpath = "RouteCauseAnalysisDetails/WHY4", nullifyParentLevel = 0)
+	private String why4;
+	@InforField(xpath = "RouteCauseAnalysisDetails/WHY5", nullifyParentLevel = 0)
+	private String why5;
+	@InforField(xpath = "RouteCauseAnalysisDetails/SOLUTION", nullifyParentLevel = 0)
+	private String solution;
+	// --- //
+
 
 	@JsonIgnore
 	@InforField(xpath = "USERDEFINEDAREA")
@@ -807,6 +836,101 @@ public class EAMCaseManagement implements Serializable {
 		this.isCaseHaveTasks = isCaseHaveTasks;
 	}
 
+	public BigDecimal getDowntimehours() {
+		return downtimehours;
+	}
+
+	public void setDowntimehours(BigDecimal downtimehours) {
+		this.downtimehours = downtimehours;
+	}
+
+	public BigDecimal getDowntimecostvalue() {
+		return downtimecostvalue;
+	}
+
+	public void setDowntimecostvalue(BigDecimal downtimecostvalue) {
+		this.downtimecostvalue = downtimecostvalue;
+	}
+
+	public BigDecimal getTotalcost() {
+		return totalcost;
+	}
+
+	public void setTotalcost(BigDecimal totalcost) {
+		this.totalcost = totalcost;
+	}
+
+	public BigDecimal getLostproductivityhours() {
+		return lostproductivityhours;
+	}
+
+	public void setLostproductivityhours(BigDecimal lostproductivityhours) {
+		this.lostproductivityhours = lostproductivityhours;
+	}
+
+	public String getProblemdescription() {
+		return problemdescription;
+	}
+
+	public void setProblemdescription(String problemdescription) {
+		this.problemdescription = problemdescription;
+	}
+
+	public String getWhathappened() {
+		return whathappened;
+	}
+
+	public void setWhathappened(String whathappened) {
+		this.whathappened = whathappened;
+	}
+
+	public String getWhy1() {
+		return why1;
+	}
+
+	public void setWhy1(String why1) {
+		this.why1 = why1;
+	}
+
+	public String getWhy2() {
+		return why2;
+	}
+
+	public void setWhy2(String why2) {
+		this.why2 = why2;
+	}
+
+	public String getWhy3() {
+		return why3;
+	}
+
+	public void setWhy3(String why3) {
+		this.why3 = why3;
+	}
+
+	public String getWhy4() {
+		return why4;
+	}
+
+	public void setWhy4(String why4) {
+		this.why4 = why4;
+	}
+
+	public String getWhy5() {
+		return why5;
+	}
+
+	public void setWhy5(String why5) {
+		this.why5 = why5;
+	}
+
+	public String getSolution() {
+		return solution;
+	}
+
+	public void setSolution(String solution) {
+		this.solution = solution;
+	}
 
 	@Override
 	public String toString() {

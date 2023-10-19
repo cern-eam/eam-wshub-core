@@ -155,6 +155,13 @@ public class UserDefinedFields implements Serializable, Cloneable {
 	@GridField(name = "udfchar45")
 	private String udfchar45;
 
+	@InforField(xpath = "UDFNOTE01", enforceValidXpath = false)
+	@GridField(name = "udfnote01")
+	private String udfnote01;
+	@InforField(xpath = "UDFNOTE02", enforceValidXpath = false)
+	@GridField(name = "udfnote02")
+	private String udfnote02;
+
 	private String udfchar01Desc;
 	private String udfchar02Desc;
 	private String udfchar03Desc;
@@ -1608,6 +1615,22 @@ public class UserDefinedFields implements Serializable, Cloneable {
 		this.udfchar45Desc = udfchar45Desc;
 	}
 
+	public String getUdfnote01() {
+		return udfnote01;
+	}
+
+	public void setUdfnote01(String udfnote01) {
+		this.udfnote01 = udfnote01;
+	}
+
+	public String getUdfnote02() {
+		return udfnote02;
+	}
+
+	public void setUdfnote02(String udfnote02) {
+		this.udfnote02 = udfnote02;
+	}
+
 	@Override
 	public String toString() {
 		return "UserDefinedFields [" + (udfchar01 != null ? "udfchar01=" + udfchar01 + ", " : "")
@@ -1834,5 +1857,7 @@ public class UserDefinedFields implements Serializable, Cloneable {
 		getters.add(UserDefinedFields::getUdfdate08);
 		getters.add(UserDefinedFields::getUdfdate09);
 		getters.add(UserDefinedFields::getUdfdate10);
+		getters.add(UserDefinedFields::getUdfnote01);
+		getters.add(UserDefinedFields::getUdfnote02);
 	}
 }
