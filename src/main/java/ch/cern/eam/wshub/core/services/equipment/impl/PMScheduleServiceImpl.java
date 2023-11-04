@@ -21,7 +21,6 @@ import net.datastream.schemas.mp_results.mp0364_001.MP0364_AddEquipmentPMSchedul
 import net.datastream.schemas.mp_results.mp0365_001.MP0365_SyncEquipmentPMSchedule_001_Result;
 import net.datastream.schemas.mp_results.mp3014_001.MP3014_GetEquipmentPMSchedule_001_Result;
 import net.datastream.schemas.mp_results.mp7006_001.MP7006_DeletePMScheduleEquipment_001_Result;
-import net.datastream.schemas.mp_results.mp7433_001.MP7433_SyncReleasedPM_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
 
@@ -159,6 +158,9 @@ public class PMScheduleServiceImpl implements PMScheduleService {
 			pmschedule.getPMScheduleData().getWORKORDERCLASSID().setORGANIZATIONID(tools.getOrganization(context));
 			pmschedule.getPMScheduleData().getWORKORDERCLASSID().setCLASSCODE(pmSchedule.getWorkOrderClass());
 		}
+
+		// TODO annotate remaining properties in pmSchedule class with InforField annotations
+		tools.getInforFieldTools().transformWSHubObject(pmschedule.getPMScheduleData(), pmSchedule, context);
 
 		MP0364_AddEquipmentPMSchedule_001_Result result =
 			tools.performInforOperation(context, inforws::addEquipmentPMScheduleOp, pmschedule);
@@ -351,6 +353,9 @@ public class PMScheduleServiceImpl implements PMScheduleService {
 			pmScheduleData.getWORKORDERCLASSID().setORGANIZATIONID(tools.getOrganization(context));
 			pmScheduleData.getWORKORDERCLASSID().setCLASSCODE(pmSchedule.getWorkOrderClass());
 		}
+
+		// TODO annotate remaining properties in pmSchedule class with InforField annotations
+		tools.getInforFieldTools().transformWSHubObject(pmScheduleData, pmSchedule, context);
 
 		// Sync Equipment PM Schedule
 		MP0365_SyncEquipmentPMSchedule_001 syncpm = new MP0365_SyncEquipmentPMSchedule_001();

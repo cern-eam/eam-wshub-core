@@ -1,6 +1,8 @@
 package ch.cern.eam.wshub.core.services.equipment.entities;
 
 import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
+import ch.cern.eam.wshub.core.annotations.InforField;
+import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -40,8 +42,13 @@ public class EquipmentPMSchedule implements Serializable {
 	@Transient private String meter2UOM;
 	@Transient private BigDecimal meter2Due;
 	@Transient private String dateDeactivated;
+
 	@Transient private String location;
 	@Transient private String workOrder;
+
+	@Transient
+	@InforField(xpath = "StandardUserDefinedFields")
+	private UserDefinedFields userDefinedFields;
 
 	public String getWorkOrderClass() {
 		return workOrderClass;
@@ -202,6 +209,14 @@ public class EquipmentPMSchedule implements Serializable {
 	}
 	public void setAssignedTo(String assignedTo) {
 		this.assignedTo = assignedTo;
+	}
+
+	public UserDefinedFields getUserDefinedFields() {
+		return userDefinedFields;
+	}
+
+	public void setUserDefinedFields(UserDefinedFields userDefinedFields) {
+		this.userDefinedFields = userDefinedFields;
 	}
 
 	@Override
