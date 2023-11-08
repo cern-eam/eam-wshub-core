@@ -6,7 +6,9 @@ import ch.cern.eam.wshub.core.services.material.entities.IssueReturnPartTransact
 import ch.cern.eam.wshub.core.services.material.entities.IssueReturnPartTransactionLine;
 import ch.cern.eam.wshub.core.services.material.PartMiscService;
 import ch.cern.eam.wshub.core.services.material.entities.*;
-import ch.cern.eam.wshub.core.services.workorders.entities.Employee;
+import ch.cern.eam.wshub.core.services.workorders.WorkOrderService;
+import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrder;
+import ch.cern.eam.wshub.core.services.workorders.impl.WorkOrderServiceImpl;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.DataTypeTools;
 import ch.cern.eam.wshub.core.tools.InforException;
@@ -31,9 +33,7 @@ import net.datastream.schemas.mp_functions.mp0612_001.MP0612_AddPartsAssociated_
 import net.datastream.schemas.mp_functions.mp0614_001.MP0614_DeletePartsAssociated_001;
 import net.datastream.schemas.mp_functions.mp2051_001.MP2051_AddSubstitutePart_001;
 import net.datastream.schemas.mp_results.mp0220_001.MP0220_AddIssueReturnTransaction_001_Result;
-import net.datastream.schemas.mp_results.mp0281_001.MP0281_AddStoreBin_001_Result;
 import net.datastream.schemas.mp_results.mp0282_001.MP0282_GetStoreBin_001_Result;
-import net.datastream.schemas.mp_results.mp0282_001.ResultData;
 import net.datastream.schemas.mp_results.mp0283_001.MP0283_SyncStoreBin_001_Result;
 import net.datastream.schemas.mp_results.mp0284_001.MP0284_DeleteStoreBin_001_Result;
 import net.datastream.schemas.mp_results.mp0612_001.MP0612_AddPartsAssociated_001_Result;
@@ -43,7 +43,6 @@ import static ch.cern.eam.wshub.core.tools.DataTypeTools.decodeBoolean;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
 
 import javax.persistence.EntityManager;
-import javax.xml.ws.BindingProvider;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -57,10 +56,13 @@ public class PartMiscServiceImpl implements PartMiscService {
 	private InforWebServicesPT inforws;
 	private ApplicationData applicationData;
 
+	private WorkOrderService workOrderService;
+
 	public PartMiscServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
 		this.applicationData = applicationData;
 		this.tools = tools;
 		this.inforws = inforWebServicesToolkitClient;
+		this.workOrderService = new WorkOrderServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
 	}
 
 	public String addPartSupplier(InforContext context, PartSupplier partSupplierParam) throws InforException {
@@ -245,7 +247,8 @@ public class PartMiscServiceImpl implements PartMiscService {
 					&& IssueReturnPartTransactionType.WORKORDER.equals(issueReturnPartTransaction.getTransactionOn())) {
 				issueReturnTransactionLine.setATTACHEQUIPMENT("true");
 				issueReturnTransactionLine.setATTACHTOEQUIPMENT(new EQUIPMENTID_Type());
-				issueReturnTransactionLine.getATTACHTOEQUIPMENT().setEQUIPMENTCODE(issueReturnPartTransaction.getEquipmentCode().toUpperCase());
+				WorkOrder workOrder = workOrderService.readWorkOrder(context, issueReturnPartTransaction.getWorkOrderNumber());
+				issueReturnTransactionLine.getATTACHTOEQUIPMENT().setEQUIPMENTCODE(workOrder.getEquipmentCode());
 				issueReturnTransactionLine.getATTACHTOEQUIPMENT().setORGANIZATIONID(tools.getOrganization(context));
 			}
 		}

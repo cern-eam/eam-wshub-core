@@ -1,5 +1,7 @@
 package ch.cern.eam.wshub.core.services.userdefinedscreens.entities;
 
+import com.fasterxml.jackson.annotation.JsonSetter;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -36,6 +38,7 @@ public class UDTOpBean implements Serializable {
         return row;
     }
 
+    @JsonSetter
     public void setRow(UDTRow row) {
         this.row = row;
     }
