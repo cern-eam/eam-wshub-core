@@ -1,9 +1,11 @@
 package ch.cern.eam.wshub.core.services.equipment.entities;
 
+import ch.cern.eam.wshub.core.adapters.DateAdapter;
 import ch.cern.eam.wshub.core.annotations.InforField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -41,16 +43,20 @@ public class EquipmentReservation {
     private String customer;
 
     @InforField(xpath = "RentalDetails/COMPLETEDDATE")
+    @XmlJavaTypeAdapter(DateAdapter.class)
     private Date completedDate;
     @InforField(xpath = "RentalDetails/CREATEDBY/USERCODE")
     private String createdBy;
     @InforField(xpath = "RentalDetails/CREATEDDATE")
+    @XmlJavaTypeAdapter(DateAdapter.class)
     private Date createdDate;
 
     // Issue Details
     @InforField(xpath = "IssueDetails/ESTIMATEDISSUEDATE")
+    @XmlJavaTypeAdapter(DateAdapter.class)
     private Date estimatedIssueDate;
     @InforField(xpath = "IssueDetails/ISSUEDDATE")
+    @XmlJavaTypeAdapter(DateAdapter.class)
     private Date issuedDate;
     @InforField(xpath = "IssueDetails/ISSUELOCATION/LOCATIONCODE")
     private String issueLocation;
@@ -59,8 +65,10 @@ public class EquipmentReservation {
 
     // Return Details
     @InforField(xpath = "ReturnDetails/RETURNDATE")
+    @XmlJavaTypeAdapter(DateAdapter.class)
     private Date returnDate;
     @InforField(xpath = "ReturnDetails/ESTIMATEDRETURNDATE")
+    @XmlJavaTypeAdapter(DateAdapter.class)
     private Date estimatedReturnDate;
     @InforField(xpath = "ReturnDetails/RETURNLOCATION/LOCATIONCODE")
     private String returnLocation;
