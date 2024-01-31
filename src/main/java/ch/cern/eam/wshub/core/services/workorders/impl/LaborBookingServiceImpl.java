@@ -12,8 +12,8 @@ import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.GridTools;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
 import net.datastream.schemas.mp_fields.*;
-import net.datastream.schemas.mp_functions.SessionType;
 import net.datastream.schemas.mp_functions.mp0035_001.MP0035_GetActivity_001;
 import net.datastream.schemas.mp_functions.mp0037_001.MP0037_AddActivity_001;
 import net.datastream.schemas.mp_functions.mp0038_001.MP0038_SyncActivity_001;
@@ -26,12 +26,8 @@ import net.datastream.schemas.mp_results.mp0039_001.MP0039_DeleteActivity_001_Re
 import net.datastream.schemas.mp_results.mp0042_001.MP0042_AddLaborBooking_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
-import javax.persistence.EntityManager;
-import javax.xml.ws.Holder;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.*;
-import java.util.concurrent.Callable;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -191,7 +187,7 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 
 		tools.getInforFieldTools().transformWSHubObject(activityInfor, activityParam, context);
 
-		if (activityParam.getTaskCode() != null && !activityParam.getTaskCode().trim().equals("")) {
+		if (isNotEmpty(activityParam.getTaskCode())) {
 			activityInfor.getTASKSID().setTASKREVISION(0L);
 		}
 
@@ -227,6 +223,10 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 		net.datastream.schemas.mp_entities.activity_001.Activity activityInfor = getresult.getResultData().getActivity();
 
 		tools.getInforFieldTools().transformWSHubObject(activityInfor, activityParam, context);
+
+		if (isNotEmpty(activityParam.getTaskCode())) {
+			activityInfor.getTASKSID().setTASKREVISION(0L);
+		}
 
 		//
 		// CALL THE WS
