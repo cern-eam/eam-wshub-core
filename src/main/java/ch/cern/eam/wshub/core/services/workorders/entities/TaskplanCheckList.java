@@ -19,6 +19,8 @@ public class TaskplanCheckList {
 	private String findings;
 	private String categoryCode;
 	private String classCode;
+
+	private String equipmentFilter;
 	
 	public String getTaskPlanCode() {
 		return taskPlanCode;
@@ -110,6 +112,15 @@ public class TaskplanCheckList {
 	public void setFollowUpTaskPlanRevision(String followUpTaskPlanRevision) {
 		this.followUpTaskPlanRevision = followUpTaskPlanRevision;
 	}
+
+	public String getEquipmentFilter() {
+		return equipmentFilter;
+	}
+
+	public void setEquipmentFilter(String equipmentFilter) {
+		this.equipmentFilter = equipmentFilter;
+	}
+
 	@Override
 	public String toString() {
 		return "TaskplanCheckList ["

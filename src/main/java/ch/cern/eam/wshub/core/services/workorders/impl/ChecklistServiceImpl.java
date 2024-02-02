@@ -477,6 +477,13 @@ public class ChecklistServiceImpl implements ChecklistService {
 			taskChecklistInfor.getCATEGORYID().setCATEGORYCODE(taskChecklist.getCategoryCode());
 		}
 
+		//
+		// EQUIPMENT FILTER
+		//
+		if (isNotEmpty(taskChecklist.getEquipmentFilter())) {
+			taskChecklistInfor.setEQUIPMENTFILTER(taskChecklist.getEquipmentFilter());
+		}
+
 		MP7916_AddTaskChecklist_001 addTaskChecklist = new MP7916_AddTaskChecklist_001();
 		addTaskChecklist.setTaskChecklist(taskChecklistInfor);
 

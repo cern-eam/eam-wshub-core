@@ -590,7 +590,9 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
     @InforField(xpath = "FleetVehicleInfo/ISSUETO/PERSONCODE", nullifyParentLevel = 1)
     private String issueTo;
 
-
+    @Transient
+    @InforField(xpath="CHECKLISTFILTER")
+    private String equipmentFilter;
 
     public String getDescription() {
         return description;
@@ -1539,6 +1541,14 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
 
     public void setIssueTo(final String issueTo) {
         this.issueTo = issueTo;
+    }
+
+    public String getEquipmentFilter() {
+        return equipmentFilter;
+    }
+
+    public void setEquipmentFilter(String equipmentFilter) {
+        this.equipmentFilter = equipmentFilter;
     }
 
     @Override
