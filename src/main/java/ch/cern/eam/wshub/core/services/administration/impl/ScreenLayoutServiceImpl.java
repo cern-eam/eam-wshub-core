@@ -68,25 +68,33 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
     }
 
     private static final List<String> ALLOW_SEARCH_DESC = Collections.singletonList("LVPERS");
+    private static final List<String> ALLOW_SEARCH_ALIAS = Collections.singletonList("LVOBJL");
 
     public List<Map<String, String>> getGenericLov(InforContext context, GenericLov genericLov
                 ) throws InforException {
+        final Map<String, String> inputParams = new HashMap<>();
+        inputParams.put("objectrtype", null);
+        inputParams.put("filterutilitybill", null);
+        inputParams.putAll(genericLov.getInputParams());
+
         GridRequest gridRequest = new GridRequest(genericLov.getLovName());
-        gridRequest.getParams().putAll(genericLov.getInputParams());
+        gridRequest.getParams().putAll(inputParams);
         gridRequest.setGridType(GridRequest.GRIDTYPE.LOV);
         gridRequest.setUserFunctionName(genericLov.getRentity());
         gridRequest.setRowCount(genericLov.getRowCount() != null ? genericLov.getRowCount().intValue() : 10);
         gridRequest.setQueryTimeout(false);
+        gridRequest.setCountTotal(false);
         List<String> listReturnFields = new ArrayList<>(genericLov.getReturnFields().values());
         final Map<String, String> returnFields = genericLov.getReturnFields();
 
         boolean searchOnDesc = ALLOW_SEARCH_DESC.contains(genericLov.getLovName());
+        boolean searchOnAlias = ALLOW_SEARCH_ALIAS.contains(genericLov.getLovName());
 
         GridRequestFilter filter = new GridRequestFilter(
                 listReturnFields.get(0),
                 genericLov.getHint().toUpperCase(),
                 genericLov.isExact() ? "EQUALS" : "BEGINS",
-                searchOnDesc ? GridRequestFilter.JOINER.OR : GridRequestFilter.JOINER.AND
+                searchOnDesc || searchOnAlias ? GridRequestFilter.JOINER.OR : GridRequestFilter.JOINER.AND
         );
         gridRequest.getGridRequestFilters().add(filter);
 
@@ -98,6 +106,11 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
                 gridRequest.addFilter("description", name, "BEGINS",
                         GridRequestFilter.JOINER.AND, false, true);
             });
+        }
+
+        if (searchOnAlias && !genericLov.isExact()) {
+            gridRequest.addFilter("alias", genericLov.getHint().toUpperCase(), "BEGINS",
+                    GridRequestFilter.JOINER.AND);
         }
 
         final GridRequestResult gridRequestResult =
