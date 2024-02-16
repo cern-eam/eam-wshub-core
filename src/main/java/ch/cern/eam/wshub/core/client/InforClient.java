@@ -519,11 +519,11 @@ public class InforClient implements Serializable {
         this.caseManagementService = caseManagementService;
     }
 
-    public EquipmentReservationAdjustmentService getCustomerRentalAdjustmentService() {
+    public EquipmentReservationAdjustmentService getEquipmentReservationAdjustmentService() {
         return equipmentReservationAdjustmentService;
     }
 
-    public void setCustomerRentalAdjustmentService(EquipmentReservationAdjustmentService equipmentReservationAdjustmentService) {
+    public void setEquipmentReservationAdjustmentService(EquipmentReservationAdjustmentService equipmentReservationAdjustmentService) {
         this.equipmentReservationAdjustmentService = equipmentReservationAdjustmentService;
     }
 }
