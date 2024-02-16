@@ -14,6 +14,8 @@ import ch.cern.eam.wshub.core.services.casemanagement.CaseManagementService;
 import ch.cern.eam.wshub.core.services.casemanagement.impl.CaseManagementServiceImpl;
 import ch.cern.eam.wshub.core.services.comments.CommentService;
 import ch.cern.eam.wshub.core.services.comments.impl.CommentServiceImpl;
+import ch.cern.eam.wshub.core.services.contractmanagement.EquipmentReservationAdjustmentService;
+import ch.cern.eam.wshub.core.services.contractmanagement.impl.EquipmentReservationAdjustmentServiceImpl;
 import ch.cern.eam.wshub.core.services.documents.DocumentsService;
 import ch.cern.eam.wshub.core.services.documents.impl.DocumentsServiceImpl;
 import ch.cern.eam.wshub.core.services.equipment.*;
@@ -22,35 +24,16 @@ import ch.cern.eam.wshub.core.services.grids.GridsService;
 import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.services.material.*;
 import ch.cern.eam.wshub.core.services.material.impl.*;
-import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedScreenService;
-import ch.cern.eam.wshub.core.services.userdefinedscreens.impl.UserDefinedScreenServiceImpl;
-import ch.cern.eam.wshub.core.services.workorders.SafetyService;
-import ch.cern.eam.wshub.core.services.workorders.impl.SafetyServiceImpl;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedListService;
+import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedScreenService;
+import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedTableService;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.impl.UserDefinedListServiceImpl;
+import ch.cern.eam.wshub.core.services.userdefinedscreens.impl.UserDefinedScreenServiceImpl;
+import ch.cern.eam.wshub.core.services.userdefinedscreens.impl.UserDefinedTableServiceImpl;
 import ch.cern.eam.wshub.core.services.workorders.*;
 import ch.cern.eam.wshub.core.services.workorders.impl.*;
-import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedTableService;
-import ch.cern.eam.wshub.core.services.userdefinedscreens.impl.UserDefinedTableServiceImpl;
-import ch.cern.eam.wshub.core.services.workorders.CaseService;
-import ch.cern.eam.wshub.core.services.workorders.CaseTaskService;
-import ch.cern.eam.wshub.core.services.workorders.ChecklistService;
-import ch.cern.eam.wshub.core.services.workorders.EmployeeService;
-import ch.cern.eam.wshub.core.services.workorders.InspectionService;
-import ch.cern.eam.wshub.core.services.workorders.LaborBookingService;
-import ch.cern.eam.wshub.core.services.workorders.WorkOrderMiscService;
-import ch.cern.eam.wshub.core.services.workorders.WorkOrderService;
-import ch.cern.eam.wshub.core.services.workorders.impl.CaseServiceImpl;
-import ch.cern.eam.wshub.core.services.workorders.impl.CaseTaskServiceImpl;
-import ch.cern.eam.wshub.core.services.workorders.impl.ChecklistServiceImpl;
-import ch.cern.eam.wshub.core.services.workorders.impl.EmployeeServiceImpl;
-import ch.cern.eam.wshub.core.services.workorders.impl.InspectionServiceImpl;
-import ch.cern.eam.wshub.core.services.workorders.impl.LaborBookingServiceImpl;
-import ch.cern.eam.wshub.core.services.workorders.impl.WorkOrderMiscServiceImpl;
-import ch.cern.eam.wshub.core.services.workorders.impl.WorkOrderServiceImpl;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.Tools;
-
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
 import javax.persistence.EntityManagerFactory;
@@ -59,7 +42,6 @@ import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Service;
 import javax.xml.ws.handler.HandlerResolver;
-
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
@@ -147,6 +129,8 @@ public class InforClient implements Serializable {
     private Store2StoreTransferService store2StoreTransferService;
 
     private CaseManagementService caseManagementService;
+
+    private EquipmentReservationAdjustmentService equipmentReservationAdjustmentService;
 
     // Prevent initializing the class without the builder
     private InforClient() {}
@@ -327,6 +311,7 @@ public class InforClient implements Serializable {
             inforClient.equipmentMeterReadingService = proxy(EquipmentMeterReadingService.class,
                     new EquipmentMeterReadingServiceImpl(applicationData, tools, inforWebServicesToolkitClient),
                     inforInterceptor, tools);
+            inforClient.equipmentReservationAdjustmentService = proxy(EquipmentReservationAdjustmentService.class, new EquipmentReservationAdjustmentServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             if (!tools.isDatabaseConnectionConfigured()) {
                 logger.log(Level.WARNING, "Some of the services might require a database connection.");
             }
@@ -532,5 +517,13 @@ public class InforClient implements Serializable {
 
     public void setCaseManagementService(CaseManagementService caseManagementService) {
         this.caseManagementService = caseManagementService;
+    }
+
+    public EquipmentReservationAdjustmentService getCustomerRentalAdjustmentService() {
+        return equipmentReservationAdjustmentService;
+    }
+
+    public void setCustomerRentalAdjustmentService(EquipmentReservationAdjustmentService equipmentReservationAdjustmentService) {
+        this.equipmentReservationAdjustmentService = equipmentReservationAdjustmentService;
     }
 }
