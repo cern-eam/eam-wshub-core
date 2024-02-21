@@ -10,24 +10,28 @@ import java.util.Date;
 public class EquipmentReservationAdjustment implements Serializable {
     @InforField(xpath = "CUSTOMERRENTALADJUSTMENTID/CUSTOMERRENTALADJUSTMENTPK")
     private String code;
+    @InforField(xpath = "ADJUSTMENTID/ORGANIZATIONID/ORGANIZATIONCODE")
+    private String orgCode;
     @InforField(xpath = "CUSTOMERRENTALID/CUSTOMERRENTALCODE")
     private String customerRentalCode;
     @InforField(xpath = "ADJUSTMENTID/ADJUSTMENTCODE")
     private String adjustmentCode;
-    @InforField(xpath = "ADJUSTMENTDATE")
-    private Date date;
     @InforField(xpath = "ADJUSTMENTTYPE/TYPECODE")
     private String typeCode;
+    @InforField(xpath = "ADJUSTMENTRTYPE/TYPECODE")
+    private String typeRCode;
     @InforField(xpath = "ADJUSTMENTSTATUS/STATUSCODE")
     private String statusCode;
+    @InforField(xpath = "ADJUSTMENTRSTATUS/STATUSCODE")
+    private String statusRCode;
     @InforField(xpath = "TAXID/TAXCODE")
     private String taxCode;
-    @InforField(xpath = "ADJUSTMENTQUANTITY")
-    private BigDecimal quantity;
+    @InforField(xpath = "ADJUSTMENTDATE")
+    private Date date;
     @InforField(xpath = "AJUSTMENTCOMMENTS")
     private String comments;
-    @InforField(xpath = "ADJUSTMENTID/ORGANIZATIONID/ORGANIZATIONCODE")
-    private String orgCode;
+    @InforField(xpath = "ADJUSTMENTQUANTITY")
+    private BigDecimal quantity;
     @InforField(xpath = "RATE")
     private BigDecimal rate;
     @InforField(xpath = "TOTALAMOUNT")
@@ -40,10 +44,6 @@ public class EquipmentReservationAdjustment implements Serializable {
     private String invoiceOrgCode;
     @InforField(xpath = "WORKORDERID/JOBNUM")
     private String createdWorkOrder;
-    @InforField(xpath = "ADJUSTMENTRSTATUS/STATUSCODE")
-    private String statusRCode;
-    @InforField(xpath = "ADJUSTMENTRTYPE/TYPECODE")
-    private String typeRCode;
     @InforField(xpath = "recordid")
     private BigInteger updateCount;
 
@@ -53,6 +53,14 @@ public class EquipmentReservationAdjustment implements Serializable {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public String getOrgCode() {
+        return orgCode;
+    }
+
+    public void setOrgCode(String orgCode) {
+        this.orgCode = orgCode;
     }
 
     public String getCustomerRentalCode() {
@@ -71,20 +79,20 @@ public class EquipmentReservationAdjustment implements Serializable {
         this.adjustmentCode = adjustmentCode;
     }
 
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
     public String getTypeCode() {
         return typeCode;
     }
 
     public void setTypeCode(String typeCode) {
         this.typeCode = typeCode;
+    }
+
+    public String getTypeRCode() {
+        return typeRCode;
+    }
+
+    public void setTypeRCode(String typeRCode) {
+        this.typeRCode = typeRCode;
     }
 
     public String getStatusCode() {
@@ -95,6 +103,14 @@ public class EquipmentReservationAdjustment implements Serializable {
         this.statusCode = statusCode;
     }
 
+    public String getStatusRCode() {
+        return statusRCode;
+    }
+
+    public void setStatusRCode(String statusRCode) {
+        this.statusRCode = statusRCode;
+    }
+
     public String getTaxCode() {
         return taxCode;
     }
@@ -103,12 +119,12 @@ public class EquipmentReservationAdjustment implements Serializable {
         this.taxCode = taxCode;
     }
 
-    public BigDecimal getQuantity() {
-        return quantity;
+    public Date getDate() {
+        return date;
     }
 
-    public void setQuantity(BigDecimal quantity) {
-        this.quantity = quantity;
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     public String getComments() {
@@ -119,12 +135,12 @@ public class EquipmentReservationAdjustment implements Serializable {
         this.comments = comments;
     }
 
-    public String getOrgCode() {
-        return orgCode;
+    public BigDecimal getQuantity() {
+        return quantity;
     }
 
-    public void setOrgCode(String orgCode) {
-        this.orgCode = orgCode;
+    public void setQuantity(BigDecimal quantity) {
+        this.quantity = quantity;
     }
 
     public BigDecimal getRate() {
@@ -175,22 +191,6 @@ public class EquipmentReservationAdjustment implements Serializable {
         this.createdWorkOrder = createdWorkOrder;
     }
 
-    public String getStatusRCode() {
-        return statusRCode;
-    }
-
-    public void setStatusRCode(String statusRCode) {
-        this.statusRCode = statusRCode;
-    }
-
-    public String getTypeRCode() {
-        return typeRCode;
-    }
-
-    public void setTypeRCode(String typeRCode) {
-        this.typeRCode = typeRCode;
-    }
-
     public BigInteger getUpdateCount() {
         return updateCount;
     }
@@ -201,25 +201,25 @@ public class EquipmentReservationAdjustment implements Serializable {
 
     @Override
     public String toString() {
-        return "CustomerRentalAdjustment{" +
+        return "EquipmentReservationAdjustment{" +
                 "code='" + code + '\'' +
+                ", orgCode='" + orgCode + '\'' +
                 ", customerRentalCode='" + customerRentalCode + '\'' +
                 ", adjustmentCode='" + adjustmentCode + '\'' +
-                ", date=" + date +
                 ", typeCode='" + typeCode + '\'' +
+                ", typeRCode='" + typeRCode + '\'' +
                 ", statusCode='" + statusCode + '\'' +
+                ", statusRCode='" + statusRCode + '\'' +
                 ", taxCode='" + taxCode + '\'' +
-                ", quantity=" + quantity +
+                ", date=" + date +
                 ", comments='" + comments + '\'' +
-                ", orgCode='" + orgCode + '\'' +
+                ", quantity=" + quantity +
                 ", rate=" + rate +
                 ", totalAmount=" + totalAmount +
                 ", taxAmount=" + taxAmount +
                 ", invoice='" + invoice + '\'' +
                 ", invoiceOrgCode='" + invoiceOrgCode + '\'' +
                 ", createdWorkOrder='" + createdWorkOrder + '\'' +
-                ", statusRCode='" + statusRCode + '\'' +
-                ", typeRCode='" + typeRCode + '\'' +
                 ", updateCount=" + updateCount +
                 '}';
     }
