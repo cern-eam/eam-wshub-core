@@ -33,62 +33,46 @@ public class EquipmentReservationAdjustmentServiceImpl implements EquipmentReser
 
     @Override
     public String createEquipmentReservationAdjustment(InforContext context, EquipmentReservationAdjustment equipmentReservationAdjustment) throws InforException {
-        MP7864_AddCustomerRentalAdjustment_001 addEntity = createAddEntity(context, equipmentReservationAdjustment);
-        MP7864_AddCustomerRentalAdjustment_001_Result addOperationResult = tools.performInforOperation(context, inforws::addCustomerRentalAdjustmentOp, addEntity);
+        MP7864_AddCustomerRentalAdjustment_001 addCustomerRentalAdjustment = new MP7864_AddCustomerRentalAdjustment_001();
+        CustomerRentalAdjustment customerRentalAdjustment = tools.getInforFieldTools().transformWSHubObject(createDefaultEquipmentReservationAdjustment(), equipmentReservationAdjustment, context);
+        addCustomerRentalAdjustment.setCustomerRentalAdjustment(customerRentalAdjustment);
+        MP7864_AddCustomerRentalAdjustment_001_Result addOperationResult = tools.performInforOperation(context, inforws::addCustomerRentalAdjustmentOp, addCustomerRentalAdjustment);
         return addOperationResult.getResultData().getCUSTOMERRENTALADJUSTMENTID().getCUSTOMERRENTALADJUSTMENTPK();
     }
 
     @Override
     public EquipmentReservationAdjustment readEquipmentReservationAdjustment(InforContext context, String number) throws InforException {
-        MP7863_GetCustomerRentalAdjustment_001 getEntity = createGetEntity(number);
-        MP7863_GetCustomerRentalAdjustment_001_Result getOperationResult = tools.performInforOperation(context, inforws::getCustomerRentalAdjustmentOp, getEntity);
-        return tools.getInforFieldTools().transformInforObject(new EquipmentReservationAdjustment(), getOperationResult.getResultData().getCustomerRentalAdjustment(), context);
+        CustomerRentalAdjustment customerRentalAdjustment = readCustomerRentalAdjustment(context, number);
+        return tools.getInforFieldTools().transformInforObject(new EquipmentReservationAdjustment(), customerRentalAdjustment, context);
     }
 
     @Override
     public String updateEquipmentReservationAdjustment(InforContext context, EquipmentReservationAdjustment equipmentReservationAdjustment) throws InforException {
-        MP7865_SyncCustomerRentalAdjustment_001 updateEntity = createUpdateEntity(context, equipmentReservationAdjustment);
-        MP7865_SyncCustomerRentalAdjustment_001_Result updateOperationResult = tools.performInforOperation(context, inforws::syncCustomerRentalAdjustmentOp, updateEntity);
+        MP7865_SyncCustomerRentalAdjustment_001 syncCustomerRentalAdjustment = new MP7865_SyncCustomerRentalAdjustment_001();
+        CustomerRentalAdjustment prevCustomerRentalAdjustment = readCustomerRentalAdjustment(context, equipmentReservationAdjustment.getCode());
+        CustomerRentalAdjustment newCustomerRentalAdjustment = tools.getInforFieldTools().transformWSHubObject(prevCustomerRentalAdjustment, equipmentReservationAdjustment, context);
+        syncCustomerRentalAdjustment.setCustomerRentalAdjustment(newCustomerRentalAdjustment);
+        MP7865_SyncCustomerRentalAdjustment_001_Result updateOperationResult = tools.performInforOperation(context, inforws::syncCustomerRentalAdjustmentOp, syncCustomerRentalAdjustment);
         return updateOperationResult.getResultData().getCUSTOMERRENTALADJUSTMENTID().getCUSTOMERRENTALADJUSTMENTPK();
     }
 
     @Override
     public String deleteEquipmentReservationAdjustment(InforContext context, String number) throws InforException {
-        MP7866_DeleteCustomerRentalAdjustment_001 deleteEntity = createDeleteEntity(number);
-        MP7866_DeleteCustomerRentalAdjustment_001_Result deleteOperationResult = tools.performInforOperation(context, inforws::deleteCustomerRentalAdjustmentOp, deleteEntity);
-        return deleteOperationResult.getResultData().getCUSTOMERRENTALADJUSTMENTID().getCUSTOMERRENTALADJUSTMENTPK();
-    }
-
-    private MP7864_AddCustomerRentalAdjustment_001 createAddEntity(InforContext context, EquipmentReservationAdjustment equipmentReservationAdjustment) throws InforException {
-        MP7864_AddCustomerRentalAdjustment_001 addCustomerRentalAdjustment = new MP7864_AddCustomerRentalAdjustment_001();
-        CustomerRentalAdjustment customerRentalAdjustment = tools.getInforFieldTools().transformWSHubObject(createDefaultEquipmentReservationAdjustment(), equipmentReservationAdjustment, context);
-        addCustomerRentalAdjustment.setCustomerRentalAdjustment(customerRentalAdjustment);
-        return addCustomerRentalAdjustment;
-    }
-
-    private MP7863_GetCustomerRentalAdjustment_001 createGetEntity(String number) {
-        MP7863_GetCustomerRentalAdjustment_001 getCustomerRentalAdjustment = new MP7863_GetCustomerRentalAdjustment_001();
-        CUSTOMERRENTALADJUSTMENTID_Type idType = new CUSTOMERRENTALADJUSTMENTID_Type();
-        idType.setCUSTOMERRENTALADJUSTMENTPK(number);
-        getCustomerRentalAdjustment.setCUSTOMERRENTALADJUSTMENTID(idType);
-        return getCustomerRentalAdjustment;
-    }
-
-    private MP7865_SyncCustomerRentalAdjustment_001 createUpdateEntity(InforContext context, EquipmentReservationAdjustment equipmentReservationAdjustment) throws InforException {
-        MP7865_SyncCustomerRentalAdjustment_001 syncCustomerRentalAdjustment = new MP7865_SyncCustomerRentalAdjustment_001();
-        EquipmentReservationAdjustment prevReservation = readEquipmentReservationAdjustment(context, equipmentReservationAdjustment.getCode());
-        CustomerRentalAdjustment prevCustomerRentalAdjustment = tools.getInforFieldTools().transformWSHubObject(new CustomerRentalAdjustment(), prevReservation, context);
-        CustomerRentalAdjustment newCustomerRentalAdjustment = tools.getInforFieldTools().transformWSHubObject(prevCustomerRentalAdjustment, equipmentReservationAdjustment, context);
-        syncCustomerRentalAdjustment.setCustomerRentalAdjustment(newCustomerRentalAdjustment);
-        return syncCustomerRentalAdjustment;
-    }
-
-    private MP7866_DeleteCustomerRentalAdjustment_001 createDeleteEntity(String number) {
         MP7866_DeleteCustomerRentalAdjustment_001 deleteCustomerRentalAdjustment = new MP7866_DeleteCustomerRentalAdjustment_001();
         CUSTOMERRENTALADJUSTMENTID_Type idType = new CUSTOMERRENTALADJUSTMENTID_Type();
         idType.setCUSTOMERRENTALADJUSTMENTPK(number);
         deleteCustomerRentalAdjustment.setCUSTOMERRENTALADJUSTMENTID(idType);
-        return deleteCustomerRentalAdjustment;
+        MP7866_DeleteCustomerRentalAdjustment_001_Result deleteOperationResult = tools.performInforOperation(context, inforws::deleteCustomerRentalAdjustmentOp, deleteCustomerRentalAdjustment);
+        return deleteOperationResult.getResultData().getCUSTOMERRENTALADJUSTMENTID().getCUSTOMERRENTALADJUSTMENTPK();
+    }
+
+    private CustomerRentalAdjustment readCustomerRentalAdjustment(InforContext context, String number) throws InforException {
+        MP7863_GetCustomerRentalAdjustment_001 getCustomerRentalAdjustment = new MP7863_GetCustomerRentalAdjustment_001();
+        CUSTOMERRENTALADJUSTMENTID_Type idType = new CUSTOMERRENTALADJUSTMENTID_Type();
+        idType.setCUSTOMERRENTALADJUSTMENTPK(number);
+        getCustomerRentalAdjustment.setCUSTOMERRENTALADJUSTMENTID(idType);
+        MP7863_GetCustomerRentalAdjustment_001_Result getOperationResult = tools.performInforOperation(context, inforws::getCustomerRentalAdjustmentOp, getCustomerRentalAdjustment);
+        return getOperationResult.getResultData().getCustomerRentalAdjustment();
     }
 
     private CustomerRentalAdjustment createDefaultEquipmentReservationAdjustment() {
