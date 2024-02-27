@@ -1,7 +1,9 @@
 package ch.cern.eam.wshub.core.services.contractmanagement.entities;
 
+import ch.cern.eam.wshub.core.adapters.DateAdapter;
 import ch.cern.eam.wshub.core.annotations.InforField;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -119,6 +121,7 @@ public class EquipmentReservationAdjustment implements Serializable {
         this.taxCode = taxCode;
     }
 
+    @XmlJavaTypeAdapter(DateAdapter.class)
     public Date getDate() {
         return date;
     }

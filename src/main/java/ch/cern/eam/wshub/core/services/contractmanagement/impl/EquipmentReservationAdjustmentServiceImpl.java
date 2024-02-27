@@ -33,40 +33,40 @@ public class EquipmentReservationAdjustmentServiceImpl implements EquipmentReser
 
     @Override
     public String createEquipmentReservationAdjustment(InforContext context, EquipmentReservationAdjustment equipmentReservationAdjustment) throws InforException {
-        MP7864_AddCustomerRentalAdjustment_001 addOperation = createAddOperation(context, equipmentReservationAdjustment);
-        MP7864_AddCustomerRentalAdjustment_001_Result addOperationResult = tools.performInforOperation(context, inforws::addCustomerRentalAdjustmentOp, addOperation);
+        MP7864_AddCustomerRentalAdjustment_001 addEntity = createAddEntity(context, equipmentReservationAdjustment);
+        MP7864_AddCustomerRentalAdjustment_001_Result addOperationResult = tools.performInforOperation(context, inforws::addCustomerRentalAdjustmentOp, addEntity);
         return addOperationResult.getResultData().getCUSTOMERRENTALADJUSTMENTID().getCUSTOMERRENTALADJUSTMENTPK();
     }
 
     @Override
     public EquipmentReservationAdjustment readEquipmentReservationAdjustment(InforContext context, String number) throws InforException {
-        MP7863_GetCustomerRentalAdjustment_001 getOperation = createGetOperation(number);
-        MP7863_GetCustomerRentalAdjustment_001_Result getOperationResult = tools.performInforOperation(context, inforws::getCustomerRentalAdjustmentOp, getOperation);
+        MP7863_GetCustomerRentalAdjustment_001 getEntity = createGetEntity(number);
+        MP7863_GetCustomerRentalAdjustment_001_Result getOperationResult = tools.performInforOperation(context, inforws::getCustomerRentalAdjustmentOp, getEntity);
         return tools.getInforFieldTools().transformInforObject(new EquipmentReservationAdjustment(), getOperationResult.getResultData().getCustomerRentalAdjustment(), context);
     }
 
     @Override
     public String updateEquipmentReservationAdjustment(InforContext context, EquipmentReservationAdjustment equipmentReservationAdjustment) throws InforException {
-        MP7865_SyncCustomerRentalAdjustment_001 updateOperation = createUpdateOperation(context, equipmentReservationAdjustment);
-        MP7865_SyncCustomerRentalAdjustment_001_Result updateOperationResult = tools.performInforOperation(context, inforws::syncCustomerRentalAdjustmentOp, updateOperation);
+        MP7865_SyncCustomerRentalAdjustment_001 updateEntity = createUpdateEntity(context, equipmentReservationAdjustment);
+        MP7865_SyncCustomerRentalAdjustment_001_Result updateOperationResult = tools.performInforOperation(context, inforws::syncCustomerRentalAdjustmentOp, updateEntity);
         return updateOperationResult.getResultData().getCUSTOMERRENTALADJUSTMENTID().getCUSTOMERRENTALADJUSTMENTPK();
     }
 
     @Override
     public String deleteEquipmentReservationAdjustment(InforContext context, String number) throws InforException {
-        MP7866_DeleteCustomerRentalAdjustment_001 deleteOperation = createDeleteOperation(number);
-        MP7866_DeleteCustomerRentalAdjustment_001_Result deleteOperationResult = tools.performInforOperation(context, inforws::deleteCustomerRentalAdjustmentOp, deleteOperation);
+        MP7866_DeleteCustomerRentalAdjustment_001 deleteEntity = createDeleteEntity(number);
+        MP7866_DeleteCustomerRentalAdjustment_001_Result deleteOperationResult = tools.performInforOperation(context, inforws::deleteCustomerRentalAdjustmentOp, deleteEntity);
         return deleteOperationResult.getResultData().getCUSTOMERRENTALADJUSTMENTID().getCUSTOMERRENTALADJUSTMENTPK();
     }
 
-    private MP7864_AddCustomerRentalAdjustment_001 createAddOperation(InforContext context, EquipmentReservationAdjustment equipmentReservationAdjustment) throws InforException {
+    private MP7864_AddCustomerRentalAdjustment_001 createAddEntity(InforContext context, EquipmentReservationAdjustment equipmentReservationAdjustment) throws InforException {
         MP7864_AddCustomerRentalAdjustment_001 addCustomerRentalAdjustment = new MP7864_AddCustomerRentalAdjustment_001();
         CustomerRentalAdjustment customerRentalAdjustment = tools.getInforFieldTools().transformWSHubObject(createDefaultEquipmentReservationAdjustment(), equipmentReservationAdjustment, context);
         addCustomerRentalAdjustment.setCustomerRentalAdjustment(customerRentalAdjustment);
         return addCustomerRentalAdjustment;
     }
 
-    private MP7863_GetCustomerRentalAdjustment_001 createGetOperation(String number) {
+    private MP7863_GetCustomerRentalAdjustment_001 createGetEntity(String number) {
         MP7863_GetCustomerRentalAdjustment_001 getCustomerRentalAdjustment = new MP7863_GetCustomerRentalAdjustment_001();
         CUSTOMERRENTALADJUSTMENTID_Type idType = new CUSTOMERRENTALADJUSTMENTID_Type();
         idType.setCUSTOMERRENTALADJUSTMENTPK(number);
@@ -74,7 +74,7 @@ public class EquipmentReservationAdjustmentServiceImpl implements EquipmentReser
         return getCustomerRentalAdjustment;
     }
 
-    private MP7865_SyncCustomerRentalAdjustment_001 createUpdateOperation(InforContext context, EquipmentReservationAdjustment equipmentReservationAdjustment) throws InforException {
+    private MP7865_SyncCustomerRentalAdjustment_001 createUpdateEntity(InforContext context, EquipmentReservationAdjustment equipmentReservationAdjustment) throws InforException {
         MP7865_SyncCustomerRentalAdjustment_001 syncCustomerRentalAdjustment = new MP7865_SyncCustomerRentalAdjustment_001();
         EquipmentReservationAdjustment prevReservation = readEquipmentReservationAdjustment(context, equipmentReservationAdjustment.getCode());
         CustomerRentalAdjustment prevCustomerRentalAdjustment = tools.getInforFieldTools().transformWSHubObject(new CustomerRentalAdjustment(), prevReservation, context);
@@ -83,7 +83,7 @@ public class EquipmentReservationAdjustmentServiceImpl implements EquipmentReser
         return syncCustomerRentalAdjustment;
     }
 
-    private MP7866_DeleteCustomerRentalAdjustment_001 createDeleteOperation(String number) {
+    private MP7866_DeleteCustomerRentalAdjustment_001 createDeleteEntity(String number) {
         MP7866_DeleteCustomerRentalAdjustment_001 deleteCustomerRentalAdjustment = new MP7866_DeleteCustomerRentalAdjustment_001();
         CUSTOMERRENTALADJUSTMENTID_Type idType = new CUSTOMERRENTALADJUSTMENTID_Type();
         idType.setCUSTOMERRENTALADJUSTMENTPK(number);
