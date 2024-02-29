@@ -1,7 +1,6 @@
 package ch.cern.eam.wshub.core.services.workorders.entities;
 
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
-import ch.cern.eam.wshub.core.annotations.InforField;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -31,6 +30,7 @@ public class WorkOrderActivityCheckList implements Serializable {
 		public static final String DATE = "13";
 		public static final String DATETIME = "14";
 		public static final String FREE_TEXT = "15";
+		public static final String DUAL_QUANTITATIVE = "17";
 	}
 
 	public static final class ReturnType {
@@ -62,6 +62,7 @@ public class WorkOrderActivityCheckList implements Serializable {
 	private String type;
 	private String result;
 	private BigDecimal numericValue;
+	private BigDecimal numericValue2;
 	private String finding;
 	private String notes;
 	private String UOM;
@@ -199,6 +200,14 @@ public class WorkOrderActivityCheckList implements Serializable {
 
 	public void setNumericValue(BigDecimal numericValue) {
 		this.numericValue = numericValue;
+	}
+
+	public BigDecimal getNumericValue2() {
+		return numericValue2;
+	}
+
+	public void setNumericValue2(BigDecimal numericValue2) {
+		this.numericValue2 = numericValue2;
 	}
 
 	public Boolean getFollowUp() {
@@ -394,6 +403,7 @@ public class WorkOrderActivityCheckList implements Serializable {
 				", type='" + type + '\'' +
 				", result='" + result + '\'' +
 				", numericValue=" + numericValue +
+				", numericValue2=" + numericValue2 +
 				", finding='" + finding + '\'' +
 				", notes='" + notes + '\'' +
 				", UOM='" + UOM + '\'' +

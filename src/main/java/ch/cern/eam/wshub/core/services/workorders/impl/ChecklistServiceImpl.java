@@ -5,7 +5,10 @@ import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.entities.Pair;
 import ch.cern.eam.wshub.core.services.entities.Signature;
 import ch.cern.eam.wshub.core.services.grids.GridsService;
-import ch.cern.eam.wshub.core.services.grids.entities.*;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestRow;
 import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.services.workorders.ChecklistService;
 import ch.cern.eam.wshub.core.services.workorders.entities.*;
@@ -34,11 +37,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.isEmpty;
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.*;
 import static ch.cern.eam.wshub.core.tools.GridTools.*;
 
@@ -364,6 +368,9 @@ public class ChecklistServiceImpl implements ChecklistService {
 			case CheckListType.FREE_TEXT:
 				workOrderActivityCheckListInfor.setCHECKLISTFREETEXT(workOrderActivityCheckList.getFreeText());
 				break;
+//			case CheckListType.DUAL_QUANTITATIVE:
+//				workOrderActivityCheckListInfor.setRESULTVALUE();
+//				break;
 		}
 
 		if (workOrderActivityCheckList.getNotes() != null) {
@@ -655,6 +662,11 @@ public class ChecklistServiceImpl implements ChecklistService {
 				break;
 			case CheckListType.FREE_TEXT:
 				checklist.setFreeText(getCellContent("checklistfreetext", row));
+				break;
+			case CheckListType.DUAL_QUANTITATIVE:
+				checklist.setNumericValue(encodeBigDecimal(getCellContent("value", row), ""));
+				checklist.setNumericValue2(encodeBigDecimal(getCellContent("value2", row), ""));
+				checklist.setUOM(getCellContent("uom2", row));
 				break;
 		}
 
