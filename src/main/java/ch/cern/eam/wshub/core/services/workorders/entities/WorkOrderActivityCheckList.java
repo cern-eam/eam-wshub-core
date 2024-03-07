@@ -416,6 +416,7 @@ public class WorkOrderActivityCheckList implements Serializable {
 				", finding='" + finding + '\'' +
 				", notes='" + notes + '\'' +
 				", UOM='" + UOM + '\'' +
+				", UOM2='" + UOM + '\'' +
 				", equipmentCode='" + equipmentCode + '\'' +
 				", equipmentDesc='" + equipmentDesc + '\'' +
 				", followUp='" + followUp + '\'' +
