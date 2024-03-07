@@ -368,6 +368,13 @@ public class ChecklistServiceImpl implements ChecklistService {
 			case CheckListType.FREE_TEXT:
 				workOrderActivityCheckListInfor.setCHECKLISTFREETEXT(workOrderActivityCheckList.getFreeText());
 				break;
+			case CheckListType.ENTITY:
+				workOrderActivityCheckListInfor.setENTITYCODEID(new ENTITYCODEID_Type());
+				workOrderActivityCheckListInfor.getENTITYCODEID().setCODE(workOrderActivityCheckList.getEntityCode());
+				ORGANIZATIONID_Type organizationidType = new ORGANIZATIONID_Type();
+				organizationidType.setORGANIZATIONCODE(isEmpty(workOrderActivityCheckList.getEntityCodeOrg()) ? workOrderActivityCheckList.getEntityCodeOrg() : tools.getOrganizationCode(context));
+				workOrderActivityCheckListInfor.getENTITYCODEID().setORGANIZATIONID(organizationidType);
+				break;
 			case CheckListType.DUAL_QUANTITATIVE:
 				workOrderActivityCheckListInfor.setRESULTVALUE(tools.getDataTypeTools().encodeQuantity(workOrderActivityCheckList.getNumericValue(), "Checklists Value"));
 				workOrderActivityCheckListInfor.setRESULTVALUE2(tools.getDataTypeTools().encodeQuantity(workOrderActivityCheckList.getNumericValue2(), "Checklists Value"));
@@ -663,6 +670,11 @@ public class ChecklistServiceImpl implements ChecklistService {
 				break;
 			case CheckListType.FREE_TEXT:
 				checklist.setFreeText(getCellContent("checklistfreetext", row));
+				break;
+			case CheckListType.ENTITY:
+				checklist.setEntityCode(getCellContent("entitycode", row));
+				checklist.setEntityCodeOrg(getCellContent("entitycodeorg", row));
+				checklist.setEntityType(getCellContent("rentitycode", row));
 				break;
 			case CheckListType.DUAL_QUANTITATIVE:
 				checklist.setNumericValue(encodeBigDecimal(getCellContent("value", row), ""));

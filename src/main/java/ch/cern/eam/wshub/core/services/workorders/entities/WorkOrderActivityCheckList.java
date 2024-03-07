@@ -30,6 +30,7 @@ public class WorkOrderActivityCheckList implements Serializable {
 		public static final String DATE = "13";
 		public static final String DATETIME = "14";
 		public static final String FREE_TEXT = "15";
+		public static final String ENTITY = "16";
 		public static final String DUAL_QUANTITATIVE = "17";
 	}
 
@@ -69,6 +70,9 @@ public class WorkOrderActivityCheckList implements Serializable {
 	private String UOM2;
 	private String equipmentCode;
 	private String equipmentDesc;
+	private String entityType;
+	private String entityCode;
+	private String entityCodeOrg;
 	private Boolean followUp = false;
 	private String followUpWorkOrder;
 	private Boolean requiredToClose = false;
@@ -344,6 +348,30 @@ public class WorkOrderActivityCheckList implements Serializable {
 
 	public void setEquipmentDesc(String equipmentDesc) {
 		this.equipmentDesc = equipmentDesc;
+	}
+
+	public String getEntityType() {
+		return entityType;
+	}
+
+	public void setEntityType(String entityType) {
+		this.entityType = entityType;
+	}
+
+	public String getEntityCode() {
+		return entityCode;
+	}
+
+	public void setEntityCode(String entityCode) {
+		this.entityCode = entityCode;
+	}
+
+	public String getEntityCodeOrg() {
+		return entityCodeOrg;
+	}
+
+	public void setEntityCodeOrg(String entityCodeOrg) {
+		this.entityCodeOrg = entityCodeOrg;
 	}
 
 	public String getColor() {
