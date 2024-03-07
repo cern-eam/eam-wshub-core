@@ -66,6 +66,7 @@ public class WorkOrderActivityCheckList implements Serializable {
 	private String finding;
 	private String notes;
 	private String UOM;
+	private String UOM2;
 	private String equipmentCode;
 	private String equipmentDesc;
 	private Boolean followUp = false;
@@ -311,6 +312,14 @@ public class WorkOrderActivityCheckList implements Serializable {
 
 	public void setUOM(String uOM) {
 		UOM = uOM;
+	}
+
+	public String getUOM2() {
+		return UOM2;
+	}
+
+	public void setUOM2(String UOM2) {
+		this.UOM2 = UOM2;
 	}
 
 	public String getFinding() {

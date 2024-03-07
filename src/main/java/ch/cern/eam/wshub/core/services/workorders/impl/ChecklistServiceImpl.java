@@ -368,9 +368,10 @@ public class ChecklistServiceImpl implements ChecklistService {
 			case CheckListType.FREE_TEXT:
 				workOrderActivityCheckListInfor.setCHECKLISTFREETEXT(workOrderActivityCheckList.getFreeText());
 				break;
-//			case CheckListType.DUAL_QUANTITATIVE:
-//				workOrderActivityCheckListInfor.setRESULTVALUE();
-//				break;
+			case CheckListType.DUAL_QUANTITATIVE:
+				workOrderActivityCheckListInfor.setRESULTVALUE(tools.getDataTypeTools().encodeQuantity(workOrderActivityCheckList.getNumericValue(), "Checklists Value"));
+				workOrderActivityCheckListInfor.setRESULTVALUE2(tools.getDataTypeTools().encodeQuantity(workOrderActivityCheckList.getNumericValue2(), "Checklists Value"));
+				break;
 		}
 
 		if (workOrderActivityCheckList.getNotes() != null) {
@@ -666,7 +667,8 @@ public class ChecklistServiceImpl implements ChecklistService {
 			case CheckListType.DUAL_QUANTITATIVE:
 				checklist.setNumericValue(encodeBigDecimal(getCellContent("value", row), ""));
 				checklist.setNumericValue2(encodeBigDecimal(getCellContent("value2", row), ""));
-				checklist.setUOM(getCellContent("uom2", row));
+				checklist.setUOM(getCellContent("uom", row));
+				checklist.setUOM2(getCellContent("uom2", row));
 				break;
 		}
 
