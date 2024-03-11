@@ -372,7 +372,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 				workOrderActivityCheckListInfor.setENTITYCODEID(new ENTITYCODEID_Type());
 				workOrderActivityCheckListInfor.getENTITYCODEID().setCODE(workOrderActivityCheckList.getEntityCode());
 				ORGANIZATIONID_Type organizationidType = new ORGANIZATIONID_Type();
-				organizationidType.setORGANIZATIONCODE(isEmpty(workOrderActivityCheckList.getEntityCodeOrg()) ? workOrderActivityCheckList.getEntityCodeOrg() : tools.getOrganizationCode(context));
+				organizationidType.setORGANIZATIONCODE(isEmpty(workOrderActivityCheckList.getEntityCodeOrg()) ? tools.getOrganizationCode(context) : workOrderActivityCheckList.getEntityCodeOrg());
 				workOrderActivityCheckListInfor.getENTITYCODEID().setORGANIZATIONID(organizationidType);
 				break;
 			case CheckListType.DUAL_QUANTITATIVE:
@@ -571,6 +571,11 @@ public class ChecklistServiceImpl implements ChecklistService {
 
 		checklist.setMaximumValue(encodeBigInteger(
 				getCellContent("maximumslidervalue", row), "maximumslidervalue"));
+		checklist.setMinimumValue2(encodeBigInteger(
+				getCellContent("minimumslidervalue2", row), "minimumslidervalue2"));
+
+		checklist.setMaximumValue2(encodeBigInteger(
+				getCellContent("maximumslidervalue2", row), "maximumslidervalue2"));
 
 		checklist.setNotApplicableOption(getCellContent("notapplicable", row));
 

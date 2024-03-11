@@ -90,6 +90,8 @@ public class WorkOrderActivityCheckList implements Serializable {
 
 	private BigInteger minimumValue;
 	private BigInteger maximumValue;
+	private BigInteger minimumValue2;
+	private BigInteger maximumValue2;
 
 	private String notApplicableOption;
 
@@ -398,6 +400,22 @@ public class WorkOrderActivityCheckList implements Serializable {
 		this.maximumValue = maximumValue;
 	}
 
+	public BigInteger getMinimumValue2() {
+		return minimumValue2;
+	}
+
+	public void setMinimumValue2(BigInteger minimumValue2) {
+		this.minimumValue2 = minimumValue2;
+	}
+
+	public BigInteger getMaximumValue2() {
+		return maximumValue2;
+	}
+
+	public void setMaximumValue2(BigInteger maximumValue2) {
+		this.maximumValue2 = maximumValue2;
+	}
+
 	public String getNotApplicableOption() {
 		return notApplicableOption;
 	}
@@ -459,6 +477,8 @@ public class WorkOrderActivityCheckList implements Serializable {
 				", color='" + color + '\'' +
 				", minimumValue='" + minimumValue + '\'' +
 				", maximumValue='" + maximumValue + '\'' +
+				", minimumValue2='" + minimumValue2 + '\'' +
+				", maximumValue2='" + maximumValue2 + '\'' +
 				", notApplicableOption='" + notApplicableOption + '\'' +
 				", checklistDefinitionCode='" + checklistDefinitionCode + '\'' +
 				", freeText='" + freeText + '\'' +
