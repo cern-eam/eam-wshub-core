@@ -1,9 +1,15 @@
 package ch.cern.eam.wshub.core.services.equipment.impl;
 
 import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.services.contractmanagement.entities.EquipmentReservationAdjustment;
 import ch.cern.eam.wshub.core.services.equipment.EquipmentReservationService;
 import ch.cern.eam.wshub.core.services.equipment.entities.EquipmentReservation;
+import ch.cern.eam.wshub.core.services.grids.GridsService;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
+import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
+import ch.cern.eam.wshub.core.tools.GridTools;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_entities.customerrental_001.CustomerRental;
@@ -17,16 +23,21 @@ import net.datastream.schemas.mp_results.mp7833_001.MP7833_AddCustomerRental_001
 import net.datastream.schemas.mp_results.mp7834_001.MP7834_SyncCustomerRental_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
+import java.util.List;
+
 public class EquipmentReservationServiceImpl implements EquipmentReservationService {
 
     private ApplicationData applicationData;
     private Tools tools;
     private InforWebServicesPT inforws;
 
+    private GridsService gridsService;
+
     public EquipmentReservationServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
         this.applicationData = applicationData;
         this.tools = tools;
         this.inforws = inforWebServicesToolkitClient;
+        this.gridsService = new GridsServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
     }
 
     @Override
@@ -90,5 +101,16 @@ public class EquipmentReservationServiceImpl implements EquipmentReservationServ
         tools.performInforOperation(context, inforws::deleteCustomerRentalOp, deleteReservation);
 
         return customerRentalCode;
+    }
+
+    @Override
+    public List<EquipmentReservationAdjustment> readEquipmentReservationAdjustments(InforContext context, String customerRentalCode) throws InforException {
+        GridRequest gridRequest = new GridRequest("2890", "WSCREN_CAD", "2905");
+        gridRequest.setUserFunctionName("WSCREN");
+        gridRequest.setGridType(GridRequest.GRIDTYPE.LIST);
+        gridRequest.addParam("parameter.customerrentalcode", customerRentalCode);
+        gridRequest.addParam("parameter.organization", tools.getOrganizationCode(context));
+        GridRequestResult gridRequestResult = gridsService.executeQuery(context, gridRequest);
+        return GridTools.convertGridResultToObject(EquipmentReservationAdjustment.class, null, gridRequestResult);
     }
 }
