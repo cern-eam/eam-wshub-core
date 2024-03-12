@@ -23,6 +23,7 @@ import net.datastream.schemas.mp_results.mp7833_001.MP7833_AddCustomerRental_001
 import net.datastream.schemas.mp_results.mp7834_001.MP7834_SyncCustomerRental_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
+import java.util.Date;
 import java.util.List;
 
 public class EquipmentReservationServiceImpl implements EquipmentReservationService {
@@ -43,6 +44,11 @@ public class EquipmentReservationServiceImpl implements EquipmentReservationServ
     @Override
     public String createEquipmentReservation(InforContext context, EquipmentReservation reservationParam) throws InforException {
         CustomerRental reservation = new CustomerRental();
+
+        //Work aroud while EAM does not automatically populates these fields
+        reservationParam.setCreatedDate(new Date());
+        reservationParam.setCreatedBy(context.getCredentials().getUsername());
+
         tools.getInforFieldTools().transformWSHubObject(reservation, reservationParam, context);
 
         if (reservation.getCUSTOMERRENTALID().getCUSTOMERRENTALCODE() == null) {
