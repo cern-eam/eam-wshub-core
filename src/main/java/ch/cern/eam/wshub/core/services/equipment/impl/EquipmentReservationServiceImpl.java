@@ -105,9 +105,8 @@ public class EquipmentReservationServiceImpl implements EquipmentReservationServ
 
     @Override
     public List<EquipmentReservationAdjustment> readEquipmentReservationAdjustments(InforContext context, String customerRentalCode) throws InforException {
-        GridRequest gridRequest = new GridRequest("2890", "WSCREN_CAD", "2905");
+        GridRequest gridRequest = new GridRequest("WSCREN_CAD", GridRequest.GRIDTYPE.LIST);
         gridRequest.setUserFunctionName("WSCREN");
-        gridRequest.setGridType(GridRequest.GRIDTYPE.LIST);
         gridRequest.addParam("parameter.customerrentalcode", customerRentalCode);
         gridRequest.addParam("parameter.organization", tools.getOrganizationCode(context));
         GridRequestResult gridRequestResult = gridsService.executeQuery(context, gridRequest);
