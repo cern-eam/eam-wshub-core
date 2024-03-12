@@ -4,8 +4,11 @@ import ch.cern.eam.wshub.core.annotations.Operation;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.interceptors.LogDataReferenceType;
 import ch.cern.eam.wshub.core.services.INFOR_OPERATION;
+import ch.cern.eam.wshub.core.services.contractmanagement.entities.EquipmentReservationAdjustment;
 import ch.cern.eam.wshub.core.services.equipment.entities.EquipmentReservation;
 import ch.cern.eam.wshub.core.tools.InforException;
+
+import java.util.List;
 
 public interface EquipmentReservationService {
 
@@ -20,5 +23,8 @@ public interface EquipmentReservationService {
 
     @Operation(logOperation = INFOR_OPERATION.EQP_RES_D)
     String deleteEquipmentReservation(InforContext context, String customerRentalCode) throws InforException;
+
+    @Operation(logOperation = INFOR_OPERATION.EQP_RES_RA, logDataReference1 = LogDataReferenceType.INPUT)
+    List<EquipmentReservationAdjustment> readEquipmentReservationAdjustments(InforContext context, String customerRentalCode) throws InforException;
 
 }
