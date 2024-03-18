@@ -512,7 +512,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 
 	public WorkOrderActivityCheckList[] readWorkOrderChecklists(InforContext context, Activity activity) throws InforException {
 		// Fetch the data
-		GridRequest gridRequest = new GridRequest("3315", "WSJOBS_ACK", "3369");
+		GridRequest gridRequest = new GridRequest("WSJOBS_ACK");
 		gridRequest.setRowCount(2000);
 		gridRequest.setUseNative(true);
 		gridRequest.setUserFunctionName("WSJOBS");
@@ -520,7 +520,6 @@ public class ChecklistServiceImpl implements ChecklistService {
 		gridRequest.getParams().put("param.activity", activity.getActivityCode().toString());
 		gridRequest.getParams().put("param.jobseq", "0");
 		GridRequestResult gridRequestResult = gridsService.executeQuery(context, gridRequest);
-
 
 		LinkedList<WorkOrderActivityCheckList> checklists = new LinkedList<>();
 		for (GridRequestRow row : gridRequestResult.getRows()) {
