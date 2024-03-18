@@ -73,6 +73,7 @@ public class WorkOrderActivityCheckList implements Serializable {
 	private String entityType;
 	private String entityCode;
 	private String entityCodeOrg;
+	private String entityClass;
 	private Boolean followUp = false;
 	private String followUpWorkOrder;
 	private Boolean requiredToClose = false;
@@ -376,6 +377,14 @@ public class WorkOrderActivityCheckList implements Serializable {
 		this.entityCodeOrg = entityCodeOrg;
 	}
 
+	public String getEntityClass() {
+		return entityClass;
+	}
+
+	public void setEntityClass(String entityClass) {
+		this.entityClass = entityClass;
+	}
+
 	public String getColor() {
 		return color;
 	}
@@ -468,6 +477,7 @@ public class WorkOrderActivityCheckList implements Serializable {
 				", entityType='" + entityType + '\'' +
 				", entityCode='" + entityCode + '\'' +
 				", entityCodeOrg='" + entityCodeOrg + '\'' +
+				", entityClass='" + entityClass + '\'' +
 				", followUp='" + followUp + '\'' +
 				", followUWorkOrder='" + followUpWorkOrder + '\'' +
 				", requiredToClose='" + requiredToClose + '\'' +
