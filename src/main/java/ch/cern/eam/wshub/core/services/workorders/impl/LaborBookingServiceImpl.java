@@ -12,7 +12,6 @@ import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.GridTools;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
-import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
 import net.datastream.schemas.mp_fields.*;
 import net.datastream.schemas.mp_functions.mp0035_001.MP0035_GetActivity_001;
 import net.datastream.schemas.mp_functions.mp0037_001.MP0037_AddActivity_001;
@@ -27,9 +26,12 @@ import net.datastream.schemas.mp_results.mp0042_001.MP0042_AddLaborBooking_001_R
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
 
 public class LaborBookingServiceImpl implements LaborBookingService {
 
@@ -233,6 +235,7 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 		//
 		MP0038_SyncActivity_001 syncActivity = new MP0038_SyncActivity_001();
 		syncActivity.setActivity(activityInfor);
+		syncActivity.setConfirmadddeletechecklist("confirmed");
 
 		MP0038_SyncActivity_001_Result syncresult =
 			tools.performInforOperation(context, inforws::syncActivityOp, syncActivity);
