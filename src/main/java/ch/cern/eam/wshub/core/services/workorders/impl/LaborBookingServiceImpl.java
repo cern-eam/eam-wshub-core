@@ -204,6 +204,10 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 	}
 
 	public String updateActivity(InforContext context, Activity activityParam) throws InforException {
+		return updateActivity(context, activityParam, null);
+	}
+
+	public String updateActivity(InforContext context, Activity activityParam, String confirmDeleteChecklist) throws InforException {
 		//
 		// READ THE ACTIVITY FIRST
 		//
@@ -220,7 +224,7 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 		getActivity.getACTIVITYID().getWORKORDERID().setJOBNUM(activityParam.getWorkOrderNumber());
 
 		MP0035_GetActivity_001_Result getresult =
-			tools.performInforOperation(context, inforws::getActivityOp, getActivity);
+				tools.performInforOperation(context, inforws::getActivityOp, getActivity);
 
 		net.datastream.schemas.mp_entities.activity_001.Activity activityInfor = getresult.getResultData().getActivity();
 
@@ -235,10 +239,10 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 		//
 		MP0038_SyncActivity_001 syncActivity = new MP0038_SyncActivity_001();
 		syncActivity.setActivity(activityInfor);
-		syncActivity.setConfirmadddeletechecklist("confirmed");
+		syncActivity.setConfirmadddeletechecklist(confirmDeleteChecklist);
 
 		MP0038_SyncActivity_001_Result syncresult =
-			tools.performInforOperation(context, inforws::syncActivityOp, syncActivity);
+				tools.performInforOperation(context, inforws::syncActivityOp, syncActivity);
 		return syncresult.getResultData().getACTIVITYID().getACTIVITYCODE().getValue() + "";
 	}
 
