@@ -2,14 +2,14 @@ package ch.cern.eam.wshub.core.services.grids.impl;
 
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.entities.Credentials;
-import ch.cern.eam.wshub.core.services.grids.entities.*;
-import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.tools.InforException;
-import ch.cern.eam.wshub.core.tools.Tools;
 import ch.cern.eam.wshub.core.services.grids.customfields.GridCustomFieldHandler;
+import ch.cern.eam.wshub.core.services.grids.entities.*;
 import ch.cern.eam.wshub.core.services.grids.exceptions.IncorrectParenthesesGridFilterException;
 import ch.cern.eam.wshub.core.services.grids.exceptions.IncorrectSortTypeException;
 import ch.cern.eam.wshub.core.services.grids.exceptions.MissingJoinerGridFilterException;
+import ch.cern.eam.wshub.core.tools.ApplicationData;
+import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -31,6 +31,8 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
 
 public class JPAGrids implements Serializable {
 
@@ -640,7 +642,7 @@ public class JPAGrids implements Serializable {
 		int filtersLengthMinusOne = filters.size() - 1;
 		for (GridRequestFilter filter : filters) {
 			//skip custom fields
-			if(tagNames.get(filter.getFieldName()) != null){
+			if (tagNames.get(filter.getFieldName()) != null && isNotEmpty(filter.getOperator())) {
 				
 				if (filter.getLeftParenthesis()) filterString.append("(");
 

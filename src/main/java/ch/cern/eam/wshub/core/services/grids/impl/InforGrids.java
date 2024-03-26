@@ -348,9 +348,16 @@ public class InforGrids implements Serializable {
 					case "LESS_THAN_EQUALS":
 						inforFilter.setOPERATOR("<=");
 						break;
-					case "GREATER_THAN_EQUALS":
-						inforFilter.setOPERATOR(">=");
+					case "SELECTED":
+						inforFilter.setOPERATOR("=");
+						inforFilter.setVALUE("-1");
 						break;
+					case "NOT_SELECTED":
+						inforFilter.setOPERATOR("=");
+						inforFilter.setVALUE("0");
+						break;
+					case "":
+						continue;
 				}
 
 				multiaddon_filters.getMADDON_FILTER().add(inforFilter);
