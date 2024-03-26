@@ -30,6 +30,7 @@ public class WorkOrderActivityCheckList implements Serializable {
 		public static final String DATE = "13";
 		public static final String DATETIME = "14";
 		public static final String FREE_TEXT = "15";
+		public static final String ENTITY = "16";
 		public static final String DUAL_QUANTITATIVE = "17";
 	}
 
@@ -69,6 +70,10 @@ public class WorkOrderActivityCheckList implements Serializable {
 	private String UOM2;
 	private String equipmentCode;
 	private String equipmentDesc;
+	private String entityType;
+	private String entityCode;
+	private String entityCodeOrg;
+	private String entityClass;
 	private Boolean followUp = false;
 	private String followUpWorkOrder;
 	private Boolean requiredToClose = false;
@@ -86,6 +91,8 @@ public class WorkOrderActivityCheckList implements Serializable {
 
 	private BigInteger minimumValue;
 	private BigInteger maximumValue;
+	private BigInteger minimumValue2;
+	private BigInteger maximumValue2;
 
 	private String notApplicableOption;
 
@@ -346,6 +353,38 @@ public class WorkOrderActivityCheckList implements Serializable {
 		this.equipmentDesc = equipmentDesc;
 	}
 
+	public String getEntityType() {
+		return entityType;
+	}
+
+	public void setEntityType(String entityType) {
+		this.entityType = entityType;
+	}
+
+	public String getEntityCode() {
+		return entityCode;
+	}
+
+	public void setEntityCode(String entityCode) {
+		this.entityCode = entityCode;
+	}
+
+	public String getEntityCodeOrg() {
+		return entityCodeOrg;
+	}
+
+	public void setEntityCodeOrg(String entityCodeOrg) {
+		this.entityCodeOrg = entityCodeOrg;
+	}
+
+	public String getEntityClass() {
+		return entityClass;
+	}
+
+	public void setEntityClass(String entityClass) {
+		this.entityClass = entityClass;
+	}
+
 	public String getColor() {
 		return color;
 	}
@@ -368,6 +407,22 @@ public class WorkOrderActivityCheckList implements Serializable {
 
 	public void setMaximumValue(BigInteger maximumValue) {
 		this.maximumValue = maximumValue;
+	}
+
+	public BigInteger getMinimumValue2() {
+		return minimumValue2;
+	}
+
+	public void setMinimumValue2(BigInteger minimumValue2) {
+		this.minimumValue2 = minimumValue2;
+	}
+
+	public BigInteger getMaximumValue2() {
+		return maximumValue2;
+	}
+
+	public void setMaximumValue2(BigInteger maximumValue2) {
+		this.maximumValue2 = maximumValue2;
 	}
 
 	public String getNotApplicableOption() {
@@ -419,6 +474,10 @@ public class WorkOrderActivityCheckList implements Serializable {
 				", UOM2='" + UOM + '\'' +
 				", equipmentCode='" + equipmentCode + '\'' +
 				", equipmentDesc='" + equipmentDesc + '\'' +
+				", entityType='" + entityType + '\'' +
+				", entityCode='" + entityCode + '\'' +
+				", entityCodeOrg='" + entityCodeOrg + '\'' +
+				", entityClass='" + entityClass + '\'' +
 				", followUp='" + followUp + '\'' +
 				", followUWorkOrder='" + followUpWorkOrder + '\'' +
 				", requiredToClose='" + requiredToClose + '\'' +
@@ -428,6 +487,8 @@ public class WorkOrderActivityCheckList implements Serializable {
 				", color='" + color + '\'' +
 				", minimumValue='" + minimumValue + '\'' +
 				", maximumValue='" + maximumValue + '\'' +
+				", minimumValue2='" + minimumValue2 + '\'' +
+				", maximumValue2='" + maximumValue2 + '\'' +
 				", notApplicableOption='" + notApplicableOption + '\'' +
 				", checklistDefinitionCode='" + checklistDefinitionCode + '\'' +
 				", freeText='" + freeText + '\'' +
