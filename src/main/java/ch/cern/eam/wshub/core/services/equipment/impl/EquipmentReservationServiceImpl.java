@@ -45,9 +45,9 @@ public class EquipmentReservationServiceImpl implements EquipmentReservationServ
     public String createEquipmentReservation(InforContext context, EquipmentReservation reservationParam) throws InforException {
         CustomerRental reservation = new CustomerRental();
 
-        //Work aroud while EAM does not automatically populates these fields
+        //Work aroud while EAM does not automatically populate these fields
         reservationParam.setCreatedDate(new Date());
-        reservationParam.setCreatedBy(context.getCredentials().getUsername());
+        reservationParam.setCreatedBy(context.getCredentials().getUsername().toUpperCase());
 
         tools.getInforFieldTools().transformWSHubObject(reservation, reservationParam, context);
 
