@@ -102,12 +102,11 @@ public class EquipmentReservation {
     @InforField(xpath = "StandardUserDefinedFields")
     private UserDefinedFields userDefinedFields;
 
-
     public String getCode() {
         return code;
     }
 
-    public void setCode(final String code) {
+    public void setCode(String code) {
         this.code = code;
     }
 
@@ -115,7 +114,7 @@ public class EquipmentReservation {
         return organizationCode;
     }
 
-    public void setOrganizationCode(final String organizationCode) {
+    public void setOrganizationCode(String organizationCode) {
         this.organizationCode = organizationCode;
     }
 
@@ -123,7 +122,7 @@ public class EquipmentReservation {
         return description;
     }
 
-    public void setDescription(final String description) {
+    public void setDescription(String description) {
         this.description = description;
     }
 
@@ -131,7 +130,7 @@ public class EquipmentReservation {
         return rentalType;
     }
 
-    public void setRentalType(final String rentalType) {
+    public void setRentalType(String rentalType) {
         this.rentalType = rentalType;
     }
 
@@ -139,7 +138,7 @@ public class EquipmentReservation {
         return status;
     }
 
-    public void setStatus(final String status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 
@@ -147,7 +146,7 @@ public class EquipmentReservation {
         return equipmentCode;
     }
 
-    public void setEquipmentCode(final String equipmentCode) {
+    public void setEquipmentCode(String equipmentCode) {
         this.equipmentCode = equipmentCode;
     }
 
@@ -155,7 +154,7 @@ public class EquipmentReservation {
         return locationCode;
     }
 
-    public void setLocationCode(final String locationCode) {
+    public void setLocationCode(String locationCode) {
         this.locationCode = locationCode;
     }
 
@@ -163,7 +162,7 @@ public class EquipmentReservation {
         return classCode;
     }
 
-    public void setClassCode(final String classCode) {
+    public void setClassCode(String classCode) {
         this.classCode = classCode;
     }
 
@@ -171,7 +170,7 @@ public class EquipmentReservation {
         return reference;
     }
 
-    public void setReference(final String reference) {
+    public void setReference(String reference) {
         this.reference = reference;
     }
 
@@ -179,7 +178,7 @@ public class EquipmentReservation {
         return vehicleType;
     }
 
-    public void setVehicleType(final String vehicleType) {
+    public void setVehicleType(String vehicleType) {
         this.vehicleType = vehicleType;
     }
 
@@ -187,7 +186,7 @@ public class EquipmentReservation {
         return issueTo;
     }
 
-    public void setIssueTo(final String issueTo) {
+    public void setIssueTo(String issueTo) {
         this.issueTo = issueTo;
     }
 
@@ -195,7 +194,7 @@ public class EquipmentReservation {
         return costCode;
     }
 
-    public void setCostCode(final String costCode) {
+    public void setCostCode(String costCode) {
         this.costCode = costCode;
     }
 
@@ -203,7 +202,7 @@ public class EquipmentReservation {
         return rentalTemplate;
     }
 
-    public void setRentalTemplate(final String rentalTemplate) {
+    public void setRentalTemplate(String rentalTemplate) {
         this.rentalTemplate = rentalTemplate;
     }
 
@@ -211,7 +210,7 @@ public class EquipmentReservation {
         return customer;
     }
 
-    public void setCustomer(final String customer) {
+    public void setCustomer(String customer) {
         this.customer = customer;
     }
 
@@ -220,7 +219,7 @@ public class EquipmentReservation {
         return completedDate;
     }
 
-    public void setCompletedDate(final Date completedDate) {
+    public void setCompletedDate(Date completedDate) {
         this.completedDate = completedDate;
     }
 
@@ -228,7 +227,7 @@ public class EquipmentReservation {
         return createdBy;
     }
 
-    public void setCreatedBy(final String createdBy) {
+    public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
     }
 
@@ -237,7 +236,7 @@ public class EquipmentReservation {
         return createdDate;
     }
 
-    public void setCreatedDate(final Date createdDate) {
+    public void setCreatedDate(Date createdDate) {
         this.createdDate = createdDate;
     }
 
@@ -246,7 +245,7 @@ public class EquipmentReservation {
         return estimatedIssueDate;
     }
 
-    public void setEstimatedIssueDate(final Date estimatedIssueDate) {
+    public void setEstimatedIssueDate(Date estimatedIssueDate) {
         this.estimatedIssueDate = estimatedIssueDate;
     }
 
@@ -255,7 +254,7 @@ public class EquipmentReservation {
         return issuedDate;
     }
 
-    public void setIssuedDate(final Date issuedDate) {
+    public void setIssuedDate(Date issuedDate) {
         this.issuedDate = issuedDate;
     }
 
@@ -263,7 +262,7 @@ public class EquipmentReservation {
         return issueLocation;
     }
 
-    public void setIssueLocation(final String issueLocation) {
+    public void setIssueLocation(String issueLocation) {
         this.issueLocation = issueLocation;
     }
 
@@ -271,7 +270,7 @@ public class EquipmentReservation {
         return issuedBy;
     }
 
-    public void setIssuedBy(final String issuedBy) {
+    public void setIssuedBy(String issuedBy) {
         this.issuedBy = issuedBy;
     }
 
@@ -280,17 +279,16 @@ public class EquipmentReservation {
         return returnDate;
     }
 
-    public void setReturnDate(final Date returnDate) {
+    public void setReturnDate(Date returnDate) {
         this.returnDate = returnDate;
     }
-
-
+    
     @XmlJavaTypeAdapter(DateAdapter.class)
     public Date getEstimatedReturnDate() {
         return estimatedReturnDate;
     }
 
-    public void setEstimatedReturnDate(final Date estimatedReturnDate) {
+    public void setEstimatedReturnDate(Date estimatedReturnDate) {
         this.estimatedReturnDate = estimatedReturnDate;
     }
 
@@ -298,7 +296,7 @@ public class EquipmentReservation {
         return returnLocation;
     }
 
-    public void setReturnLocation(final String returnLocation) {
+    public void setReturnLocation(String returnLocation) {
         this.returnLocation = returnLocation;
     }
 
@@ -306,7 +304,7 @@ public class EquipmentReservation {
         return invoicedAmount;
     }
 
-    public void setInvoicedAmount(final BigDecimal invoicedAmount) {
+    public void setInvoicedAmount(BigDecimal invoicedAmount) {
         this.invoicedAmount = invoicedAmount;
     }
 
@@ -314,7 +312,7 @@ public class EquipmentReservation {
         return calculatedDays;
     }
 
-    public void setCalculatedDays(final BigDecimal calculatedDays) {
+    public void setCalculatedDays(BigDecimal calculatedDays) {
         this.calculatedDays = calculatedDays;
     }
 
@@ -322,7 +320,7 @@ public class EquipmentReservation {
         return calculatedHours;
     }
 
-    public void setCalculatedHours(final BigDecimal calculatedHours) {
+    public void setCalculatedHours(BigDecimal calculatedHours) {
         this.calculatedHours = calculatedHours;
     }
 
@@ -330,7 +328,7 @@ public class EquipmentReservation {
         return correctedDays;
     }
 
-    public void setCorrectedDays(final BigDecimal correctedDays) {
+    public void setCorrectedDays(BigDecimal correctedDays) {
         this.correctedDays = correctedDays;
     }
 
@@ -338,7 +336,7 @@ public class EquipmentReservation {
         return correctedHours;
     }
 
-    public void setCorrectedHours(final BigDecimal correctedHours) {
+    public void setCorrectedHours(BigDecimal correctedHours) {
         this.correctedHours = correctedHours;
     }
 
@@ -346,7 +344,7 @@ public class EquipmentReservation {
         return adjustments;
     }
 
-    public void setAdjustments(final BigDecimal adjustments) {
+    public void setAdjustments(BigDecimal adjustments) {
         this.adjustments = adjustments;
     }
 
@@ -354,7 +352,7 @@ public class EquipmentReservation {
         return netAmount;
     }
 
-    public void setNetAmount(final BigDecimal netAmount) {
+    public void setNetAmount(BigDecimal netAmount) {
         this.netAmount = netAmount;
     }
 
@@ -362,7 +360,7 @@ public class EquipmentReservation {
         return grossAmount;
     }
 
-    public void setGrossAmount(final BigDecimal grossAmount) {
+    public void setGrossAmount(BigDecimal grossAmount) {
         this.grossAmount = grossAmount;
     }
 
@@ -370,16 +368,8 @@ public class EquipmentReservation {
         return taxAmount;
     }
 
-    public void setTaxAmount(final BigDecimal taxAmount) {
+    public void setTaxAmount(BigDecimal taxAmount) {
         this.taxAmount = taxAmount;
-    }
-
-    public UserDefinedFields getUserDefinedFields() {
-        return userDefinedFields;
-    }
-
-    public void setUserDefinedFields(final UserDefinedFields userDefinedFields) {
-        this.userDefinedFields = userDefinedFields;
     }
 
     public BigDecimal getIssueFuelLevel() {
@@ -428,6 +418,14 @@ public class EquipmentReservation {
 
     public void setUom(String uom) {
         this.uom = uom;
+    }
+
+    public UserDefinedFields getUserDefinedFields() {
+        return userDefinedFields;
+    }
+
+    public void setUserDefinedFields(UserDefinedFields userDefinedFields) {
+        this.userDefinedFields = userDefinedFields;
     }
 
     @Override
