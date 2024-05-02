@@ -92,7 +92,18 @@ public class EquipmentReservation {
     private BigDecimal grossAmount;
     @InforField(xpath = "InvoicingDetails/TAXAMOUNT")
     private BigDecimal taxAmount;
-
+    @InforField(xpath = "IssueDetails/ISSUEFUELLEVEL")
+    private BigDecimal issueFuelLevel;
+    @InforField(xpath = "IssueDetails/ISSUEREADING")
+    private BigDecimal issueReading;
+    @InforField(xpath = "ReturnDetails/RETURNEDTO/USERCODE")
+    private String returnedTo;
+    @InforField(xpath = "ReturnDetails/RETURNFUELLEVEL")
+    private BigDecimal returnFuelLevel;
+    @InforField(xpath = "ReturnDetails/RETURNREADING")
+    private BigDecimal returnReading;
+    @InforField(xpath = "IssueDetails/UOMID/UOMCODE")
+    private String uom;
     @Transient
     @InforField(xpath = "StandardUserDefinedFields")
     private UserDefinedFields userDefinedFields;
@@ -370,6 +381,54 @@ public class EquipmentReservation {
         this.userDefinedFields = userDefinedFields;
     }
 
+    public BigDecimal getIssueFuelLevel() {
+        return issueFuelLevel;
+    }
+
+    public void setIssueFuelLevel(BigDecimal issueFuelLevel) {
+        this.issueFuelLevel = issueFuelLevel;
+    }
+
+    public BigDecimal getIssueReading() {
+        return issueReading;
+    }
+
+    public void setIssueReading(BigDecimal issueReading) {
+        this.issueReading = issueReading;
+    }
+
+    public String getReturnedTo() {
+        return returnedTo;
+    }
+
+    public void setReturnedTo(String returnedTo) {
+        this.returnedTo = returnedTo;
+    }
+
+    public BigDecimal getReturnFuelLevel() {
+        return returnFuelLevel;
+    }
+
+    public void setReturnFuelLevel(BigDecimal returnFuelLevel) {
+        this.returnFuelLevel = returnFuelLevel;
+    }
+
+    public BigDecimal getReturnReading() {
+        return returnReading;
+    }
+
+    public void setReturnReading(BigDecimal returnReading) {
+        this.returnReading = returnReading;
+    }
+
+    public String getUom() {
+        return uom;
+    }
+
+    public void setUom(String uom) {
+        this.uom = uom;
+    }
+
     @Override
     public String toString() {
         return "EquipmentReservation{" +
@@ -406,6 +465,12 @@ public class EquipmentReservation {
                 ", netAmount=" + netAmount +
                 ", grossAmount=" + grossAmount +
                 ", taxAmount=" + taxAmount +
+                ", issueFuelLevel=" + issueFuelLevel +
+                ", issueReading=" + issueReading +
+                ", returnedTo='" + returnedTo + '\'' +
+                ", returnFuelLevel=" + returnFuelLevel +
+                ", returnReading=" + returnReading +
+                ", uom='" + uom + '\'' +
                 ", userDefinedFields=" + userDefinedFields +
                 '}';
     }
