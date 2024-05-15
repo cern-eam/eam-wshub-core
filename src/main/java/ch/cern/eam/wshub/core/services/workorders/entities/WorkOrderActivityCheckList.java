@@ -98,6 +98,8 @@ public class WorkOrderActivityCheckList implements Serializable {
 
 	private String checklistDefinitionCode;
 
+	private Boolean conditional;
+
 	public String getCheckListCode() {
 		return checkListCode;
 	}
@@ -453,6 +455,14 @@ public class WorkOrderActivityCheckList implements Serializable {
 
 	public void setDateTime(Date dateTime) { this.dateTime = dateTime; }
 
+	public Boolean isConditional() {
+		return conditional;
+	}
+
+	public void setConditional(Boolean conditional) {
+		this.conditional = conditional;
+	}
+
 	@Override
 	public String toString() {
 		return "WorkOrderActivityCheckList{" +
@@ -494,6 +504,7 @@ public class WorkOrderActivityCheckList implements Serializable {
 				", freeText='" + freeText + '\'' +
 				", date='" + date + '\'' +
 				", dateTime='" + dateTime + '\'' +
+				", conditional='" + conditional + '\'' +
 				'}';
 	}
 }

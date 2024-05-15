@@ -561,6 +561,8 @@ public class ChecklistServiceImpl implements ChecklistService {
 			checklist.setRequiredToClose(false);
 		}
 
+		checklist.setConditional("X".equalsIgnoreCase(getCellContent("conditionpk", row)));
+
 		// NOTES
 		checklist.setNotes(getCellContent("notes", row));
 
