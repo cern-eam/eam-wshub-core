@@ -95,7 +95,7 @@ public class EquipmentReservation {
     private BigDecimal grossAmount;
     @InforField(xpath = "InvoicingDetails/TAXAMOUNT")
     private BigDecimal taxAmount;
-    @InforField(xpath = "IssueDetails/ISSUEFUELLEVEL")
+    @InforField(xpath = "IssueDetails/ISSUEVEFUELLEVEL")
     private BigDecimal issueFuelLevel;
     @InforField(xpath = "IssueDetails/ISSUEREADING")
     private BigDecimal issueReading;
