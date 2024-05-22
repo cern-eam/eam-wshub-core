@@ -3,6 +3,7 @@ package ch.cern.eam.wshub.core.services.contractmanagement.entities;
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
 import ch.cern.eam.wshub.core.annotations.GridField;
 import ch.cern.eam.wshub.core.annotations.InforField;
+import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
@@ -68,6 +69,8 @@ public class EquipmentReservationAdjustment implements Serializable {
     @GridField(name = "recordid")
     @InforField(xpath = "recordid")
     private BigInteger updateCount;
+    @InforField(xpath = "StandardUserDefinedFields")
+    private UserDefinedFields userDefinedFields;
 
     public String getCode() {
         return code;
@@ -222,6 +225,14 @@ public class EquipmentReservationAdjustment implements Serializable {
         this.updateCount = updateCount;
     }
 
+    public UserDefinedFields getUserDefinedFields() {
+        return userDefinedFields;
+    }
+
+    public void setUserDefinedFields(UserDefinedFields userDefinedFields) {
+        this.userDefinedFields = userDefinedFields;
+    }
+
     @Override
     public String toString() {
         return "EquipmentReservationAdjustment{" +
@@ -244,6 +255,7 @@ public class EquipmentReservationAdjustment implements Serializable {
                 ", invoiceOrgCode='" + invoiceOrgCode + '\'' +
                 ", createdWorkOrder='" + createdWorkOrder + '\'' +
                 ", updateCount=" + updateCount +
+                ", userDefinedFields=" + userDefinedFields +
                 '}';
     }
 }
