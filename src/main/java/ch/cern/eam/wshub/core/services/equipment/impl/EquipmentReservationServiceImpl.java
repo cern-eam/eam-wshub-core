@@ -115,6 +115,7 @@ public class EquipmentReservationServiceImpl implements EquipmentReservationServ
         gridRequest.setUserFunctionName("WSCREN");
         gridRequest.addParam("parameter.customerrentalcode", customerRentalCode);
         gridRequest.addParam("parameter.organization", tools.getOrganizationCode(context));
+        gridRequest.sortBy("adjustmentid", "DESC");
         GridRequestResult gridRequestResult = gridsService.executeQuery(context, gridRequest);
         return GridTools.convertGridResultToObject(EquipmentReservationAdjustment.class, null, gridRequestResult);
     }

@@ -3,6 +3,8 @@ package ch.cern.eam.wshub.core.services.contractmanagement.impl;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.contractmanagement.EquipmentReservationAdjustmentService;
 import ch.cern.eam.wshub.core.services.contractmanagement.entities.EquipmentReservationAdjustment;
+import ch.cern.eam.wshub.core.services.equipment.EquipmentReservationService;
+import ch.cern.eam.wshub.core.services.equipment.impl.EquipmentReservationServiceImpl;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
@@ -20,15 +22,25 @@ import net.datastream.schemas.mp_results.mp7865_001.MP7865_SyncCustomerRentalAdj
 import net.datastream.schemas.mp_results.mp7866_001.MP7866_DeleteCustomerRentalAdjustment_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.Objects;
+
 public class EquipmentReservationAdjustmentServiceImpl implements EquipmentReservationAdjustmentService {
     private final Tools tools;
     private final InforWebServicesPT inforws;
     private ApplicationData applicationData;
 
+    private EquipmentReservationService equipmentReservationService;
+
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
     public EquipmentReservationAdjustmentServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
         this.applicationData = applicationData;
         this.tools = tools;
         this.inforws = inforWebServicesToolkitClient;
+        this.equipmentReservationService = new EquipmentReservationServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
     }
 
     @Override
@@ -37,7 +49,20 @@ public class EquipmentReservationAdjustmentServiceImpl implements EquipmentReser
         CustomerRentalAdjustment customerRentalAdjustment = tools.getInforFieldTools().transformWSHubObject(createDefaultEquipmentReservationAdjustment(), equipmentReservationAdjustment, context);
         addCustomerRentalAdjustment.setCustomerRentalAdjustment(customerRentalAdjustment);
         MP7864_AddCustomerRentalAdjustment_001_Result addOperationResult = tools.performInforOperation(context, inforws::addCustomerRentalAdjustmentOp, addCustomerRentalAdjustment);
-        return addOperationResult.getResultData().getCUSTOMERRENTALADJUSTMENTID().getCUSTOMERRENTALADJUSTMENTPK();
+
+        // Since EAM always returns a 0 as the primary key of the created Equipment Reservation Adjustment, we have to use an alternative method to retrieve it
+        // The solution might return incorrect results if multiple clients are creating requests at the same time, but it's still
+        //better than the alternative of always not having the ID (for CERN's use case)
+        List<EquipmentReservationAdjustment> equipmentReservationAdjustments = equipmentReservationService.readEquipmentReservationAdjustments(context, equipmentReservationAdjustment.getCustomerRentalCode());
+        equipmentReservationAdjustments.removeIf(s ->
+                !Objects.equals(dateFormat.format(s.getDate()), dateFormat.format(equipmentReservationAdjustment.getDate()))
+                || s.getTotalAmount().compareTo(equipmentReservationAdjustment.getTotalAmount() == null ? BigDecimal.ZERO : equipmentReservationAdjustment.getTotalAmount()) != 0
+                || !Objects.equals(s.getAdjustmentCode(), equipmentReservationAdjustment.getAdjustmentCode())
+            );
+        if (equipmentReservationAdjustments.isEmpty()) {
+            throw new InforException("Could not retrieve Equipment Reservation Adjustment id.", null, null);
+        }
+        return equipmentReservationAdjustments.get(0).getCode();
     }
 
     @Override
