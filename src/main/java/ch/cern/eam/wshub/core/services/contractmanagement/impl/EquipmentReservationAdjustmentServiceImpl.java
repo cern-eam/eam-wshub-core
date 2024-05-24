@@ -56,7 +56,8 @@ public class EquipmentReservationAdjustmentServiceImpl implements EquipmentReser
         List<EquipmentReservationAdjustment> equipmentReservationAdjustments = equipmentReservationService.readEquipmentReservationAdjustments(context, equipmentReservationAdjustment.getCustomerRentalCode());
         equipmentReservationAdjustments.removeIf(s ->
                 !Objects.equals(dateFormat.format(s.getDate()), dateFormat.format(equipmentReservationAdjustment.getDate()))
-                || s.getTotalAmount().compareTo(equipmentReservationAdjustment.getTotalAmount() == null ? BigDecimal.ZERO : equipmentReservationAdjustment.getTotalAmount()) != 0
+                || (s.getRate() == null ? equipmentReservationAdjustment.getRate() != null
+                        : s.getRate().compareTo(equipmentReservationAdjustment.getRate()) != 0)
                 || !Objects.equals(s.getAdjustmentCode(), equipmentReservationAdjustment.getAdjustmentCode())
             );
         if (equipmentReservationAdjustments.isEmpty()) {
@@ -113,5 +114,4 @@ public class EquipmentReservationAdjustmentServiceImpl implements EquipmentReser
         defaultObject.setCUSTOMERRENTALADJUSTMENTID(code);
         return defaultObject;
     }
-
 }
