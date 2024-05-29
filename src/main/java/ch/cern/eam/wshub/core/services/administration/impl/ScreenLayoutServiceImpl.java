@@ -4,7 +4,10 @@ import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.administration.ScreenLayoutService;
 import ch.cern.eam.wshub.core.services.administration.entities.*;
 import ch.cern.eam.wshub.core.services.grids.GridsService;
-import ch.cern.eam.wshub.core.services.grids.entities.*;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestRow;
 import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.GridTools;
@@ -52,6 +55,8 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
         if (tabs != null && tabs.size() > 0) {
             screenLayout.setTabs(getTabs(context, tabs, userGroup, systemFunction, userFunction, entity));
         }
+
+        screenLayout.setCustomGridTabs(getCustomGridTabs(context, userGroup, userFunction));
         // Get layout labels first
         Map<String, String> labels = getTabLayoutLabels(context, userFunction);
         // For all fields for the record view the bot_fld1 matches the upper-cased elementId
@@ -148,6 +153,19 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
         return result;
     }
 
+    private Map<String, Tab> getCustomGridTabs(InforContext context, String userGroup, String userFunction) throws InforException {
+        GridRequest gridRequest = new GridRequest("BSGROU_PRM");
+        gridRequest.getParams().put("param.usergroupcode", userGroup);
+        gridRequest.getParams().put("param.userfunction", userFunction);
+        gridRequest.addFilter("tabcode", "X", "BEGINS", GridRequestFilter.JOINER.OR);
+        GridRequestResult result = gridsService.executeQuery(context, gridRequest);
+        Map<String, Tab> tabs = new HashMap<>();
+        for (GridRequestRow row : result.getRows()) {
+            tabs.put(GridTools.getCellContent("tabcode", row), gridRowToTab(row));
+        }
+        return tabs;
+    }
+
     private Map<String, ElementInfo> getTabLayout(InforContext context, String userGroup, String systemFunction, String userFunction, String entity) throws InforException {
         GridRequest gridRequestLayout = new GridRequest( "EULLAY");
         gridRequestLayout.setRowCount(2000);
@@ -241,6 +259,18 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
             }
         }
         return elementInfo;
+    }
+
+    private Tab gridRowToTab(GridRequestRow row) {
+        Tab tab = new Tab();
+        tab.setTabAvailable(decodeBoolean(GridTools.getCellContent("tabavailable", row)));
+        tab.setAlwaysDisplayed(decodeBoolean(GridTools.getCellContent("tabalwaysdisp", row)));
+        tab.setTabDescription(GridTools.getCellContent("tabcodetext", row));
+        tab.setInsertAllowed(decodeBoolean(GridTools.getCellContent("insertval", row)));
+        tab.setQueryAllowed(decodeBoolean(GridTools.getCellContent("queryval", row)));
+        tab.setUpdateAllowed(decodeBoolean(GridTools.getCellContent("updateval", row)));
+        tab.setDeleteAllowed(decodeBoolean(GridTools.getCellContent("deleteval", row)));
+        return tab;
     }
 
 }
