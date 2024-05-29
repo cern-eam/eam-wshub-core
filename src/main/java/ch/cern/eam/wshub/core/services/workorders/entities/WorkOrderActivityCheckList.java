@@ -94,6 +94,7 @@ public class WorkOrderActivityCheckList implements Serializable {
 	private BigInteger minimumValue2;
 	private BigInteger maximumValue2;
 
+	private String responsibility;
 	private String notApplicableOption;
 
 	private String checklistDefinitionCode;
@@ -452,6 +453,10 @@ public class WorkOrderActivityCheckList implements Serializable {
 	public Date getDateTime() { return dateTime; }
 
 	public void setDateTime(Date dateTime) { this.dateTime = dateTime; }
+
+	public String getResponsibility() { return responsibility; }
+
+	public void setResponsibility(String responsibility) { this.responsibility = responsibility; }
 
 	@Override
 	public String toString() {
