@@ -90,6 +90,7 @@ public class UserSetupServiceImpl implements UserSetupService {
 
 		// Fetch corresponding employee code and description
 		GridRequest employeeGridRequest = new GridRequest("WSEMPS", GridRequest.GRIDTYPE.LIST);
+		employeeGridRequest.setUserFunctionName("WSEMPS");
 		employeeGridRequest.setUseNative(false);
 		employeeGridRequest.addFilter("associateduser", userCode, "=");
 		GridRequestResult employeeGridResult = gridsService.executeQuery(context, employeeGridRequest);
