@@ -1,11 +1,14 @@
 package ch.cern.eam.wshub.core.services.equipment.entities;
 
+import ch.cern.eam.wshub.core.adapters.DateAdapter;
 import ch.cern.eam.wshub.core.annotations.GridField;
 import ch.cern.eam.wshub.core.annotations.InforField;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Date;
@@ -13,6 +16,7 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class NonConformity {
     @GridField(name = "description")
     @InforField(xpath = "NONCONFORMITYID/DESCRIPTION")
@@ -382,6 +386,7 @@ public class NonConformity {
     @InforField(xpath = "TrackingDetails/CREATEDDATE")
     private Date createdDate;
 
+    @Setter
     @GridField(name = "updated")
     @InforField(xpath = "TrackingDetails/DATEUPDATED")
     private Date updatedDate;
@@ -402,13 +407,15 @@ public class NonConformity {
     @InforField(xpath = "TrackingDetails/ESTIMATEDTOTALCOST")
     private BigDecimal ncftotalestcost;
 
+    @Setter
     @GridField(name = "nextinspectdate")
     @InforField(xpath = "TrackingDetails/NEXTINSPECTIONDATE")
-    private Date nextinspectdate;
+    private Date nextInspectDate;
 
+    @Setter
     @GridField(name = "nextinspectdateoverride")
     @InforField(xpath = "TrackingDetails/NEXTINSPECTIONDATEOVERRIDE")
-    private Date nextinspectdateoverride;
+    private Date nextInspectDateOverride;
 
     @GridField(name = "mergedinto")
     @InforField(xpath = "TrackingDetails/NONCONFORMITYMERGEINTO")
@@ -420,7 +427,7 @@ public class NonConformity {
 
     @GridField(name = "repairdate")
     @InforField(xpath = "TrackingDetails/RECOMMENDEDREPAIRDATE")
-    private Date repairdate;
+    private Date repairDate;
 
     @GridField(name = "sourceobservation")
     @InforField(xpath = "TrackingDetails/SOURCEOBSERVATIONNUM")
@@ -445,4 +452,29 @@ public class NonConformity {
     @GridField(name = "recordid")
     @InforField(xpath = "recordid")
     private BigInteger recordid;
+
+    @XmlJavaTypeAdapter(DateAdapter.class)
+    public Date getNextInspectDateOverride() {
+        return nextInspectDateOverride;
+    }
+
+    @XmlJavaTypeAdapter(DateAdapter.class)
+    public Date getNextInspectDate() {
+        return nextInspectDate;
+    }
+
+    @XmlJavaTypeAdapter(DateAdapter.class)
+    public Date getUpdatedDate() {
+        return updatedDate;
+    }
+
+    @XmlJavaTypeAdapter(DateAdapter.class)
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+    @XmlJavaTypeAdapter(DateAdapter.class)
+    public Date getRepairDate() {
+        return repairDate;
+    }
 }
