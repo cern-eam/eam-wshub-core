@@ -3,6 +3,7 @@ package ch.cern.eam.wshub.core.services.equipment.entities;
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
 import ch.cern.eam.wshub.core.annotations.GridField;
 import ch.cern.eam.wshub.core.annotations.InforField;
+import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
@@ -452,6 +453,9 @@ public class NonConformity {
     @GridField(name = "recordid")
     @InforField(xpath = "recordid")
     private BigInteger recordid;
+
+    @InforField(xpath = "StandardUserDefinedFields")
+    private UserDefinedFields userDefinedFields;
 
     @XmlJavaTypeAdapter(DateAdapter.class)
     public Date getNextInspectDateOverride() {
