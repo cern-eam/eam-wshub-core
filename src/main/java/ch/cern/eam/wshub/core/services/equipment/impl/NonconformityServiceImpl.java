@@ -2,7 +2,7 @@ package ch.cern.eam.wshub.core.services.equipment.impl;
 
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.equipment.NonconformityService;
-import ch.cern.eam.wshub.core.services.equipment.entities.Nonconformity;
+import ch.cern.eam.wshub.core.services.equipment.entities.NonConformity;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
@@ -31,7 +31,7 @@ public class NonconformityServiceImpl implements NonconformityService {
     }
 
     @Override
-    public Nonconformity readNonconformityDefault(InforContext context) throws InforException {
+    public NonConformity readNonconformityDefault(InforContext context) throws InforException {
         MP3396_GetNonconformityDefault_001 getNonconformityDefault = new MP3396_GetNonconformityDefault_001();
 
         getNonconformityDefault.setORGANIZATIONID(tools.getOrganization(context));
@@ -40,12 +40,12 @@ public class NonconformityServiceImpl implements NonconformityService {
                 tools.performInforOperation(context, inforws::getNonconformityDefaultOp, getNonconformityDefault);
 
         return tools.getInforFieldTools().transformInforObject(
-                new Nonconformity(), result.getResultData().getNonconformityDefault(), context
+                new NonConformity(), result.getResultData().getNonconformityDefault(), context
         );
     }
 
     @Override
-    public String createNonconformity(InforContext context, Nonconformity nonconformityParam) throws InforException {
+    public String createNonconformity(InforContext context, NonConformity nonconformityParam) throws InforException {
         net.datastream.schemas.mp_entities.nonconformity_001.Nonconformity nonconformity =
                 new net.datastream.schemas.mp_entities.nonconformity_001.Nonconformity();
 
@@ -61,11 +61,11 @@ public class NonconformityServiceImpl implements NonconformityService {
     }
 
     @Override
-    public Nonconformity readNonconformity(InforContext context, String nonconformityCode) throws InforException {
+    public NonConformity readNonconformity(InforContext context, String nonconformityCode) throws InforException {
         net.datastream.schemas.mp_entities.nonconformity_001.Nonconformity nonconformity =
                 readNonconformityInfor(context, nonconformityCode);
 
-        return tools.getInforFieldTools().transformInforObject(new Nonconformity(), nonconformity, context);
+        return tools.getInforFieldTools().transformInforObject(new NonConformity(), nonconformity, context);
     }
 
     private net.datastream.schemas.mp_entities.nonconformity_001.Nonconformity readNonconformityInfor(
@@ -83,7 +83,7 @@ public class NonconformityServiceImpl implements NonconformityService {
     }
 
     @Override
-    public String updateNonconformity(InforContext context, Nonconformity nonconformityParam) throws InforException {
+    public String updateNonconformity(InforContext context, NonConformity nonconformityParam) throws InforException {
         net.datastream.schemas.mp_entities.nonconformity_001.Nonconformity nonconformity =
                 readNonconformityInfor(context, nonconformityParam.getCode());
 
