@@ -594,6 +594,12 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
     @InforField(xpath="CHECKLISTFILTER")
     private String equipmentFilter;
 
+    @InforField(xpath = "WORKSPACEID/WORKSPACENUMBER")
+    private String workspaceNo;
+
+    @InforField(xpath = "FUELID/FUELCODE")
+    private String primaryFuel;
+
     public String getDescription() {
         return description;
     }
@@ -1549,6 +1555,22 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
 
     public void setEquipmentFilter(String equipmentFilter) {
         this.equipmentFilter = equipmentFilter;
+    }
+
+    public String getWorkspaceNo() {
+        return workspaceNo;
+    }
+
+    public void setWorkspaceNo(String workspaceNo) {
+        this.workspaceNo = workspaceNo;
+    }
+
+    public String getPrimaryFuel() {
+        return primaryFuel;
+    }
+
+    public void setPrimaryFuel(String primaryFuel) {
+        this.primaryFuel = primaryFuel;
     }
 
     @Override

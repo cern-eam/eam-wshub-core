@@ -3,12 +3,16 @@ package ch.cern.eam.wshub.core.services.equipment.entities;
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
 import ch.cern.eam.wshub.core.annotations.InforField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.math.BigDecimal;
 import java.util.Date;
 
+@Getter
+@Setter
 public class EquipmentReservation {
     // Main identifying fields
     @InforField(xpath = "CUSTOMERRENTALID/CUSTOMERRENTALCODE")
@@ -102,134 +106,9 @@ public class EquipmentReservation {
     @InforField(xpath = "StandardUserDefinedFields")
     private UserDefinedFields userDefinedFields;
 
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(final String code) {
-        this.code = code;
-    }
-
-    public String getOrganizationCode() {
-        return organizationCode;
-    }
-
-    public void setOrganizationCode(final String organizationCode) {
-        this.organizationCode = organizationCode;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(final String description) {
-        this.description = description;
-    }
-
-    public String getRentalType() {
-        return rentalType;
-    }
-
-    public void setRentalType(final String rentalType) {
-        this.rentalType = rentalType;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(final String status) {
-        this.status = status;
-    }
-
-    public String getEquipmentCode() {
-        return equipmentCode;
-    }
-
-    public void setEquipmentCode(final String equipmentCode) {
-        this.equipmentCode = equipmentCode;
-    }
-
-    public String getLocationCode() {
-        return locationCode;
-    }
-
-    public void setLocationCode(final String locationCode) {
-        this.locationCode = locationCode;
-    }
-
-    public String getClassCode() {
-        return classCode;
-    }
-
-    public void setClassCode(final String classCode) {
-        this.classCode = classCode;
-    }
-
-    public String getReference() {
-        return reference;
-    }
-
-    public void setReference(final String reference) {
-        this.reference = reference;
-    }
-
-    public String getVehicleType() {
-        return vehicleType;
-    }
-
-    public void setVehicleType(final String vehicleType) {
-        this.vehicleType = vehicleType;
-    }
-
-    public String getIssueTo() {
-        return issueTo;
-    }
-
-    public void setIssueTo(final String issueTo) {
-        this.issueTo = issueTo;
-    }
-
-    public String getCostCode() {
-        return costCode;
-    }
-
-    public void setCostCode(final String costCode) {
-        this.costCode = costCode;
-    }
-
-    public String getRentalTemplate() {
-        return rentalTemplate;
-    }
-
-    public void setRentalTemplate(final String rentalTemplate) {
-        this.rentalTemplate = rentalTemplate;
-    }
-
-    public String getCustomer() {
-        return customer;
-    }
-
-    public void setCustomer(final String customer) {
-        this.customer = customer;
-    }
-
     @XmlJavaTypeAdapter(DateAdapter.class)
     public Date getCompletedDate() {
         return completedDate;
-    }
-
-    public void setCompletedDate(final Date completedDate) {
-        this.completedDate = completedDate;
-    }
-
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(final String createdBy) {
-        this.createdBy = createdBy;
     }
 
     @XmlJavaTypeAdapter(DateAdapter.class)
@@ -237,17 +116,9 @@ public class EquipmentReservation {
         return createdDate;
     }
 
-    public void setCreatedDate(final Date createdDate) {
-        this.createdDate = createdDate;
-    }
-
     @XmlJavaTypeAdapter(DateAdapter.class)
     public Date getEstimatedIssueDate() {
         return estimatedIssueDate;
-    }
-
-    public void setEstimatedIssueDate(final Date estimatedIssueDate) {
-        this.estimatedIssueDate = estimatedIssueDate;
     }
 
     @XmlJavaTypeAdapter(DateAdapter.class)
@@ -255,224 +126,13 @@ public class EquipmentReservation {
         return issuedDate;
     }
 
-    public void setIssuedDate(final Date issuedDate) {
-        this.issuedDate = issuedDate;
-    }
-
-    public String getIssueLocation() {
-        return issueLocation;
-    }
-
-    public void setIssueLocation(final String issueLocation) {
-        this.issueLocation = issueLocation;
-    }
-
-    public String getIssuedBy() {
-        return issuedBy;
-    }
-
-    public void setIssuedBy(final String issuedBy) {
-        this.issuedBy = issuedBy;
-    }
-
     @XmlJavaTypeAdapter(DateAdapter.class)
     public Date getReturnDate() {
         return returnDate;
     }
 
-    public void setReturnDate(final Date returnDate) {
-        this.returnDate = returnDate;
-    }
-
-
     @XmlJavaTypeAdapter(DateAdapter.class)
     public Date getEstimatedReturnDate() {
         return estimatedReturnDate;
-    }
-
-    public void setEstimatedReturnDate(final Date estimatedReturnDate) {
-        this.estimatedReturnDate = estimatedReturnDate;
-    }
-
-    public String getReturnLocation() {
-        return returnLocation;
-    }
-
-    public void setReturnLocation(final String returnLocation) {
-        this.returnLocation = returnLocation;
-    }
-
-    public BigDecimal getInvoicedAmount() {
-        return invoicedAmount;
-    }
-
-    public void setInvoicedAmount(final BigDecimal invoicedAmount) {
-        this.invoicedAmount = invoicedAmount;
-    }
-
-    public BigDecimal getCalculatedDays() {
-        return calculatedDays;
-    }
-
-    public void setCalculatedDays(final BigDecimal calculatedDays) {
-        this.calculatedDays = calculatedDays;
-    }
-
-    public BigDecimal getCalculatedHours() {
-        return calculatedHours;
-    }
-
-    public void setCalculatedHours(final BigDecimal calculatedHours) {
-        this.calculatedHours = calculatedHours;
-    }
-
-    public BigDecimal getCorrectedDays() {
-        return correctedDays;
-    }
-
-    public void setCorrectedDays(final BigDecimal correctedDays) {
-        this.correctedDays = correctedDays;
-    }
-
-    public BigDecimal getCorrectedHours() {
-        return correctedHours;
-    }
-
-    public void setCorrectedHours(final BigDecimal correctedHours) {
-        this.correctedHours = correctedHours;
-    }
-
-    public BigDecimal getAdjustments() {
-        return adjustments;
-    }
-
-    public void setAdjustments(final BigDecimal adjustments) {
-        this.adjustments = adjustments;
-    }
-
-    public BigDecimal getNetAmount() {
-        return netAmount;
-    }
-
-    public void setNetAmount(final BigDecimal netAmount) {
-        this.netAmount = netAmount;
-    }
-
-    public BigDecimal getGrossAmount() {
-        return grossAmount;
-    }
-
-    public void setGrossAmount(final BigDecimal grossAmount) {
-        this.grossAmount = grossAmount;
-    }
-
-    public BigDecimal getTaxAmount() {
-        return taxAmount;
-    }
-
-    public void setTaxAmount(final BigDecimal taxAmount) {
-        this.taxAmount = taxAmount;
-    }
-
-    public UserDefinedFields getUserDefinedFields() {
-        return userDefinedFields;
-    }
-
-    public void setUserDefinedFields(final UserDefinedFields userDefinedFields) {
-        this.userDefinedFields = userDefinedFields;
-    }
-
-    public BigDecimal getIssueFuelLevel() {
-        return issueFuelLevel;
-    }
-
-    public void setIssueFuelLevel(BigDecimal issueFuelLevel) {
-        this.issueFuelLevel = issueFuelLevel;
-    }
-
-    public BigDecimal getIssueReading() {
-        return issueReading;
-    }
-
-    public void setIssueReading(BigDecimal issueReading) {
-        this.issueReading = issueReading;
-    }
-
-    public String getReturnedTo() {
-        return returnedTo;
-    }
-
-    public void setReturnedTo(String returnedTo) {
-        this.returnedTo = returnedTo;
-    }
-
-    public BigDecimal getReturnFuelLevel() {
-        return returnFuelLevel;
-    }
-
-    public void setReturnFuelLevel(BigDecimal returnFuelLevel) {
-        this.returnFuelLevel = returnFuelLevel;
-    }
-
-    public BigDecimal getReturnReading() {
-        return returnReading;
-    }
-
-    public void setReturnReading(BigDecimal returnReading) {
-        this.returnReading = returnReading;
-    }
-
-    public String getUom() {
-        return uom;
-    }
-
-    public void setUom(String uom) {
-        this.uom = uom;
-    }
-
-    @Override
-    public String toString() {
-        return "EquipmentReservation{" +
-                "code='" + code + '\'' +
-                ", organizationCode='" + organizationCode + '\'' +
-                ", description='" + description + '\'' +
-                ", rentalType='" + rentalType + '\'' +
-                ", status='" + status + '\'' +
-                ", equipmentCode='" + equipmentCode + '\'' +
-                ", locationCode='" + locationCode + '\'' +
-                ", classCode='" + classCode + '\'' +
-                ", reference='" + reference + '\'' +
-                ", vehicleType='" + vehicleType + '\'' +
-                ", issueTo='" + issueTo + '\'' +
-                ", costCode='" + costCode + '\'' +
-                ", rentalTemplate='" + rentalTemplate + '\'' +
-                ", customer='" + customer + '\'' +
-                ", completedDate=" + completedDate +
-                ", createdBy='" + createdBy + '\'' +
-                ", createdDate=" + createdDate +
-                ", estimatedIssueDate=" + estimatedIssueDate +
-                ", issuedDate=" + issuedDate +
-                ", issueLocation='" + issueLocation + '\'' +
-                ", issuedBy='" + issuedBy + '\'' +
-                ", returnDate=" + returnDate +
-                ", estimatedReturnDate=" + estimatedReturnDate +
-                ", returnLocation='" + returnLocation + '\'' +
-                ", invoicedAmount=" + invoicedAmount +
-                ", calculatedDays=" + calculatedDays +
-                ", calculatedHours=" + calculatedHours +
-                ", correctedDays=" + correctedDays +
-                ", correctedHours=" + correctedHours +
-                ", adjustments=" + adjustments +
-                ", netAmount=" + netAmount +
-                ", grossAmount=" + grossAmount +
-                ", taxAmount=" + taxAmount +
-                ", issueFuelLevel=" + issueFuelLevel +
-                ", issueReading=" + issueReading +
-                ", returnedTo='" + returnedTo + '\'' +
-                ", returnFuelLevel=" + returnFuelLevel +
-                ", returnReading=" + returnReading +
-                ", uom='" + uom + '\'' +
-                ", userDefinedFields=" + userDefinedFields +
-                '}';
     }
 }
