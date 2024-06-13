@@ -78,6 +78,10 @@ public class Activity implements Serializable {
 	@InforField(xpath = "TASKSID/DESCRIPTION")
 	private String taskDesc;
 
+	@Column(name = "TSK_REVISION")
+	@GridField(name = "taskrev")
+	private String taskRev;
+
 	@Column(name = "ACT_TRADE")
 	@GridField(name="trade")
 	@InforField(xpath = "TRADEID/TRADECODE")
@@ -191,6 +195,14 @@ public class Activity implements Serializable {
 		this.taskDesc = taskDesc;
 	}
 
+	public String getTaskRev() {
+		return taskRev;
+	}
+
+	public void setTaskRev(String taskRev) {
+		this.taskRev = taskRev;
+	}
+
 	public WorkOrderActivityCheckList[] getChecklists() {
 		return checklists;
 	}
@@ -242,6 +254,7 @@ public class Activity implements Serializable {
 				", materialList='" + materialList + '\'' +
 				", taskCode='" + taskCode + '\'' +
 				", taskDesc='" + taskDesc + '\'' +
+				", taskRev='" + taskRev + '\'' +
 				", tradeCode='" + tradeCode + '\'' +
 				", taskQty='" + taskQty + '\'' +
 				", checklists=" + Arrays.toString(checklists) +

@@ -7,11 +7,6 @@ import ch.cern.eam.wshub.core.services.comments.entities.Comment;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
-import static ch.cern.eam.wshub.core.tools.DataTypeTools.encodeBoolean;
-import static ch.cern.eam.wshub.core.tools.DataTypeTools.isEmpty;
-import static ch.cern.eam.wshub.core.tools.Tools.extractEntityCode;
-import static ch.cern.eam.wshub.core.tools.Tools.extractOrganizationCode;
-
 import net.datastream.schemas.mp_fields.*;
 import net.datastream.schemas.mp_functions.mp0108_001.CommentsReq;
 import net.datastream.schemas.mp_functions.mp0108_001.MP0108_GetComments_001;
@@ -23,6 +18,11 @@ import net.datastream.wsdls.inforws.InforWebServicesPT;
 
 import java.util.LinkedList;
 import java.util.List;
+
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.encodeBoolean;
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.isEmpty;
+import static ch.cern.eam.wshub.core.tools.Tools.extractEntityCode;
+import static ch.cern.eam.wshub.core.tools.Tools.extractOrganizationCode;
 
 
 public class CommentServiceImpl implements CommentService {
@@ -108,7 +108,7 @@ public class CommentServiceImpl implements CommentService {
 	}
 
 	public Comment[] readComments(InforContext context, String entityCode, String entityKeyCode, String typeCode) throws InforException {
-		return readCommentsInfor(context, entityCode, extractEntityCode(entityKeyCode), typeCode, tools.getOrganizationCode(context, extractOrganizationCode(entityCode)))
+		return readCommentsInfor(context, entityCode, extractEntityCode(entityKeyCode), typeCode, tools.getOrganizationCode(context, extractOrganizationCode(entityKeyCode)))
 				.stream().map(this::convertToComment)
 				.toArray(Comment[]::new);
 	}
@@ -237,7 +237,7 @@ public class CommentServiceImpl implements CommentService {
 	}
 
 	private static String complementEntityKeyCode(String entityCode, String entityKeyCode, String organization) {
-		if ("OBJ".equals(entityCode) || "PART".equals(entityCode)) {
+		if ("OBJ".equals(entityCode) || "PART".equals(entityCode) || "TASK".equals(entityCode)) {
 			return entityKeyCode + "#" + organization;
 		}
 		return entityKeyCode;
