@@ -129,7 +129,7 @@ public class NonConformity {
 
     @GridField(name = "highestobservation")
     @InforField(xpath = "HIGHESTOBSERVATIONNUM")
-    private String highestObservation;
+    private BigDecimal highestObservation;
 
     @GridField(name = "locationdesc")
     @InforField(xpath = "LOCATIONID/DESCRIPTION")
