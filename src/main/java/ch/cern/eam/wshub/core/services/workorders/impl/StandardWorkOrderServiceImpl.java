@@ -21,7 +21,7 @@ import net.datastream.schemas.mp_results.mp7079_001.MP7079_AddStandardWorkOrder_
 import net.datastream.schemas.mp_results.mp7082_001.MP7082_GetStandardWorkOrder_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
-import javax.xml.ws.Holder;
+import jakarta.xml.ws.Holder;
 
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.toCodeString;
 

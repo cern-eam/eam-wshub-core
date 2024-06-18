@@ -1,6 +1,5 @@
 package ch.cern.eam.wshub.core.services.material.impl;
 
-import javax.xml.ws.Holder;
 
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
@@ -11,7 +10,6 @@ import ch.cern.eam.wshub.core.tools.Tools;
 import ch.cern.eam.wshub.core.tools.InforException;
 import net.datastream.schemas.mp_fields.PURCHASEORDERID_Type;
 import net.datastream.schemas.mp_fields.STATUS_Type;
-import net.datastream.schemas.mp_functions.SessionType;
 import net.datastream.schemas.mp_functions.mp0413_001.MP0413_GetPurchaseOrder_001;
 import net.datastream.schemas.mp_functions.mp0415_001.MP0415_SyncPurchaseOrder_001;
 import net.datastream.schemas.mp_results.mp0413_001.MP0413_GetPurchaseOrder_001_Result;

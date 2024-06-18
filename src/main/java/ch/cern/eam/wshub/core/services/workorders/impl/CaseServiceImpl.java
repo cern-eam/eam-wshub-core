@@ -20,7 +20,7 @@ import net.datastream.schemas.mp_results.mp3641_001.MP3641_SyncCaseManagement_00
 import net.datastream.schemas.mp_results.mp3643_001.MP3643_GetCaseManagement_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
-import javax.xml.ws.Holder;
+import jakarta.xml.ws.Holder;
 
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.toCodeString;
 

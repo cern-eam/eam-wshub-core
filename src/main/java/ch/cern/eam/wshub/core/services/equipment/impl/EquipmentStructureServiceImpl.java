@@ -17,7 +17,7 @@ import net.datastream.schemas.mp_functions.mp3057_001.MP3057_AddEquipmentStructu
 import net.datastream.schemas.mp_functions.mp3058_001.MP3058_SyncEquipmentStructure_001;
 import net.datastream.schemas.mp_functions.mp3058_001.NewParentEquipment;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
-import javax.xml.ws.Holder;
+import jakarta.xml.ws.Holder;
 
 public class EquipmentStructureServiceImpl implements EquipmentStructureService {
 

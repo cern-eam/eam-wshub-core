@@ -21,7 +21,7 @@ import net.datastream.wsdls.inforws.InforWebServicesPT;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import javax.xml.ws.Holder;
+import jakarta.xml.ws.Holder;
 
 public class EquipmentWarrantyCoverageServiceImpl implements EquipmentWarrantyCoverageService {
 

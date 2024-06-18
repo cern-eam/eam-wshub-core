@@ -19,7 +19,7 @@ import net.datastream.schemas.mp_functions.mp3026_001.MP3026_SyncEquipLinearRef_
 import net.datastream.schemas.mp_results.mp3023_001.MP3023_GetEquipLinearRef_001_Result;
 import net.datastream.schemas.mp_results.mp3024_001.MP3024_AddEquipLinearRef_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
-import javax.xml.ws.Holder;
+import jakarta.xml.ws.Holder;
 
 public class LinearReferenceServiceImpl implements LinearReferenceService {
 

@@ -10,7 +10,7 @@ import net.datastream.schemas.mp_functions.mp9501_001.MP9501_GetCustomFields_001
 import net.datastream.schemas.mp_results.mp9501_001.MP9501_GetCustomFields_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
-import javax.xml.ws.Holder;
+import jakarta.xml.ws.Holder;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;

@@ -8,8 +8,8 @@ import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Transient;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElementWrapper;
 import java.io.Serializable;
 import java.util.Arrays;
 

@@ -1,6 +1,8 @@
 package ch.cern.eam.wshub.core.tools;
 
-import javax.xml.ws.WebFault;
+
+import jakarta.xml.ws.WebFault;
+
 import java.util.Arrays;
 
 @WebFault(name="ExceptionInfoList")

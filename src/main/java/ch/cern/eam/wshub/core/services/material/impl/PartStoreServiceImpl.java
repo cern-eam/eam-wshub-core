@@ -13,7 +13,7 @@ import net.datastream.schemas.mp_functions.mp0255_001.MP0255_AddPartStores_001;
 import net.datastream.schemas.mp_functions.mp0256_001.MP0256_SyncPartStores_001;
 import net.datastream.schemas.mp_results.mp0254_001.MP0254_GetPartStores_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
-import javax.xml.ws.Holder;
+import jakarta.xml.ws.Holder;
 
 
 public class PartStoreServiceImpl implements PartStoreService {

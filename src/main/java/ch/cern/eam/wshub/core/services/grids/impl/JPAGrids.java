@@ -91,10 +91,10 @@ public class JPAGrids implements Serializable {
 		Integer rowCount;
 		Integer cursorPosition;
 		if (gridRequest.getRowCount() != null && gridRequest.getCursorPosition() != null) {
-			rowCount = new Integer(gridRequest.getRowCount());
+			rowCount = Integer.valueOf(gridRequest.getRowCount());
 			if (rowCount <= 0)
 				throw tools.generateFault("Please supply row count > 0");
-			cursorPosition = new Integer(gridRequest.getCursorPosition()) - 1;
+			cursorPosition = Integer.valueOf(gridRequest.getCursorPosition()) - 1;
 			if (cursorPosition < 0)
 				throw tools.generateFault("Please supply cursor position >= 1");
 		} else {

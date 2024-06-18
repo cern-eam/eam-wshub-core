@@ -1,8 +1,9 @@
 package ch.cern.eam.wshub.core.adapters;
 
 import ch.cern.eam.wshub.core.tools.DataTypeTools;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+
 import java.math.BigDecimal;
 
 public class BigDecimalAdapter extends XmlAdapter<String, BigDecimal> {

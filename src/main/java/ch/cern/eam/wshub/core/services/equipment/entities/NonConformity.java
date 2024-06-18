@@ -5,11 +5,12 @@ import ch.cern.eam.wshub.core.annotations.GridField;
 import ch.cern.eam.wshub.core.annotations.InforField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Date;

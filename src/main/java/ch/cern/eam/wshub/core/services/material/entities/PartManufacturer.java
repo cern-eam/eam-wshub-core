@@ -4,7 +4,7 @@ import ch.cern.eam.wshub.core.adapters.BooleanAdapter;
 import ch.cern.eam.wshub.core.annotations.BooleanType;
 import ch.cern.eam.wshub.core.annotations.InforField;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 
 public class PartManufacturer implements Serializable {

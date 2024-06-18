@@ -7,7 +7,7 @@ import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import net.datastream.schemas.mp_fields.READINGTYPEID_Type;
 import net.datastream.schemas.mp_fields.StandardUserDefinedFields;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Objects;

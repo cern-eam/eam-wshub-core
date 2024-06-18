@@ -11,7 +11,7 @@ import net.datastream.schemas.mp_fields.LOTID_Type;
 import net.datastream.schemas.mp_functions.SessionType;
 import net.datastream.schemas.mp_functions.mp1201_001.MP1201_AddLot_001;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
-import javax.xml.ws.Holder;
+import jakarta.xml.ws.Holder;
 
 public class PartLotServiceImpl implements PartLotService {
 

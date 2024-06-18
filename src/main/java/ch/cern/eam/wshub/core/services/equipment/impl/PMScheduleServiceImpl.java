@@ -25,7 +25,7 @@ import net.datastream.wsdls.inforws.InforWebServicesPT;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
 
 import javax.persistence.EntityManager;
-import javax.xml.ws.Holder;
+import jakarta.xml.ws.Holder;
 
 public class PMScheduleServiceImpl implements PMScheduleService {
 

@@ -20,7 +20,7 @@ import net.datastream.schemas.mp_functions.mp1027_001.MP1027_AddInspectionPoint_
 import net.datastream.schemas.mp_functions.mp1031_001.MP1031_AddInspectionAspectPoint_001;
 import net.datastream.schemas.mp_functions.mp7177_001.MP7177_AddInspectionsForWorkOrder_001;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
-import javax.xml.ws.Holder;
+import jakarta.xml.ws.Holder;
 import java.math.BigDecimal;
 
 public class InspectionServiceImpl implements InspectionService {

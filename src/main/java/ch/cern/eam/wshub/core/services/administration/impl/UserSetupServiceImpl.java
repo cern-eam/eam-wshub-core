@@ -27,7 +27,7 @@ import net.datastream.schemas.mp_results.mp0603_001.MP0603_SyncUserSetup_001_Res
 import net.datastream.schemas.mp_results.mp9532_001.MP9532_RunEmptyOp_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
-import javax.xml.ws.Holder;
+import jakarta.xml.ws.Holder;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.concurrent.Callable;

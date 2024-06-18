@@ -7,8 +7,8 @@ import net.datastream.schemas.mp_fields.*;
 import org.openapplications.oagis_segments.AMOUNT;
 import org.openapplications.oagis_segments.QUANTITY;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.math.BigDecimal;
 

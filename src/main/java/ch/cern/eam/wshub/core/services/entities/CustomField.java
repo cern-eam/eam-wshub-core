@@ -1,12 +1,9 @@
 package ch.cern.eam.wshub.core.services.entities;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.StringJoiner;
+
 
 @XmlAccessorType(XmlAccessType.PROPERTY)
 public class CustomField implements Serializable {

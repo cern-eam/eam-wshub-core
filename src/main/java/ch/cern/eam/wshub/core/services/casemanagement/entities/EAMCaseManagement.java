@@ -7,8 +7,8 @@ import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import net.datastream.schemas.mp_fields.StandardUserDefinedFields;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;

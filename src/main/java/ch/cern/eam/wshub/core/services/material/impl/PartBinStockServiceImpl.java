@@ -16,7 +16,7 @@ import net.datastream.schemas.mp_functions.mp0249_001.MP0249_SyncBinStock_001;
 import net.datastream.schemas.mp_functions.mp0250_001.MP0250_GetBinStock_001;
 import net.datastream.schemas.mp_results.mp0250_001.MP0250_GetBinStock_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
-import javax.xml.ws.Holder;
+import jakarta.xml.ws.Holder;
 
 public class PartBinStockServiceImpl implements PartBinStockService {
 

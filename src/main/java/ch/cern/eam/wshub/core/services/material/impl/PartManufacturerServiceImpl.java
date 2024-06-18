@@ -17,7 +17,7 @@ import net.datastream.schemas.mp_functions.mp0263_001.MP0263_DeletePartManufactu
 import net.datastream.schemas.mp_functions.mp0264_001.MP0264_GetPartManufacturer_001;
 import net.datastream.schemas.mp_results.mp0264_001.MP0264_GetPartManufacturer_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
-import javax.xml.ws.Holder;
+import jakarta.xml.ws.Holder;
 
 public class PartManufacturerServiceImpl implements PartManufacturerService {
 

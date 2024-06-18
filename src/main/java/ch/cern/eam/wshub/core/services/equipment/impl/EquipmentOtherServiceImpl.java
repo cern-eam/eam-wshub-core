@@ -24,7 +24,7 @@ import net.datastream.schemas.mp_results.mp3016_001.MP3016_GetDepreciation_001_R
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
 import javax.persistence.EntityManager;
-import javax.xml.ws.Holder;
+import jakarta.xml.ws.Holder;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 

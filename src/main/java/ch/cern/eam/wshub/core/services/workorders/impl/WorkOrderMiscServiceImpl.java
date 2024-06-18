@@ -27,7 +27,7 @@ import net.datastream.schemas.mp_results.mp7336_001.AdditionalWOEquipDetails;
 import net.datastream.schemas.mp_results.mp7336_001.MP7336_GetWOEquipLinearDetails_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
-import javax.xml.ws.Holder;
+import jakarta.xml.ws.Holder;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 

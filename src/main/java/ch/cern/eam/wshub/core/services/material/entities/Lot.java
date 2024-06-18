@@ -2,7 +2,7 @@ package ch.cern.eam.wshub.core.services.material.entities;
 
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.Date;
 
 public class Lot {

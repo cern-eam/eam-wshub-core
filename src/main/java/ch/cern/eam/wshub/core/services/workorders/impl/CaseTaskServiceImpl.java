@@ -18,7 +18,7 @@ import net.datastream.schemas.mp_results.mp3655_001.MP3655_AddCaseManagementTask
 import net.datastream.schemas.mp_results.mp3656_001.MP3656_SyncCaseManagementTask_001_Result;
 import net.datastream.schemas.mp_results.mp3658_001.MP3658_GetCaseManagementTask_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
-import javax.xml.ws.Holder;
+import jakarta.xml.ws.Holder;
 
 
 public class CaseTaskServiceImpl implements CaseTaskService {

@@ -13,7 +13,7 @@ import ch.cern.eam.wshub.core.tools.Tools;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import javax.xml.ws.soap.SOAPFaultException;
+import jakarta.xml.ws.soap.SOAPFaultException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;

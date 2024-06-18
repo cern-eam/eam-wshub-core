@@ -3,7 +3,7 @@ package ch.cern.eam.wshub.core.tools;
 import net.datastream.schemas.mp_functions.MessageConfigType;
 import org.xmlsoap.schemas.ws._2002._04.secext.Security;
 
-import javax.xml.ws.Holder;
+import jakarta.xml.ws.Holder;
 
 @FunctionalInterface
 public interface InforOperation<A, R> {

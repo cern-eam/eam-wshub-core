@@ -4,13 +4,13 @@ import ch.cern.eam.wshub.core.annotations.InforField;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
 import net.datastream.schemas.mp_fields.USERDEFINEDAREA;
 import org.openapplications.oagis_segments.AMOUNT;
 import org.openapplications.oagis_segments.DATETIME;
 import org.openapplications.oagis_segments.QUANTITY;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;

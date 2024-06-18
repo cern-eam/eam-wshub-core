@@ -22,7 +22,7 @@ import net.datastream.schemas.mp_results.mp1223_001.MP1223_AddPickListPart_001_R
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 import org.openapplications.oagis_segments.QUANTITY;
 
-import javax.xml.ws.Holder;
+import jakarta.xml.ws.Holder;
 import java.math.BigDecimal;
 
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.toCodeString;
