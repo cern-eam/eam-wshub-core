@@ -20,7 +20,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ch.cern.eam</groupId>
     <artifactId>eam-wshub-core</artifactId>
-    <version>12.1-14-SNAPSHOT</version>
+    <version>12.1-16-SNAPSHOT</version>
     <name>EAM WS Hub Core</name>
     <description>High-level Java SE library that provides all core functionalities of EAM WS Hub.</description>
     <url>https://github.com/cern-eam/eam-wshub-core</url>
@@ -130,6 +130,11 @@
             <version>1.18.30</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>com.sun.xml.messaging.saaj</groupId>
+            <artifactId>saaj-impl</artifactId>
+            <version>2.0.1</version>
+        </dependency>
     </dependencies>
 
     <scm>
@@ -222,34 +227,34 @@
                     <target>21</target>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <createDependencyReducedPom>false</createDependencyReducedPom>
-                            <minimizeJar>false</minimizeJar>
-                            <outputDirectory>${project.build.directory}/shaded</outputDirectory>
-                            <filters>
-                                <filter>
-                                    <artifact>*:*</artifact>
-                                    <excludes>
-                                        <exclude>com/sun/xml/ws/spi/ProviderImpl.class</exclude>
-                                        <exclude>com/sun/xml/ws/spi/ProviderImpl$1.class</exclude>
-                                        <exclude>com/sun/xml/ws/spi/ProviderImpl$2.class</exclude>
-                                    </excludes>
-                                </filter>
-                            </filters>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-shade-plugin</artifactId>-->
+<!--                <version>3.2.4</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <phase>package</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>shade</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <createDependencyReducedPom>false</createDependencyReducedPom>-->
+<!--                            <minimizeJar>false</minimizeJar>-->
+<!--                            <outputDirectory>${project.build.directory}/shaded</outputDirectory>-->
+<!--                            <filters>-->
+<!--                                <filter>-->
+<!--                                    <artifact>*:*</artifact>-->
+<!--                                    <excludes>-->
+<!--                                        <exclude>com/sun/xml/ws/spi/ProviderImpl.class</exclude>-->
+<!--                                        <exclude>com/sun/xml/ws/spi/ProviderImpl$1.class</exclude>-->
+<!--                                        <exclude>com/sun/xml/ws/spi/ProviderImpl$2.class</exclude>-->
+<!--                                    </excludes>-->
+<!--                                </filter>-->
+<!--                            </filters>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
         </plugins>
     </build>
 
