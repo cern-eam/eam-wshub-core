@@ -2,9 +2,9 @@ package ch.cern.eam.wshub.core.services.workorders.entities;
 
 import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
-import ch.cern.eam.wshub.core.annotations.InforField;
+import ch.cern.eam.wshub.core.annotations.EAMField;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -12,16 +12,16 @@ import java.util.Date;
 public class MeterReading implements Serializable {
     private static final long serialVersionUID = -3004563411794265577L;
 
-    @InforField(xpath = "USAGEUOMID/UOMCODE")
+    @EAMField(xpath = "USAGEUOMID/UOMCODE")
     private String UOM;
-    @InforField(xpath = "TARGETEQUIPMENTID/EQUIPMENTCODE")
+    @EAMField(xpath = "TARGETEQUIPMENTID/EQUIPMENTCODE")
     private String equipmentCode;
-    @InforField(xpath = "TARGETEQUIPMENTID/ORGANIZATIONID/ORGANIZATIONCODE")
+    @EAMField(xpath = "TARGETEQUIPMENTID/ORGANIZATIONID/ORGANIZATIONCODE")
     private String equipmentOrganization;
     private BigDecimal actualValue;
     private BigDecimal differenceValue;
     private Date readingDate;
-    @InforField(xpath = "WORKORDERID/JOBNUM")
+    @EAMField(xpath = "WORKORDERID/JOBNUM")
     private String woNumber;
 
     public String getUOM() {

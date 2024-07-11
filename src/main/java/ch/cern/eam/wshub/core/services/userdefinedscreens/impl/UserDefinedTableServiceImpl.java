@@ -1,16 +1,16 @@
 package ch.cern.eam.wshub.core.services.userdefinedscreens.impl;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedTableQueries;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedTableService;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedTableValidator;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.entities.UDTRow;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 import ch.cern.eam.wshub.core.tools.Tools;
-import net.datastream.wsdls.inforws.InforWebServicesPT;
+import net.datastream.wsdls.eamws.EAMWebServicesPT;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
@@ -22,19 +22,19 @@ public class UserDefinedTableServiceImpl implements UserDefinedTableService {
     }
 
     private Tools tools;
-    private InforWebServicesPT inforws;
+    private EAMWebServicesPT eamws;
     private ApplicationData applicationData;
 
     public UserDefinedTableServiceImpl(ApplicationData applicationData, Tools tools,
-                                       InforWebServicesPT inforWebServicesToolkitClient) {
+                                       EAMWebServicesPT eamWebServicesToolkitClient) {
         this.applicationData = applicationData;
         this.tools = tools;
-        this.inforws = inforWebServicesToolkitClient;
+        this.eamws = eamWebServicesToolkitClient;
     }
 
     @Override
-    public String createUserDefinedTableRows(InforContext context, String tableName, List<UDTRow> rows)
-            throws InforException {
+    public String createUserDefinedTableRows(EAMContext context, String tableName, List<UDTRow> rows)
+            throws EAMException {
         tools.demandDatabaseConnection();
         UserDefinedTableValidator.validateOperation(tableName, rows);
         EntityManager entityManager = tools.getEntityManager();
@@ -48,8 +48,8 @@ public class UserDefinedTableServiceImpl implements UserDefinedTableService {
     }
 
     @Override
-    public List<Map<String, Object>> readUserDefinedTableRows(InforContext context,
-                                                              String tableName, UDTRow filters, List<String> fieldsToRead) throws InforException {
+    public List<Map<String, Object>> readUserDefinedTableRows(EAMContext context,
+                                                              String tableName, UDTRow filters, List<String> fieldsToRead) throws EAMException {
         tools.demandDatabaseConnection();
         EntityManager entityManager = tools.getEntityManager();
 
@@ -66,16 +66,16 @@ public class UserDefinedTableServiceImpl implements UserDefinedTableService {
             List<Map<String, Object>> maps = UserDefinedTableQueries.executeReadQuery(tableName.toUpperCase(),
                     parameters, fieldsToRead, maxRows, entityManager);
             return maps;
-        } catch (InforException inforException) {
-            throw inforException;
+        } catch (EAMException eamException) {
+            throw eamException;
         } finally {
             entityManager.close();
         }
     }
 
     @Override
-    public int updateUserDefinedTableRows(InforContext context, String tableName, UDTRow fieldsToUpdate,
-                                          UDTRow filters) throws InforException {
+    public int updateUserDefinedTableRows(EAMContext context, String tableName, UDTRow fieldsToUpdate,
+                                          UDTRow filters) throws EAMException {
         tools.demandDatabaseConnection();
         EntityManager entityManager = tools.getEntityManager();
 
@@ -86,8 +86,8 @@ public class UserDefinedTableServiceImpl implements UserDefinedTableService {
             Map<String, Object> whereMap = getUDTRowAsMap(filters);
             updateMapMap.putAll(getDefaultUpdateColumns(context.getCredentials().getUsername()));
             return UserDefinedTableQueries.executeUpdateQuery(tableName, updateMapMap, whereMap, entityManager);
-        } catch (InforException inforException) {
-            throw inforException;
+        } catch (EAMException eamException) {
+            throw eamException;
         } finally {
             entityManager.close();
         }
@@ -95,7 +95,7 @@ public class UserDefinedTableServiceImpl implements UserDefinedTableService {
     }
 
     @Override
-    public int deleteUserDefinedTableRows(InforContext context, String tableName, UDTRow filters) throws InforException {
+    public int deleteUserDefinedTableRows(EAMContext context, String tableName, UDTRow filters) throws EAMException {
         tools.demandDatabaseConnection();
         EntityManager entityManager = tools.getEntityManager();
 
@@ -104,14 +104,14 @@ public class UserDefinedTableServiceImpl implements UserDefinedTableService {
             UserDefinedTableValidator.validateOperation(tableName, null, filters);
             Map<String, Object> filterMap = getUDTRowAsMap(filters);
             return UserDefinedTableQueries.executeDeleteQuery(tableName, filterMap, entityManager);
-        } catch (InforException inforException) {
-            throw inforException;
+        } catch (EAMException eamException) {
+            throw eamException;
         } finally {
             entityManager.close();
         }
     }
 
-    public List<UDTRow> getMapsAsUDTRows(String tableName, List<Map<String, Object>> mapRows) throws InforException {
+    public List<UDTRow> getMapsAsUDTRows(String tableName, List<Map<String, Object>> mapRows) throws EAMException {
         List<UDTRow> udtRowList = new ArrayList<>();
         for (Map<String, Object> row : mapRows) {
             UDTRow udtRow = getMapAsUDTRow(tableName, row);
@@ -120,7 +120,7 @@ public class UserDefinedTableServiceImpl implements UserDefinedTableService {
         return udtRowList;
     }
 
-    public UDTRow getMapAsUDTRow(String tableName, Map<String, Object> mapRow) throws InforException {
+    public UDTRow getMapAsUDTRow(String tableName, Map<String, Object> mapRow) throws EAMException {
         tools.demandDatabaseConnection();
         EntityManager entityManager = tools.getEntityManager();
 
@@ -153,8 +153,8 @@ public class UserDefinedTableServiceImpl implements UserDefinedTableService {
                 }
             }
             return newRow;
-        } catch (InforException inforException) {
-            throw inforException;
+        } catch (EAMException eamException) {
+            throw eamException;
         } finally {
             entityManager.close();
         }

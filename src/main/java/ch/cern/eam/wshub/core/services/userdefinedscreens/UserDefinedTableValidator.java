@@ -2,7 +2,7 @@ package ch.cern.eam.wshub.core.services.userdefinedscreens;
 
 import ch.cern.eam.wshub.core.services.userdefinedscreens.entities.UDTRow;
 import ch.cern.eam.wshub.core.tools.ExceptionInfo;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -15,17 +15,17 @@ public class UserDefinedTableValidator {
     );
 
     public static void validateOperation(String tableName, UDTRow rowsToInsert,
-                                         UDTRow rowsToFilter) throws InforException {
+                                         UDTRow rowsToFilter) throws EAMException {
         validateOperation(tableName, rowsToInsert == null ? new ArrayList<>()
                 : Collections.singletonList(rowsToInsert), rowsToFilter);
     }
 
-    public static void validateOperation(String tableName, List<UDTRow> rowsToInsert) throws InforException {
+    public static void validateOperation(String tableName, List<UDTRow> rowsToInsert) throws EAMException {
         validateOperation(tableName, rowsToInsert, null);
     }
 
     private static void validateOperation(String tableName, List<UDTRow> rowsToInsert
-            , UDTRow rowsToFilter) throws InforException {
+            , UDTRow rowsToFilter) throws EAMException {
         validateTableName(tableName);
         if (rowsToInsert != null) {
             for(UDTRow row: rowsToInsert) {
@@ -37,7 +37,7 @@ public class UserDefinedTableValidator {
         }
     }
 
-    public static void validateKeyList(List<String> keyList, boolean insert) throws InforException {
+    public static void validateKeyList(List<String> keyList, boolean insert) throws EAMException {
         for (String key: keyList) {
             validateColumnName(key);
             Set<String> hashSet = keyList.stream().map(String::toUpperCase).collect(Collectors.toSet());
@@ -48,11 +48,11 @@ public class UserDefinedTableValidator {
                         .filter(hashSet::contains)
                         .collect(Collectors.joining(","))
                         ;
-                throw generateInforException( "columnNames", "Repeated column names: " + repeaters);
+                throw generateEAMException( "columnNames", "Repeated column names: " + repeaters);
             }
             //Reserved column names that shall not be manipulated by the user
             if (insert && hashSet.stream().anyMatch(RESERVED_FIELD_NAMES::contains)) {
-                throw generateInforException( "columnNames", "Reserved field names cannot be used: "
+                throw generateEAMException( "columnNames", "Reserved field names cannot be used: "
                         + hashSet.stream().filter(RESERVED_FIELD_NAMES::contains)
                         .collect(Collectors.joining(",")));
             }
@@ -60,8 +60,8 @@ public class UserDefinedTableValidator {
         }
     }
 
-    public static InforException generateInforException(String field, String errorMessage) {
-        return new InforException(
+    public static EAMException generateEAMException(String field, String errorMessage) {
+        return new EAMException(
                 errorMessage,
                 null,
                 Collections.singleton(new ExceptionInfo(field, errorMessage))
@@ -69,25 +69,25 @@ public class UserDefinedTableValidator {
         );
     }
 
-    private static void validateTableName(String name) throws InforException {
+    private static void validateTableName(String name) throws EAMException {
         if (name == null) {
-            throw generateInforException("key", "Table name cannot be null");
+            throw generateEAMException("key", "Table name cannot be null");
         }
         // Valid U5 (User Defined Screen) table names
         if (!Pattern.matches("^[Uu]5[_A-Za-z0-9]+$", name)) {
             String errorMessage = "Invalid Table name: \"" + name + '"';
-            throw generateInforException(name, errorMessage);
+            throw generateEAMException(name, errorMessage);
         }
     }
 
-    private static void validateColumnName(String name) throws InforException {
+    private static void validateColumnName(String name) throws EAMException {
         if (name == null) {
-            throw generateInforException("key", "Column name cannot be null");
+            throw generateEAMException("key", "Column name cannot be null");
         }
         // Valid column names
         if (!Pattern.matches("^[_A-Za-z0-9]+$", name)) {
             String errorMessage = "Invalid Column name: \"" + name + '"';
-            throw generateInforException(name, errorMessage);
+            throw generateEAMException(name, errorMessage);
         }
     }
 }

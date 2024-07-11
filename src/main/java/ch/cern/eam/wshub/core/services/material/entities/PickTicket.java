@@ -1,6 +1,6 @@
 package ch.cern.eam.wshub.core.services.material.entities;
 
-import ch.cern.eam.wshub.core.annotations.InforField;
+import ch.cern.eam.wshub.core.annotations.EAMField;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
 
 import java.io.Serializable;
@@ -10,45 +10,45 @@ import java.util.Objects;
 
 public class PickTicket implements Serializable {
 
-    @InforField(xpath = "PICKLISTID/PICKLIST")
+    @EAMField(xpath = "PICKLISTID/PICKLIST")
     private String code;
-    @InforField(xpath = "PICKLISTID/PICKLISTDESC")
+    @EAMField(xpath = "PICKLISTID/PICKLISTDESC")
     private String description;
-    @InforField(xpath = "STOREID/STORECODE")
+    @EAMField(xpath = "STOREID/STORECODE")
     private String storeCode;
-    @InforField(xpath = "STATUS/STATUSCODE")
+    @EAMField(xpath = "STATUS/STATUSCODE")
     private String status;
-    @InforField(xpath = "DATEREQUIRED")
+    @EAMField(xpath = "DATEREQUIRED")
     private Date requestedEndDate;
-    @InforField(xpath = "CLASSID/CLASSCODE")
+    @EAMField(xpath = "CLASSID/CLASSCODE")
     private String classCode;
-    @InforField(xpath = "WORKORDERACTIVITY/ACTIVITYID/WORKORDERID")
+    @EAMField(xpath = "WORKORDERACTIVITY/ACTIVITYID/WORKORDERID")
     private String workorderCode;
-    @InforField(xpath = "WORKORDERACTIVITY/ACTIVITYID/ACTIVITYCODE")
+    @EAMField(xpath = "WORKORDERACTIVITY/ACTIVITYID/ACTIVITYCODE")
     private Long activityNumber;
-    @InforField(xpath = "JOBSEQUENCE")
+    @EAMField(xpath = "JOBSEQUENCE")
     private Long jobSequence;
-    @InforField(xpath = "ASSETID/EQUIPMENTCODE")
+    @EAMField(xpath = "ASSETID/EQUIPMENTCODE")
     private String assetCode;
-    @InforField(xpath = "ASSETID/EQUIPMENTCODE")
+    @EAMField(xpath = "ASSETID/EQUIPMENTCODE")
     private String eventCode;
-    @InforField(xpath = "DELIVERYADDRESSID/DELADDRESSCODE")
+    @EAMField(xpath = "DELIVERYADDRESSID/DELADDRESSCODE")
     private String deliveryAddressId;
-    @InforField(xpath = "DELIVERYSUPPLIERID/SUPPLIERCODE")
+    @EAMField(xpath = "DELIVERYSUPPLIERID/SUPPLIERCODE")
     private String deliverySupplierId;
-    @InforField(xpath = "DELIVERPERSONNEL/PERSONCODE")
+    @EAMField(xpath = "DELIVERPERSONNEL/PERSONCODE")
     private String deliverPersonnelCode;
-    @InforField(xpath = "ORIGINID/USERCODE")
+    @EAMField(xpath = "ORIGINID/USERCODE")
     private String originCode;
-    @InforField(xpath = "DEFAULTAPPROVER/USERCODE")
+    @EAMField(xpath = "DEFAULTAPPROVER/USERCODE")
     private String defaultApproverCode;
-    @InforField(xpath = "APPROVER/USERCODE")
+    @EAMField(xpath = "APPROVER/USERCODE")
     private String approverCode;
-    @InforField(xpath = "APPROVEDATE")
+    @EAMField(xpath = "APPROVEDATE")
     private Date approvedate;
-    @InforField(xpath = "PRINTDATE")
+    @EAMField(xpath = "PRINTDATE")
     private Date printDate;
-    @InforField(xpath = "USERDEFINEDAREA")
+    @EAMField(xpath = "USERDEFINEDAREA")
     private CustomField[] customFields;
 
     public String getCode() {

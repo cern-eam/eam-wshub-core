@@ -1,37 +1,35 @@
 package ch.cern.eam.wshub.core.services.material.impl;
 
-import javax.xml.ws.Holder;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import ch.cern.eam.wshub.core.services.material.PurchaseOrdersService;
 import ch.cern.eam.wshub.core.services.material.entities.PurchaseOrder;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.Tools;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 import net.datastream.schemas.mp_fields.PURCHASEORDERID_Type;
 import net.datastream.schemas.mp_fields.STATUS_Type;
-import net.datastream.schemas.mp_functions.SessionType;
 import net.datastream.schemas.mp_functions.mp0413_001.MP0413_GetPurchaseOrder_001;
 import net.datastream.schemas.mp_functions.mp0415_001.MP0415_SyncPurchaseOrder_001;
 import net.datastream.schemas.mp_results.mp0413_001.MP0413_GetPurchaseOrder_001_Result;
-import net.datastream.wsdls.inforws.InforWebServicesPT;
+import net.datastream.wsdls.eamws.EAMWebServicesPT;
 
 public class PurchaseOrdersImpl implements PurchaseOrdersService {
 
 	private Tools tools;
-	private InforWebServicesPT inforws;
+	private EAMWebServicesPT eamws;
 	private ApplicationData applicationData;
 
-	public PurchaseOrdersImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
+	public PurchaseOrdersImpl(ApplicationData applicationData, Tools tools, EAMWebServicesPT eamWebServicesToolkitClient) {
 		this.applicationData = applicationData;
 		this.tools = tools;
-		this.inforws = inforWebServicesToolkitClient;
+		this.eamws = eamWebServicesToolkitClient;
 	}
 	
 	@Override
-	public String updatePurchaseOrder(InforContext context, PurchaseOrder purchaseOrderParam)
-			throws InforException {
+	public String updatePurchaseOrder(EAMContext context, PurchaseOrder purchaseOrderParam)
+			throws EAMException {
 		//
 		
 		MP0413_GetPurchaseOrder_001 req = new MP0413_GetPurchaseOrder_001();
@@ -40,162 +38,162 @@ public class PurchaseOrdersImpl implements PurchaseOrdersService {
 		req.getPURCHASEORDERID().setORGANIZATIONID(tools.getOrganization(context));
 		
 		MP0413_GetPurchaseOrder_001_Result getPOResult =
-			tools.performInforOperation(context, inforws::getPurchaseOrderOp, req);
-		net.datastream.schemas.mp_entities.purchaseorder_001.PurchaseOrder inforPurchaseOrder = getPOResult.getResultData()
+			tools.performEAMOperation(context, eamws::getPurchaseOrderOp, req);
+		net.datastream.schemas.mp_entities.purchaseorder_001.PurchaseOrder eamPurchaseOrder = getPOResult.getResultData()
 				.getPurchaseOrder();
 		
 		//
 		// SET ALL PROPERTIES
 		//
-		this.initializeInforPOObject(inforPurchaseOrder, purchaseOrderParam);
+		this.initializeEAMPOObject(eamPurchaseOrder, purchaseOrderParam);
 		
 		//
 		// CALL INFOR WEB SERVICE
 		//
 		MP0415_SyncPurchaseOrder_001 syncPO = new MP0415_SyncPurchaseOrder_001();
-		syncPO.setPurchaseOrder(inforPurchaseOrder);
-		tools.performInforOperation(context, inforws::syncPurchaseOrderOp, syncPO);
+		syncPO.setPurchaseOrder(eamPurchaseOrder);
+		tools.performEAMOperation(context, eamws::syncPurchaseOrderOp, syncPO);
 
-		return inforPurchaseOrder.getPURCHASEORDERID().getPURCHASEORDERCODE();
+		return eamPurchaseOrder.getPURCHASEORDERID().getPURCHASEORDERCODE();
 	}
 	
-	private void initializeInforPOObject(net.datastream.schemas.mp_entities.purchaseorder_001.PurchaseOrder inforPO,
-			PurchaseOrder po) throws InforException {
+	private void initializeEAMPOObject(net.datastream.schemas.mp_entities.purchaseorder_001.PurchaseOrder eamPO,
+			PurchaseOrder po) throws EAMException {
 
-		if (inforPO.getUserDefinedFields() == null) {
-			inforPO.setUserDefinedFields(new net.datastream.schemas.mp_entities.purchaseorder_001.UserDefinedFields());
+		if (eamPO.getUserDefinedFields() == null) {
+			eamPO.setUserDefinedFields(new net.datastream.schemas.mp_entities.purchaseorder_001.UserDefinedFields());
 		}
 		
-		initializeInforPOObject(inforPO.getUserDefinedFields(), po.getUserDefinedFields());
+		initializeEAMPOObject(eamPO.getUserDefinedFields(), po.getUserDefinedFields());
 		
 		// STATUS
 		if (po.getStatusCode() != null) {
-			inforPO.setSTATUS(new STATUS_Type());
-			inforPO.getSTATUS().setSTATUSCODE(po.getStatusCode().trim());
+			eamPO.setSTATUS(new STATUS_Type());
+			eamPO.getSTATUS().setSTATUSCODE(po.getStatusCode().trim());
 		} 
 		
 	}
 	
-	private void initializeInforPOObject(net.datastream.schemas.mp_entities.purchaseorder_001.UserDefinedFields inforUserDefinedFields, UserDefinedFields userDefinedFields) throws InforException {
+	private void initializeEAMPOObject(net.datastream.schemas.mp_entities.purchaseorder_001.UserDefinedFields eamUserDefinedFields, UserDefinedFields userDefinedFields) throws EAMException {
 		
 		if (userDefinedFields.getUdfchar01() != null) {
-			inforUserDefinedFields.setUDFCHAR01(userDefinedFields.getUdfchar01());
+			eamUserDefinedFields.setUDFCHAR01(userDefinedFields.getUdfchar01());
 		}
 
 		if (userDefinedFields.getUdfchar02() != null) {
-			inforUserDefinedFields.setUDFCHAR02(userDefinedFields.getUdfchar02());
+			eamUserDefinedFields.setUDFCHAR02(userDefinedFields.getUdfchar02());
 		}
 
 		if (userDefinedFields.getUdfchar03() != null) {
-			inforUserDefinedFields.setUDFCHAR03(userDefinedFields.getUdfchar03());
+			eamUserDefinedFields.setUDFCHAR03(userDefinedFields.getUdfchar03());
 		}
 
 		if (userDefinedFields.getUdfchar04() != null) {
-			inforUserDefinedFields.setUDFCHAR04(userDefinedFields.getUdfchar04());
+			eamUserDefinedFields.setUDFCHAR04(userDefinedFields.getUdfchar04());
 		}
 
 		if (userDefinedFields.getUdfchar05() != null) {
-			inforUserDefinedFields.setUDFCHAR05(userDefinedFields.getUdfchar05());
+			eamUserDefinedFields.setUDFCHAR05(userDefinedFields.getUdfchar05());
 		}
 
 		if (userDefinedFields.getUdfchar06() != null) {
-			inforUserDefinedFields.setUDFCHAR06(userDefinedFields.getUdfchar06());
+			eamUserDefinedFields.setUDFCHAR06(userDefinedFields.getUdfchar06());
 		}
 
 		if (userDefinedFields.getUdfchar07() != null) {
-			inforUserDefinedFields.setUDFCHAR07(userDefinedFields.getUdfchar07());
+			eamUserDefinedFields.setUDFCHAR07(userDefinedFields.getUdfchar07());
 		}
 
 		if (userDefinedFields.getUdfchar08() != null) {
-			inforUserDefinedFields.setUDFCHAR08(userDefinedFields.getUdfchar08());
+			eamUserDefinedFields.setUDFCHAR08(userDefinedFields.getUdfchar08());
 		}
 
 		if (userDefinedFields.getUdfchar09() != null) {
-			inforUserDefinedFields.setUDFCHAR09(userDefinedFields.getUdfchar09());
+			eamUserDefinedFields.setUDFCHAR09(userDefinedFields.getUdfchar09());
 		}
 
 		if (userDefinedFields.getUdfchar10() != null) {
-			inforUserDefinedFields.setUDFCHAR10(userDefinedFields.getUdfchar10());
+			eamUserDefinedFields.setUDFCHAR10(userDefinedFields.getUdfchar10());
 		}
 
 		if (userDefinedFields.getUdfchar11() != null) {
-			inforUserDefinedFields.setUDFCHAR11(userDefinedFields.getUdfchar11());
+			eamUserDefinedFields.setUDFCHAR11(userDefinedFields.getUdfchar11());
 		}
 
 		if (userDefinedFields.getUdfchar12() != null) {
-			inforUserDefinedFields.setUDFCHAR12(userDefinedFields.getUdfchar12());
+			eamUserDefinedFields.setUDFCHAR12(userDefinedFields.getUdfchar12());
 		}
 
 		if (userDefinedFields.getUdfchar13() != null) {
-			inforUserDefinedFields.setUDFCHAR13(userDefinedFields.getUdfchar13());
+			eamUserDefinedFields.setUDFCHAR13(userDefinedFields.getUdfchar13());
 		}
 
 		if (userDefinedFields.getUdfchar14() != null) {
-			inforUserDefinedFields.setUDFCHAR14(userDefinedFields.getUdfchar14());
+			eamUserDefinedFields.setUDFCHAR14(userDefinedFields.getUdfchar14());
 		}
 
 		if (userDefinedFields.getUdfchar15() != null) {
-			inforUserDefinedFields.setUDFCHAR15(userDefinedFields.getUdfchar15());
+			eamUserDefinedFields.setUDFCHAR15(userDefinedFields.getUdfchar15());
 		}
 
 		if (userDefinedFields.getUdfchar16() != null) {
-			inforUserDefinedFields.setUDFCHAR16(userDefinedFields.getUdfchar16());
+			eamUserDefinedFields.setUDFCHAR16(userDefinedFields.getUdfchar16());
 		}
 
 		if (userDefinedFields.getUdfchar17() != null) {
-			inforUserDefinedFields.setUDFCHAR17(userDefinedFields.getUdfchar17());
+			eamUserDefinedFields.setUDFCHAR17(userDefinedFields.getUdfchar17());
 		}
 
 		if (userDefinedFields.getUdfchar18() != null) {
-			inforUserDefinedFields.setUDFCHAR18(userDefinedFields.getUdfchar18());
+			eamUserDefinedFields.setUDFCHAR18(userDefinedFields.getUdfchar18());
 		}
 
 		if (userDefinedFields.getUdfchar19() != null) {
-			inforUserDefinedFields.setUDFCHAR19(userDefinedFields.getUdfchar19());
+			eamUserDefinedFields.setUDFCHAR19(userDefinedFields.getUdfchar19());
 		}
 
 		if (userDefinedFields.getUdfchar20() != null) {
-			inforUserDefinedFields.setUDFCHAR20(userDefinedFields.getUdfchar20());
+			eamUserDefinedFields.setUDFCHAR20(userDefinedFields.getUdfchar20());
 		}
 
 		if (userDefinedFields.getUdfchar21() != null) {
-			inforUserDefinedFields.setUDFCHAR21(userDefinedFields.getUdfchar21());
+			eamUserDefinedFields.setUDFCHAR21(userDefinedFields.getUdfchar21());
 		}
 
 		if (userDefinedFields.getUdfchar22() != null) {
-			inforUserDefinedFields.setUDFCHAR22(userDefinedFields.getUdfchar22());
+			eamUserDefinedFields.setUDFCHAR22(userDefinedFields.getUdfchar22());
 		}
 
 		if (userDefinedFields.getUdfchar23() != null) {
-			inforUserDefinedFields.setUDFCHAR23(userDefinedFields.getUdfchar23());
+			eamUserDefinedFields.setUDFCHAR23(userDefinedFields.getUdfchar23());
 		}
 
 		if (userDefinedFields.getUdfchar24() != null) {
-			inforUserDefinedFields.setUDFCHAR24(userDefinedFields.getUdfchar24());
+			eamUserDefinedFields.setUDFCHAR24(userDefinedFields.getUdfchar24());
 		}
 
 		if (userDefinedFields.getUdfchar25() != null) {
-			inforUserDefinedFields.setUDFCHAR25(userDefinedFields.getUdfchar25());
+			eamUserDefinedFields.setUDFCHAR25(userDefinedFields.getUdfchar25());
 		}
 
 		if (userDefinedFields.getUdfchar26() != null) {
-			inforUserDefinedFields.setUDFCHAR26(userDefinedFields.getUdfchar26());
+			eamUserDefinedFields.setUDFCHAR26(userDefinedFields.getUdfchar26());
 		}
 
 		if (userDefinedFields.getUdfchar27() != null) {
-			inforUserDefinedFields.setUDFCHAR27(userDefinedFields.getUdfchar27());
+			eamUserDefinedFields.setUDFCHAR27(userDefinedFields.getUdfchar27());
 		}
 
 		if (userDefinedFields.getUdfchar28() != null) {
-			inforUserDefinedFields.setUDFCHAR28(userDefinedFields.getUdfchar28());
+			eamUserDefinedFields.setUDFCHAR28(userDefinedFields.getUdfchar28());
 		}
 
 		if (userDefinedFields.getUdfchar29() != null) {
-			inforUserDefinedFields.setUDFCHAR29(userDefinedFields.getUdfchar29());
+			eamUserDefinedFields.setUDFCHAR29(userDefinedFields.getUdfchar29());
 		}
 
 		if (userDefinedFields.getUdfchar30() != null) {
-			inforUserDefinedFields.setUDFCHAR30(userDefinedFields.getUdfchar30());
+			eamUserDefinedFields.setUDFCHAR30(userDefinedFields.getUdfchar30());
 		}
 	}
 

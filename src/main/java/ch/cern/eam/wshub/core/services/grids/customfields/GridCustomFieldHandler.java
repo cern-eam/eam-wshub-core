@@ -6,7 +6,7 @@ import ch.cern.eam.wshub.core.services.grids.entities.DataspyField;
 import ch.cern.eam.wshub.core.services.grids.entities.GridField;
 import ch.cern.eam.wshub.core.tools.Tools;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -28,7 +28,7 @@ public class GridCustomFieldHandler implements Serializable {
     }
 
     /**
-     * Infor stores different types of custom fields in different
+     * EAM stores different types of custom fields in different
      * fields in R5PROPERTYVALUES
      */
     public static String NUMERICAL_VALUE = "PRV_NVALUE";
@@ -160,7 +160,7 @@ public class GridCustomFieldHandler implements Serializable {
 
             /**
              * Per each custom field there are two joins: one on primary key and one on the category
-             * Don't know why but this is the way Infor does this
+             * Don't know why but this is the way EAM does this
              */
             if (!customField.getRentity().equals("PART")) {
                 joinClausePart = "LEFT OUTER JOIN R5PROPERTYVALUES " + getJoinName(customField.getPropertyName()) +
@@ -178,7 +178,7 @@ public class GridCustomFieldHandler implements Serializable {
 
             /**
              * In case of parts, we cannot make the normal LEFT OUTER JOIN
-             * because Infor uses the Oracle deprecated join syntax with the plus (+)
+             * because EAM uses the Oracle deprecated join syntax with the plus (+)
              * and the two cannot coexist.
              * In this case we do this kind of join.
              */

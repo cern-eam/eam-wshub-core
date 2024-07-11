@@ -1,11 +1,11 @@
 package ch.cern.eam.wshub.core.services.workorders.impl;
 
 import ch.cern.eam.wshub.core.annotations.GridField;
-import ch.cern.eam.wshub.core.annotations.InforField;
+import ch.cern.eam.wshub.core.annotations.EAMField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Objects;
@@ -13,33 +13,33 @@ import java.util.Objects;
 public class Safety implements Serializable {
     private static final long serialVersionUID = -4988635355683432596L;
 
-    @InforField(xpath = "SAFETYCODE")
+    @EAMField(xpath = "SAFETYCODE")
     @GridField(name = "entitysafetyid", alternativeNames = { "worksafety" })
     private String id;
 
-    @InforField(xpath = "HAZARDID/HAZARDCODE")
+    @EAMField(xpath = "HAZARDID/HAZARDCODE")
     @GridField(name = "hazardcode", alternativeNames = { "hazard" })
     private String hazardCode;
 
-    @InforField(xpath = "HAZARDID/DESCRIPTION")
+    @EAMField(xpath = "HAZARDID/DESCRIPTION")
     @GridField(name = "hazarddescription", alternativeNames = { "hazarddesc" })
     private String hazardDescription;
 
-    @InforField(xpath = "HAZARDID/REVISIONNUM")
+    @EAMField(xpath = "HAZARDID/REVISIONNUM")
     private BigDecimal hazardRevision;
 
-    @InforField(xpath = "PRECAUTIONID/PRECAUTIONCODE")
+    @EAMField(xpath = "PRECAUTIONID/PRECAUTIONCODE")
     @GridField(name = "precaution")
     private String precautionCode;
 
-    @InforField(xpath = "PRECAUTIONID/DESCRIPTION")
+    @EAMField(xpath = "PRECAUTIONID/DESCRIPTION")
     @GridField(name = "precautiondescription", alternativeNames = { "precautiondesc" })
     private String precautionDescription;
 
-    @InforField(xpath = "PRECAUTIONID/REVISIONNUM")
+    @EAMField(xpath = "PRECAUTIONID/REVISIONNUM")
     private BigDecimal precautionRevision;
 
-    @InforField(xpath = "StandardUserDefinedFields")
+    @EAMField(xpath = "StandardUserDefinedFields")
     @GridField(name = "")
     private UserDefinedFields userDefinedFields;
 

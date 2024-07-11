@@ -1,12 +1,12 @@
 package ch.cern.eam.wshub.core.services.workorders.impl;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.material.PartService;
 import ch.cern.eam.wshub.core.services.material.entities.MaterialList;
 import ch.cern.eam.wshub.core.services.material.impl.PartServiceImpl;
 import ch.cern.eam.wshub.core.services.workorders.WorkOrderMiscService;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import ch.cern.eam.wshub.core.services.workorders.entities.RouteEquipment;
 import ch.cern.eam.wshub.core.services.workorders.entities.TaskPlan;
@@ -27,9 +27,9 @@ import net.datastream.schemas.mp_functions.mp7593_001.MP7593_AddWorkOrderAdditio
 import net.datastream.schemas.mp_results.mp0044_001.MP0044_AddMeterReading_001_Result;
 import net.datastream.schemas.mp_results.mp7336_001.AdditionalWOEquipDetails;
 import net.datastream.schemas.mp_results.mp7336_001.MP7336_GetWOEquipLinearDetails_001_Result;
-import net.datastream.wsdls.inforws.InforWebServicesPT;
+import net.datastream.wsdls.eamws.EAMWebServicesPT;
 
-import javax.xml.ws.Holder;
+import jakarta.xml.ws.Holder;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -39,53 +39,53 @@ import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
 public class WorkOrderMiscServiceImpl implements WorkOrderMiscService {
 
 	private Tools tools;
-	private InforWebServicesPT inforws;
+	private EAMWebServicesPT eamws;
 	private ApplicationData applicationData;
 
 	private PartService partService;
 
-	public WorkOrderMiscServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
+	public WorkOrderMiscServiceImpl(ApplicationData applicationData, Tools tools, EAMWebServicesPT eamWebServicesToolkitClient) {
 		this.applicationData = applicationData;
 		this.tools = tools;
-		this.inforws = inforWebServicesToolkitClient;
-		this.partService = new PartServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
+		this.eamws = eamWebServicesToolkitClient;
+		this.partService = new PartServiceImpl(applicationData, tools, eamWebServicesToolkitClient);
 	}
 
-	public String createMeterReading(InforContext context, ch.cern.eam.wshub.core.services.workorders.entities.MeterReading meterReadingParam) throws InforException {
+	public String createMeterReading(EAMContext context, ch.cern.eam.wshub.core.services.workorders.entities.MeterReading meterReadingParam) throws EAMException {
 		// Handling the normal case for meter reading
-		MeterReading meterreadinginfor = new MeterReading();
-		tools.getInforFieldTools().transformWSHubObject(meterreadinginfor, meterReadingParam, context);
+		MeterReading meterreadingeam = new MeterReading();
+		tools.getEAMFieldTools().transformWSHubObject(meterreadingeam, meterReadingParam, context);
 
 		if (meterReadingParam.getActualValue() != null) {
-			meterreadinginfor
+			meterreadingeam
 					.setACTUALREADING(tools.getDataTypeTools().encodeQuantity(meterReadingParam.getActualValue(), "Meter Reading Value"));
 		} else if (meterReadingParam.getDifferenceValue() != null) {
-			meterreadinginfor.setDIFFERENCEREADING(
+			meterreadingeam.setDIFFERENCEREADING(
 					tools.getDataTypeTools().encodeQuantity(meterReadingParam.getDifferenceValue(), "Meter Reading Value"));
 		} else {
 			throw tools.generateFault("Supply actual reading or difference reading value.");
 		}
 
 		if (meterReadingParam.getReadingDate() == null) {
-			meterreadinginfor.setREADINGDATE(tools.getDataTypeTools().formatDate("SYSDATE", "Meter Reading Date"));
+			meterreadingeam.setREADINGDATE(tools.getDataTypeTools().formatDate("SYSDATE", "Meter Reading Date"));
 		} else {
-			meterreadinginfor
-					.setREADINGDATE(tools.getDataTypeTools().encodeInforDate(meterReadingParam.getReadingDate(), "Meter Reading Date"));
+			meterreadingeam
+					.setREADINGDATE(tools.getDataTypeTools().encodeEAMDate(meterReadingParam.getReadingDate(), "Meter Reading Date"));
 		}
 
 		MP0044_AddMeterReading_001 addmeterreading = new MP0044_AddMeterReading_001();
-		addmeterreading.setMeterReading(meterreadinginfor);
+		addmeterreading.setMeterReading(meterreadingeam);
 		MP0044_AddMeterReading_001_Result result =
-			tools.performInforOperation(context, inforws::addMeterReadingOp, addmeterreading);
+			tools.performEAMOperation(context, eamws::addMeterReadingOp, addmeterreading);
 		return result.getResultData().getMETERREADINGCODE();
 
 	}
 
-	public String createWorkOrderAdditionalCost(InforContext context,
-												ch.cern.eam.wshub.core.services.workorders.entities.WorkOrderAdditionalCosts workOrderAddCostsParam) throws InforException {
+	public String createWorkOrderAdditionalCost(EAMContext context,
+												ch.cern.eam.wshub.core.services.workorders.entities.WorkOrderAdditionalCosts workOrderAddCostsParam) throws EAMException {
 		WorkOrderAdditionalCosts workOrderAddCosts = new WorkOrderAdditionalCosts();
 
-		tools.getInforFieldTools().transformWSHubObject(workOrderAddCosts, workOrderAddCostsParam, context);
+		tools.getEAMFieldTools().transformWSHubObject(workOrderAddCosts, workOrderAddCostsParam, context);
 
 		workOrderAddCosts.setWOADDITIONALCOSTQTY(tools.getDataTypeTools().encodeQuantity(BigDecimal.ONE, "Additional Quantity"));
 
@@ -100,12 +100,12 @@ public class WorkOrderMiscServiceImpl implements WorkOrderMiscService {
 		MP7593_AddWorkOrderAdditionalCosts_001 addCost = new MP7593_AddWorkOrderAdditionalCosts_001();
 		addCost.setWorkOrderAdditionalCosts(workOrderAddCosts);
 
-		tools.performInforOperation(context, inforws::addWorkOrderAdditionalCostsOp, addCost);
+		tools.performEAMOperation(context, eamws::addWorkOrderAdditionalCostsOp, addCost);
 
 		return "done";
 	}
 
-	public String createMaterialList(InforContext context, MaterialList materialList) throws InforException {
+	public String createMaterialList(EAMContext context, MaterialList materialList) throws EAMException {
 
 		MP0067_AddMaterialListPart_001 matList = new MP0067_AddMaterialListPart_001();
 		matList.setMaterialListPart(new MaterialListPart());
@@ -150,12 +150,12 @@ public class WorkOrderMiscServiceImpl implements WorkOrderMiscService {
 			matList.getMaterialListPart().getUOMID().setUOMCODE(materialList.getUOM());
 		}
 
-		tools.performInforOperation(context, inforws::addMaterialListPartOp, matList);
+		tools.performEAMOperation(context, eamws::addMaterialListPartOp, matList);
 		return "done";
 
 	}
 
-	public String addWorkOrderPart(InforContext context, ch.cern.eam.wshub.core.services.entities.WorkOrderPart workOrderPart) throws InforException {
+	public String addWorkOrderPart(EAMContext context, ch.cern.eam.wshub.core.services.entities.WorkOrderPart workOrderPart) throws EAMException {
 
 		WorkOrderPart wop = new WorkOrderPart();
 		// PART ID
@@ -203,46 +203,46 @@ public class WorkOrderMiscServiceImpl implements WorkOrderMiscService {
 		MP0071_AddWorkOrderPart_001 addwop = new MP0071_AddWorkOrderPart_001();
 		addwop.setWorkOrderPart(wop);
 
-		tools.performInforOperation(context, inforws::addWorkOrderPartOp, addwop);
+		tools.performEAMOperation(context, eamws::addWorkOrderPartOp, addwop);
 		return "done";
 	}
 
-	public String createRouteEquipment(InforContext context, RouteEquipment routeEquipment) throws InforException {
+	public String createRouteEquipment(EAMContext context, RouteEquipment routeEquipment) throws EAMException {
 
-		net.datastream.schemas.mp_entities.routeequipment_001.RouteEquipment routeEquipmentInfor = new net.datastream.schemas.mp_entities.routeequipment_001.RouteEquipment();
+		net.datastream.schemas.mp_entities.routeequipment_001.RouteEquipment routeEquipmentEAM = new net.datastream.schemas.mp_entities.routeequipment_001.RouteEquipment();
 		//
 		// ROUTE ID
 		//
-		routeEquipmentInfor.setROUTEEQUIPMENTID(new ROUTEEQUIPMENTID_Type());
-		routeEquipmentInfor.getROUTEEQUIPMENTID().setROUTEEQUIPMENTSEQUENCE(
+		routeEquipmentEAM.setROUTEEQUIPMENTID(new ROUTEEQUIPMENTID_Type());
+		routeEquipmentEAM.getROUTEEQUIPMENTID().setROUTEEQUIPMENTSEQUENCE(
 				tools.getDataTypeTools().encodeLong(routeEquipment.getRouteEquipmentSequence(), "Route Equipment Sequence"));
-		routeEquipmentInfor.getROUTEEQUIPMENTID().setROUTEID(new ROUTE_Type());
-		routeEquipmentInfor.getROUTEEQUIPMENTID().getROUTEID().setROUTECODE(routeEquipment.getRouteCode());
+		routeEquipmentEAM.getROUTEEQUIPMENTID().setROUTEID(new ROUTE_Type());
+		routeEquipmentEAM.getROUTEEQUIPMENTID().getROUTEID().setROUTECODE(routeEquipment.getRouteCode());
 		if (routeEquipment.getRouteRevision() != null) {
-			routeEquipmentInfor.getROUTEEQUIPMENTID().getROUTEID()
+			routeEquipmentEAM.getROUTEEQUIPMENTID().getROUTEID()
 					.setROUTEREVISION(tools.getDataTypeTools().encodeLong(routeEquipment.getRouteRevision(), "Route Revision"));
 		} else {
-			routeEquipmentInfor.getROUTEEQUIPMENTID().getROUTEID().setROUTEREVISION(0l);
+			routeEquipmentEAM.getROUTEEQUIPMENTID().getROUTEID().setROUTEREVISION(0l);
 		}
 		//
 		// EQUIPMENT ID
 		//
-		routeEquipmentInfor.setROUTEEQUIPMENTTYPE(new ROUTEEQUIPMENTTYPE_Type());
-		routeEquipmentInfor.getROUTEEQUIPMENTTYPE().setEQUIPMENTID(new EQUIPMENTID_Type());
-		routeEquipmentInfor.getROUTEEQUIPMENTTYPE().getEQUIPMENTID().setORGANIZATIONID(tools.getOrganization(context));
-		routeEquipmentInfor.getROUTEEQUIPMENTTYPE().getEQUIPMENTID()
+		routeEquipmentEAM.setROUTEEQUIPMENTTYPE(new ROUTEEQUIPMENTTYPE_Type());
+		routeEquipmentEAM.getROUTEEQUIPMENTTYPE().setEQUIPMENTID(new EQUIPMENTID_Type());
+		routeEquipmentEAM.getROUTEEQUIPMENTTYPE().getEQUIPMENTID().setORGANIZATIONID(tools.getOrganization(context));
+		routeEquipmentEAM.getROUTEEQUIPMENTTYPE().getEQUIPMENTID()
 				.setEQUIPMENTCODE(routeEquipment.getEquipmentCode());
-		routeEquipmentInfor.getROUTEEQUIPMENTTYPE().setOBJRTYPE(routeEquipment.getObjRType());
-		routeEquipmentInfor.getROUTEEQUIPMENTTYPE().setOBJTYPE(routeEquipment.getObjType());
+		routeEquipmentEAM.getROUTEEQUIPMENTTYPE().setOBJRTYPE(routeEquipment.getObjRType());
+		routeEquipmentEAM.getROUTEEQUIPMENTTYPE().setOBJTYPE(routeEquipment.getObjType());
 		//
 		MP7153_AddRouteEquipment_001 addRouteEquipment = new MP7153_AddRouteEquipment_001();
-		addRouteEquipment.setRouteEquipment(routeEquipmentInfor);
+		addRouteEquipment.setRouteEquipment(routeEquipmentEAM);
 
-		tools.performInforOperation(context, inforws::addRouteEquipmentOp, addRouteEquipment);
+		tools.performEAMOperation(context, eamws::addRouteEquipmentOp, addRouteEquipment);
 		return "done";
 	}
 
-	public String deleteRouteEquipment(InforContext context, RouteEquipment routeEquipment) throws InforException {
+	public String deleteRouteEquipment(EAMContext context, RouteEquipment routeEquipment) throws EAMException {
 		//
 		MP7156_DeleteRouteEquipment_001 deleteRouteEquipment = new MP7156_DeleteRouteEquipment_001();
 
@@ -258,13 +258,13 @@ public class WorkOrderMiscServiceImpl implements WorkOrderMiscService {
 			deleteRouteEquipment.getROUTEEQUIPMENTID().getROUTEID().setROUTEREVISION(0l);
 		}
 
-		tools.performInforOperation(context, inforws::deleteRouteEquipmentOp, deleteRouteEquipment);
+		tools.performEAMOperation(context, eamws::deleteRouteEquipmentOp, deleteRouteEquipment);
 		return "done";
 	}
 
 	//TODO
 	/*
-	public String syncRoutes(String nothing, Credentials credentials, String sessionID) throws InforException {
+	public String syncRoutes(String nothing, Credentials credentials, String sessionID) throws EAMException {
 		EntityManager em = tools.getEntityManager();
 		try {
 			List<RouteEquipment> equipmentUdfRoutes = em.createNamedQuery("FINDUDFROUTES", RouteEquipment.class)
@@ -300,7 +300,7 @@ public class WorkOrderMiscServiceImpl implements WorkOrderMiscService {
 	}
 	*/
 
-	public String createTaskPlan(InforContext context, TaskPlan taskPlan) throws InforException {
+	public String createTaskPlan(EAMContext context, TaskPlan taskPlan) throws EAMException {
 		// Provide defaults for the revision control if not present
 		if (taskPlan.getTaskRevision() == null) {
 			taskPlan.setTaskRevision(BigInteger.ZERO);
@@ -312,21 +312,21 @@ public class WorkOrderMiscServiceImpl implements WorkOrderMiscService {
 
 		// Create the Task Plan
 		MP0080_AddTask_001 addTask = new MP0080_AddTask_001();
-		addTask.setTask(tools.getInforFieldTools().transformWSHubObject(new Task(), taskPlan, context));
+		addTask.setTask(tools.getEAMFieldTools().transformWSHubObject(new Task(), taskPlan, context));
 
-		tools.performInforOperation(context, inforws::addTaskOp, addTask);
+		tools.performEAMOperation(context, eamws::addTaskOp, addTask);
 		return "done";
 	}
 
 	@Override
-	public AdditionalWOEquipDetails getEquipLinearDetails(final InforContext context, final String eqCode) throws InforException {
+	public AdditionalWOEquipDetails getEquipLinearDetails(final EAMContext context, final String eqCode) throws EAMException {
 		MP7336_GetWOEquipLinearDetails_001 op = new MP7336_GetWOEquipLinearDetails_001();
 		op.setEQUIPMENTID(new EQUIPMENTID_Type());
 		op.getEQUIPMENTID().setEQUIPMENTCODE(eqCode);
 		op.getEQUIPMENTID().setORGANIZATIONID(tools.getOrganization(context));
 		op.setORGANIZATIONID(tools.getOrganization(context));
 		final MP7336_GetWOEquipLinearDetails_001_Result additionalWOEquipDetails =
-				tools.performInforOperation(context, inforws::getWOEquipLinearDetailsOp, op);
+				tools.performEAMOperation(context, eamws::getWOEquipLinearDetailsOp, op);
 		return additionalWOEquipDetails.getResultData().getAdditionalWOEquipDetails();
 	}
 

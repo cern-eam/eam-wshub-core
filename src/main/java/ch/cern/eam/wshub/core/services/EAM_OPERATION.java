@@ -1,9 +1,9 @@
 package ch.cern.eam.wshub.core.services;
 
 /**
- * List of infor operations supported by this library
+ * List of eam operations supported by this library
  */
-public enum INFOR_OPERATION {
+public enum EAM_OPERATION {
 
     // WORK ORDERS
     WORKORDER_CREATE("WORKORDER_C"),
@@ -292,7 +292,7 @@ public enum INFOR_OPERATION {
 
     private String code;
 
-    INFOR_OPERATION(String code) {
+    EAM_OPERATION(String code) {
         this.code = code;
     }
 

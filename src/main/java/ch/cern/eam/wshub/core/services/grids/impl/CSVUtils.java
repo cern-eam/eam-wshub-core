@@ -3,7 +3,7 @@ package ch.cern.eam.wshub.core.services.grids.impl;
 import ch.cern.eam.wshub.core.services.grids.entities.GridField;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestCell;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 import ch.cern.eam.wshub.core.tools.Tools;
 
 import java.util.Arrays;
@@ -14,7 +14,7 @@ public class CSVUtils {
 
     private static final String SEPARATOR = ",";
 
-    public static String convertGridRequestResultToCsv(GridRequestResult gridRequestResult) throws InforException {
+    public static String convertGridRequestResultToCsv(GridRequestResult gridRequestResult) throws EAMException {
 
         if (gridRequestResult.getGridFields() == null || gridRequestResult.getGridFields().size() == 0) {
             throw Tools.generateFault("The grid request result must contain the list of fields (GridRequestResult.gridFields)");

@@ -1,7 +1,7 @@
 package ch.cern.eam.wshub.core.services.userdefinedscreens.entities.xmlhashmap;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlValue;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlValue;
 
 public class XmlHashMapEntry<T> {
     private String key;

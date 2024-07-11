@@ -1,6 +1,6 @@
 package ch.cern.eam.wshub.core.services.equipment.impl;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.contractmanagement.entities.EquipmentReservationAdjustment;
 import ch.cern.eam.wshub.core.services.equipment.EquipmentReservationService;
 import ch.cern.eam.wshub.core.services.equipment.entities.EquipmentReservation;
@@ -10,7 +10,7 @@ import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
 import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.GridTools;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_entities.customerrental_001.CustomerRental;
 import net.datastream.schemas.mp_fields.CUSTOMERRENTALID_Type;
@@ -21,7 +21,7 @@ import net.datastream.schemas.mp_functions.mp7835_001.MP7835_DeleteCustomerRenta
 import net.datastream.schemas.mp_results.mp7832_001.MP7832_GetCustomerRental_001_Result;
 import net.datastream.schemas.mp_results.mp7833_001.MP7833_AddCustomerRental_001_Result;
 import net.datastream.schemas.mp_results.mp7834_001.MP7834_SyncCustomerRental_001_Result;
-import net.datastream.wsdls.inforws.InforWebServicesPT;
+import net.datastream.wsdls.eamws.EAMWebServicesPT;
 
 import java.util.Date;
 import java.util.List;
@@ -30,26 +30,26 @@ public class EquipmentReservationServiceImpl implements EquipmentReservationServ
 
     private ApplicationData applicationData;
     private Tools tools;
-    private InforWebServicesPT inforws;
+    private EAMWebServicesPT eamws;
 
     private GridsService gridsService;
 
-    public EquipmentReservationServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
+    public EquipmentReservationServiceImpl(ApplicationData applicationData, Tools tools, EAMWebServicesPT eamWebServicesToolkitClient) {
         this.applicationData = applicationData;
         this.tools = tools;
-        this.inforws = inforWebServicesToolkitClient;
-        this.gridsService = new GridsServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
+        this.eamws = eamWebServicesToolkitClient;
+        this.gridsService = new GridsServiceImpl(applicationData, tools, eamWebServicesToolkitClient);
     }
 
     @Override
-    public String createEquipmentReservation(InforContext context, EquipmentReservation reservationParam) throws InforException {
+    public String createEquipmentReservation(EAMContext context, EquipmentReservation reservationParam) throws EAMException {
         CustomerRental reservation = new CustomerRental();
 
         //Work aroud while EAM does not automatically populate these fields
         reservationParam.setCreatedDate(new Date());
         reservationParam.setCreatedBy(context.getCredentials().getUsername().toUpperCase());
 
-        tools.getInforFieldTools().transformWSHubObject(reservation, reservationParam, context);
+        tools.getEAMFieldTools().transformWSHubObject(reservation, reservationParam, context);
 
         if (reservation.getCUSTOMERRENTALID().getCUSTOMERRENTALCODE() == null) {
             reservation.getCUSTOMERRENTALID().setCUSTOMERRENTALCODE("");
@@ -59,58 +59,58 @@ public class EquipmentReservationServiceImpl implements EquipmentReservationServ
         addReservation.setCustomerRental(reservation);
 
         MP7833_AddCustomerRental_001_Result result =
-                tools.performInforOperation(context, inforws::addCustomerRentalOp, addReservation);
+                tools.performEAMOperation(context, eamws::addCustomerRentalOp, addReservation);
 
         return result.getResultData().getCUSTOMERRENTALID().getCUSTOMERRENTALCODE();
     }
 
     @Override
-    public EquipmentReservation readEquipmentReservation(InforContext context, String customerRentalCode) throws InforException {
-        CustomerRental reservation = readEquipmentReservationInfor(context, customerRentalCode);
+    public EquipmentReservation readEquipmentReservation(EAMContext context, String customerRentalCode) throws EAMException {
+        CustomerRental reservation = readEquipmentReservationEAM(context, customerRentalCode);
 
-        return tools.getInforFieldTools().transformInforObject(new EquipmentReservation(), reservation, context);
+        return tools.getEAMFieldTools().transformEAMObject(new EquipmentReservation(), reservation, context);
     }
 
-    private CustomerRental readEquipmentReservationInfor(InforContext context, String customerRentalCode) throws InforException {
+    private CustomerRental readEquipmentReservationEAM(EAMContext context, String customerRentalCode) throws EAMException {
         MP7832_GetCustomerRental_001 getReservation = new MP7832_GetCustomerRental_001();
         getReservation.setCUSTOMERRENTALID(new CUSTOMERRENTALID_Type());
         getReservation.getCUSTOMERRENTALID().setCUSTOMERRENTALCODE(customerRentalCode);
         getReservation.getCUSTOMERRENTALID().setORGANIZATIONID(tools.getOrganization(context));
 
         MP7832_GetCustomerRental_001_Result result =
-                tools.performInforOperation(context, inforws::getCustomerRentalOp, getReservation);
+                tools.performEAMOperation(context, eamws::getCustomerRentalOp, getReservation);
 
         return result.getResultData().getCustomerRental();
     }
 
     @Override
-    public String updateEquipmentReservation(InforContext context, EquipmentReservation reservationParam) throws InforException {
-        CustomerRental reservation = readEquipmentReservationInfor(context, reservationParam.getCode());
-        tools.getInforFieldTools().transformWSHubObject(reservation, reservationParam, context);
+    public String updateEquipmentReservation(EAMContext context, EquipmentReservation reservationParam) throws EAMException {
+        CustomerRental reservation = readEquipmentReservationEAM(context, reservationParam.getCode());
+        tools.getEAMFieldTools().transformWSHubObject(reservation, reservationParam, context);
 
         MP7834_SyncCustomerRental_001 syncReservation = new MP7834_SyncCustomerRental_001();
         syncReservation.setCustomerRental(reservation);
 
         MP7834_SyncCustomerRental_001_Result syncResult =
-                tools.performInforOperation(context, inforws::syncCustomerRentalOp, syncReservation);
+                tools.performEAMOperation(context, eamws::syncCustomerRentalOp, syncReservation);
 
         return syncResult.getResultData().getCUSTOMERRENTALID().getCUSTOMERRENTALCODE();
     }
 
     @Override
-    public String deleteEquipmentReservation(InforContext context, String customerRentalCode) throws InforException {
+    public String deleteEquipmentReservation(EAMContext context, String customerRentalCode) throws EAMException {
         MP7835_DeleteCustomerRental_001 deleteReservation = new MP7835_DeleteCustomerRental_001();
         deleteReservation.setCUSTOMERRENTALID(new CUSTOMERRENTALID_Type());
         deleteReservation.getCUSTOMERRENTALID().setCUSTOMERRENTALCODE(customerRentalCode);
         deleteReservation.getCUSTOMERRENTALID().setORGANIZATIONID(tools.getOrganization(context));
 
-        tools.performInforOperation(context, inforws::deleteCustomerRentalOp, deleteReservation);
+        tools.performEAMOperation(context, eamws::deleteCustomerRentalOp, deleteReservation);
 
         return customerRentalCode;
     }
 
     @Override
-    public List<EquipmentReservationAdjustment> readEquipmentReservationAdjustments(InforContext context, String customerRentalCode) throws InforException {
+    public List<EquipmentReservationAdjustment> readEquipmentReservationAdjustments(EAMContext context, String customerRentalCode) throws EAMException {
         GridRequest gridRequest = new GridRequest("WSCREN_CAD", GridRequest.GRIDTYPE.LIST);
         gridRequest.setUserFunctionName("WSCREN");
         gridRequest.addParam("parameter.customerrentalcode", customerRentalCode);

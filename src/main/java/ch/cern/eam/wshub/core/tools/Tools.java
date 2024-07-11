@@ -1,12 +1,15 @@
 package ch.cern.eam.wshub.core.tools;
 
-import ch.cern.eam.wshub.core.client.InforContext;
-import ch.cern.eam.wshub.core.services.entities.*;
+import ch.cern.eam.wshub.core.client.EAMContext;
+import ch.cern.eam.wshub.core.services.entities.BatchResponse;
+import ch.cern.eam.wshub.core.services.entities.BatchSingleResponse;
+import ch.cern.eam.wshub.core.services.entities.Credentials;
+import ch.cern.eam.wshub.core.services.entities.EntityOrganizationCodePair;
 import net.datastream.schemas.mp_fields.*;
 import net.datastream.schemas.mp_functions.MessageConfigType;
 import net.datastream.schemas.mp_functions.MessageItemConfigType;
 import net.datastream.schemas.mp_functions.SessionType;
-import net.datastream.wsdls.inforws.InforWebServicesPT;
+import net.datastream.wsdls.eamws.EAMWebServicesPT;
 import org.w3c.dom.NodeList;
 import org.xmlsoap.schemas.ws._2002._04.secext.Password;
 import org.xmlsoap.schemas.ws._2002._04.secext.Username;
@@ -14,11 +17,11 @@ import org.xmlsoap.schemas.ws._2002._04.secext.UsernameToken;
 import org.xmlsoap.schemas.ws._2002._04.secext.Security;
 import org.xmlsoap.schemas.ws._2002._04.secext.ObjectFactory;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
-import javax.xml.ws.Holder;
-import javax.xml.ws.soap.SOAPFaultException;
+import jakarta.xml.ws.Holder;
+import jakarta.xml.ws.soap.SOAPFaultException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -35,7 +38,7 @@ import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
 public class Tools {
 
 	private ApplicationData applicationData;
-	private InforWebServicesPT inforws;
+	private EAMWebServicesPT eamws;
 
 	private ExecutorService executorService;
 	private DataSource dataSource;
@@ -47,25 +50,25 @@ public class Tools {
 	private DataTypeTools dataTypeTools;
 	private FieldDescriptionTools fieldDescriptionsTools;
 	private GridTools gridTools;
-	private InforFieldTools inforFieldTools;
+	private EAMFieldTools eamFieldTools;
 
 	public Tools(ApplicationData applicationData,
-				 InforWebServicesPT inforWebServicesToolkitClient,
+				 EAMWebServicesPT eamWebServicesToolkitClient,
 				 ExecutorService executorService,
 				 DataSource dataSource,
 				 EntityManagerFactory entityManagerFactory,
 				 Logger logger) {
 		//
 		this.applicationData = applicationData;
-		this.inforws = inforWebServicesToolkitClient;
+		this.eamws = eamWebServicesToolkitClient;
 		this.executorService = executorService;
 		this.dataSource = dataSource;
 		this.entityManagerFactory = entityManagerFactory;
 		// Init specific tool classes
-		this.customFieldsTools = new CustomFieldsTools(this, applicationData, inforws);
-		this.inforFieldTools = new InforFieldTools(customFieldsTools, this);
+		this.customFieldsTools = new CustomFieldsTools(this, applicationData, eamws);
+		this.eamFieldTools = new EAMFieldTools(customFieldsTools, this);
 		this.dataTypeTools = new DataTypeTools(this);
-		this.fieldDescriptionsTools = new FieldDescriptionTools(this, applicationData, inforws);
+		this.fieldDescriptionsTools = new FieldDescriptionTools(this, applicationData, eamws);
 		this.gridTools = new GridTools(this);
 
 		//
@@ -91,7 +94,7 @@ public class Tools {
 
 	public GridTools getGridTools() {return gridTools;}
 
-	public InforFieldTools getInforFieldTools() {return inforFieldTools;}
+	public EAMFieldTools getEAMFieldTools() {return eamFieldTools;}
 
 	//
 	//
@@ -105,7 +108,7 @@ public class Tools {
 	//
 	// SECURITY AND SESSION
 	//
-	public Security createSecurityHeader(InforContext context) throws InforException {
+	public Security createSecurityHeader(EAMContext context) throws EAMException {
 		if (context == null || context.getCredentials() == null) {
 			throw generateFault("Credentials must be initialized.");
 		}
@@ -126,7 +129,7 @@ public class Tools {
 		return security;
 	}
 
-	public SessionType createInforSession(InforContext context) {
+	public SessionType createEAMSession(EAMContext context) {
 		SessionType session = new SessionType();
 		if (context.getSessionID() != null) {
 			session.setSessionId(context.getSessionID());
@@ -156,19 +159,19 @@ public class Tools {
 	//
 	// ORGANIZATION
 	//
-	public ORGANIZATIONID_Type getOrganization(InforContext inforContext) {
+	public ORGANIZATIONID_Type getOrganization(EAMContext eamContext) {
 		ORGANIZATIONID_Type org = new ORGANIZATIONID_Type();
-		org.setORGANIZATIONCODE(getOrganizationCode(inforContext));
+		org.setORGANIZATIONCODE(getOrganizationCode(eamContext));
 		return org;
 	}
 
-	public ORGANIZATIONID_Type getOrganization(InforContext inforContext, String organizationCode) {
+	public ORGANIZATIONID_Type getOrganization(EAMContext eamContext, String organizationCode) {
 		ORGANIZATIONID_Type org = new ORGANIZATIONID_Type();
-		org.setORGANIZATIONCODE(getOrganizationCode(inforContext, organizationCode));
+		org.setORGANIZATIONCODE(getOrganizationCode(eamContext, organizationCode));
 		return org;
 	}
 
-	public String getOrganizationCode(InforContext context, String organizationCode) {
+	public String getOrganizationCode(EAMContext context, String organizationCode) {
 		if (isNotEmpty(organizationCode)) {
 			return organizationCode;
 		}
@@ -176,9 +179,9 @@ public class Tools {
 		return getOrganizationCode(context);
 	}
 
-	public String getOrganizationCode(InforContext inforContext) {
-		if (inforContext != null && inforContext.getOrganizationCode() != null) {
-			return inforContext.getOrganizationCode();
+	public String getOrganizationCode(EAMContext eamContext) {
+		if (eamContext != null && eamContext.getOrganizationCode() != null) {
+			return eamContext.getOrganizationCode();
 		} else {
 			return applicationData.getOrganization();
 		}
@@ -212,20 +215,20 @@ public class Tools {
 	//
 	// TENANT
 	//
-	public String getTenant(InforContext inforContext) {
-		if (inforContext != null && inforContext.getTenant() != null) {
-			return inforContext.getTenant();
+	public String getTenant(EAMContext eamContext) {
+		if (eamContext != null && eamContext.getTenant() != null) {
+			return eamContext.getTenant();
 		} else {
 			return applicationData.getTenant();
 		}
 	}
 
-	public static InforException generateFault(String reason) {
-		return new InforException(reason, null, null);
+	public static EAMException generateFault(String reason) {
+		return new EAMException(reason, null, null);
 	}
 
-	public static InforException generateFault(String reason, ExceptionInfo[] errors) {
-		return new InforException(reason, null, errors);
+	public static EAMException generateFault(String reason, ExceptionInfo[] errors) {
+		return new EAMException(reason, null, errors);
 	}
 
 	//
@@ -261,11 +264,11 @@ public class Tools {
 		return response;
 	}
 
-	public void processRunnables(Runnable... runnables) throws InforException {
+	public void processRunnables(Runnable... runnables) throws EAMException {
 		processRunnables(Arrays.asList(runnables));
 	}
 
-	public void processRunnables(List<Runnable> mylist) throws InforException {
+	public void processRunnables(List<Runnable> mylist) throws EAMException {
 		try {
 			executorService.invokeAll(mylist.stream().map(runnable -> Executors.callable(runnable)).collect(Collectors.toList()), 2, TimeUnit.MINUTES);
 		} catch (Exception exception) {
@@ -289,23 +292,23 @@ public class Tools {
 	//
 	// INFOR CONTEXT
 	//
-	public InforContext getInforContext(Credentials credentials, String sessionID) {
+	public EAMContext getEAMContext(Credentials credentials, String sessionID) {
 		if (credentials != null) {
-			return new InforContext(credentials);
+			return new EAMContext(credentials);
 		} else {
-			return new InforContext(sessionID);
+			return new EAMContext(sessionID);
 		}
 	}
 
-	public InforContext getInforContext(Credentials credentials) {
-		return new InforContext(credentials);
+	public EAMContext getEAMContext(Credentials credentials) {
+		return new EAMContext(credentials);
 	}
 
-	public InforContext getInforContext(String username, String password) {
+	public EAMContext getEAMContext(String username, String password) {
 		Credentials credentials = new Credentials();
 		credentials.setUsername(username);
 		credentials.setPassword(password);
-		return getInforContext(credentials);
+		return getEAMContext(credentials);
 	}
 
 	/**
@@ -332,7 +335,7 @@ public class Tools {
 		}
 	}
 
-	public void demandDatabaseConnection() throws InforException {
+	public void demandDatabaseConnection() throws EAMException {
 		if (this.entityManagerFactory == null || getDataSource() == null) {
 			throw generateFault("This operation requires DB connection.");
 		}
@@ -343,7 +346,7 @@ public class Tools {
 	}
 
 
-	public <A, R> BatchResponse<R> batchOperation(InforContext context, WSHubOperation<A, R> operation, List<A> arguments) {
+	public <A, R> BatchResponse<R> batchOperation(EAMContext context, WSHubOperation<A, R> operation, List<A> arguments) {
 		List<Callable<R>> callableList = arguments.stream()
 				.<Callable<R>>map(argument -> () -> operation.apply(context, argument))
 				.collect(Collectors.toList());
@@ -389,8 +392,8 @@ public class Tools {
 		return returnMap;
 	}
 
-	public <A, R> R performInforOperation(InforContext context, InforOperation<A, R> operation, A argument)
-			throws InforException {
+	public <A, R> R performEAMOperation(EAMContext context, EAMOperation<A, R> operation, A argument)
+			throws EAMException {
 		Security security = null;
 		String organization = getOrganizationCode(context);
 		String sessionTerminationScenario = "terminate";
@@ -404,12 +407,12 @@ public class Tools {
 		if(context.getCredentials() != null) {
 			security = createSecurityHeader(context);
 		} else {
-			holder = new Holder<>(createInforSession(context));
+			holder = new Holder<>(createEAMSession(context));
 		}
 
 		// Every MP class extending BaseSchemaRequestElement has ESIGNATURE property
 		if (argument instanceof BaseSchemaRequestElement && context.getSignature() != null) {
-			((BaseSchemaRequestElement) argument).setESIGNATURE(inforFieldTools.transformWSHubObject(new ESIGNATURE(), context.getSignature(), context));
+			((BaseSchemaRequestElement) argument).setESIGNATURE(eamFieldTools.transformWSHubObject(new ESIGNATURE(), context.getSignature(), context));
 		}
 
 		String tenant = getTenant(context);

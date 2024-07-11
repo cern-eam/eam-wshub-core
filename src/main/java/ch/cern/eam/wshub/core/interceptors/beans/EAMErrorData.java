@@ -1,9 +1,9 @@
 package ch.cern.eam.wshub.core.interceptors.beans;
 
 /**
- * Bean containing details about an exception occuring during a call to an Infor service
+ * Bean containing details about an exception occuring during a call to an EAM service
  */
-public class InforErrorData {
+public class EAMErrorData {
 
     // Response time in nanoseconds
     private long responseTime;
@@ -11,7 +11,7 @@ public class InforErrorData {
     private Exception exception;
 
 
-    private InforErrorData(long responseTime, Exception exception) {
+    private EAMErrorData(long responseTime, Exception exception) {
         this.responseTime = responseTime;
         this.exception = exception;
     }
@@ -30,8 +30,8 @@ public class InforErrorData {
             return this;
         }
 
-        public InforErrorData build() {
-            return new InforErrorData(responseTime, exception);
+        public EAMErrorData build() {
+            return new EAMErrorData(responseTime, exception);
         }
     }
 

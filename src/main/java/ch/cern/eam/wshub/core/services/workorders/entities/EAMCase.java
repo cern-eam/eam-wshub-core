@@ -1,16 +1,16 @@
 package ch.cern.eam.wshub.core.services.workorders.entities;
 
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
-import ch.cern.eam.wshub.core.annotations.InforField;
+import ch.cern.eam.wshub.core.annotations.EAMField;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElementWrapper;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Date;
@@ -18,7 +18,7 @@ import java.util.Date;
 @XmlAccessorType(XmlAccessType.PROPERTY)
 @Entity
 @Table(name = "R5CASEMANAGEMENT")
-public class InforCase implements Serializable, Cloneable {
+public class EAMCase implements Serializable, Cloneable {
 	private static final long serialVersionUID = 2632244342851353370L;
 
 	@Id
@@ -116,11 +116,11 @@ public class InforCase implements Serializable, Cloneable {
 	private Date eventenddate;
 
 	@Transient
-	@InforField(xpath = "USERDEFINEDAREA")
+	@EAMField(xpath = "USERDEFINEDAREA")
 	private CustomField[] customFields;
 
 	@Transient
-	@InforField(xpath = "StandardUserDefinedFields")
+	@EAMField(xpath = "StandardUserDefinedFields")
 	private UserDefinedFields userDefinedFields;
 
 	//
@@ -163,9 +163,9 @@ public class InforCase implements Serializable, Cloneable {
 	@Transient
 	private String docsrrNeedReqFlag;
 	
-	public InforCase copy() {
+	public EAMCase copy() {
 		try {
-			InforCase clone = (InforCase) this.clone();
+			EAMCase clone = (EAMCase) this.clone();
 			if (this.userDefinedFields != null) {
 				clone.setUserDefinedFields(this.userDefinedFields.copy());
 			}
@@ -672,7 +672,7 @@ public class InforCase implements Serializable, Cloneable {
 
 	@Override
 	public String toString() {
-		return "InforCase [" + (code != null ? "code=" + code + ", " : "")
+		return "EAMCase [" + (code != null ? "code=" + code + ", " : "")
 				+ (description != null ? "description=" + description + ", " : "")
 				+ (classCode != null ? "classCode=" + classCode + ", " : "")
 				+ (classDesc != null ? "classDesc=" + classDesc + ", " : "")

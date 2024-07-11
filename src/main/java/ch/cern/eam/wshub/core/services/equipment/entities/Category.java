@@ -1,9 +1,9 @@
 package ch.cern.eam.wshub.core.services.equipment.entities;
 
-import ch.cern.eam.wshub.core.annotations.InforField;
+import ch.cern.eam.wshub.core.annotations.EAMField;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.Arrays;
 
@@ -13,36 +13,36 @@ public class Category implements Serializable {
 
     @Id
     @Column(name = "OBJ_CODE")
-    @InforField(xpath = "CATEGORYID/CATEGORYCODE")
+    @EAMField(xpath = "CATEGORYID/CATEGORYCODE")
     private String code;
 
     @Column(name = "OBJ_DESC")
-    @InforField(xpath = "CATEGORYID/DESCRIPTION")
+    @EAMField(xpath = "CATEGORYID/DESCRIPTION")
     private String description;
 
     @Transient
-    @InforField(xpath = "CLASSID/CLASSCODE")
+    @EAMField(xpath = "CLASSID/CLASSCODE")
     private String classCode;
 
     @Transient
-    @InforField(xpath = "CLASSID/DESCRIPTION", readOnly = true)
+    @EAMField(xpath = "CLASSID/DESCRIPTION", readOnly = true)
     private String classDesc;
 
     @Transient
-    @InforField(xpath = "MANUFACTURERID/MANUFACTURERCODE")
+    @EAMField(xpath = "MANUFACTURERID/MANUFACTURERCODE")
     private String manufacturerCode;
 
     @Transient
-    @InforField(xpath = "MANUFACTURERID/DESCRIPTION")
+    @EAMField(xpath = "MANUFACTURERID/DESCRIPTION")
     private String manufacturerDesc;
 
     @Transient
     @Column(name = "OBJ_SCHEMATIC")
-    @InforField(xpath= "SCHEMATICID/USERDEFINEDCODE")
+    @EAMField(xpath= "SCHEMATICID/USERDEFINEDCODE")
     private String schematic;
 
     @Transient
-    @InforField(xpath = "USERDEFINEDAREA")
+    @EAMField(xpath = "USERDEFINEDAREA")
     private CustomField[] customFields;
 
 

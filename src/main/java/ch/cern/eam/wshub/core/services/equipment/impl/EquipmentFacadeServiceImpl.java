@@ -1,12 +1,12 @@
 package ch.cern.eam.wshub.core.services.equipment.impl;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.entities.BatchResponse;
 import ch.cern.eam.wshub.core.services.equipment.*;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.Tools;
-import ch.cern.eam.wshub.core.tools.InforException;
-import net.datastream.wsdls.inforws.InforWebServicesPT;
+import ch.cern.eam.wshub.core.tools.EAMException;
+import net.datastream.wsdls.eamws.EAMWebServicesPT;
 import ch.cern.eam.wshub.core.services.equipment.entities.Equipment;
 import java.util.List;
 
@@ -15,63 +15,63 @@ import static ch.cern.eam.wshub.core.tools.Tools.*;
 public class EquipmentFacadeServiceImpl implements EquipmentFacadeService {
 
     private Tools tools;
-    private InforWebServicesPT inforws;
+    private EAMWebServicesPT eamws;
     private ApplicationData applicationData;
     private AssetService assetService;
     private PositionService positionService;
     private SystemService systemService;
     private EquipmentTools equipmentTools;
 
-    public EquipmentFacadeServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
+    public EquipmentFacadeServiceImpl(ApplicationData applicationData, Tools tools, EAMWebServicesPT eamWebServicesToolkitClient) {
         this.applicationData = applicationData;
         this.tools = tools;
-        this.inforws = inforWebServicesToolkitClient;
-        this.assetService = new AssetServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
-        this.positionService = new PositionServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
-        this.systemService = new SystemServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
-        this.equipmentTools = new EquipmentTools(applicationData, tools, inforWebServicesToolkitClient);
+        this.eamws = eamWebServicesToolkitClient;
+        this.assetService = new AssetServiceImpl(applicationData, tools, eamWebServicesToolkitClient);
+        this.positionService = new PositionServiceImpl(applicationData, tools, eamWebServicesToolkitClient);
+        this.systemService = new SystemServiceImpl(applicationData, tools, eamWebServicesToolkitClient);
+        this.equipmentTools = new EquipmentTools(applicationData, tools, eamWebServicesToolkitClient);
     }
 
     //
     // BATCH PROCESSING
     //
     @Override
-    public BatchResponse<String> createEquipmentBatch(InforContext inforContext, List<Equipment> equipmentList) {
-        return tools.batchOperation(inforContext, this::createEquipment, equipmentList);
+    public BatchResponse<String> createEquipmentBatch(EAMContext eamContext, List<Equipment> equipmentList) {
+        return tools.batchOperation(eamContext, this::createEquipment, equipmentList);
     }
 
     @Override
-    public BatchResponse<Equipment> readEquipmentBatch(InforContext inforContext, List<String> equipmentCodes) {
-        return tools.batchOperation(inforContext, this::readEquipment, equipmentCodes);
+    public BatchResponse<Equipment> readEquipmentBatch(EAMContext eamContext, List<String> equipmentCodes) {
+        return tools.batchOperation(eamContext, this::readEquipment, equipmentCodes);
     }
 
     @Override
-    public BatchResponse<String> updateEquipmentBatch(InforContext inforContext, List<Equipment> equipmentList) {
-        return tools.batchOperation(inforContext, this::updateEquipment, equipmentList);
+    public BatchResponse<String> updateEquipmentBatch(EAMContext eamContext, List<Equipment> equipmentList) {
+        return tools.batchOperation(eamContext, this::updateEquipment, equipmentList);
     }
 
     @Override
-    public BatchResponse<String> deleteEquipmentBatch(InforContext inforContext, List<String> equipmentCodes) {
-        return tools.batchOperation(inforContext, this::deleteEquipment, equipmentCodes);
+    public BatchResponse<String> deleteEquipmentBatch(EAMContext eamContext, List<String> equipmentCodes) {
+        return tools.batchOperation(eamContext, this::deleteEquipment, equipmentCodes);
     }
 
     //
     // CRUD
     //
     @Override
-    public String updateEquipment(InforContext inforContext, Equipment equipment) throws InforException {
+    public String updateEquipment(EAMContext eamContext, Equipment equipment) throws EAMException {
 
         if (equipment.getSystemTypeCode() == null) {
-            equipment.setSystemTypeCode(equipmentTools.getEquipmentSystemTypeForEquipment(inforContext, equipment.getCode(), equipment.getOrganization()));
+            equipment.setSystemTypeCode(equipmentTools.getEquipmentSystemTypeForEquipment(eamContext, equipment.getCode(), equipment.getOrganization()));
         }
 
         switch (equipment.getSystemTypeCode()) {
             case "A":
-                return assetService.updateAsset(inforContext, equipment);
+                return assetService.updateAsset(eamContext, equipment);
             case "P":
-                return positionService.updatePosition(inforContext, equipment);
+                return positionService.updatePosition(eamContext, equipment);
             case "S": // System
-                return systemService.updateSystem(inforContext, equipment);
+                return systemService.updateSystem(eamContext, equipment);
             case "L": // Location
                 throw tools.generateFault("Locations are not available here. Use LocationService.");
             default:
@@ -80,22 +80,22 @@ public class EquipmentFacadeServiceImpl implements EquipmentFacadeService {
     }
 
     @Override
-    public String createEquipment(InforContext inforContext, Equipment equipment) throws InforException {
+    public String createEquipment(EAMContext eamContext, Equipment equipment) throws EAMException {
         if (equipment.getTypeCode() == null) {
             throw tools.generateFault("Equipment type can not be empty.");
         }
 
         if (equipment.getSystemTypeCode() == null) {
-            equipment.setSystemTypeCode(equipmentTools.getEquipmentSystemTypeForUserType(inforContext, equipment.getTypeCode()));
+            equipment.setSystemTypeCode(equipmentTools.getEquipmentSystemTypeForUserType(eamContext, equipment.getTypeCode()));
         }
 
         switch (equipment.getSystemTypeCode()) {
             case "A":
-                return assetService.createAsset(inforContext, equipment);
+                return assetService.createAsset(eamContext, equipment);
             case "P":
-                return positionService.createPosition(inforContext, equipment);
+                return positionService.createPosition(eamContext, equipment);
             case "S": // System
-                return systemService.createSystem(inforContext, equipment);
+                return systemService.createSystem(eamContext, equipment);
             case "L": // Location
                 throw tools.generateFault("Locations are not available here. Use LocationService.");
             default:
@@ -104,19 +104,19 @@ public class EquipmentFacadeServiceImpl implements EquipmentFacadeService {
     }
 
     @Override
-    public Equipment readEquipment(InforContext inforContext, String equipmentCode) throws InforException {
+    public Equipment readEquipment(EAMContext eamContext, String equipmentCode) throws EAMException {
         String code = extractEntityCode(equipmentCode);
         String organization = extractOrganizationCode(equipmentCode);
 
-        String equipmentTypeCode = equipmentTools.getEquipmentSystemTypeForEquipment(inforContext, code, organization);
+        String equipmentTypeCode = equipmentTools.getEquipmentSystemTypeForEquipment(eamContext, code, organization);
 
         switch (equipmentTypeCode) {
             case "A":
-                return assetService.readAsset(inforContext, code, organization);
+                return assetService.readAsset(eamContext, code, organization);
             case "P":
-                return positionService.readPosition(inforContext, code, organization);
+                return positionService.readPosition(eamContext, code, organization);
             case "S": // System
-                return systemService.readSystem(inforContext, code, organization);
+                return systemService.readSystem(eamContext, code, organization);
             case "L": // Location
                 throw tools.generateFault("Locations are no longer available here. Use LocationService.");
             default:
@@ -125,19 +125,19 @@ public class EquipmentFacadeServiceImpl implements EquipmentFacadeService {
     }
 
     @Override
-    public String deleteEquipment(InforContext inforContext, String equipmentCode) throws InforException {
+    public String deleteEquipment(EAMContext eamContext, String equipmentCode) throws EAMException {
         String code = extractEntityCode(equipmentCode);
         String organization = extractOrganizationCode(equipmentCode);
 
-        String equipmentTypeCode = equipmentTools.getEquipmentSystemTypeForEquipment(inforContext, code, organization);
+        String equipmentTypeCode = equipmentTools.getEquipmentSystemTypeForEquipment(eamContext, code, organization);
 
         switch (equipmentTypeCode) {
             case "A":
-                return assetService.deleteAsset(inforContext, code, organization);
+                return assetService.deleteAsset(eamContext, code, organization);
             case "P":
-                return positionService.deletePosition(inforContext, code, organization);
+                return positionService.deletePosition(eamContext, code, organization);
             case "S": // System
-                return systemService.deleteSystem(inforContext, code, organization);
+                return systemService.deleteSystem(eamContext, code, organization);
             case "L": // Location
                 throw tools.generateFault("Locations are no longer available here. Use LocationService.");
             default:
@@ -146,8 +146,8 @@ public class EquipmentFacadeServiceImpl implements EquipmentFacadeService {
     }
 
     @Override
-    public String readEquipmentType(InforContext inforContext, String equipmentCode) throws InforException {
-        return equipmentTools.getEquipmentSystemTypeForEquipment(inforContext, extractEntityCode(equipmentCode), extractOrganizationCode(equipmentCode));
+    public String readEquipmentType(EAMContext eamContext, String equipmentCode) throws EAMException {
+        return equipmentTools.getEquipmentSystemTypeForEquipment(eamContext, extractEntityCode(equipmentCode), extractOrganizationCode(equipmentCode));
     }
 
 }

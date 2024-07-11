@@ -4,10 +4,10 @@ import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
 import ch.cern.eam.wshub.core.adapters.BigIntegerAdapter;
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
 import ch.cern.eam.wshub.core.annotations.GridField;
-import ch.cern.eam.wshub.core.annotations.InforField;
+import ch.cern.eam.wshub.core.annotations.EAMField;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -26,56 +26,56 @@ public class Activity implements Serializable {
 	@Id
 	@Column(name = "ACT_ACT")
 	@GridField(name="activity")
-	@InforField(xpath = "ACTIVITYID/ACTIVITYCODE/value")
+	@EAMField(xpath = "ACTIVITYID/ACTIVITYCODE/value")
 	private BigInteger activityCode;
 
 	@Column(name = "ACT_NOTE")
 	@GridField(name="activitynote")
-	@InforField(xpath = "ACTIVITYID/ACTIVITYNOTE", nullifyParentLevel = 0)
+	@EAMField(xpath = "ACTIVITYID/ACTIVITYNOTE", nullifyParentLevel = 0)
 	private String activityNote;
 
 	@Column(name = "ACT_EVENT")
 	@GridField(name="workordernum")
-	@InforField(xpath = "ACTIVITYID/WORKORDERID/JOBNUM")
+	@EAMField(xpath = "ACTIVITYID/WORKORDERID/JOBNUM")
 	private String workOrderNumber;
 
 	@Column(name = "ACT_PERSONS")
 	@GridField(name="personsreq")
-	@InforField(xpath = "PERSONS")
+	@EAMField(xpath = "PERSONS")
 	private BigInteger peopleRequired;
 
 	@Column(name = "ACT_EST")
 	@GridField(name="esthrs")
-	@InforField(xpath = "ESTIMATEDHOURS")
+	@EAMField(xpath = "ESTIMATEDHOURS")
 	private BigDecimal estimatedHours;
 
 	@Column(name = "ACT_REM")
 	@GridField(name="hrsremain")
-	@InforField(xpath = "HOURSREMAINING")
+	@EAMField(xpath = "HOURSREMAINING")
 	private BigDecimal hoursRemaining;
 
 	@Column(name = "ACT_START")
 	@GridField(name="actstartdate")
-	@InforField(xpath = "ACTIVITYSTARTDATE")
+	@EAMField(xpath = "ACTIVITYSTARTDATE")
 	private Date startDate;
 
 	@Transient
 	@GridField(name="actenddate")
-	@InforField(xpath = "ACTIVITYENDDATE")
+	@EAMField(xpath = "ACTIVITYENDDATE")
 	private Date endDate;
 
 	@Column(name = "ACT_MATLIST")
 	@GridField(name="matlcode")
-	@InforField(xpath = "MATLIST/MTLCODE")
+	@EAMField(xpath = "MATLIST/MTLCODE")
 	private String materialList;
 
 	@Column(name = "ACT_TASK")
 	@GridField(name="task")
-	@InforField(xpath = "TASKSID/TASKCODE")
+	@EAMField(xpath = "TASKSID/TASKCODE")
 	private String taskCode;
 
 	@Column(name = "TSK_DESC")
-	@InforField(xpath = "TASKSID/DESCRIPTION")
+	@EAMField(xpath = "TASKSID/DESCRIPTION")
 	private String taskDesc;
 
 	@Column(name = "TSK_REVISION")
@@ -84,12 +84,12 @@ public class Activity implements Serializable {
 
 	@Column(name = "ACT_TRADE")
 	@GridField(name="trade")
-	@InforField(xpath = "TRADEID/TRADECODE")
+	@EAMField(xpath = "TRADEID/TRADECODE")
 	private String tradeCode;
 
 	@Column(name = "ACT_QTY")
 	@GridField(name="taskqty")
-	@InforField(xpath = "TASKSID/TASKQUANTITY")
+	@EAMField(xpath = "TASKSID/TASKQUANTITY")
 	private BigDecimal taskQty;
 
 	@Transient

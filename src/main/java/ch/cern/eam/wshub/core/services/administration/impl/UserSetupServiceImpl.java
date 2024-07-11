@@ -1,6 +1,6 @@
 package ch.cern.eam.wshub.core.services.administration.impl;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.administration.UserSetupService;
 import ch.cern.eam.wshub.core.services.entities.BatchResponse;
 import ch.cern.eam.wshub.core.services.administration.entities.EAMUser;
@@ -12,7 +12,7 @@ import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import static ch.cern.eam.wshub.core.tools.GridTools.extractSingleResult;
 import static ch.cern.eam.wshub.core.tools.GridTools.convertGridResultToMap;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_fields.USERID_Type;
 import net.datastream.schemas.mp_functions.SessionType;
@@ -25,9 +25,9 @@ import net.datastream.schemas.mp_results.mp0601_001.MP0601_GetUserSetup_001_Resu
 import net.datastream.schemas.mp_results.mp0602_001.MP0602_AddUserSetup_001_Result;
 import net.datastream.schemas.mp_results.mp0603_001.MP0603_SyncUserSetup_001_Result;
 import net.datastream.schemas.mp_results.mp9532_001.MP9532_RunEmptyOp_001_Result;
-import net.datastream.wsdls.inforws.InforWebServicesPT;
+import net.datastream.wsdls.eamws.EAMWebServicesPT;
 
-import javax.xml.ws.Holder;
+import jakarta.xml.ws.Holder;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -38,22 +38,22 @@ import static ch.cern.eam.wshub.core.tools.DataTypeTools.toCodeString;
 public class UserSetupServiceImpl implements UserSetupService {
 
 	private Tools tools;
-	private InforWebServicesPT inforws;
+	private EAMWebServicesPT eamws;
 	private ApplicationData applicationData;
 	private GridsService gridsService;
 
-	public UserSetupServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
+	public UserSetupServiceImpl(ApplicationData applicationData, Tools tools, EAMWebServicesPT eamWebServicesToolkitClient) {
 		this.applicationData = applicationData;
 		this.tools = tools;
-		this.inforws = inforWebServicesToolkitClient;
-		this.gridsService = new GridsServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
+		this.eamws = eamWebServicesToolkitClient;
+		this.gridsService = new GridsServiceImpl(applicationData, tools, eamWebServicesToolkitClient);
 	}
 
-	public String login(InforContext context, String userCode) throws InforException {
-		return login(context, userCode, tools, inforws);
+	public String login(EAMContext context, String userCode) throws EAMException {
+		return login(context, userCode, tools, eamws);
 	}
 	
-	public static String login(InforContext context, String userCode, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) throws InforException {
+	public static String login(EAMContext context, String userCode, Tools tools, EAMWebServicesPT eamWebServicesToolkitClient) throws EAMException {
 		MP9532_RunEmptyOp_001 runEmptyOp = new MP9532_RunEmptyOp_001();
 		if (context != null && context.getCredentials() != null) {
 			String sessionTerminationScenario = "terminate";
@@ -61,7 +61,7 @@ public class UserSetupServiceImpl implements UserSetupService {
 				sessionTerminationScenario = null;
 			}
 			Holder<SessionType> sessionTypeHolder = new Holder<>();
-			MP9532_RunEmptyOp_001_Result result =  inforWebServicesToolkitClient.runEmptyOpOp(runEmptyOp, tools.getOrganizationCode(context),
+			MP9532_RunEmptyOp_001_Result result =  eamWebServicesToolkitClient.runEmptyOpOp(runEmptyOp, tools.getOrganizationCode(context),
 					tools.createSecurityHeader(context), sessionTerminationScenario, sessionTypeHolder, null,
 					tools.getTenant(context));
 			if (sessionTypeHolder.value != null && sessionTypeHolder.value.getSessionId() != null) {
@@ -74,19 +74,19 @@ public class UserSetupServiceImpl implements UserSetupService {
 		}
 	}
 
-	public EAMUser readUserSetup(InforContext context, String userCode) throws InforException {
+	public EAMUser readUserSetup(EAMContext context, String userCode) throws EAMException {
 		// The user to be readed
 		MP0601_GetUserSetup_001 getUserSetup = new MP0601_GetUserSetup_001();
 		getUserSetup.setUSERID(new USERID_Type());
 		getUserSetup.getUSERID().setUSERCODE(userCode);
 
 		// Execute operation of reading
-		MP0601_GetUserSetup_001_Result getUserSetupResult = tools.performInforOperation(context, inforws::getUserSetupOp, getUserSetup);
+		MP0601_GetUserSetup_001_Result getUserSetupResult = tools.performEAMOperation(context, eamws::getUserSetupOp, getUserSetup);
 
-		net.datastream.schemas.mp_entities.usersetup_001.UserSetup userInfor = getUserSetupResult.getResultData().getUserSetup();
+		net.datastream.schemas.mp_entities.usersetup_001.UserSetup userEAM = getUserSetupResult.getResultData().getUserSetup();
 
 		// Populate 'EAMUser' Object
-		EAMUser user = tools.getInforFieldTools().transformInforObject(new EAMUser(), userInfor, context);
+		EAMUser user = tools.getEAMFieldTools().transformEAMObject(new EAMUser(), userEAM, context);
 
 		// Fetch corresponding employee code and description
 		GridRequest employeeGridRequest = new GridRequest("WSEMPS", GridRequest.GRIDTYPE.LIST);
@@ -109,38 +109,38 @@ public class UserSetupServiceImpl implements UserSetupService {
 		return user;
 	}
 
-	public String createUserSetup(InforContext context, EAMUser userParam) throws InforException {
-		// Create user infor
-		net.datastream.schemas.mp_entities.usersetup_001.UserSetup userInfor = new net.datastream.schemas.mp_entities.usersetup_001.UserSetup();
+	public String createUserSetup(EAMContext context, EAMUser userParam) throws EAMException {
+		// Create user EAM
+		net.datastream.schemas.mp_entities.usersetup_001.UserSetup userEAM = new net.datastream.schemas.mp_entities.usersetup_001.UserSetup();
 
 		// Check custom fields
-		userInfor.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(
+		userEAM.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getEAMCustomFields(
 			context,
-			toCodeString(userInfor.getCLASSID()),
-			userInfor.getUSERDEFINEDAREA(),
+			toCodeString(userEAM.getCLASSID()),
+			userEAM.getUSERDEFINEDAREA(),
 			userParam.getClassCode(),
 			"USER"));
 
 		// Init object for creation
-		tools.getInforFieldTools().transformWSHubObject(userInfor, userParam, context);
-		userInfor.setLANGUAGE("EN");
-		userInfor.setMSGTIMEOUT(tools.getDataTypeTools().encodeAmount(BigDecimal.TEN, "Success Msg. Timeout"));
-		userInfor.setISCONNECTOR("+");
+		tools.getEAMFieldTools().transformWSHubObject(userEAM, userParam, context);
+		userEAM.setLANGUAGE("EN");
+		userEAM.setMSGTIMEOUT(tools.getDataTypeTools().encodeAmount(BigDecimal.TEN, "Success Msg. Timeout"));
+		userEAM.setISCONNECTOR("+");
 
 		// Add user
 		MP0602_AddUserSetup_001 addUser = new MP0602_AddUserSetup_001();
-		addUser.setUserSetup(userInfor);
+		addUser.setUserSetup(userEAM);
 
 		MP0602_AddUserSetup_001_Result result = null;
 
 		// Execute operation
-		result = tools.performInforOperation(context, inforws::addUserSetupOp, addUser);
+		result = tools.performEAMOperation(context, eamws::addUserSetupOp, addUser);
 
 		// Return result of adding the user
 		return result.getUSERID().getUSERCODE();
 	}
 
-	public String updateUserSetup(InforContext context, EAMUser userParam) throws InforException {
+	public String updateUserSetup(EAMContext context, EAMUser userParam) throws EAMException {
 
 		// User Setup result
 		MP0601_GetUserSetup_001_Result getUserSetupResult = null;
@@ -150,49 +150,49 @@ public class UserSetupServiceImpl implements UserSetupService {
 		getUserSetup.getUSERID().setUSERCODE(userParam.getUserCode());
 
 		// Execute operation of reading
-		getUserSetupResult = tools.performInforOperation(context, inforws::getUserSetupOp, getUserSetup);
+		getUserSetupResult = tools.performEAMOperation(context, eamws::getUserSetupOp, getUserSetup);
 
 		// Assign the result
-		net.datastream.schemas.mp_entities.usersetup_001.UserSetup userInfor = getUserSetupResult.getResultData()
+		net.datastream.schemas.mp_entities.usersetup_001.UserSetup userEAM = getUserSetupResult.getResultData()
 				.getUserSetup();
 
 		// If there are custom fields
-		userInfor.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(
+		userEAM.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getEAMCustomFields(
 			context,
-			toCodeString(userInfor.getCLASSID()),
-			userInfor.getUSERDEFINEDAREA(),
+			toCodeString(userEAM.getCLASSID()),
+			userEAM.getUSERDEFINEDAREA(),
 			userParam.getClassCode(),
 			"USER"));
 
 		// Init object for update
-		tools.getInforFieldTools().transformWSHubObject(userInfor, userParam, context);
+		tools.getEAMFieldTools().transformWSHubObject(userEAM, userParam, context);
 
 		// Update user Sync User Setup
 		MP0603_SyncUserSetup_001 syncUser = new MP0603_SyncUserSetup_001();
-		syncUser.setUserSetup(userInfor);
+		syncUser.setUserSetup(userEAM);
 
 		// Execute the operation of sync user
 		MP0603_SyncUserSetup_001_Result result =
-			tools.performInforOperation(context, inforws::syncUserSetupOp, syncUser);
+			tools.performEAMOperation(context, eamws::syncUserSetupOp, syncUser);
 
 		// Return the result of the update
 		return result.getUSERID().getUSERCODE();
 	}
 
-	public BatchResponse<String> updateUserSetupBatch(InforContext context, List<EAMUser> eamUsers)
-			throws InforException {
+	public BatchResponse<String> updateUserSetupBatch(EAMContext context, List<EAMUser> eamUsers)
+			throws EAMException {
 		List<Callable<String>> callableList = eamUsers.stream()
 				.<Callable<String>>map(eamUser -> () -> updateUserSetup(context, eamUser))
 				.collect(Collectors.toList());
 		return tools.processCallables(callableList);
 	}
 
-	public String deleteUserSetup(InforContext context, String userCode) throws InforException {
+	public String deleteUserSetup(EAMContext context, String userCode) throws EAMException {
 		MP0604_DeleteUserSetup_001 deleteUser = new MP0604_DeleteUserSetup_001();
 		deleteUser.setUSERID(new USERID_Type());
 		deleteUser.getUSERID().setUSERCODE(userCode);
 
-		tools.performInforOperation(context, inforws::deleteUserSetupOp, deleteUser);
+		tools.performEAMOperation(context, eamws::deleteUserSetupOp, deleteUser);
 		
 		return "success";
 	}

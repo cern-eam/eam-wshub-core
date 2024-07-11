@@ -1,16 +1,16 @@
 package ch.cern.eam.wshub.core.tools;
 
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
 import net.datastream.schemas.mp_fields.*;
 import net.datastream.schemas.mp_functions.SessionType;
 import net.datastream.schemas.mp_functions.mp9501_001.CUSTOMFIELDREQ;
 import net.datastream.schemas.mp_functions.mp9501_001.MP9501_GetCustomFields_001;
 import net.datastream.schemas.mp_results.mp9501_001.MP9501_GetCustomFields_001_Result;
-import net.datastream.wsdls.inforws.InforWebServicesPT;
+import net.datastream.wsdls.eamws.EAMWebServicesPT;
 
-import javax.xml.ws.Holder;
+import jakarta.xml.ws.Holder;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -27,13 +27,13 @@ public class CustomFieldsTools {
 
     private Tools tools;
     private ApplicationData applicationData;
-    private InforWebServicesPT inforws;
+    private EAMWebServicesPT eamws;
     private static Map<String, String[][]> map;
 
-    public CustomFieldsTools(Tools tools, ApplicationData applicationData, InforWebServicesPT inforws) {
+    public CustomFieldsTools(Tools tools, ApplicationData applicationData, EAMWebServicesPT eamws) {
         this.tools = tools;
         this.applicationData = applicationData;
-        this.inforws = inforws;
+        this.eamws = eamws;
         map = new HashMap<>();
     }
     //
@@ -41,62 +41,62 @@ public class CustomFieldsTools {
     //
 
     // INFOR CUSTOM FIELD -> MIDDLE TIER CUSTOM FIELD
-    public CustomField decodeInforCustomField(CUSTOMFIELD customFieldInfor, InforContext inforContext) {
+    public CustomField decodeEAMCustomField(CUSTOMFIELD customFieldEAM, EAMContext eamContext) {
         CustomField customField = new CustomField();
 
-        customField.setGroupLabel(customFieldInfor.getGROUPLABEL());
-        customField.setClassCode(customFieldInfor.getCLASSID().getCLASSCODE());
-        customField.setEntityCode(customFieldInfor.getEntity());
-        customField.setCode(customFieldInfor.getPROPERTYCODE());
-        customField.setType(customFieldInfor.getType());
-        customField.setLabel(customFieldInfor.getPROPERTYLABEL());
-        customField.setUOM(customFieldInfor.getUOM());
-        customField.setMinValue(customFieldInfor.getMINVALUE());
-        customField.setMaxValue(customFieldInfor.getMAXVALUE());
-        if (customFieldInfor.getLOVSETTINGS() != null) {
-            customField.setLovType(customFieldInfor.getLOVSETTINGS().getLOV_TYPE());
-            customField.setLovValidate(customFieldInfor.getLOVSETTINGS().getLOV_VALIDATE());
+        customField.setGroupLabel(customFieldEAM.getGROUPLABEL());
+        customField.setClassCode(customFieldEAM.getCLASSID().getCLASSCODE());
+        customField.setEntityCode(customFieldEAM.getEntity());
+        customField.setCode(customFieldEAM.getPROPERTYCODE());
+        customField.setType(customFieldEAM.getType());
+        customField.setLabel(customFieldEAM.getPROPERTYLABEL());
+        customField.setUOM(customFieldEAM.getUOM());
+        customField.setMinValue(customFieldEAM.getMINVALUE());
+        customField.setMaxValue(customFieldEAM.getMAXVALUE());
+        if (customFieldEAM.getLOVSETTINGS() != null) {
+            customField.setLovType(customFieldEAM.getLOVSETTINGS().getLOV_TYPE());
+            customField.setLovValidate(customFieldEAM.getLOVSETTINGS().getLOV_VALIDATE());
         }
         //
         //
         //
-        if (customFieldInfor.getType().toUpperCase().equals("DATI") && customFieldInfor.getDATETIMEFIELD() != null) {
-            customField.setValue(tools.getDataTypeTools().retrieveDate(customFieldInfor.getDATETIMEFIELD(),
-                    inforContext.getLocalizeResults() ? "dd-MMM-yyyy HH:mm" : DateAdapter.DATE_ISO_FORMAT));
+        if (customFieldEAM.getType().toUpperCase().equals("DATI") && customFieldEAM.getDATETIMEFIELD() != null) {
+            customField.setValue(tools.getDataTypeTools().retrieveDate(customFieldEAM.getDATETIMEFIELD(),
+                    eamContext.getLocalizeResults() ? "dd-MMM-yyyy HH:mm" : DateAdapter.DATE_ISO_FORMAT));
         }
         //
         //
         //
-        else if (customFieldInfor.getType().toUpperCase().equals("DATE") && customFieldInfor.getDATEFIELD() != null) {
-            customField.setValue(tools.getDataTypeTools().retrieveDate(customFieldInfor.getDATEFIELD(),
-                    inforContext.getLocalizeResults() ? "dd-MMM-yyyy" : DateAdapter.DATE_ISO_FORMAT));
+        else if (customFieldEAM.getType().toUpperCase().equals("DATE") && customFieldEAM.getDATEFIELD() != null) {
+            customField.setValue(tools.getDataTypeTools().retrieveDate(customFieldEAM.getDATEFIELD(),
+                    eamContext.getLocalizeResults() ? "dd-MMM-yyyy" : DateAdapter.DATE_ISO_FORMAT));
         }
         //
         //
         //
-        else if (customFieldInfor.getType().toUpperCase().equals("RENT") && customFieldInfor.getENTITYCODEFIELD() != null) {
-            customField.setValue(customFieldInfor.getENTITYCODEFIELD().getCODEVALUE());
-            customField.setRentCodeValue(customFieldInfor.getENTITYCODEFIELD().getEntity());
-            customField.setValueDesc(tools.getFieldDescriptionsTools().readCustomFieldDesc(customFieldInfor.getENTITYCODEFIELD().getEntity(), customFieldInfor.getENTITYCODEFIELD().getCODEVALUE()));
+        else if (customFieldEAM.getType().toUpperCase().equals("RENT") && customFieldEAM.getENTITYCODEFIELD() != null) {
+            customField.setValue(customFieldEAM.getENTITYCODEFIELD().getCODEVALUE());
+            customField.setRentCodeValue(customFieldEAM.getENTITYCODEFIELD().getEntity());
+            customField.setValueDesc(tools.getFieldDescriptionsTools().readCustomFieldDesc(customFieldEAM.getENTITYCODEFIELD().getEntity(), customFieldEAM.getENTITYCODEFIELD().getCODEVALUE()));
         }
         //
         //
         //
-        else if (customFieldInfor.getType().toUpperCase().equals("NUM") && customFieldInfor.getNUMBERFIELD() != null) {
-            customField.setValue(decodeBigDecimal(tools.getDataTypeTools().decodeQuantity(customFieldInfor.getNUMBERFIELD())));
+        else if (customFieldEAM.getType().toUpperCase().equals("NUM") && customFieldEAM.getNUMBERFIELD() != null) {
+            customField.setValue(decodeBigDecimal(tools.getDataTypeTools().decodeQuantity(customFieldEAM.getNUMBERFIELD())));
         }
         //
         //
         //
-        else if (customFieldInfor.getType().toUpperCase().equals("CODE") && customFieldInfor.getCODEDESCFIELD() != null) {
-            customField.setValue(customFieldInfor.getCODEDESCFIELD().getCODEVALUE());
-            customField.setValueDesc(customFieldInfor.getCODEDESCFIELD().getDESCRIPTION());
+        else if (customFieldEAM.getType().toUpperCase().equals("CODE") && customFieldEAM.getCODEDESCFIELD() != null) {
+            customField.setValue(customFieldEAM.getCODEDESCFIELD().getCODEVALUE());
+            customField.setValueDesc(customFieldEAM.getCODEDESCFIELD().getDESCRIPTION());
         }
         //
         //
         //
-        else if (customFieldInfor.getType().toUpperCase().equals("CHAR") && customFieldInfor.getTEXTFIELD() != null){
-            customField.setValue(customFieldInfor.getTEXTFIELD());
+        else if (customFieldEAM.getType().toUpperCase().equals("CHAR") && customFieldEAM.getTEXTFIELD() != null){
+            customField.setValue(customFieldEAM.getTEXTFIELD());
         }
         //
         //
@@ -106,68 +106,68 @@ public class CustomFieldsTools {
     }
 
     // MIDDLE TIER CUSTOM FIELD -> INFOR CUSTOM FIELD
-    public CUSTOMFIELD encodeInforCustomField(CUSTOMFIELD customFieldInfor, CustomField customField)
-            throws InforException {
+    public CUSTOMFIELD encodeEAMCustomField(CUSTOMFIELD customFieldEAM, CustomField customField)
+            throws EAMException {
         //
         // DATE TIME
         //
-        if (customFieldInfor.getType().toUpperCase().equals("DATI")) {
+        if (customFieldEAM.getType().toUpperCase().equals("DATI")) {
             if (customField.getValue() != null) {
-                customFieldInfor.setDATETIMEFIELD(tools.getDataTypeTools().formatDate(customField.getValue(),
-                        "Custom field '" + customFieldInfor.getPROPERTYLABEL() + "'"));
+                customFieldEAM.setDATETIMEFIELD(tools.getDataTypeTools().formatDate(customField.getValue(),
+                        "Custom field '" + customFieldEAM.getPROPERTYLABEL() + "'"));
             }
         }
         //
         // DATE
         //
-        if (customFieldInfor.getType().toUpperCase().equals("DATE")) {
+        if (customFieldEAM.getType().toUpperCase().equals("DATE")) {
             if (customField.getValue() != null) {
-                customFieldInfor.setDATEFIELD(tools.getDataTypeTools().formatDate(customField.getValue(),
-                        "Custom field '" + customFieldInfor.getPROPERTYLABEL() + "'"));
+                customFieldEAM.setDATEFIELD(tools.getDataTypeTools().formatDate(customField.getValue(),
+                        "Custom field '" + customFieldEAM.getPROPERTYLABEL() + "'"));
             }
         }
         //
         // ENTITY
         //
-        if (customFieldInfor.getType().toUpperCase().equals("RENT")) {
-            customFieldInfor.setENTITYCODEFIELD(new ENTITYCODEFIELD());
+        if (customFieldEAM.getType().toUpperCase().equals("RENT")) {
+            customFieldEAM.setENTITYCODEFIELD(new ENTITYCODEFIELD());
             if (customField.getValue() != null) {
-                customFieldInfor.getENTITYCODEFIELD().setCODEVALUE(customField.getValue());
+                customFieldEAM.getENTITYCODEFIELD().setCODEVALUE(customField.getValue());
             } else {
-                customFieldInfor.getENTITYCODEFIELD().setCODEVALUE("");
+                customFieldEAM.getENTITYCODEFIELD().setCODEVALUE("");
             }
         }
         //
         //
         //
-        if (customFieldInfor.getType().toUpperCase().equals("NUM")) {
+        if (customFieldEAM.getType().toUpperCase().equals("NUM")) {
             if (customField.getValue() != null) {
-                customFieldInfor.setNUMBERFIELD(tools.getDataTypeTools().encodeQuantity(encodeBigDecimal(customField.getValue(), "Custom field '" + customFieldInfor.getPROPERTYLABEL() + "'"),
-                        "Custom field '" + customFieldInfor.getPROPERTYLABEL() + "'"));
+                customFieldEAM.setNUMBERFIELD(tools.getDataTypeTools().encodeQuantity(encodeBigDecimal(customField.getValue(), "Custom field '" + customFieldEAM.getPROPERTYLABEL() + "'"),
+                        "Custom field '" + customFieldEAM.getPROPERTYLABEL() + "'"));
             }
         }
         //
         //
         //
-        if (customFieldInfor.getType().toUpperCase().equals("CODE") && customFieldInfor.getCODEDESCFIELD() != null) {
-            customFieldInfor.setCODEDESCFIELD(new CODEDESCFIELD());
+        if (customFieldEAM.getType().toUpperCase().equals("CODE") && customFieldEAM.getCODEDESCFIELD() != null) {
+            customFieldEAM.setCODEDESCFIELD(new CODEDESCFIELD());
             if (customField.getValue() != null) {
-                customFieldInfor.getCODEDESCFIELD().setCODEVALUE(customField.getValue());
+                customFieldEAM.getCODEDESCFIELD().setCODEVALUE(customField.getValue());
             } else {
-                customFieldInfor.getCODEDESCFIELD().setCODEVALUE("");
+                customFieldEAM.getCODEDESCFIELD().setCODEVALUE("");
             }
         }
         //
         //
         //
-        if (customFieldInfor.getType().toUpperCase().equals("CHAR")) {
-            customFieldInfor.setTEXTFIELD(customField.getValue());
+        if (customFieldEAM.getType().toUpperCase().equals("CHAR")) {
+            customFieldEAM.setTEXTFIELD(customField.getValue());
         }
-        return customFieldInfor;
+        return customFieldEAM;
     }
 
-    public void updateInforCustomFields(USERDEFINEDAREA userdefinedarea, CustomField[] customFields)
-            throws InforException {
+    public void updateEAMCustomFields(USERDEFINEDAREA userdefinedarea, CustomField[] customFields)
+            throws EAMException {
         if (userdefinedarea == null
                 || userdefinedarea.getCUSTOMFIELD() == null
                 || userdefinedarea.getCUSTOMFIELD().size() == 0) {
@@ -184,24 +184,24 @@ public class CustomFieldsTools {
             .filter(cf -> cf != null && cf.getCode() != null)
             .collect(Collectors.groupingBy(CustomField::getCode, Collectors.toList()));
 
-        userdefinedarea.getCUSTOMFIELD().removeIf(inforCustomField -> {
-            List<CustomField> wshubCustomField = wshubCustomFieldMap.get(inforCustomField.getPROPERTYCODE());
+        userdefinedarea.getCUSTOMFIELD().removeIf(eamCustomField -> {
+            List<CustomField> wshubCustomField = wshubCustomFieldMap.get(eamCustomField.getPROPERTYCODE());
             if (wshubCustomField == null || wshubCustomField.size() == 0) {
                 return false;
             }
             final Optional<CustomField> cf =
                     wshubCustomField.stream().filter(customField -> customField.getEntityCode() == null ||
-                            inforCustomField.getEntity().equals(customField.getEntityCode())).findFirst();
+                            eamCustomField.getEntity().equals(customField.getEntityCode())).findFirst();
             return cf.isPresent()
                 && (cf.get().getValue() == null || "".equals(cf.get().getValue()));
         });
 
-        for (CUSTOMFIELD inforCustomField : userdefinedarea.getCUSTOMFIELD()) {
-            final Optional<CustomField> wshubCustomField = wshubCustomFieldMap.getOrDefault(inforCustomField.getPROPERTYCODE(),
-                    new ArrayList<>()).stream().filter(cf -> cf.getEntityCode() == null || cf.getEntityCode().equals(inforCustomField.getEntity())).findFirst();
-            if (wshubCustomField.isPresent() && hasChangedCustomField(inforCustomField, wshubCustomField.get())) {
-                encodeInforCustomField(inforCustomField, wshubCustomField.get());
-                inforCustomField.setChanged("true");
+        for (CUSTOMFIELD eamCustomField : userdefinedarea.getCUSTOMFIELD()) {
+            final Optional<CustomField> wshubCustomField = wshubCustomFieldMap.getOrDefault(eamCustomField.getPROPERTYCODE(),
+                    new ArrayList<>()).stream().filter(cf -> cf.getEntityCode() == null || cf.getEntityCode().equals(eamCustomField.getEntity())).findFirst();
+            if (wshubCustomField.isPresent() && hasChangedCustomField(eamCustomField, wshubCustomField.get())) {
+                encodeEAMCustomField(eamCustomField, wshubCustomField.get());
+                eamCustomField.setChanged("true");
             }
         }
     }
@@ -209,35 +209,35 @@ public class CustomFieldsTools {
     /**
      * To identify if the custom field really changed
      *
-     * @param customFieldInfor
-     *            The custom field from Infor (The one that was read)
+     * @param customFieldEAM
+     *            The custom field from EAM (The one that was read)
      * @param customField
      *            The custom field comming to be updated
      * @return true if it was changed, false otherwise
      */
-    private boolean hasChangedCustomField(CUSTOMFIELD customFieldInfor, CustomField customField) {
+    private boolean hasChangedCustomField(CUSTOMFIELD customFieldEAM, CustomField customField) {
         // Check accorging with the type of custom field
-        switch (customFieldInfor.getType().toUpperCase()) {
+        switch (customFieldEAM.getType().toUpperCase()) {
 
             case "RENT":
                 // Compare different
-                if (customFieldInfor.getENTITYCODEFIELD() != null)
-                    return isDifferentValue(customFieldInfor.getENTITYCODEFIELD().getCODEVALUE(), customField.getValue());
+                if (customFieldEAM.getENTITYCODEFIELD() != null)
+                    return isDifferentValue(customFieldEAM.getENTITYCODEFIELD().getCODEVALUE(), customField.getValue());
                 return isDifferentValue(null, customField.getValue());
             case "NUM":
                 // Decode the quantity
-                String quantity = decodeBigDecimal(decodeQuantity(customFieldInfor.getNUMBERFIELD()));
+                String quantity = decodeBigDecimal(decodeQuantity(customFieldEAM.getNUMBERFIELD()));
                 // Compare
                 return isDifferentValue(quantity, customField.getValue());
 
             case "CODE":
                 // Compare different
-                if (customFieldInfor.getCODEDESCFIELD() != null)
-                    return isDifferentValue(customFieldInfor.getCODEDESCFIELD().getCODEVALUE(), customField.getValue());
+                if (customFieldEAM.getCODEDESCFIELD() != null)
+                    return isDifferentValue(customFieldEAM.getCODEDESCFIELD().getCODEVALUE(), customField.getValue());
                 return isDifferentValue(null, customField.getValue());
             case "CHAR":
                 // Compare different
-                return isDifferentValue(customFieldInfor.getTEXTFIELD(), customField.getValue());
+                return isDifferentValue(customFieldEAM.getTEXTFIELD(), customField.getValue());
 
             case "DATI":/* Date time */
             case "DATE":/* Date */
@@ -265,21 +265,21 @@ public class CustomFieldsTools {
         return !value1.equals(value2);
     }
 
-    public CustomField[] readInforCustomFields(USERDEFINEDAREA userdefinedarea, InforContext inforContext) {
+    public CustomField[] readEAMCustomFields(USERDEFINEDAREA userdefinedarea, EAMContext eamContext) {
         if (userdefinedarea == null || userdefinedarea.getCUSTOMFIELD() == null) {
             return new CustomField[0];
         }
-        return userdefinedarea.getCUSTOMFIELD().stream().sorted(comparing(CUSTOMFIELD::getIndex)).map(cf -> decodeInforCustomField(cf, inforContext)).toArray(CustomField[]::new);
+        return userdefinedarea.getCUSTOMFIELD().stream().sorted(comparing(CUSTOMFIELD::getIndex)).map(cf -> decodeEAMCustomField(cf, eamContext)).toArray(CustomField[]::new);
     }
 
-    public USERDEFINEDAREA getInforCustomFields(InforContext context, String entity, String inforClass)
-            throws InforException {
+    public USERDEFINEDAREA getEAMCustomFields(EAMContext context, String entity, String eamClass)
+            throws EAMException {
         CUSTOMFIELDREQ cfreq = new CUSTOMFIELDREQ();
         cfreq.setORGANIZATIONID(tools.getOrganization(context));
 
         cfreq.setCLASSID(new CLASSID_Type());
         cfreq.getCLASSID().setORGANIZATIONID(tools.getOrganization(context));
-        cfreq.getCLASSID().setCLASSCODE(inforClass);
+        cfreq.getCLASSID().setCLASSCODE(eamClass);
 
         cfreq.setENTITYNAME(entity);
 
@@ -287,23 +287,23 @@ public class CustomFieldsTools {
         getcustomfields.setCUSTOMFIELDREQ(cfreq);
 
         MP9501_GetCustomFields_001_Result result =
-            tools.performInforOperation(context, inforws::getCustomFieldsOp, getcustomfields);
+            tools.performEAMOperation(context, eamws::getCustomFieldsOp, getcustomfields);
         return result.getUSERDEFINEDAREA();
 
     }
 
-    public CustomField[] getWSHubCustomFields(InforContext context, String entity, String inforClass)
-            throws InforException {
-        return readInforCustomFields(getInforCustomFields(context, entity, inforClass), context);
+    public CustomField[] getWSHubCustomFields(EAMContext context, String entity, String eamClass)
+            throws EAMException {
+        return readEAMCustomFields(getEAMCustomFields(context, entity, eamClass), context);
     }
 
-    public USERDEFINEDAREA getInforCustomFields(
-            InforContext context,
+    public USERDEFINEDAREA getEAMCustomFields(
+            EAMContext context,
             String previousClass,
             USERDEFINEDAREA previousCustomFields,
             String targetClass,
             String entityType)
-            throws InforException {
+            throws EAMException {
 
         // TODO: check if uppercasing these classes is actually necessary, left here for safety
         previousClass = previousClass == null ? null : previousClass.toUpperCase();
@@ -349,7 +349,7 @@ public class CustomFieldsTools {
             // this separates cases 2 and 3, 5 and 6, 8 and 9
             String newClass = targetClass.length() == 0 ? "*" : targetClass;
 
-            USERDEFINEDAREA classCustomFields = getInforCustomFields(context, entityType, newClass);
+            USERDEFINEDAREA classCustomFields = getEAMCustomFields(context, entityType, newClass);
 
             // [2] handle case 11 and 12
             if(previousCustomFields == null) return classCustomFields;
@@ -364,7 +364,7 @@ public class CustomFieldsTools {
         if(previousCustomFields != null) return previousCustomFields;
 
         // [5] handle case 4 and 10
-        return getInforCustomFields(context, entityType, "*");
+        return getEAMCustomFields(context, entityType, "*");
     }
 
     // IMPORTANT: this method mutates the argument called "base"

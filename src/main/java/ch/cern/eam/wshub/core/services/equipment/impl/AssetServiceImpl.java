@@ -1,13 +1,13 @@
 package ch.cern.eam.wshub.core.services.equipment.impl;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.equipment.AssetService;
 import ch.cern.eam.wshub.core.services.equipment.entities.Equipment;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedListService;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.entities.EntityId;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.impl.UserDefinedListServiceImpl;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_entities.assetequipment_001.*;
 import net.datastream.schemas.mp_fields.*;
@@ -21,7 +21,7 @@ import net.datastream.schemas.mp_results.mp0301_001.MP0301_AddAssetEquipment_001
 import net.datastream.schemas.mp_results.mp0302_001.MP0302_GetAssetEquipment_001_Result;
 import net.datastream.schemas.mp_results.mp0305_001.MP0305_GetAssetEquipmentDefault_001_Result;
 import net.datastream.schemas.mp_results.mp0327_001.MP0327_GetAssetParentHierarchy_001_Result;
-import net.datastream.wsdls.inforws.InforWebServicesPT;
+import net.datastream.wsdls.eamws.EAMWebServicesPT;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.*;
 import static ch.cern.eam.wshub.core.services.equipment.impl.EquipmentHierarchyTools.*;
 
@@ -32,31 +32,31 @@ import java.util.logging.Level;
 public class AssetServiceImpl implements AssetService {
 
     private Tools tools;
-    private InforWebServicesPT inforws;
+    private EAMWebServicesPT eamws;
     private ApplicationData applicationData;
     private UserDefinedListService userDefinedListService;
 
-    public AssetServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
+    public AssetServiceImpl(ApplicationData applicationData, Tools tools, EAMWebServicesPT eamWebServicesToolkitClient) {
         this.applicationData = applicationData;
         this.tools = tools;
-        this.inforws = inforWebServicesToolkitClient;
-        this.userDefinedListService = new UserDefinedListServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
+        this.eamws = eamWebServicesToolkitClient;
+        this.userDefinedListService = new UserDefinedListServiceImpl(applicationData, tools, eamWebServicesToolkitClient);
     }
 
-    public Equipment readAssetDefault(InforContext context, String organization) throws InforException {
+    public Equipment readAssetDefault(EAMContext context, String organization) throws EAMException {
         MP0305_GetAssetEquipmentDefault_001 getAssetEquipmentDefault_001 = new MP0305_GetAssetEquipmentDefault_001();
         getAssetEquipmentDefault_001.setORGANIZATIONID(tools.getOrganization(context , organization));
-        MP0305_GetAssetEquipmentDefault_001_Result result = tools.performInforOperation(context, inforws::getAssetEquipmentDefaultOp, getAssetEquipmentDefault_001);
+        MP0305_GetAssetEquipmentDefault_001_Result result = tools.performEAMOperation(context, eamws::getAssetEquipmentDefaultOp, getAssetEquipmentDefault_001);
 
-        Equipment equipment = tools.getInforFieldTools().transformInforObject(new Equipment(), result.getResultData().getAssetEquipment(), context);
+        Equipment equipment = tools.getEAMFieldTools().transformEAMObject(new Equipment(), result.getResultData().getAssetEquipment(), context);
         equipment.setUserDefinedList(new HashMap<>());
         return equipment;
     }
 
-    public Equipment readAsset(InforContext context, String assetCode, String organization) throws InforException {
-        AssetEquipment assetEquipment = readInforAsset(context, assetCode, organization);
+    public Equipment readAsset(EAMContext context, String assetCode, String organization) throws EAMException {
+        AssetEquipment assetEquipment = readEAMAsset(context, assetCode, organization);
         //
-        Equipment asset = tools.getInforFieldTools().transformInforObject(new Equipment(), assetEquipment, context);
+        Equipment asset = tools.getEAMFieldTools().transformEAMObject(new Equipment(), assetEquipment, context);
         asset.setSystemTypeCode("A");
 
         // DESCRIPTIONS
@@ -79,35 +79,35 @@ public class AssetServiceImpl implements AssetService {
         return asset;
     }
 
-    private AssetParentHierarchy readInforAssetHierarchy(InforContext context, String assetCode, String organization) throws InforException {
+    private AssetParentHierarchy readEAMAssetHierarchy(EAMContext context, String assetCode, String organization) throws EAMException {
         MP0327_GetAssetParentHierarchy_001 getassetph = new MP0327_GetAssetParentHierarchy_001();
         getassetph.setASSETID(new EQUIPMENTID_Type());
         getassetph.getASSETID().setORGANIZATIONID(tools.getOrganization(context, organization));
         getassetph.getASSETID().setEQUIPMENTCODE(assetCode);
 
-        MP0327_GetAssetParentHierarchy_001_Result result = tools.performInforOperation(context, inforws::getAssetParentHierarchyOp, getassetph);
+        MP0327_GetAssetParentHierarchy_001_Result result = tools.performEAMOperation(context, eamws::getAssetParentHierarchyOp, getassetph);
 
         return result.getResultData().getAssetParentHierarchy();
     }
 
-    private AssetEquipment readInforAsset(InforContext context, String assetCode, String organization)
-            throws InforException {
+    private AssetEquipment readEAMAsset(EAMContext context, String assetCode, String organization)
+            throws EAMException {
         MP0302_GetAssetEquipment_001 getAsset = new MP0302_GetAssetEquipment_001();
         getAsset.setASSETID(new EQUIPMENTID_Type());
         getAsset.getASSETID().setORGANIZATIONID(tools.getOrganization(context, organization));
         getAsset.getASSETID().setEQUIPMENTCODE(assetCode);
 
-        MP0302_GetAssetEquipment_001_Result getAssetResult = tools.performInforOperation(context, inforws::getAssetEquipmentOp, getAsset);
-        getAssetResult.getResultData().getAssetEquipment().setAssetParentHierarchy(readInforAssetHierarchy(context, assetCode, organization));
+        MP0302_GetAssetEquipment_001_Result getAssetResult = tools.performEAMOperation(context, eamws::getAssetEquipmentOp, getAsset);
+        getAssetResult.getResultData().getAssetEquipment().setAssetParentHierarchy(readEAMAssetHierarchy(context, assetCode, organization));
 
         return getAssetResult.getResultData().getAssetEquipment();
     }
 
-    public String updateAsset(InforContext context, Equipment assetParam) throws InforException {
-        AssetEquipment assetEquipment = readInforAsset(context, assetParam.getCode(), assetParam.getOrganization());
+    public String updateAsset(EAMContext context, Equipment assetParam) throws EAMException {
+        AssetEquipment assetEquipment = readEAMAsset(context, assetParam.getCode(), assetParam.getOrganization());
 
         //
-        assetEquipment.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(
+        assetEquipment.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getEAMCustomFields(
             context,
             toCodeString(assetEquipment.getCLASSID()),
             assetEquipment.getUSERDEFINEDAREA(),
@@ -116,7 +116,7 @@ public class AssetServiceImpl implements AssetService {
         );
 
         initializeAssetObject(assetEquipment, assetParam, context);
-        tools.getInforFieldTools().transformWSHubObject(assetEquipment, assetParam, context);
+        tools.getEAMFieldTools().transformWSHubObject(assetEquipment, assetParam, context);
 
         // PART ASSOCIATION
         if (assetParam.getPartCode() != null) {
@@ -139,17 +139,17 @@ public class AssetServiceImpl implements AssetService {
         //
         MP0303_SyncAssetEquipment_001 syncAsset = new MP0303_SyncAssetEquipment_001();
         syncAsset.setAssetEquipment(assetEquipment);
-        tools.performInforOperation(context, inforws::syncAssetEquipmentOp, syncAsset);
+        tools.performEAMOperation(context, eamws::syncAssetEquipmentOp, syncAsset);
         userDefinedListService.writeUDLToEntity(context, assetParam, new EntityId("OBJ", assetParam.getCode()));
 
         return assetParam.getCode();
     }
 
-    public String createAsset(InforContext context, Equipment assetParam) throws InforException {
+    public String createAsset(EAMContext context, Equipment assetParam) throws EAMException {
 
         AssetEquipment assetEquipment = new AssetEquipment();
         //
-        assetEquipment.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(
+        assetEquipment.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getEAMCustomFields(
             context,
             toCodeString(assetEquipment.getCLASSID()),
             assetEquipment.getUSERDEFINEDAREA(),
@@ -158,38 +158,38 @@ public class AssetServiceImpl implements AssetService {
 
         //
         initializeAssetObject(assetEquipment, assetParam, context);
-        tools.getInforFieldTools().transformWSHubObject(assetEquipment, assetParam, context);
+        tools.getEAMFieldTools().transformWSHubObject(assetEquipment, assetParam, context);
         //
         MP0301_AddAssetEquipment_001 addAsset = new MP0301_AddAssetEquipment_001();
         addAsset.setAssetEquipment(assetEquipment);
         MP0301_AddAssetEquipment_001_Result addAssetResult =
-            tools.performInforOperation(context, inforws::addAssetEquipmentOp, addAsset);
+            tools.performEAMOperation(context, eamws::addAssetEquipmentOp, addAsset);
         String equipmentCode = addAssetResult.getResultData().getASSETID().getEQUIPMENTCODE();
         userDefinedListService.writeUDLToEntityCopyFrom(context, assetParam, new EntityId("OBJ", equipmentCode));
         return equipmentCode;
     }
 
-    public String deleteAsset(InforContext context, String assetCode, String organization) throws InforException {
+    public String deleteAsset(EAMContext context, String assetCode, String organization) throws EAMException {
         MP0304_DeleteAssetEquipment_001 deleteAsset = new MP0304_DeleteAssetEquipment_001();
         deleteAsset.setASSETID(new EQUIPMENTID_Type());
         deleteAsset.getASSETID().setORGANIZATIONID(tools.getOrganization(context, organization));
         deleteAsset.getASSETID().setEQUIPMENTCODE(assetCode);
 
-        tools.performInforOperation(context, inforws::deleteAssetEquipmentOp, deleteAsset);
+        tools.performEAMOperation(context, eamws::deleteAssetEquipmentOp, deleteAsset);
         userDefinedListService.deleteUDLFromEntity(context, new EntityId("OBJ", assetCode));
         return assetCode;
     }
 
-    private void initializeAssetObject(AssetEquipment assetInfor, Equipment assetParam, InforContext context) throws InforException {
+    private void initializeAssetObject(AssetEquipment assetEAM, Equipment assetParam, EAMContext context) throws EAMException {
         // == null means Asset creation
-        if (assetInfor.getASSETID() == null) {
-            assetInfor.setASSETID(new EQUIPMENTID_Type());
-            assetInfor.getASSETID().setORGANIZATIONID(tools.getOrganization(context, assetParam.getOrganization()));
-            assetInfor.getASSETID().setEQUIPMENTCODE(assetParam.getCode().toUpperCase().trim());
+        if (assetEAM.getASSETID() == null) {
+            assetEAM.setASSETID(new EQUIPMENTID_Type());
+            assetEAM.getASSETID().setORGANIZATIONID(tools.getOrganization(context, assetParam.getOrganization()));
+            assetEAM.getASSETID().setEQUIPMENTCODE(assetParam.getCode().toUpperCase().trim());
         }
 
         if (assetParam.getDescription() != null) {
-            assetInfor.getASSETID().setDESCRIPTION(assetParam.getDescription());
+            assetEAM.getASSETID().setDESCRIPTION(assetParam.getDescription());
         }
 
         // HIERARCHY
@@ -198,7 +198,7 @@ public class AssetServiceImpl implements AssetService {
                 || assetParam.getHierarchyPrimarySystemCode() != null
                 || assetParam.getHierarchyLocationCode() != null) {
             try {
-                initializeAssetHierarchy(assetInfor, assetParam, context);
+                initializeAssetHierarchy(assetEAM, assetParam, context);
             } catch (Exception e) {
                 tools.log(Level.SEVERE, e.getMessage());
                 e.printStackTrace();
@@ -206,7 +206,7 @@ public class AssetServiceImpl implements AssetService {
         }
     }
 
-    private void initializeAssetHierarchy(AssetEquipment assetInfor, Equipment assetParam, InforContext context) throws InforException {
+    private void initializeAssetHierarchy(AssetEquipment assetEAM, Equipment assetParam, EAMContext context) throws EAMException {
         AssetParentHierarchy hierarchy = new AssetParentHierarchy();
 
         hierarchy.setASSETID(new EQUIPMENTID_Type());
@@ -216,12 +216,12 @@ public class AssetServiceImpl implements AssetService {
         hierarchy.getTYPE().setTYPECODE("A");
 
         // Fetch all possible parent types that are present in only one object that indicates the current hierarchy type
-        ASSETPARENT_Type assetParent = readAssetParent(assetInfor.getAssetParentHierarchy());
-        POSITIONPARENT_Type positionParent = readPositionParent(assetInfor.getAssetParentHierarchy());
-        SYSTEMPARENT_Type primarySystemParent = readPrimarySystemParent(assetInfor.getAssetParentHierarchy());
-        LOCATIONPARENT_Type locationParent = readLocationParent(assetInfor.getAssetParentHierarchy());
-        List<SYSTEMPARENT_Type> systemParents = readSystemsParent(assetInfor.getAssetParentHierarchy());
-        HIERARCHY_TYPE currentHierarchyType = readHierarchyType(assetInfor.getAssetParentHierarchy());
+        ASSETPARENT_Type assetParent = readAssetParent(assetEAM.getAssetParentHierarchy());
+        POSITIONPARENT_Type positionParent = readPositionParent(assetEAM.getAssetParentHierarchy());
+        SYSTEMPARENT_Type primarySystemParent = readPrimarySystemParent(assetEAM.getAssetParentHierarchy());
+        LOCATIONPARENT_Type locationParent = readLocationParent(assetEAM.getAssetParentHierarchy());
+        List<SYSTEMPARENT_Type> systemParents = readSystemsParent(assetEAM.getAssetParentHierarchy());
+        HIERARCHY_TYPE currentHierarchyType = readHierarchyType(assetEAM.getAssetParentHierarchy());
 
         // Incorporate user changes into the parent types
         assetParent = createAssetParent(tools.getOrganizationCode(context, assetParam.getHierarchyAssetOrg()), assetParam.getHierarchyAssetCode(), assetParam.getHierarchyAssetCostRollUp(), assetParent);
@@ -247,7 +247,7 @@ public class AssetServiceImpl implements AssetService {
                 hierarchy.setNonDependentParents(createNonDependentParentsForAsset(assetParent, positionParent, primarySystemParent, systemParents));
         }
 
-        assetInfor.setAssetParentHierarchy(hierarchy);
+        assetEAM.setAssetParentHierarchy(hierarchy);
     }
 
 }

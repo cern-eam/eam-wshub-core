@@ -1,41 +1,41 @@
 package ch.cern.eam.wshub.core.services.material.entities;
 
 import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
-import ch.cern.eam.wshub.core.annotations.InforField;
+import ch.cern.eam.wshub.core.annotations.EAMField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import net.datastream.schemas.mp_fields.*;
 import org.openapplications.oagis_segments.AMOUNT;
 import org.openapplications.oagis_segments.QUANTITY;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
 public class StoreTransactionPartLine implements Serializable {
-    @InforField(xpath="PARTID/PARTCODE")
+    @EAMField(xpath="PARTID/PARTCODE")
     private String partCode;
-    @InforField(xpath="REPAIRABLE")
+    @EAMField(xpath="REPAIRABLE")
     private String repairable;
-    @InforField(xpath="TRANSACTIONQUANTITY")
+    @EAMField(xpath="TRANSACTIONQUANTITY")
     private BigDecimal transactionQuantity;
-    @InforField(xpath="REPAIRQUANTITY")
+    @EAMField(xpath="REPAIRQUANTITY")
     private BigDecimal repairQuantity;
-    @InforField(xpath="FROMBIN/BIN")
+    @EAMField(xpath="FROMBIN/BIN")
     private String fromBinCode;
-    @InforField(xpath="TOBIN/BIN")
+    @EAMField(xpath="TOBIN/BIN")
     private String toBinCode;
-    @InforField(xpath="LOTID/LOTCODE")
+    @EAMField(xpath="LOTID/LOTCODE")
     private String lotCode;
-    @InforField(xpath="PRICE")
+    @EAMField(xpath="PRICE")
     private BigDecimal price;
-    @InforField(xpath="ASSETID/EQUIPMENTCODE")
+    @EAMField(xpath="ASSETID/EQUIPMENTCODE")
     private String assetCode;
-    @InforField(xpath="SERIALNUMBER")
+    @EAMField(xpath="SERIALNUMBER")
     private String serialNumber;
-    @InforField(xpath="StandardUserDefinedFields")
+    @EAMField(xpath="StandardUserDefinedFields")
     private UserDefinedFields StandardUserDefinedFields;
-    @InforField(xpath="PARTCONDITIONTEMPLATECONDITIONCODE")
+    @EAMField(xpath="PARTCONDITIONTEMPLATECONDITIONCODE")
     private String partConditionTemplateConditionCode;
 
     public String getPartCode() {

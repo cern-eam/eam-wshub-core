@@ -1,12 +1,12 @@
 package ch.cern.eam.wshub.core.services.equipment.impl;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.equipment.PMScheduleService;
 import ch.cern.eam.wshub.core.services.equipment.entities.EquipmentPMSchedule;
 import ch.cern.eam.wshub.core.services.equipment.entities.ReleasedPMSchedule;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.annotations.BooleanType;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_entities.pmschedule_001.PMScheduleData;
 import net.datastream.schemas.mp_entities.releasedpm_001.ReleasedPM;
@@ -21,26 +21,26 @@ import net.datastream.schemas.mp_results.mp0364_001.MP0364_AddEquipmentPMSchedul
 import net.datastream.schemas.mp_results.mp0365_001.MP0365_SyncEquipmentPMSchedule_001_Result;
 import net.datastream.schemas.mp_results.mp3014_001.MP3014_GetEquipmentPMSchedule_001_Result;
 import net.datastream.schemas.mp_results.mp7006_001.MP7006_DeletePMScheduleEquipment_001_Result;
-import net.datastream.wsdls.inforws.InforWebServicesPT;
+import net.datastream.wsdls.eamws.EAMWebServicesPT;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
 
-import javax.persistence.EntityManager;
-import javax.xml.ws.Holder;
+import jakarta.persistence.EntityManager;
+import jakarta.xml.ws.Holder;
 
 public class PMScheduleServiceImpl implements PMScheduleService {
 
 	private Tools tools;
-	private InforWebServicesPT inforws;
+	private EAMWebServicesPT eamws;
 	private ApplicationData applicationData;
 
-	public PMScheduleServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
+	public PMScheduleServiceImpl(ApplicationData applicationData, Tools tools, EAMWebServicesPT eamWebServicesToolkitClient) {
 		this.applicationData = applicationData;
 		this.tools = tools;
-		this.inforws = inforWebServicesToolkitClient;
+		this.eamws = eamWebServicesToolkitClient;
 	}
 
 
-	public String createEquipmentPMSchedule(InforContext context, EquipmentPMSchedule pmSchedule) throws InforException {
+	public String createEquipmentPMSchedule(EAMContext context, EquipmentPMSchedule pmSchedule) throws EAMException {
 		//
 		//
 		//
@@ -159,15 +159,15 @@ public class PMScheduleServiceImpl implements PMScheduleService {
 			pmschedule.getPMScheduleData().getWORKORDERCLASSID().setCLASSCODE(pmSchedule.getWorkOrderClass());
 		}
 
-		// TODO annotate remaining properties in pmSchedule class with InforField annotations
-		tools.getInforFieldTools().transformWSHubObject(pmschedule.getPMScheduleData(), pmSchedule, context);
+		// TODO annotate remaining properties in pmSchedule class with EAMField annotations
+		tools.getEAMFieldTools().transformWSHubObject(pmschedule.getPMScheduleData(), pmSchedule, context);
 
 		MP0364_AddEquipmentPMSchedule_001_Result result =
-			tools.performInforOperation(context, inforws::addEquipmentPMScheduleOp, pmschedule);
+			tools.performEAMOperation(context, eamws::addEquipmentPMScheduleOp, pmschedule);
 		return result.getResultData().getPMSCHEDULEEQUIPMENTID().getSEQUENCENUMBER() + "";
 	}
 
-	public String deleteEquipmentPMSchedule(InforContext context, EquipmentPMSchedule pmSchedule) throws InforException {
+	public String deleteEquipmentPMSchedule(EAMContext context, EquipmentPMSchedule pmSchedule) throws EAMException {
 		//
 		// Fetch PM Schedule Sequence Number and Revision
 		//
@@ -201,11 +201,11 @@ public class PMScheduleServiceImpl implements PMScheduleService {
 		pmschedule.getPMSCHEDULEEQUIPMENTID().setSEQUENCENUMBER(tools.getDataTypeTools().encodeLong(pmSchedule.getSequenceNumber(), "Sequence Number"));
 
 		MP7006_DeletePMScheduleEquipment_001_Result result =
-			tools.performInforOperation(context, inforws::deletePMScheduleEquipmentOp, pmschedule);
+			tools.performEAMOperation(context, eamws::deletePMScheduleEquipmentOp, pmschedule);
 		return result.getResultData().getPMSCHEDULEEQUIPMENTID().getSEQUENCENUMBER() + "";
 	}
 
-	public String updateEquipmentPMSchedule(InforContext context, EquipmentPMSchedule pmSchedule) throws InforException {
+	public String updateEquipmentPMSchedule(EAMContext context, EquipmentPMSchedule pmSchedule) throws EAMException {
 		//
 		// Fetch PM Schedule Sequence Number and Revision
 		//
@@ -238,7 +238,7 @@ public class PMScheduleServiceImpl implements PMScheduleService {
 		getpm.getPMSCHEDULEEQUIPMENTID().setSEQUENCENUMBER(tools.getDataTypeTools().encodeLong(pmSchedule.getSequenceNumber(), "PM Schedule Sequence Number"));
 
 		MP3014_GetEquipmentPMSchedule_001_Result getresult =
-			tools.performInforOperation(context, inforws::getEquipmentPMScheduleOp, getpm);
+			tools.performEAMOperation(context, eamws::getEquipmentPMScheduleOp, getpm);
 		//
 		// Update it
 		//
@@ -354,27 +354,27 @@ public class PMScheduleServiceImpl implements PMScheduleService {
 			pmScheduleData.getWORKORDERCLASSID().setCLASSCODE(pmSchedule.getWorkOrderClass());
 		}
 
-		// TODO annotate remaining properties in pmSchedule class with InforField annotations
-		tools.getInforFieldTools().transformWSHubObject(pmScheduleData, pmSchedule, context);
+		// TODO annotate remaining properties in pmSchedule class with EAMField annotations
+		tools.getEAMFieldTools().transformWSHubObject(pmScheduleData, pmSchedule, context);
 
 		// Sync Equipment PM Schedule
 		MP0365_SyncEquipmentPMSchedule_001 syncpm = new MP0365_SyncEquipmentPMSchedule_001();
 		syncpm.setPMScheduleData(pmScheduleData);
 
 		MP0365_SyncEquipmentPMSchedule_001_Result syncresult =
-			tools.performInforOperation(context, inforws::syncEquipmentPMScheduleOp, syncpm);
+			tools.performEAMOperation(context, eamws::syncEquipmentPMScheduleOp, syncpm);
 
 		return syncresult.getResultData().getPMSCHEDULEEQUIPMENTID().getSEQUENCENUMBER() + "";
 	}
 
-    public String updateReleasedPMSchedule(InforContext context, ReleasedPMSchedule releasedPMSchedule) throws InforException {
+    public String updateReleasedPMSchedule(EAMContext context, ReleasedPMSchedule releasedPMSchedule) throws EAMException {
 
 		MP7433_SyncReleasedPM_001 syncReleasedPM = new MP7433_SyncReleasedPM_001();
 		syncReleasedPM.setReleasedPM(new ReleasedPM());
 		syncReleasedPM.setPRINTALLRELEASED("false");
 
-		tools.getInforFieldTools().transformWSHubObject(syncReleasedPM.getReleasedPM(), releasedPMSchedule, context);
-		tools.performInforOperation(context, inforws::syncReleasedPMOp, syncReleasedPM);
+		tools.getEAMFieldTools().transformWSHubObject(syncReleasedPM.getReleasedPM(), releasedPMSchedule, context);
+		tools.performEAMOperation(context, eamws::syncReleasedPMOp, syncReleasedPM);
 		return "OK";
 	}
 

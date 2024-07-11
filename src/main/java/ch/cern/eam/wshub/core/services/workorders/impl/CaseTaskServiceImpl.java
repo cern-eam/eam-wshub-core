@@ -1,11 +1,11 @@
 package ch.cern.eam.wshub.core.services.workorders.impl;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.workorders.CaseTaskService;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 import ch.cern.eam.wshub.core.tools.Tools;
-import ch.cern.eam.wshub.core.services.workorders.entities.InforCaseTask;
+import ch.cern.eam.wshub.core.services.workorders.entities.EAMCaseTask;
 import net.datastream.schemas.mp_entities.casemanagementtask_001.CaseManagementTask;
 import net.datastream.schemas.mp_entities.casemanagementtask_001.TrackingDetails;
 import net.datastream.schemas.mp_fields.*;
@@ -17,23 +17,23 @@ import net.datastream.schemas.mp_functions.mp3658_001.MP3658_GetCaseManagementTa
 import net.datastream.schemas.mp_results.mp3655_001.MP3655_AddCaseManagementTask_001_Result;
 import net.datastream.schemas.mp_results.mp3656_001.MP3656_SyncCaseManagementTask_001_Result;
 import net.datastream.schemas.mp_results.mp3658_001.MP3658_GetCaseManagementTask_001_Result;
-import net.datastream.wsdls.inforws.InforWebServicesPT;
-import javax.xml.ws.Holder;
+import net.datastream.wsdls.eamws.EAMWebServicesPT;
+import jakarta.xml.ws.Holder;
 
 
 public class CaseTaskServiceImpl implements CaseTaskService {
 
 	private Tools tools;
-	private InforWebServicesPT inforws;
+	private EAMWebServicesPT eamws;
 	private ApplicationData applicationData;
 
-	public CaseTaskServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
+	public CaseTaskServiceImpl(ApplicationData applicationData, Tools tools, EAMWebServicesPT eamWebServicesToolkitClient) {
 		this.applicationData = applicationData;
 		this.tools = tools;
-		this.inforws = inforWebServicesToolkitClient;
+		this.eamws = eamWebServicesToolkitClient;
 	}
 
-	public InforCaseTask readCaseTask(InforContext context, String caseTaskID) throws InforException {
+	public EAMCaseTask readCaseTask(EAMContext context, String caseTaskID) throws EAMException {
 		//
 		// Fetch Case Task
 		//
@@ -42,84 +42,84 @@ public class CaseTaskServiceImpl implements CaseTaskService {
 		getCaseTask.getCASEMANAGEMENTTASKID().setCASEMANAGEMENTTASKCODE(caseTaskID);
 
 		MP3658_GetCaseManagementTask_001_Result result =
-			tools.performInforOperation(context, inforws::getCaseManagementTaskOp, getCaseTask);
+			tools.performEAMOperation(context, eamws::getCaseManagementTaskOp, getCaseTask);
 
-		CaseManagementTask caseTaskInfor = result.getResultData().getCaseManagementTask();
-		InforCaseTask caseTaskMT = new InforCaseTask();
+		CaseManagementTask caseTaskEAM = result.getResultData().getCaseManagementTask();
+		EAMCaseTask caseTaskMT = new EAMCaseTask();
 		//
 		// IDs and DESCRIPTION
 		//
-		if (caseTaskInfor.getCASEMANAGEMENTTASKID() != null) {
-			caseTaskMT.setCaseCode(caseTaskInfor.getCASEID().getCASECODE());
-			caseTaskMT.setTaskCode(caseTaskInfor.getCASEMANAGEMENTTASKID().getCASEMANAGEMENTTASKCODE());
-			caseTaskMT.setDescription(caseTaskInfor.getCASEMANAGEMENTTASKID().getDESCRIPTION());
+		if (caseTaskEAM.getCASEMANAGEMENTTASKID() != null) {
+			caseTaskMT.setCaseCode(caseTaskEAM.getCASEID().getCASECODE());
+			caseTaskMT.setTaskCode(caseTaskEAM.getCASEMANAGEMENTTASKID().getCASEMANAGEMENTTASKCODE());
+			caseTaskMT.setDescription(caseTaskEAM.getCASEMANAGEMENTTASKID().getDESCRIPTION());
 		}
 		//
 		// SEQUENCE
 		//
-		caseTaskMT.setSequence(caseTaskInfor.getSEQUENCE());
+		caseTaskMT.setSequence(caseTaskEAM.getSEQUENCE());
 		//
 		// STEP
 		//
-		if (caseTaskInfor.getSTEP() != null) {
-			caseTaskMT.setStep(caseTaskInfor.getSTEP());
+		if (caseTaskEAM.getSTEP() != null) {
+			caseTaskMT.setStep(caseTaskEAM.getSTEP());
 		}
 		//
 		// ESTIMATED COSTS
 		//
-		if (caseTaskInfor.getESTIMATEDCOSTS() != null) {
-			caseTaskMT.setEstimatedCosts(tools.getDataTypeTools().decodeAmount(caseTaskInfor.getESTIMATEDCOSTS()));
+		if (caseTaskEAM.getESTIMATEDCOSTS() != null) {
+			caseTaskMT.setEstimatedCosts(tools.getDataTypeTools().decodeAmount(caseTaskEAM.getESTIMATEDCOSTS()));
 		}
 		//
 		// PRIORITY
 		//
-		if (caseTaskInfor.getPRIORITY() != null) {
-			caseTaskMT.setPriority(caseTaskInfor.getPRIORITY().getPRIORITYCODE());
+		if (caseTaskEAM.getPRIORITY() != null) {
+			caseTaskMT.setPriority(caseTaskEAM.getPRIORITY().getPRIORITYCODE());
 		}
 		//
 		// CREATED BY
 		//
-		if (caseTaskInfor.getCREATEDBY() != null) {
-			caseTaskMT.setCreatedBy(caseTaskInfor.getCREATEDBY().getUSERCODE());
+		if (caseTaskEAM.getCREATEDBY() != null) {
+			caseTaskMT.setCreatedBy(caseTaskEAM.getCREATEDBY().getUSERCODE());
 		}
 		//
 		// CREATE DATE
 		//
-		if (caseTaskInfor.getCREATEDDATE() != null) {
-			caseTaskMT.setDateCreated(tools.getDataTypeTools().decodeInforDate(caseTaskInfor.getCREATEDDATE()));
+		if (caseTaskEAM.getCREATEDDATE() != null) {
+			caseTaskMT.setDateCreated(tools.getDataTypeTools().decodeEAMDate(caseTaskEAM.getCREATEDDATE()));
 		}
 		//
 		// UPDATED BY
 		//
-		if (caseTaskInfor.getUPDATEDBY() != null) {
-			caseTaskMT.setUpdatedBy(caseTaskInfor.getUPDATEDBY().getUSERCODE());
+		if (caseTaskEAM.getUPDATEDBY() != null) {
+			caseTaskMT.setUpdatedBy(caseTaskEAM.getUPDATEDBY().getUSERCODE());
 		}
 		//
 		// UPDATE DATE
 		//
-		if (caseTaskInfor.getDATEUPDATED() != null) {
-			caseTaskMT.setDateUpdated(tools.getDataTypeTools().decodeInforDate(caseTaskInfor.getDATEUPDATED()));
+		if (caseTaskEAM.getDATEUPDATED() != null) {
+			caseTaskMT.setDateUpdated(tools.getDataTypeTools().decodeEAMDate(caseTaskEAM.getDATEUPDATED()));
 		}
 		//
 		// TRACKING DETAILS
 		//
-		if (caseTaskInfor.getTrackingDetails() != null) {
-			TrackingDetails trackingDetails = caseTaskInfor.getTrackingDetails();
-			caseTaskMT.setStartDate(tools.getDataTypeTools().decodeInforDate(caseTaskInfor.getTrackingDetails().getSTARTDATE()));
+		if (caseTaskEAM.getTrackingDetails() != null) {
+			TrackingDetails trackingDetails = caseTaskEAM.getTrackingDetails();
+			caseTaskMT.setStartDate(tools.getDataTypeTools().decodeEAMDate(caseTaskEAM.getTrackingDetails().getSTARTDATE()));
 			if (trackingDetails.getCOMPLETEDDATE() != null) {
 				caseTaskMT
-						.setCompletedDate(tools.getDataTypeTools().decodeInforDate(caseTaskInfor.getTrackingDetails().getCOMPLETEDDATE()));
+						.setCompletedDate(tools.getDataTypeTools().decodeEAMDate(caseTaskEAM.getTrackingDetails().getCOMPLETEDDATE()));
 			}
 			if (trackingDetails.getSCHEDULEDSTARTDATE() != null) {
 				caseTaskMT.setScheduledStartDate(
-						tools.getDataTypeTools().decodeInforDate(caseTaskInfor.getTrackingDetails().getSCHEDULEDSTARTDATE()));
+						tools.getDataTypeTools().decodeEAMDate(caseTaskEAM.getTrackingDetails().getSCHEDULEDSTARTDATE()));
 			}
 			if (trackingDetails.getSCHEDULEDENDDATE() != null) {
 				caseTaskMT.setScheduledEndDate(
-						tools.getDataTypeTools().decodeInforDate(caseTaskInfor.getTrackingDetails().getSCHEDULEDENDDATE()));
+						tools.getDataTypeTools().decodeEAMDate(caseTaskEAM.getTrackingDetails().getSCHEDULEDENDDATE()));
 			}
-			if (caseTaskInfor.getTrackingDetails().getPLANNEDDURATION() != null) {
-				PLANNEDDURATION_Type planneddurationType = caseTaskInfor.getTrackingDetails().getPLANNEDDURATION();
+			if (caseTaskEAM.getTrackingDetails().getPLANNEDDURATION() != null) {
+				PLANNEDDURATION_Type planneddurationType = caseTaskEAM.getTrackingDetails().getPLANNEDDURATION();
 				if (planneddurationType.getPLANNEDDURATIONVALUE() != null) {
 					caseTaskMT.setPlannedDuration(tools.getDataTypeTools().decodeQuantity(planneddurationType.getPLANNEDDURATIONVALUE()));
 				}
@@ -133,18 +133,18 @@ public class CaseTaskServiceImpl implements CaseTaskService {
 		//
 		// CUSTOM FIELDS
 		//
-		caseTaskMT.setCustomFields(tools.getCustomFieldsTools().readInforCustomFields(caseTaskInfor.getUSERDEFINEDAREA(), context));
+		caseTaskMT.setCustomFields(tools.getCustomFieldsTools().readEAMCustomFields(caseTaskEAM.getUSERDEFINEDAREA(), context));
 		//
 		// USER DEFINED FIELDS
 		//
-		//TODO caseTaskMT.setUserDefinedFields(tools.getUDFTools().readInforUserDefinedFields(caseTaskInfor.getStandardUserDefinedFields()));
+		//TODO caseTaskMT.setUserDefinedFields(tools.getUDFTools().readEAMUserDefinedFields(caseTaskEAM.getStandardUserDefinedFields()));
 		//
 		//
 		//
 		return caseTaskMT;
 	}
 
-	public String createCaseTask(InforContext context, InforCaseTask caseTaskMT) throws InforException {
+	public String createCaseTask(EAMContext context, EAMCaseTask caseTaskMT) throws EAMException {
 		CaseManagementTask caseManagement = new CaseManagementTask();
 		caseManagement.setStandardUserDefinedFields(new StandardUserDefinedFields());
 
@@ -152,11 +152,11 @@ public class CaseTaskServiceImpl implements CaseTaskService {
 		MP3655_AddCaseManagementTask_001 initCaseTask = new MP3655_AddCaseManagementTask_001();
 		initCaseTask.setCaseManagementTask(caseManagement);
 		MP3655_AddCaseManagementTask_001_Result initCaseTaskResult =
-			tools.performInforOperation(context, inforws::addCaseManagementTaskOp, initCaseTask);
+			tools.performEAMOperation(context, eamws::addCaseManagementTaskOp, initCaseTask);
 		return initCaseTaskResult.getResultData().getCASEMANAGEMENTTASKID().getCASEMANAGEMENTTASKCODE();
 	}
 
-	public String updateCaseTask(InforContext context, InforCaseTask caseTaskMT) throws InforException {
+	public String updateCaseTask(EAMContext context, EAMCaseTask caseTaskMT) throws EAMException {
 		//
 		// Fetch Case Task
 		//
@@ -165,7 +165,7 @@ public class CaseTaskServiceImpl implements CaseTaskService {
 		getCaseTask.getCASEMANAGEMENTTASKID().setCASEMANAGEMENTTASKCODE(caseTaskMT.getTaskCode());
 
 		MP3658_GetCaseManagementTask_001_Result result =
-			tools.performInforOperation(context, inforws::getCaseManagementTaskOp, getCaseTask);
+			tools.performEAMOperation(context, eamws::getCaseManagementTaskOp, getCaseTask);
 
 		CaseManagementTask caseManagementTask = result.getResultData().getCaseManagementTask();
 		initCaseTaskObject(caseManagementTask, caseTaskMT, context);
@@ -176,11 +176,11 @@ public class CaseTaskServiceImpl implements CaseTaskService {
 		MP3656_SyncCaseManagementTask_001 syncCase = new MP3656_SyncCaseManagementTask_001();
 		syncCase.setCaseManagementTask(caseManagementTask);
 		MP3656_SyncCaseManagementTask_001_Result syncCaseResult =
-			tools.performInforOperation(context, inforws::syncCaseManagementTaskOp, syncCase);
+			tools.performEAMOperation(context, eamws::syncCaseManagementTaskOp, syncCase);
 		return syncCaseResult.getResultData().getCASEMANAGEMENTTASKID().getCASEMANAGEMENTTASKCODE();
 	}
 
-	public String deleteCaseTask(InforContext context, String caseTaskID) throws InforException {
+	public String deleteCaseTask(EAMContext context, String caseTaskID) throws EAMException {
 		MP3657_DeleteCaseManagementTask_001 deleteCaseTask = new MP3657_DeleteCaseManagementTask_001();
 
 		// Set task id
@@ -188,129 +188,129 @@ public class CaseTaskServiceImpl implements CaseTaskService {
 		caseManagementTaskIdType.setCASEMANAGEMENTTASKCODE(caseTaskID);
 		deleteCaseTask.setCASEMANAGEMENTTASKID(caseManagementTaskIdType);
 
-		tools.performInforOperation(context, inforws::deleteCaseManagementTaskOp, deleteCaseTask);
+		tools.performEAMOperation(context, eamws::deleteCaseManagementTaskOp, deleteCaseTask);
 		return deleteCaseTask.getCASEMANAGEMENTTASKID().getCASEMANAGEMENTTASKCODE();
 	}
 
-	private void initCaseTaskObject(CaseManagementTask caseTaskInfor, InforCaseTask caseTaskMT, InforContext context) throws InforException {
-		if (caseTaskInfor.getCASEID() == null) {
+	private void initCaseTaskObject(CaseManagementTask caseTaskEAM, EAMCaseTask caseTaskMT, EAMContext context) throws EAMException {
+		if (caseTaskEAM.getCASEID() == null) {
 			CASEID_Type caseIdType = new CASEID_Type();
 			caseIdType.setCASECODE(caseTaskMT.getCaseCode());
-			caseTaskInfor.setCASEID(caseIdType);
+			caseTaskEAM.setCASEID(caseIdType);
 		}
 
 		//
 		// CODE AND DESCRIPTION
 		//
-		if (caseTaskInfor.getCASEID().getORGANIZATIONID() == null) {
-			caseTaskInfor.getCASEID().setORGANIZATIONID(tools.getOrganization(context));
+		if (caseTaskEAM.getCASEID().getORGANIZATIONID() == null) {
+			caseTaskEAM.getCASEID().setORGANIZATIONID(tools.getOrganization(context));
 		}
-		if (caseTaskInfor.getCASEMANAGEMENTTASKID() == null) {
-			caseTaskInfor.setCASEMANAGEMENTTASKID(new CASEMANAGEMENTTASKID_Type());
-			caseTaskInfor.getCASEMANAGEMENTTASKID().setCASEMANAGEMENTTASKCODE("0");
+		if (caseTaskEAM.getCASEMANAGEMENTTASKID() == null) {
+			caseTaskEAM.setCASEMANAGEMENTTASKID(new CASEMANAGEMENTTASKID_Type());
+			caseTaskEAM.getCASEMANAGEMENTTASKID().setCASEMANAGEMENTTASKCODE("0");
 		}
 
 		if (caseTaskMT.getDescription() != null) {
-			caseTaskInfor.getCASEMANAGEMENTTASKID().setDESCRIPTION(caseTaskMT.getDescription());
+			caseTaskEAM.getCASEMANAGEMENTTASKID().setDESCRIPTION(caseTaskMT.getDescription());
 		}
 		//
 		// SEQUENCE
 		//
 		if (caseTaskMT.getSequence() != null) {
-			caseTaskInfor.setSEQUENCE(caseTaskMT.getSequence());
+			caseTaskEAM.setSEQUENCE(caseTaskMT.getSequence());
 		}
 		//
 		// ESTIMATED COSTS
 		//
 		if (caseTaskMT.getEstimatedCosts() != null) {
-			caseTaskInfor.setESTIMATEDCOSTS(tools.getDataTypeTools().encodeAmount(caseTaskMT.getEstimatedCosts(), null));
+			caseTaskEAM.setESTIMATEDCOSTS(tools.getDataTypeTools().encodeAmount(caseTaskMT.getEstimatedCosts(), null));
 		}
 		//
 		// SEQUENCE
 		//
 		if (caseTaskMT.getSequence() != null) {
-			caseTaskInfor.setSEQUENCE(caseTaskMT.getSequence());
+			caseTaskEAM.setSEQUENCE(caseTaskMT.getSequence());
 		}
 		//
 		// STEP
 		//
 		if (caseTaskMT.getStep() != null) {
-			caseTaskInfor.setSTEP(caseTaskMT.getStep());
+			caseTaskEAM.setSTEP(caseTaskMT.getStep());
 		}
 		//
 		// PRIORITY
 		//
 		if (caseTaskMT.getPriority() != null) {
-			caseTaskInfor.setPRIORITY(new PRIORITY());
-			caseTaskInfor.getPRIORITY().setPRIORITYCODE(caseTaskMT.getPriority());
+			caseTaskEAM.setPRIORITY(new PRIORITY());
+			caseTaskEAM.getPRIORITY().setPRIORITYCODE(caseTaskMT.getPriority());
 		}
 		//
 		// USER DEFINED FIELDS
 		//
-		//TODO tools.getUDFTools().updateInforUserDefinedFields(caseTaskInfor.getStandardUserDefinedFields(), caseTaskMT.getUserDefinedFields());
+		//TODO tools.getUDFTools().updateEAMUserDefinedFields(caseTaskEAM.getStandardUserDefinedFields(), caseTaskMT.getUserDefinedFields());
 		//
 		// TRACKING DETAILS
 		//
 		if (caseTaskMT.getAssignedTo() != null) {
-			if (caseTaskInfor.getTrackingDetails() == null) {
-				caseTaskInfor.setTrackingDetails(new TrackingDetails());
+			if (caseTaskEAM.getTrackingDetails() == null) {
+				caseTaskEAM.setTrackingDetails(new TrackingDetails());
 			}
-			caseTaskInfor.getTrackingDetails().setASSIGNEDTO(new PERSONID_Type());
-			caseTaskInfor.getTrackingDetails().getASSIGNEDTO().setPERSONCODE(caseTaskMT.getAssignedTo());
+			caseTaskEAM.getTrackingDetails().setASSIGNEDTO(new PERSONID_Type());
+			caseTaskEAM.getTrackingDetails().getASSIGNEDTO().setPERSONCODE(caseTaskMT.getAssignedTo());
 		}
 
 		if (caseTaskMT.getStartDate() != null) {
-			if (caseTaskInfor.getTrackingDetails() == null) {
-				caseTaskInfor.setTrackingDetails(new TrackingDetails());
+			if (caseTaskEAM.getTrackingDetails() == null) {
+				caseTaskEAM.setTrackingDetails(new TrackingDetails());
 			}
-			caseTaskInfor.getTrackingDetails()
-					.setSTARTDATE(tools.getDataTypeTools().encodeInforDate(caseTaskMT.getStartDate(), "Start Date"));
+			caseTaskEAM.getTrackingDetails()
+					.setSTARTDATE(tools.getDataTypeTools().encodeEAMDate(caseTaskMT.getStartDate(), "Start Date"));
 		}
 
 		if (caseTaskMT.getCompletedDate() != null) {
-			if (caseTaskInfor.getTrackingDetails() == null) {
-				caseTaskInfor.setTrackingDetails(new TrackingDetails());
+			if (caseTaskEAM.getTrackingDetails() == null) {
+				caseTaskEAM.setTrackingDetails(new TrackingDetails());
 			}
-			caseTaskInfor.getTrackingDetails()
-					.setCOMPLETEDDATE(tools.getDataTypeTools().encodeInforDate(caseTaskMT.getCompletedDate(), "Completed Date"));
+			caseTaskEAM.getTrackingDetails()
+					.setCOMPLETEDDATE(tools.getDataTypeTools().encodeEAMDate(caseTaskMT.getCompletedDate(), "Completed Date"));
 		}
 
 		if (caseTaskMT.getScheduledStartDate() != null) {
-			if (caseTaskInfor.getTrackingDetails() == null) {
-				caseTaskInfor.setTrackingDetails(new TrackingDetails());
+			if (caseTaskEAM.getTrackingDetails() == null) {
+				caseTaskEAM.setTrackingDetails(new TrackingDetails());
 			}
-			caseTaskInfor.getTrackingDetails().setSCHEDULEDSTARTDATE(
-					tools.getDataTypeTools().encodeInforDate(caseTaskMT.getScheduledStartDate(), "Scheduling Start Date"));
+			caseTaskEAM.getTrackingDetails().setSCHEDULEDSTARTDATE(
+					tools.getDataTypeTools().encodeEAMDate(caseTaskMT.getScheduledStartDate(), "Scheduling Start Date"));
 		}
 
 		if (caseTaskMT.getPlannedDuration() != null && caseTaskMT.getPlannedDurationUnit() != null) {
-			if (caseTaskInfor.getTrackingDetails() == null) {
-				caseTaskInfor.setTrackingDetails(new TrackingDetails());
+			if (caseTaskEAM.getTrackingDetails() == null) {
+				caseTaskEAM.setTrackingDetails(new TrackingDetails());
 			}
-			if (caseTaskInfor.getTrackingDetails().getPLANNEDDURATION() == null) {
-				caseTaskInfor.getTrackingDetails().setPLANNEDDURATION(new PLANNEDDURATION_Type());
-				caseTaskInfor.getTrackingDetails().getPLANNEDDURATION().setPLANNEDDURATIONUOM(new PLANNEDDURATIONUOM());
-				caseTaskInfor.getTrackingDetails().getPLANNEDDURATION().getPLANNEDDURATIONUOM()
+			if (caseTaskEAM.getTrackingDetails().getPLANNEDDURATION() == null) {
+				caseTaskEAM.getTrackingDetails().setPLANNEDDURATION(new PLANNEDDURATION_Type());
+				caseTaskEAM.getTrackingDetails().getPLANNEDDURATION().setPLANNEDDURATIONUOM(new PLANNEDDURATIONUOM());
+				caseTaskEAM.getTrackingDetails().getPLANNEDDURATION().getPLANNEDDURATIONUOM()
 						.setPLANNEDDURATIONUOMCODE(caseTaskMT.getPlannedDurationUnit());
-				caseTaskInfor.getTrackingDetails().getPLANNEDDURATION().setPLANNEDDURATIONVALUE(
+				caseTaskEAM.getTrackingDetails().getPLANNEDDURATION().setPLANNEDDURATIONVALUE(
 						tools.getDataTypeTools().encodeQuantity(caseTaskMT.getPlannedDuration(), "Planned Duration"));
 			}
 		}
 
 		if (caseTaskMT.getRequestedStartDate() != null) {
-			if (caseTaskInfor.getTrackingDetails() == null) {
-				caseTaskInfor.setTrackingDetails(new TrackingDetails());
+			if (caseTaskEAM.getTrackingDetails() == null) {
+				caseTaskEAM.setTrackingDetails(new TrackingDetails());
 			}
-			caseTaskInfor.getTrackingDetails().setREQUESTEDSTART(
-					tools.getDataTypeTools().encodeInforDate(caseTaskMT.getRequestedStartDate(), "Requested Start Date"));
+			caseTaskEAM.getTrackingDetails().setREQUESTEDSTART(
+					tools.getDataTypeTools().encodeEAMDate(caseTaskMT.getRequestedStartDate(), "Requested Start Date"));
 		}
 
 		if (caseTaskMT.getRequestedEndDate() != null) {
-			if (caseTaskInfor.getTrackingDetails() == null) {
-				caseTaskInfor.setTrackingDetails(new TrackingDetails());
+			if (caseTaskEAM.getTrackingDetails() == null) {
+				caseTaskEAM.setTrackingDetails(new TrackingDetails());
 			}
-			caseTaskInfor.getTrackingDetails()
-					.setREQUESTEDEND(tools.getDataTypeTools().encodeInforDate(caseTaskMT.getRequestedEndDate(), "Requested End Date"));
+			caseTaskEAM.getTrackingDetails()
+					.setREQUESTEDEND(tools.getDataTypeTools().encodeEAMDate(caseTaskMT.getRequestedEndDate(), "Requested End Date"));
 		}
 	}
 

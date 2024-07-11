@@ -1,11 +1,11 @@
 package ch.cern.eam.wshub.core.services.casemanagement.impl;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.casemanagement.CaseManagementService;
 import ch.cern.eam.wshub.core.services.casemanagement.entities.EAMCaseManagement;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_entities.casemanagement_001.CaseManagement;
 import net.datastream.schemas.mp_fields.CASEID_Type;
@@ -13,7 +13,7 @@ import net.datastream.schemas.mp_functions.mp3640_001.MP3640_AddCaseManagement_0
 import net.datastream.schemas.mp_functions.mp3641_001.MP3641_SyncCaseManagement_001;
 import net.datastream.schemas.mp_functions.mp3642_001.MP3642_DeleteCaseManagement_001;
 import net.datastream.schemas.mp_functions.mp3643_001.MP3643_GetCaseManagement_001;
-import net.datastream.wsdls.inforws.InforWebServicesPT;
+import net.datastream.wsdls.eamws.EAMWebServicesPT;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -22,18 +22,18 @@ import java.util.stream.Collectors;
 public class CaseManagementServiceImpl implements CaseManagementService {
 
 	private Tools tools;
-	private InforWebServicesPT inforws;
+	private EAMWebServicesPT eamws;
 	private ApplicationData applicationData;
 
-	public CaseManagementServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
+	public CaseManagementServiceImpl(ApplicationData applicationData, Tools tools, EAMWebServicesPT eamWebServicesToolkitClient) {
 		this.applicationData = applicationData;
 		this.tools = tools;
-		this.inforws = inforWebServicesToolkitClient;
+		this.eamws = eamWebServicesToolkitClient;
 	}
 
-	public EAMCaseManagement readCase(InforContext context, String caseCode) throws InforException {
+	public EAMCaseManagement readCase(EAMContext context, String caseCode) throws EAMException {
 		final CaseManagement caseManagement = readCaseEAM(context, caseCode);
-		EAMCaseManagement eamCaseManagement = tools.getInforFieldTools().transformInforObject(new EAMCaseManagement(),
+		EAMCaseManagement eamCaseManagement = tools.getEAMFieldTools().transformEAMObject(new EAMCaseManagement(),
 				caseManagement, context);
 
 		//New Custom Field API
@@ -48,18 +48,18 @@ public class CaseManagementServiceImpl implements CaseManagementService {
 		return eamCaseManagement;
 	}
 
-	private CaseManagement readCaseEAM(InforContext context, String caseCode) throws InforException {
+	private CaseManagement readCaseEAM(EAMContext context, String caseCode) throws EAMException {
 		MP3643_GetCaseManagement_001 getCase = new MP3643_GetCaseManagement_001();
 		getCase.setCASEID(new CASEID_Type());
 		getCase.getCASEID().setCASECODE(caseCode);
 		getCase.getCASEID().setORGANIZATIONID(tools.getOrganization(context));
 
-		final CaseManagement caseManagement = tools.performInforOperation(context, inforws::getCaseManagementOp, getCase)
+		final CaseManagement caseManagement = tools.performEAMOperation(context, eamws::getCaseManagementOp, getCase)
 				.getResultData().getCaseManagement();
 		return caseManagement;
 	}
 
-	private CaseManagement syncCase(InforContext context, EAMCaseManagement eamCaseManagement, CaseManagement caseManagement) throws InforException {
+	private CaseManagement syncCase(EAMContext context, EAMCaseManagement eamCaseManagement, CaseManagement caseManagement) throws EAMException {
 		//New Custom Field API
 		final Map<String, String> customFieldMap = eamCaseManagement.getCustomFieldMap();
 		if (customFieldMap != null) {
@@ -69,7 +69,7 @@ public class CaseManagementServiceImpl implements CaseManagementService {
 		}
 
 		caseManagement.setUSERDEFINEDAREA(
-			tools.getCustomFieldsTools().getInforCustomFields(
+			tools.getCustomFieldsTools().getEAMCustomFields(
 				context,
 				null,
 				caseManagement.getUSERDEFINEDAREA(),
@@ -81,7 +81,7 @@ public class CaseManagementServiceImpl implements CaseManagementService {
 		// The system code is set by EAM, but it is still required. User status shall be used always instead
 		eamCaseManagement.setSystemStatusCode("O");
 
-		final CaseManagement caseManagement1 = tools.getInforFieldTools().transformWSHubObject(
+		final CaseManagement caseManagement1 = tools.getEAMFieldTools().transformWSHubObject(
 				caseManagement,
 				eamCaseManagement,
 				context
@@ -89,37 +89,37 @@ public class CaseManagementServiceImpl implements CaseManagementService {
 		return caseManagement1;
 	}
 
-	public String createCase(InforContext context, EAMCaseManagement eamCaseManagement) throws InforException {
+	public String createCase(EAMContext context, EAMCaseManagement eamCaseManagement) throws EAMException {
 		eamCaseManagement.setCaseCode("0");
 		final CaseManagement caseManagement = syncCase(context, eamCaseManagement, new CaseManagement());
 
 		MP3640_AddCaseManagement_001 mp3640_AddCaseManagement_001 = new MP3640_AddCaseManagement_001();
 		mp3640_AddCaseManagement_001.setCaseManagement(caseManagement);
 
-		final String caseCode = tools.performInforOperation(context, inforws::addCaseManagementOp,
+		final String caseCode = tools.performEAMOperation(context, eamws::addCaseManagementOp,
 						mp3640_AddCaseManagement_001)
 				.getResultData().getCASEID().getCASECODE();
 		return caseCode;
 	}
 
-	public String deleteCase(InforContext context, String caseCode) throws InforException {
+	public String deleteCase(EAMContext context, String caseCode) throws EAMException {
 		MP3642_DeleteCaseManagement_001 deleteCase = new MP3642_DeleteCaseManagement_001();
 		deleteCase.setCASEID(new CASEID_Type());
 		deleteCase.getCASEID().setCASECODE(caseCode);
 		deleteCase.getCASEID().setORGANIZATIONID(tools.getOrganization(context));
-		tools.performInforOperation(context, inforws::deleteCaseManagementOp, deleteCase);
+		tools.performEAMOperation(context, eamws::deleteCaseManagementOp, deleteCase);
 		return caseCode;
 	}
 
-	public synchronized String updateCase(InforContext context, EAMCaseManagement eamCaseManagement)
-			throws InforException {
+	public synchronized String updateCase(EAMContext context, EAMCaseManagement eamCaseManagement)
+			throws EAMException {
 		final CaseManagement caseManagement = readCaseEAM(context, eamCaseManagement.getCaseCode());
 		final CaseManagement caseManagement1 = syncCase(context, eamCaseManagement, caseManagement);
 
 		MP3641_SyncCaseManagement_001 mp3641_SyncCaseManagement_001 = new MP3641_SyncCaseManagement_001();
 		mp3641_SyncCaseManagement_001.setCaseManagement(caseManagement1);
 
-		final String caseCode = tools.performInforOperation(context, inforws::syncCaseManagementOp,
+		final String caseCode = tools.performEAMOperation(context, eamws::syncCaseManagementOp,
 						mp3641_SyncCaseManagement_001)
 				.getResultData().getCASEID().getCASECODE();
 		return caseCode;

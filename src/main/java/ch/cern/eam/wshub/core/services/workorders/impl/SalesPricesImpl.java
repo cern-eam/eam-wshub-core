@@ -1,10 +1,10 @@
 package ch.cern.eam.wshub.core.services.workorders.impl;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.workorders.SalesPriceService;
 import ch.cern.eam.wshub.core.services.workorders.entities.SalesPrice;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_entities.customercontractsalesprice_001.CustomerContractSalesPrice;
 import net.datastream.schemas.mp_fields.CUSTOMERCONTRACTSALESPRICEID_Type;
@@ -14,7 +14,7 @@ import net.datastream.schemas.mp_functions.mp7875_001.MP7875_SyncCustomerContrac
 import net.datastream.schemas.mp_results.mp7873_001.MP7873_GetCustomerContractSalesPrice_001_Result;
 import net.datastream.schemas.mp_results.mp7874_001.MP7874_AddCustomerContractSalesPrice_001_Result;
 import net.datastream.schemas.mp_results.mp7875_001.MP7875_SyncCustomerContractSalesPrice_001_Result;
-import net.datastream.wsdls.inforws.InforWebServicesPT;
+import net.datastream.wsdls.eamws.EAMWebServicesPT;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -25,16 +25,16 @@ import static ch.cern.eam.wshub.core.tools.DataTypeTools.isEmpty;
 public class SalesPricesImpl implements SalesPriceService {
 
     private Tools tools;
-    private InforWebServicesPT inforws;
+    private EAMWebServicesPT eamws;
     private ApplicationData applicationData;
 
-    public SalesPricesImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
+    public SalesPricesImpl(ApplicationData applicationData, Tools tools, EAMWebServicesPT eamWebServicesToolkitClient) {
         this.applicationData = applicationData;
         this.tools = tools;
-        this.inforws = inforWebServicesToolkitClient;
+        this.eamws = eamWebServicesToolkitClient;
     }
 
-    public String createSalesPrice(InforContext context, SalesPrice salesPrice) throws InforException {
+    public String createSalesPrice(EAMContext context, SalesPrice salesPrice) throws EAMException {
         //
         if (isEmpty(salesPrice.getSalesPriceCode())) {
             salesPrice.setSalesPriceCode("");
@@ -50,24 +50,24 @@ public class SalesPricesImpl implements SalesPriceService {
 
         MP7874_AddCustomerContractSalesPrice_001 addSalesPrice = new MP7874_AddCustomerContractSalesPrice_001();
         addSalesPrice.setCustomerContractSalesPrice(new CustomerContractSalesPrice());
-        tools.getInforFieldTools().transformWSHubObject(addSalesPrice.getCustomerContractSalesPrice(), salesPrice, context);
+        tools.getEAMFieldTools().transformWSHubObject(addSalesPrice.getCustomerContractSalesPrice(), salesPrice, context);
 
-        MP7874_AddCustomerContractSalesPrice_001_Result result = tools.performInforOperation(context, inforws::addCustomerContractSalesPriceOp, addSalesPrice);
+        MP7874_AddCustomerContractSalesPrice_001_Result result = tools.performEAMOperation(context, eamws::addCustomerContractSalesPriceOp, addSalesPrice);
         return result.getResultData().getCUSTOMERCONTRACTSALESPRICEID().getCUSTOMERCONTRACTSALESPRICECODE();
     }
 
-    public String updateSalesPrice(InforContext context, SalesPrice salesPrice) throws  InforException {
+    public String updateSalesPrice(EAMContext context, SalesPrice salesPrice) throws  EAMException {
         MP7873_GetCustomerContractSalesPrice_001 getSalesPrice = new MP7873_GetCustomerContractSalesPrice_001();
         getSalesPrice.setCUSTOMERCONTRACTSALESPRICEID(new CUSTOMERCONTRACTSALESPRICEID_Type());
         getSalesPrice.getCUSTOMERCONTRACTSALESPRICEID().setCUSTOMERCONTRACTSALESPRICECODE(salesPrice.getSalesPriceCode());
-        MP7873_GetCustomerContractSalesPrice_001_Result getSalesPriceResult = tools.performInforOperation(context, inforws::getCustomerContractSalesPriceOp, getSalesPrice);
+        MP7873_GetCustomerContractSalesPrice_001_Result getSalesPriceResult = tools.performEAMOperation(context, eamws::getCustomerContractSalesPriceOp, getSalesPrice);
 
-        CustomerContractSalesPrice salesPriceInfor  = tools.getInforFieldTools().transformWSHubObject(getSalesPriceResult.getResultData().getCustomerContractSalesPrice(), salesPrice, context);
+        CustomerContractSalesPrice salesPriceEAM  = tools.getEAMFieldTools().transformWSHubObject(getSalesPriceResult.getResultData().getCustomerContractSalesPrice(), salesPrice, context);
 
         MP7875_SyncCustomerContractSalesPrice_001 syncSalesPrice = new MP7875_SyncCustomerContractSalesPrice_001();
-        syncSalesPrice.setCustomerContractSalesPrice(salesPriceInfor);
+        syncSalesPrice.setCustomerContractSalesPrice(salesPriceEAM);
 
-        MP7875_SyncCustomerContractSalesPrice_001_Result result = tools.performInforOperation(context, inforws::syncCustomerContractSalesPriceOp, syncSalesPrice);
+        MP7875_SyncCustomerContractSalesPrice_001_Result result = tools.performEAMOperation(context, eamws::syncCustomerContractSalesPriceOp, syncSalesPrice);
         return result.getResultData().getCUSTOMERCONTRACTSALESPRICEID().getCUSTOMERCONTRACTSALESPRICECODE();
 
     }

@@ -2,39 +2,39 @@ package ch.cern.eam.wshub.core.services.equipment.entities;
 
 import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
-import ch.cern.eam.wshub.core.annotations.InforField;
+import ch.cern.eam.wshub.core.annotations.EAMField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import net.datastream.schemas.mp_fields.READINGTYPEID_Type;
 import net.datastream.schemas.mp_fields.StandardUserDefinedFields;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Objects;
 
 public class EqpMeterReading {
-    @InforField(xpath = "EQUIPMETERID/STANDARDENTITYCODE")
+    @EAMField(xpath = "EQUIPMETERID/STANDARDENTITYCODE")
     private String readingCode;
-    @InforField(xpath = "EQUIPMENTID/EQUIPMENTCODE")
+    @EAMField(xpath = "EQUIPMENTID/EQUIPMENTCODE")
     private String equipmentCode;
-    @InforField(xpath = "TYPE/TYPECODE")
+    @EAMField(xpath = "TYPE/TYPECODE")
     private String type; //A,
-    @InforField(xpath = "READINGTYPEID/READINGTYPECODE")
+    @EAMField(xpath = "READINGTYPEID/READINGTYPECODE")
     private String readingType; //R,D
-    @InforField(xpath = "UOMID/UOMCODE")
+    @EAMField(xpath = "UOMID/UOMCODE")
     private String UOM;
-    @InforField(xpath = "READINGDATE")
+    @EAMField(xpath = "READINGDATE")
     private Date readingDate;
-    @InforField(xpath = "NEWVALUE")
+    @EAMField(xpath = "NEWVALUE")
     private BigDecimal quantity;
 
-    @InforField(xpath = "WORKORDERID/JOBNUM")
+    @EAMField(xpath = "WORKORDERID/JOBNUM")
     private String workorderId;
-    @InforField(xpath = "RELATEDWORKORDERID/JOBNUM")
+    @EAMField(xpath = "RELATEDWORKORDERID/JOBNUM")
     private String relatedWorkorderId;
-    @InforField(xpath = "CHILDREADING")
+    @EAMField(xpath = "CHILDREADING")
     private String childReading;
-    @InforField(xpath = "StandardUserDefinedFields")
+    @EAMField(xpath = "StandardUserDefinedFields")
     private UserDefinedFields userDefinedFields;
 
     public String getReadingCode() {

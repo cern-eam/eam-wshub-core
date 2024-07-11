@@ -1,18 +1,18 @@
 package ch.cern.eam.wshub.core.services.equipment;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.equipment.entities.Category;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 
 public interface CategoryService {
 
-    Category readCategory(InforContext context, String categoryCode) throws InforException;
+    Category readCategory(EAMContext context, String categoryCode) throws EAMException;
 
-    String updateCategory(InforContext context, Category category) throws InforException;
+    String updateCategory(EAMContext context, Category category) throws EAMException;
 
-    String createCategory(InforContext context, Category category) throws InforException;
+    String createCategory(EAMContext context, Category category) throws EAMException;
 
-    String deleteCategory(InforContext context, String categoryCode) throws InforException;
+    String deleteCategory(EAMContext context, String categoryCode) throws EAMException;
 
-//    Category readCategoryDefault(InforContext context, String organizationCode) throws InforException;
+//    Category readCategoryDefault(EAMContext context, String organizationCode) throws EAMException;
 }

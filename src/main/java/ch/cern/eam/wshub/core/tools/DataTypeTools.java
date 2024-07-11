@@ -59,7 +59,7 @@ public class DataTypeTools {
         return calendar != null ? calendar.getTime() : null;
     }
 
-    public static DATETIME encodeInforDate(Date dateValue, String dateLabel) throws InforException {
+    public static DATETIME encodeEAMDate(Date dateValue, String dateLabel) throws EAMException {
         if (dateValue.getTime() == 0L) {
             return null;
         }
@@ -67,29 +67,29 @@ public class DataTypeTools {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(dateValue);
 
-        DATETIME inforDateTime = new DATETIME();
-        inforDateTime.setSUBSECOND(BigInteger.valueOf(0));
-        inforDateTime.setSECOND(BigInteger.valueOf(calendar.get(Calendar.SECOND)));
-        inforDateTime.setMINUTE(BigInteger.valueOf(calendar.get(Calendar.MINUTE)));
-        inforDateTime.setHOUR(BigInteger.valueOf(calendar.get(Calendar.HOUR_OF_DAY)));
-        inforDateTime.setDAY(BigInteger.valueOf(calendar.get(Calendar.DAY_OF_MONTH)));
-        inforDateTime.setMONTH(BigInteger.valueOf(calendar.get(Calendar.MONTH) + 1));
+        DATETIME eamDateTime = new DATETIME();
+        eamDateTime.setSUBSECOND(BigInteger.valueOf(0));
+        eamDateTime.setSECOND(BigInteger.valueOf(calendar.get(Calendar.SECOND)));
+        eamDateTime.setMINUTE(BigInteger.valueOf(calendar.get(Calendar.MINUTE)));
+        eamDateTime.setHOUR(BigInteger.valueOf(calendar.get(Calendar.HOUR_OF_DAY)));
+        eamDateTime.setDAY(BigInteger.valueOf(calendar.get(Calendar.DAY_OF_MONTH)));
+        eamDateTime.setMONTH(BigInteger.valueOf(calendar.get(Calendar.MONTH) + 1));
 
         try {
             DatatypeFactory dataTypeFactory = DatatypeFactory.newInstance();
             XMLGregorianCalendar yearCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar();
             yearCalendar.setYear(calendar.get(Calendar.YEAR));
-            inforDateTime.setYEAR(yearCalendar);
+            eamDateTime.setYEAR(yearCalendar);
         } catch (Exception e) {
 
         }
 
-        inforDateTime.setQualifier(DATETIMEqual.OTHER);
-        inforDateTime.setTIMEZONE("UTC");
-        return inforDateTime;
+        eamDateTime.setQualifier(DATETIMEqual.OTHER);
+        eamDateTime.setTIMEZONE("UTC");
+        return eamDateTime;
     }
 
-    public static DATETIME formatDate(String dateValue, String dateLabel) throws InforException {
+    public static DATETIME formatDate(String dateValue, String dateLabel) throws EAMException {
         if (dateValue == null || dateValue.trim().equals("")) {
             return null;
         }
@@ -100,49 +100,49 @@ public class DataTypeTools {
             throw Tools.generateFault((dateLabel + " has invalid format. Please change it to dd-MMM-yyyy [HH:mm]"));
         }
 
-        DATETIME inforDateTime = new DATETIME();
-        inforDateTime.setSUBSECOND(BigInteger.valueOf(0));
-        inforDateTime.setSECOND(BigInteger.valueOf(calendar.get(Calendar.SECOND)));
-        inforDateTime.setMINUTE(BigInteger.valueOf(calendar.get(Calendar.MINUTE)));
-        inforDateTime.setHOUR(BigInteger.valueOf(calendar.get(Calendar.HOUR_OF_DAY)));
-        inforDateTime.setDAY(BigInteger.valueOf(calendar.get(Calendar.DAY_OF_MONTH)));
-        inforDateTime.setMONTH(BigInteger.valueOf(calendar.get(Calendar.MONTH) + 1));
+        DATETIME eamDateTime = new DATETIME();
+        eamDateTime.setSUBSECOND(BigInteger.valueOf(0));
+        eamDateTime.setSECOND(BigInteger.valueOf(calendar.get(Calendar.SECOND)));
+        eamDateTime.setMINUTE(BigInteger.valueOf(calendar.get(Calendar.MINUTE)));
+        eamDateTime.setHOUR(BigInteger.valueOf(calendar.get(Calendar.HOUR_OF_DAY)));
+        eamDateTime.setDAY(BigInteger.valueOf(calendar.get(Calendar.DAY_OF_MONTH)));
+        eamDateTime.setMONTH(BigInteger.valueOf(calendar.get(Calendar.MONTH) + 1));
 
         try {
             DatatypeFactory dataTypeFactory = DatatypeFactory.newInstance();
             XMLGregorianCalendar yearCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar();
             yearCalendar.setYear(calendar.get(Calendar.YEAR));
-            inforDateTime.setYEAR(yearCalendar);
+            eamDateTime.setYEAR(yearCalendar);
         } catch (Exception e) {
 
         }
 
-        inforDateTime.setQualifier(DATETIMEqual.OTHER);
-        inforDateTime.setTIMEZONE("UTC");
-        return inforDateTime;
+        eamDateTime.setQualifier(DATETIMEqual.OTHER);
+        eamDateTime.setTIMEZONE("UTC");
+        return eamDateTime;
     }
 
-    public String retrieveDate(DATETIME inforDateTime, String dateFormat) {
+    public String retrieveDate(DATETIME eamDateTime, String dateFormat) {
         Calendar cal = Calendar.getInstance();
-        cal.set(inforDateTime.getYEAR().getYear(), inforDateTime.getMONTH().intValue() - 1,
-                inforDateTime.getDAY().intValue(), inforDateTime.getHOUR().intValue(),
-                inforDateTime.getMINUTE().intValue(), inforDateTime.getSECOND().intValue());
+        cal.set(eamDateTime.getYEAR().getYear(), eamDateTime.getMONTH().intValue() - 1,
+                eamDateTime.getDAY().intValue(), eamDateTime.getHOUR().intValue(),
+                eamDateTime.getMINUTE().intValue(), eamDateTime.getSECOND().intValue());
         SimpleDateFormat formatter = new SimpleDateFormat(dateFormat, Locale.ENGLISH);
         return formatter.format(cal.getTime()).toUpperCase();
     }
 
-    public String retrieveDate(DATETIME inforDateTime) {
-        return retrieveDate(inforDateTime, "dd-MMM-yyyy HH:mm");
+    public String retrieveDate(DATETIME eamDateTime) {
+        return retrieveDate(eamDateTime, "dd-MMM-yyyy HH:mm");
     }
 
-    public static Date decodeInforDate(DATETIME inforDateTime) {
-        if (inforDateTime == null) {
+    public static Date decodeEAMDate(DATETIME eamDateTime) {
+        if (eamDateTime == null) {
             return null;
         }
         Calendar cal = Calendar.getInstance();
-        cal.set(inforDateTime.getYEAR().getYear(), inforDateTime.getMONTH().intValue() - 1,
-                inforDateTime.getDAY().intValue(), inforDateTime.getHOUR().intValue(),
-                inforDateTime.getMINUTE().intValue(), inforDateTime.getSECOND().intValue());
+        cal.set(eamDateTime.getYEAR().getYear(), eamDateTime.getMONTH().intValue() - 1,
+                eamDateTime.getDAY().intValue(), eamDateTime.getHOUR().intValue(),
+                eamDateTime.getMINUTE().intValue(), eamDateTime.getSECOND().intValue());
         cal.set(Calendar.MILLISECOND, 0);
         return cal.getTime();
     }
@@ -150,7 +150,7 @@ public class DataTypeTools {
     //
     // QUANTITY
     //
-    public static QUANTITY encodeQuantity(BigDecimal numberValue, String numberLabel) throws InforException {
+    public static QUANTITY encodeQuantity(BigDecimal numberValue, String numberLabel) throws EAMException {
         if (numberValue == null) {
             return null;
         }
@@ -178,12 +178,12 @@ public class DataTypeTools {
         return quantity;
     }
 
-    public static BigDecimal decodeQuantity(QUANTITY inforNumber) {
-        if (inforNumber != null) {
-            BigDecimal bc = inforNumber.getVALUE().divide(
-                    new BigDecimal(Math.pow(10, inforNumber.getNUMOFDEC().intValue())), 6, RoundingMode.HALF_UP);
+    public static BigDecimal decodeQuantity(QUANTITY eamNumber) {
+        if (eamNumber != null) {
+            BigDecimal bc = eamNumber.getVALUE().divide(
+                    new BigDecimal(Math.pow(10, eamNumber.getNUMOFDEC().intValue())), 6, RoundingMode.HALF_UP);
 
-            if (inforNumber.getSIGN() != null && inforNumber.getSIGN().equals("-")) {
+            if (eamNumber.getSIGN() != null && eamNumber.getSIGN().equals("-")) {
                 bc = bc.negate();
             }
             return bc.stripTrailingZeros();
@@ -195,7 +195,7 @@ public class DataTypeTools {
     //
     // AMOUNT
     //
-    public static AMOUNT encodeAmount(BigDecimal numberValue, String numberLabel) throws InforException {
+    public static AMOUNT encodeAmount(BigDecimal numberValue, String numberLabel) throws EAMException {
         if (numberValue == null) {
             return null;
         }
@@ -224,11 +224,11 @@ public class DataTypeTools {
         return amount;
     }
 
-    public static BigDecimal decodeAmount(AMOUNT inforNumber) {
-        if (inforNumber != null) {
-            BigDecimal bc = inforNumber.getVALUE().divide(
-                    new BigDecimal(Math.pow(10, inforNumber.getNUMOFDEC().intValue())), 6, RoundingMode.HALF_UP);
-            if (inforNumber.getSIGN() != null && inforNumber.getSIGN().equals("-")) {
+    public static BigDecimal decodeAmount(AMOUNT eamNumber) {
+        if (eamNumber != null) {
+            BigDecimal bc = eamNumber.getVALUE().divide(
+                    new BigDecimal(Math.pow(10, eamNumber.getNUMOFDEC().intValue())), 6, RoundingMode.HALF_UP);
+            if (eamNumber.getSIGN() != null && eamNumber.getSIGN().equals("-")) {
                 bc = bc.negate();
             }
             return bc;
@@ -240,7 +240,7 @@ public class DataTypeTools {
     //
     // LONG
     //
-    public long encodeLong(String longValue, String longLabel) throws InforException {
+    public long encodeLong(String longValue, String longLabel) throws EAMException {
         long value;
         try {
             value = Long.valueOf(longValue);
@@ -250,7 +250,7 @@ public class DataTypeTools {
         return value;
     }
 
-    public double encodeDouble(String doubleValue, String longLabel) throws InforException {
+    public double encodeDouble(String doubleValue, String longLabel) throws EAMException {
         double value;
         try {
             value = Double.valueOf(doubleValue);
@@ -263,7 +263,7 @@ public class DataTypeTools {
     //
     // BIG DECIMAL
     //
-    public static BigDecimal encodeBigDecimal(String stringValue, String valueLabel) throws InforException {
+    public static BigDecimal encodeBigDecimal(String stringValue, String valueLabel) throws EAMException {
         if (isEmpty(stringValue)) {
             return null;
         }
@@ -283,7 +283,7 @@ public class DataTypeTools {
     //
     // BIG INTEGER
     //
-    public static BigInteger encodeBigInteger(String stringValue, String valueLabel) throws InforException {
+    public static BigInteger encodeBigInteger(String stringValue, String valueLabel) throws EAMException {
         if (isEmpty(stringValue)) {
             return null;
         }

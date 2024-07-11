@@ -2,10 +2,10 @@ package ch.cern.eam.wshub.core.services.contractmanagement.entities;
 
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
 import ch.cern.eam.wshub.core.annotations.GridField;
-import ch.cern.eam.wshub.core.annotations.InforField;
+import ch.cern.eam.wshub.core.annotations.EAMField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -13,63 +13,63 @@ import java.util.Date;
 
 public class EquipmentReservationAdjustment implements Serializable {
     @GridField(name = "adjustmentid")
-    @InforField(xpath = "CUSTOMERRENTALADJUSTMENTID/CUSTOMERRENTALADJUSTMENTPK")
+    @EAMField(xpath = "CUSTOMERRENTALADJUSTMENTID/CUSTOMERRENTALADJUSTMENTPK")
     private String code;
     @GridField(name = "adjustmentorg")
-    @InforField(xpath = "ADJUSTMENTID/ORGANIZATIONID/ORGANIZATIONCODE")
+    @EAMField(xpath = "ADJUSTMENTID/ORGANIZATIONID/ORGANIZATIONCODE")
     private String orgCode;
     @GridField(name = "customerrentalcode")
-    @InforField(xpath = "CUSTOMERRENTALID/CUSTOMERRENTALCODE")
+    @EAMField(xpath = "CUSTOMERRENTALID/CUSTOMERRENTALCODE")
     private String customerRentalCode;
     @GridField(name = "adjustmentcode")
-    @InforField(xpath = "ADJUSTMENTID/ADJUSTMENTCODE")
+    @EAMField(xpath = "ADJUSTMENTID/ADJUSTMENTCODE")
     private String adjustmentCode;
     @GridField(name = "adjustmenttype")
-    @InforField(xpath = "ADJUSTMENTTYPE/TYPECODE")
+    @EAMField(xpath = "ADJUSTMENTTYPE/TYPECODE")
     private String typeCode;
     @GridField(name = "adjustmentsystemtype")
-    @InforField(xpath = "ADJUSTMENTRTYPE/TYPECODE")
+    @EAMField(xpath = "ADJUSTMENTRTYPE/TYPECODE")
     private String typeRCode;
     @GridField(name = "adjustmentstatus")
-    @InforField(xpath = "ADJUSTMENTSTATUS/STATUSCODE")
+    @EAMField(xpath = "ADJUSTMENTSTATUS/STATUSCODE")
     private String statusCode;
     @GridField(name = "adjustmentsystemstatus")
-    @InforField(xpath = "ADJUSTMENTRSTATUS/STATUSCODE")
+    @EAMField(xpath = "ADJUSTMENTRSTATUS/STATUSCODE")
     private String statusRCode;
     @GridField(name = "taxcode")
-    @InforField(xpath = "TAXID/TAXCODE")
+    @EAMField(xpath = "TAXID/TAXCODE")
     private String taxCode;
     @GridField(name = "adjustmentdate")
-    @InforField(xpath = "ADJUSTMENTDATE")
+    @EAMField(xpath = "ADJUSTMENTDATE")
     private Date date;
     @GridField(name = "comments")
-    @InforField(xpath = "AJUSTMENTCOMMENTS")
+    @EAMField(xpath = "AJUSTMENTCOMMENTS")
     private String comments;
     @GridField(name = "quantity")
-    @InforField(xpath = "ADJUSTMENTQUANTITY")
+    @EAMField(xpath = "ADJUSTMENTQUANTITY")
     private BigDecimal quantity;
     @GridField(name = "rate")
-    @InforField(xpath = "RATE")
+    @EAMField(xpath = "RATE")
     private BigDecimal rate;
     @GridField(name = "totalamount")
-    @InforField(xpath = "TOTALAMOUNT")
+    @EAMField(xpath = "TOTALAMOUNT")
     private BigDecimal totalAmount;
     @GridField(name = "taxamount")
-    @InforField(xpath = "TAXAMOUNT")
+    @EAMField(xpath = "TAXAMOUNT")
     private BigDecimal taxAmount;
     @GridField(name = "invoicecode")
-    @InforField(xpath = "CUSTOMERCONTRACTINVOICEID/CUSTOMERCONTRACTINVOICECODE")
+    @EAMField(xpath = "CUSTOMERCONTRACTINVOICEID/CUSTOMERCONTRACTINVOICECODE")
     private String invoice;
     @GridField(name = "invoiceorg")
-    @InforField(xpath = "CUSTOMERCONTRACTINVOICEID/ORGANIZATIONID/ORGANIZATIONCODE")
+    @EAMField(xpath = "CUSTOMERCONTRACTINVOICEID/ORGANIZATIONID/ORGANIZATIONCODE")
     private String invoiceOrgCode;
     @GridField(name = "createdworkorder")
-    @InforField(xpath = "WORKORDERID/JOBNUM")
+    @EAMField(xpath = "WORKORDERID/JOBNUM")
     private String createdWorkOrder;
     @GridField(name = "recordid")
-    @InforField(xpath = "recordid")
+    @EAMField(xpath = "recordid")
     private BigInteger updateCount;
-    @InforField(xpath = "StandardUserDefinedFields")
+    @EAMField(xpath = "StandardUserDefinedFields")
     private UserDefinedFields userDefinedFields;
 
     public String getCode() {

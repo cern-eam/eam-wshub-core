@@ -1,6 +1,6 @@
 package ch.cern.eam.wshub.core.services.grids.customfields;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 
 @Entity
@@ -11,7 +11,7 @@ import java.io.Serializable;
  * to property code (PRO_CODE) in R5PROPERTIES. The tag name is stored like
  * c_<property name>_<rentity>. In order to extract the property name we strip
  * the parts before and after the first and last underscores. There is an additional hack:
- * Infor escapes '-' in custom field names as '_i' so this is reversed.
+ * EAM escapes '-' in custom field names as '_i' so this is reversed.
  */
 @NamedNativeQuery(name = DataspyCustomField.GET_CUSTOM_FIELDS_FOR_DATASPY, query = "SELECT DCF_DDSPYID," +
         "  DCF_TAGNAME," +

@@ -1,15 +1,15 @@
 package ch.cern.eam.wshub.core.services.workorders.entities;
 
-import ch.cern.eam.wshub.core.annotations.InforField;
+import ch.cern.eam.wshub.core.annotations.EAMField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "R5PERSONNEL")
@@ -22,35 +22,35 @@ public class Employee implements Serializable {
 
 	@Id
 	@Column(name = "PER_CODE")
-	@InforField(xpath = "EMPLOYEEID/EMPLOYEECODE")
+	@EAMField(xpath = "EMPLOYEEID/EMPLOYEECODE")
 	private String code;
 
 	@Column(name = "PER_DESC")
-	@InforField(xpath = "EMPLOYEEID/DESCRIPTION", readOnly = true)
+	@EAMField(xpath = "EMPLOYEEID/DESCRIPTION", readOnly = true)
 	private String description;
 	
 	@Column(name = "PER_PHONE")
-	@InforField(xpath = "PHONE")
+	@EAMField(xpath = "PHONE")
 	private String phone;
 	
 	@Column(name = "PER_MOBILEPHONENO")
-	@InforField(xpath = "MOBILEPHONENUMBER")
+	@EAMField(xpath = "MOBILEPHONENUMBER")
 	private String mobilePhone;
 	
 	@Column(name = "PER_ADDRESS")
-	@InforField(xpath = "ADDRESS")
+	@EAMField(xpath = "ADDRESS")
 	private String address;
 	
 	@Column(name = "PER_CLASS")
-	@InforField(xpath = "CLASSID/CLASSCODE")
+	@EAMField(xpath = "CLASSID/CLASSCODE")
 	private String clazz;
 	
 	@Column(name = "PER_MRC")
-	@InforField(xpath = "DEPARTMENTCODE")
+	@EAMField(xpath = "DEPARTMENTCODE")
 	private String MRC;
 	
 	@Column(name = "PER_EMAILADDRESS")
-	@InforField(xpath = "EMAIL")
+	@EAMField(xpath = "EMAIL")
 	private String email;
 	
 	@Column(name = "PER_UDFNUM01")
@@ -61,7 +61,7 @@ public class Employee implements Serializable {
 
 
 	@Column(name = "PER_USER")
-	@InforField(xpath = "USERCODE")
+	@EAMField(xpath = "USERCODE")
 	private String userCode;
 	
 	@Column(name = "PER_TRADE")
@@ -82,10 +82,10 @@ public class Employee implements Serializable {
 	@Column(name = "PER_UDFCHKBOX01")
 	private String accountBlocked;
 
-	@InforField(xpath = "OUTOFSERVICE")
+	@EAMField(xpath = "OUTOFSERVICE")
 	private String outOfService;
 
-	@InforField(xpath = "StandardUserDefinedFields")
+	@EAMField(xpath = "StandardUserDefinedFields")
 	private UserDefinedFields userDefinedFields;
 
 	public String getCode() {

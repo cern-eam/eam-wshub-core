@@ -16,27 +16,27 @@ To use EAM WSHub Core in your project, you just need to add the following Maven 
 ```
 
 ## Usage
-### InforClient
-The class **InforClient** is the entry point of this library.
-You first need to create an instance of InforClient, with the configuration specific to your environment:
+### EAMClient
+The class **EAMClient** is the entry point of this library.
+You first need to create an instance of EAMClient, with the configuration specific to your environment:
 
 ```
-InforClient inforClient = new InforClient.Builder(
+EAMClient eamClient = new EAMClient.Builder(
         "https://<your.domain.name>/axis/services/EWSConnector") 
     .withDefaultTenant("<tenant>")
     .withDefaultOrganizationCode("<your-organization-code>")
     .build();
 ```
-The InforClient instance you get is thread-safe and should be reused across your application.
+The EAMClient instance you get is thread-safe and should be reused across your application.
 
-##### InforClient Options
+##### EAMClient Options
 | Option        | Description           | Required?  |
 | ------------- |:-------------:| -----:|
 | url           | URL of your Infor instance | **Yes** |
 | tenant        | Tenant      |   **Yes** |
 | defaultOrganizationCode  | Default organization that will be used in every Infor call in case none is provided in InforContext.      |    No |
-| inforInterceptor  | Object that includes callbacks to execute before/after every Infor call.      |    No |
-| executorService  | If you run EAM WSHub core within a Java EE container, you need to give InforClient the ManagedExecutorService coming from your container.    |    No |
+| eamInterceptor  | Object that includes callbacks to execute before/after every Infor call.      |    No |
+| executorService  | If you run EAM WSHub core within a Java EE container, you need to give EAMClient the ManagedExecutorService coming from your container.    |    No |
 | dataSource  | To improve performance, EAM WSHub core may execute SQL requests directly on the database. Passing a datasource activates this option.     |    No |
 
 ### InforContext
@@ -56,13 +56,13 @@ InforContext context = new InforContext.Builder()
 
 <sup>1</sup> You should provide either credentials, or a sessionID.
 
-<sup>2</sup> If the organization code is not provided in inforContext, the default value provided in inforClient will be used. The organization code should be provided in at least one of these two objets.
+<sup>2</sup> If the organization code is not provided in eamContext, the default value provided in eamClient will be used. The organization code should be provided in at least one of these two objets.
 
 
 ### Example
 Here is a complete example, in which we update a work order with EAM WSHub Core:
 ```java
-import ch.cern.eam.wshub.core.aisws.InforClient;
+import ch.cern.eam.wshub.core.aisws.EAMClient;
 import ch.cern.eam.wshub.core.aisws.InforContext;
 import ch.cern.eam.wshub.core.services.entities.Credentials;
 import ch.cern.eam.wshub.core.services.workorders.WorkOrderService;
@@ -73,14 +73,14 @@ public class UpdateWorkOrderExample {
 
     public static void main(String[] args) throws InforException {
 
-        String inforEndpointUrl = "{YOUR-ENDPOINT-URL}";
+        String eamEndpointUrl = "{YOUR-ENDPOINT-URL}";
         String organizationCode = "{YOUR-ORGANIZATION-CODE}";
         String tenant = "{YOUR-TENANT}";
         String username = "{YOUR-USERNAME}";
         String password = "{YOUR-PASSWORD}";
         String workOrderNumber = "{YOUR-WORK-ORDER-NUMBER}";
 
-        InforClient inforClient = new InforClient.Builder(inforEndpointUrl)
+        EAMClient eamClient = new EAMClient.Builder(eamEndpointUrl)
                 .withDefaultTenant(applicationData.getTenant())
                 .withDefaultOrganizationCode(organizationCode)
                 .build();
@@ -89,7 +89,7 @@ public class UpdateWorkOrderExample {
                 .withCredentials(new Credentials(username, password))
                 .build();
 
-        WorkOrderService workOrderService = inforClient.getWorkOrderService();
+        WorkOrderService workOrderService = eamClient.getWorkOrderService();
 
         // Fetch workorder
         WorkOrder workOrder = workOrderService.readWorkOrder(context, workOrderNumber);

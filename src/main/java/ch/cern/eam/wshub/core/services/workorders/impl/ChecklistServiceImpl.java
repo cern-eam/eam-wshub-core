@@ -1,7 +1,7 @@
 package ch.cern.eam.wshub.core.services.workorders.impl;
 
 import ch.cern.eam.wshub.core.annotations.BooleanType;
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.entities.Pair;
 import ch.cern.eam.wshub.core.services.entities.Signature;
 import ch.cern.eam.wshub.core.services.grids.GridsService;
@@ -15,7 +15,7 @@ import ch.cern.eam.wshub.core.services.workorders.entities.*;
 import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrderActivityCheckList.CheckListType;
 import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrderActivityCheckList.ReturnType;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_entities.taskchecklist_001.TaskChecklist;
 import net.datastream.schemas.mp_fields.*;
@@ -29,7 +29,7 @@ import net.datastream.schemas.mp_functions.mp8000_001.MP8000_CreateFollowUpWorkO
 import net.datastream.schemas.mp_results.mp7914_001.MP7914_GetWorkOrderActivityCheckList_001_Result;
 import net.datastream.schemas.mp_results.mp7999_001.MP7999_GetWorkOrderActivityCheckListDefault_001_Result;
 import net.datastream.schemas.mp_results.mp8000_001.MP8000_CreateFollowUpWorkOrder_001_Result;
-import net.datastream.wsdls.inforws.InforWebServicesPT;
+import net.datastream.wsdls.eamws.EAMWebServicesPT;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -49,24 +49,24 @@ import static ch.cern.eam.wshub.core.tools.GridTools.*;
 public class ChecklistServiceImpl implements ChecklistService {
 
 	private Tools tools;
-	private InforWebServicesPT inforws;
+	private EAMWebServicesPT eamws;
 	private ApplicationData applicationData;
 	private GridsService gridsService;
 	public static final Map<String, String> findingsCache = new ConcurrentHashMap<>();
 
-	public ChecklistServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
+	public ChecklistServiceImpl(ApplicationData applicationData, Tools tools, EAMWebServicesPT eamWebServicesToolkitClient) {
 		this.applicationData = applicationData;
 		this.tools = tools;
-		this.inforws = inforWebServicesToolkitClient;
-		this.gridsService = new GridsServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
+		this.eamws = eamWebServicesToolkitClient;
+		this.gridsService = new GridsServiceImpl(applicationData, tools, eamWebServicesToolkitClient);
 	}
 
-	public WorkOrderActivityChecklistSignatureResult[] getSignatures(InforContext context, String workOrderCode,
-		String activityCode, TaskPlan taskPlan) throws InforException {
+	public WorkOrderActivityChecklistSignatureResult[] getSignatures(EAMContext context, String workOrderCode,
+		String activityCode, TaskPlan taskPlan) throws EAMException {
 
 		MP7999_GetWorkOrderActivityCheckListDefault_001_Result getResult = getSignatureWS(context, workOrderCode, activityCode);
 		WorkOrderActivityCheckListDefaultResult workOrderActivityCheckListDefaultResult = new WorkOrderActivityCheckListDefaultResult();
-		tools.getInforFieldTools().transformInforObject(workOrderActivityCheckListDefaultResult,
+		tools.getEAMFieldTools().transformEAMObject(workOrderActivityCheckListDefaultResult,
 				getResult.getResultData().getWorkOrderActivityCheckListDefault(), context);
 
 		WorkOrderActivityChecklistSignatureResult[] res = filterSignatures(workOrderActivityCheckListDefaultResult, taskPlan);
@@ -74,8 +74,8 @@ public class ChecklistServiceImpl implements ChecklistService {
 		return res;
 	}
 
-	private void getResponsibilityDescriptions(InforContext context, WorkOrderActivityChecklistSignatureResult[] signatures)
-			throws InforException {
+	private void getResponsibilityDescriptions(EAMContext context, WorkOrderActivityChecklistSignatureResult[] signatures)
+			throws EAMException {
 
 		GridRequest gridRequest = new GridRequest("LVUSERRESPONSIBILITIES");
 		gridRequest.setDataspyID("4297");
@@ -178,10 +178,10 @@ public class ChecklistServiceImpl implements ChecklistService {
 		return signatures.toArray(new WorkOrderActivityChecklistSignatureResult[0]);
 	}
 
-	private MP7999_GetWorkOrderActivityCheckListDefault_001_Result getSignatureWS(InforContext context, String workOrderCode, String activityCode) throws InforException {
+	private MP7999_GetWorkOrderActivityCheckListDefault_001_Result getSignatureWS(EAMContext context, String workOrderCode, String activityCode) throws EAMException {
 		MP7999_GetWorkOrderActivityCheckListDefault_001 getWorkOrderActivityCheckListDefault = new MP7999_GetWorkOrderActivityCheckListDefault_001();
 		transformGetWorkOrderActivityCheckListDefaultRequest(getWorkOrderActivityCheckListDefault, workOrderCode, activityCode);
-		return tools.performInforOperation(context, inforws::getWorkOrderActivityCheckListDefaultOp, getWorkOrderActivityCheckListDefault);
+		return tools.performEAMOperation(context, eamws::getWorkOrderActivityCheckListDefaultOp, getWorkOrderActivityCheckListDefault);
 	}
 
 	private void transformGetWorkOrderActivityCheckListDefaultRequest(MP7999_GetWorkOrderActivityCheckListDefault_001 getWorkOrderActivityCheckListDefault,
@@ -195,8 +195,8 @@ public class ChecklistServiceImpl implements ChecklistService {
 		getWorkOrderActivityCheckListDefault.setWORKORDERID(workOrderID);
 	}
 
-	public WorkOrderActivityChecklistSignatureResponse eSignWorkOrderActivityChecklist(InforContext context, WorkOrderActivityCheckListSignature workOrderActivityCheckListSignature)
-			throws InforException{
+	public WorkOrderActivityChecklistSignatureResponse eSignWorkOrderActivityChecklist(EAMContext context, WorkOrderActivityCheckListSignature workOrderActivityCheckListSignature)
+			throws EAMException{
 		Signature signature = new Signature();
 		signature.setUserCode(workOrderActivityCheckListSignature.getUserCode());
 		signature.setPassword(workOrderActivityCheckListSignature.getPassword());
@@ -211,13 +211,13 @@ public class ChecklistServiceImpl implements ChecklistService {
 		}
 	}
 
-	private WorkOrderActivityChecklistSignatureResponse performWorkOrderActivityChecklist(InforContext context, WorkOrderActivityCheckListSignature workOrderActivityCheckListSignature)
-			throws InforException {
+	private WorkOrderActivityChecklistSignatureResponse performWorkOrderActivityChecklist(EAMContext context, WorkOrderActivityCheckListSignature workOrderActivityCheckListSignature)
+			throws EAMException {
 
 		MP7997_PerformWorkOrderActivityCheckList_001 performWorkOrderActivityCheckList = new MP7997_PerformWorkOrderActivityCheckList_001();
 
-		tools.getInforFieldTools().transformWSHubObject(performWorkOrderActivityCheckList, workOrderActivityCheckListSignature, context);
-		tools.performInforOperation(context, inforws::performWorkOrderActivityCheckListOp, performWorkOrderActivityCheckList);
+		tools.getEAMFieldTools().transformWSHubObject(performWorkOrderActivityCheckList, workOrderActivityCheckListSignature, context);
+		tools.performEAMOperation(context, eamws::performWorkOrderActivityCheckListOp, performWorkOrderActivityCheckList);
 
 		MP7999_GetWorkOrderActivityCheckListDefault_001_Result getResult =
 				getSignatureWS(context, workOrderActivityCheckListSignature.getWorkOrderCode(),
@@ -230,13 +230,13 @@ public class ChecklistServiceImpl implements ChecklistService {
 		}
 	}
 
-	private WorkOrderActivityChecklistSignatureResponse reviewWorkOrderActivityCheckList(InforContext context, WorkOrderActivityCheckListSignature workOrderActivityCheckListSignature)
-			throws InforException {
+	private WorkOrderActivityChecklistSignatureResponse reviewWorkOrderActivityCheckList(EAMContext context, WorkOrderActivityCheckListSignature workOrderActivityCheckListSignature)
+			throws EAMException {
 
 		MP7998_ReviewWorkOrderActivityCheckList_001 reviewWorkOrderActivityCheckList = new MP7998_ReviewWorkOrderActivityCheckList_001();
 
-		tools.getInforFieldTools().transformWSHubObject(reviewWorkOrderActivityCheckList, workOrderActivityCheckListSignature, context);
-		tools.performInforOperation(context, inforws::reviewWorkOrderActivityCheckListOp, reviewWorkOrderActivityCheckList);
+		tools.getEAMFieldTools().transformWSHubObject(reviewWorkOrderActivityCheckList, workOrderActivityCheckListSignature, context);
+		tools.performEAMOperation(context, eamws::reviewWorkOrderActivityCheckListOp, reviewWorkOrderActivityCheckList);
 
 		MP7999_GetWorkOrderActivityCheckListDefault_001_Result getResult =
 				getSignatureWS(context, workOrderActivityCheckListSignature.getWorkOrderCode(),
@@ -248,34 +248,34 @@ public class ChecklistServiceImpl implements ChecklistService {
 	private WorkOrderActivityChecklistSignatureResponse transformESIGNATUREtoResponse(ESIGNATURE eSignature) {
 		WorkOrderActivityChecklistSignatureResponse response = new WorkOrderActivityChecklistSignatureResponse();
 		response.setSigner(eSignature.getUSERID().getDESCRIPTION());
-		response.setTimeStamp(decodeInforDate(eSignature.getEXTERNALDATETIME()));
+		response.setTimeStamp(decodeEAMDate(eSignature.getEXTERNALDATETIME()));
 		return response;
 	}
 
-	public String updateWorkOrderChecklist(InforContext context, WorkOrderActivityCheckList workOrderActivityCheckList) throws InforException {
+	public String updateWorkOrderChecklist(EAMContext context, WorkOrderActivityCheckList workOrderActivityCheckList) throws EAMException {
 		//
 		// Fetch it first
 		//
 		MP7914_GetWorkOrderActivityCheckList_001 getwoactchl = new MP7914_GetWorkOrderActivityCheckList_001();
 		getwoactchl.setCHECKLISTCODE(workOrderActivityCheckList.getCheckListCode());
 		MP7914_GetWorkOrderActivityCheckList_001_Result getresult =
-			tools.performInforOperation(context, inforws::getWorkOrderActivityCheckListOp, getwoactchl);
+			tools.performEAMOperation(context, eamws::getWorkOrderActivityCheckListOp, getwoactchl);
 
 		//
 		// Sync afterwards
 		//
-		net.datastream.schemas.mp_entities.workorderactivitychecklist_001.WorkOrderActivityCheckList workOrderActivityCheckListInfor = getresult
+		net.datastream.schemas.mp_entities.workorderactivitychecklist_001.WorkOrderActivityCheckList workOrderActivityCheckListEAM = getresult
 				.getResultData().getWorkOrderActivityCheckList();
 
 		// Follow Up
 		if (workOrderActivityCheckList.getFollowUp() != null) {
-			workOrderActivityCheckListInfor.setFOLLOWUP(tools.getDataTypeTools().encodeBoolean(workOrderActivityCheckList.getFollowUp(), BooleanType.PLUS_MINUS));
+			workOrderActivityCheckListEAM.setFOLLOWUP(tools.getDataTypeTools().encodeBoolean(workOrderActivityCheckList.getFollowUp(), BooleanType.PLUS_MINUS));
 		}
 
 		if (workOrderActivityCheckList.getNotApplicableOption() != null) {
 			USERDEFINEDCODEID_Type option = new USERDEFINEDCODEID_Type();
 			option.setUSERDEFINEDCODE(workOrderActivityCheckList.getNotApplicableOption());
-			workOrderActivityCheckListInfor.setNOTAPPLICABLEOPTION(option);
+			workOrderActivityCheckListEAM.setNOTAPPLICABLEOPTION(option);
 		}
 
 		Function<String, String> getStringBool =
@@ -284,29 +284,29 @@ public class ChecklistServiceImpl implements ChecklistService {
 		switch (workOrderActivityCheckList.getType()) {
 			case CheckListType.CHECKLIST_ITEM:
 				if (ReturnType.COMPLETED.equalsIgnoreCase(workOrderActivityCheckList.getResult())) {
-					workOrderActivityCheckListInfor.setCOMPLETED("true");
+					workOrderActivityCheckListEAM.setCOMPLETED("true");
 				} else {
-					workOrderActivityCheckListInfor.setCOMPLETED("false");
+					workOrderActivityCheckListEAM.setCOMPLETED("false");
 				}
 				break;
 			case CheckListType.QUESTION_YES_NO:
-				workOrderActivityCheckListInfor.setYES(getStringBool.apply(ReturnType.YES));
-				workOrderActivityCheckListInfor.setNO(getStringBool.apply(ReturnType.NO));
+				workOrderActivityCheckListEAM.setYES(getStringBool.apply(ReturnType.YES));
+				workOrderActivityCheckListEAM.setNO(getStringBool.apply(ReturnType.NO));
 				break;
 			case CheckListType.QUALITATIVE:
 				if (workOrderActivityCheckList.getFinding() != null) {
-					workOrderActivityCheckListInfor.setFINDINGID(new FINDINGID_Type());
-					workOrderActivityCheckListInfor.getFINDINGID().setFINDINGCODE(workOrderActivityCheckList.getFinding());
+					workOrderActivityCheckListEAM.setFINDINGID(new FINDINGID_Type());
+					workOrderActivityCheckListEAM.getFINDINGID().setFINDINGCODE(workOrderActivityCheckList.getFinding());
 				} else {
-					workOrderActivityCheckListInfor.setFINDINGID(null);
+					workOrderActivityCheckListEAM.setFINDINGID(null);
 				}
 				break;
 			case CheckListType.INSPECTION:
 				if (workOrderActivityCheckList.getFinding() != null) {
-					workOrderActivityCheckListInfor.setFINDINGID(new FINDINGID_Type());
-					workOrderActivityCheckListInfor.getFINDINGID().setFINDINGCODE(workOrderActivityCheckList.getFinding());
+					workOrderActivityCheckListEAM.setFINDINGID(new FINDINGID_Type());
+					workOrderActivityCheckListEAM.getFINDINGID().setFINDINGCODE(workOrderActivityCheckList.getFinding());
 				} else {
-					workOrderActivityCheckListInfor.setFINDINGID(null);
+					workOrderActivityCheckListEAM.setFINDINGID(null);
 				}
 				// no break here, INSPECTION is the same as QUANTITATIVE/METER_READING,
 				// but with findings and possible findings, so we will set the numeric value below
@@ -323,194 +323,194 @@ public class ChecklistServiceImpl implements ChecklistService {
 					if(possibleNumericValue != null) numericValue = possibleNumericValue;
 				}
 
-				workOrderActivityCheckListInfor
+				workOrderActivityCheckListEAM
 						.setRESULTVALUE(tools.getDataTypeTools().encodeQuantity(numericValue, "Checklists Value"));
 				break;
 			case CheckListType.OK_REPAIR_NEEDED:
-				workOrderActivityCheckListInfor.setOKFLAG(getStringBool.apply(ReturnType.OK));
-				workOrderActivityCheckListInfor.setREPAIRSNEEDED(getStringBool.apply(ReturnType.REPAIRSNEEDED));
+				workOrderActivityCheckListEAM.setOKFLAG(getStringBool.apply(ReturnType.OK));
+				workOrderActivityCheckListEAM.setREPAIRSNEEDED(getStringBool.apply(ReturnType.REPAIRSNEEDED));
 
 				if(isEmpty(workOrderActivityCheckList.getFinding())) {
-					workOrderActivityCheckListInfor.setRESOLUTIONID(null);
+					workOrderActivityCheckListEAM.setRESOLUTIONID(null);
 				} else {
-					workOrderActivityCheckListInfor.setRESOLUTIONID(new USERDEFINEDCODEID_Type());
-					workOrderActivityCheckListInfor.getRESOLUTIONID().setUSERDEFINEDCODE(workOrderActivityCheckList.getFinding());
+					workOrderActivityCheckListEAM.setRESOLUTIONID(new USERDEFINEDCODEID_Type());
+					workOrderActivityCheckListEAM.getRESOLUTIONID().setUSERDEFINEDCODE(workOrderActivityCheckList.getFinding());
 				}
 				break;
 			case CheckListType.GOOD_POOR:
-				workOrderActivityCheckListInfor.setGOOD(getStringBool.apply(ReturnType.GOOD));
-				workOrderActivityCheckListInfor.setPOOR(getStringBool.apply(ReturnType.POOR));
+				workOrderActivityCheckListEAM.setGOOD(getStringBool.apply(ReturnType.GOOD));
+				workOrderActivityCheckListEAM.setPOOR(getStringBool.apply(ReturnType.POOR));
 				break;
 			case CheckListType.OK_ADJUSTED_MEASUREMENT:
-				workOrderActivityCheckListInfor
+				workOrderActivityCheckListEAM
 					.setRESULTVALUE(tools.getDataTypeTools().encodeQuantity(workOrderActivityCheckList.getNumericValue(), "Checklists Value"));
 				// no break here, OK_ADJUSTED_MEASUREMENT is the same as OK_ADJUSTED,
 				// but with a numeric value, so we will set the result to OK/ADJUSTED below
 			case CheckListType.OK_ADJUSTED:
-				workOrderActivityCheckListInfor.setOKFLAG(getStringBool.apply(ReturnType.OK));
-				workOrderActivityCheckListInfor.setADJUSTED(getStringBool.apply(ReturnType.ADJUSTED));
+				workOrderActivityCheckListEAM.setOKFLAG(getStringBool.apply(ReturnType.OK));
+				workOrderActivityCheckListEAM.setADJUSTED(getStringBool.apply(ReturnType.ADJUSTED));
 				break;
 			case CheckListType.NONCONFORMITY_MEASUREMENT:
-				workOrderActivityCheckListInfor
+				workOrderActivityCheckListEAM
 					.setRESULTVALUE(tools.getDataTypeTools().encodeQuantity(workOrderActivityCheckList.getNumericValue(), "Checklists Value"));
 				// no break here, NONCONFORMITY_MEASUREMENT is the same as NONCONFORMITY_CHECK,
 				// but with a numberic value, so we will set the result to OK/NONCONFORMITY below
 			case CheckListType.NONCONFORMITY_CHECK:
-				workOrderActivityCheckListInfor.setOKFLAG(getStringBool.apply(ReturnType.OK));
-				workOrderActivityCheckListInfor.setNONCONFORMITYFLAG(getStringBool.apply(ReturnType.NONCONFORMITY));
+				workOrderActivityCheckListEAM.setOKFLAG(getStringBool.apply(ReturnType.OK));
+				workOrderActivityCheckListEAM.setNONCONFORMITYFLAG(getStringBool.apply(ReturnType.NONCONFORMITY));
 				break;
 			case CheckListType.DATE:
-				workOrderActivityCheckListInfor.setCHECKLISTDATE(tools.getDataTypeTools().encodeInforDate(workOrderActivityCheckList.getDate(), ""));
+				workOrderActivityCheckListEAM.setCHECKLISTDATE(tools.getDataTypeTools().encodeEAMDate(workOrderActivityCheckList.getDate(), ""));
 				break;
 			case CheckListType.DATETIME:
-				workOrderActivityCheckListInfor.setCHECKLISTDATETIME(tools.getDataTypeTools().encodeInforDate(workOrderActivityCheckList.getDateTime(), ""));
+				workOrderActivityCheckListEAM.setCHECKLISTDATETIME(tools.getDataTypeTools().encodeEAMDate(workOrderActivityCheckList.getDateTime(), ""));
 				break;
 			case CheckListType.FREE_TEXT:
-				workOrderActivityCheckListInfor.setCHECKLISTFREETEXT(workOrderActivityCheckList.getFreeText());
+				workOrderActivityCheckListEAM.setCHECKLISTFREETEXT(workOrderActivityCheckList.getFreeText());
 				break;
 			case CheckListType.ENTITY:
 				if (isEmpty(workOrderActivityCheckList.getEntityCode())) {
-					workOrderActivityCheckListInfor.setENTITYCODEID(null);
+					workOrderActivityCheckListEAM.setENTITYCODEID(null);
 					break;
 				}
-				workOrderActivityCheckListInfor.setENTITYCODEID(new ENTITYCODEID_Type());
-				workOrderActivityCheckListInfor.getENTITYCODEID().setCODE(workOrderActivityCheckList.getEntityCode());
+				workOrderActivityCheckListEAM.setENTITYCODEID(new ENTITYCODEID_Type());
+				workOrderActivityCheckListEAM.getENTITYCODEID().setCODE(workOrderActivityCheckList.getEntityCode());
 				ORGANIZATIONID_Type organizationidType = new ORGANIZATIONID_Type();
 				organizationidType.setORGANIZATIONCODE(isEmpty(workOrderActivityCheckList.getEntityCodeOrg()) ? tools.getOrganizationCode(context) : workOrderActivityCheckList.getEntityCodeOrg());
-				workOrderActivityCheckListInfor.getENTITYCODEID().setORGANIZATIONID(organizationidType);
+				workOrderActivityCheckListEAM.getENTITYCODEID().setORGANIZATIONID(organizationidType);
 				break;
 			case CheckListType.DUAL_QUANTITATIVE:
-				workOrderActivityCheckListInfor.setRESULTVALUE(tools.getDataTypeTools().encodeQuantity(workOrderActivityCheckList.getNumericValue(), "Checklists Value"));
-				workOrderActivityCheckListInfor.setRESULTVALUE2(tools.getDataTypeTools().encodeQuantity(workOrderActivityCheckList.getNumericValue2(), "Checklists Value"));
+				workOrderActivityCheckListEAM.setRESULTVALUE(tools.getDataTypeTools().encodeQuantity(workOrderActivityCheckList.getNumericValue(), "Checklists Value"));
+				workOrderActivityCheckListEAM.setRESULTVALUE2(tools.getDataTypeTools().encodeQuantity(workOrderActivityCheckList.getNumericValue2(), "Checklists Value"));
 				break;
 		}
 
 		if (workOrderActivityCheckList.getNotes() != null) {
-			workOrderActivityCheckListInfor.setNOTES(workOrderActivityCheckList.getNotes());
+			workOrderActivityCheckListEAM.setNOTES(workOrderActivityCheckList.getNotes());
 		}
 
 		MP7913_SyncWorkOrderActivityCheckList_001 syncwoactchl = new MP7913_SyncWorkOrderActivityCheckList_001();
-		syncwoactchl.setWorkOrderActivityCheckList(workOrderActivityCheckListInfor);
+		syncwoactchl.setWorkOrderActivityCheckList(workOrderActivityCheckListEAM);
 
-		tools.performInforOperation(context, inforws::syncWorkOrderActivityCheckListOp, syncwoactchl);
+		tools.performEAMOperation(context, eamws::syncWorkOrderActivityCheckListOp, syncwoactchl);
 		return null;
 	}
 
-	public String createTaskplanChecklist(InforContext context, TaskplanCheckList taskChecklist) throws InforException {
-		TaskChecklist taskChecklistInfor = new TaskChecklist();
+	public String createTaskplanChecklist(EAMContext context, TaskplanCheckList taskChecklist) throws EAMException {
+		TaskChecklist taskChecklistEAM = new TaskChecklist();
 		//
 		// TASK LIST ID
 		//
-		taskChecklistInfor.setTASKLISTID(new TASKLISTID_Type());
-		taskChecklistInfor.getTASKLISTID().setORGANIZATIONID(tools.getOrganization(context));
-		taskChecklistInfor.getTASKLISTID().setTASKCODE(taskChecklist.getTaskPlanCode());
+		taskChecklistEAM.setTASKLISTID(new TASKLISTID_Type());
+		taskChecklistEAM.getTASKLISTID().setORGANIZATIONID(tools.getOrganization(context));
+		taskChecklistEAM.getTASKLISTID().setTASKCODE(taskChecklist.getTaskPlanCode());
 		if (taskChecklist.getTaskPlanRevision() == null) {
-			taskChecklistInfor.getTASKLISTID().setTASKREVISION(0L);
+			taskChecklistEAM.getTASKLISTID().setTASKREVISION(0L);
 		} else {
-			taskChecklistInfor.getTASKLISTID()
+			taskChecklistEAM.getTASKLISTID()
 					.setTASKREVISION(tools.getDataTypeTools().encodeLong(taskChecklist.getTaskPlanRevision(), "Task Revision"));
 		}
 		//
 		// DESCRIPTION
 		//
-		taskChecklistInfor.setCHECKLISTID(new CHECKLISTID_Type());
-		taskChecklistInfor.getCHECKLISTID().setCHECKLISTCODE("0");
-		taskChecklistInfor.getCHECKLISTID().setDESCRIPTION(taskChecklist.getChecklistDesc());
+		taskChecklistEAM.setCHECKLISTID(new CHECKLISTID_Type());
+		taskChecklistEAM.getCHECKLISTID().setCHECKLISTCODE("0");
+		taskChecklistEAM.getCHECKLISTID().setDESCRIPTION(taskChecklist.getChecklistDesc());
 		//
 		// SEQUENCE
 		//
-		taskChecklistInfor.setSEQUENCE(tools.getDataTypeTools().encodeLong(taskChecklist.getSequence(), "Sequence number"));
+		taskChecklistEAM.setSEQUENCE(tools.getDataTypeTools().encodeLong(taskChecklist.getSequence(), "Sequence number"));
 		//
 		// TYPE
 		//
-		taskChecklistInfor.setTYPE(new TYPE_Type());
-		taskChecklistInfor.getTYPE().setTYPECODE(taskChecklist.getType());
+		taskChecklistEAM.setTYPE(new TYPE_Type());
+		taskChecklistEAM.getTYPE().setTYPECODE(taskChecklist.getType());
 		//
 		// REQUIRED ENTRY
 		//
-		taskChecklistInfor.setREQUIREDTOCLOSEDOC(new USERDEFINEDCODEID_Type());
-		taskChecklistInfor.getREQUIREDTOCLOSEDOC().setUSERDEFINEDCODE(taskChecklist.getRequiredEntry());
+		taskChecklistEAM.setREQUIREDTOCLOSEDOC(new USERDEFINEDCODEID_Type());
+		taskChecklistEAM.getREQUIREDTOCLOSEDOC().setUSERDEFINEDCODE(taskChecklist.getRequiredEntry());
 		//
 		// EQUIPMENT LEVEL
 		//
-		taskChecklistInfor.setEQUIPMENTLEVEL(new USERDEFINEDCODEID_Type());
-		taskChecklistInfor.getEQUIPMENTLEVEL().setUSERDEFINEDCODE(taskChecklist.getEquipmentLevel());
+		taskChecklistEAM.setEQUIPMENTLEVEL(new USERDEFINEDCODEID_Type());
+		taskChecklistEAM.getEQUIPMENTLEVEL().setUSERDEFINEDCODE(taskChecklist.getEquipmentLevel());
 		//
 		// POSSIBLE FINDINGS
 		//
 		if (taskChecklist.getFindings() != null) {
-			taskChecklistInfor.setPOSSIBLEFINDINGS(taskChecklist.getFindings());
+			taskChecklistEAM.setPOSSIBLEFINDINGS(taskChecklist.getFindings());
 		}
 		//
 		// UOM
 		//
 		if (taskChecklist.getUOM() != null) {
-			taskChecklistInfor.setUOMID(new UOMID_Type());
-			taskChecklistInfor.getUOMID().setUOMCODE(taskChecklist.getUOM());
+			taskChecklistEAM.setUOMID(new UOMID_Type());
+			taskChecklistEAM.getUOMID().setUOMCODE(taskChecklist.getUOM());
 		}
 		//
 		// ASPECT ID
 		//
 		if (taskChecklist.getAspectCode() != null) {
-			taskChecklistInfor.setASPECTID(new ASPECTID_Type());
-			taskChecklistInfor.getASPECTID().setASPECTCODE(taskChecklist.getAspectCode());
+			taskChecklistEAM.setASPECTID(new ASPECTID_Type());
+			taskChecklistEAM.getASPECTID().setASPECTCODE(taskChecklist.getAspectCode());
 		}
 		//
 		// POINT TYPE ID
 		//
 		if (taskChecklist.getPointType() != null) {
-			taskChecklistInfor.setPOINTTYPEID(new POINTTYPEID_Type());
-			taskChecklistInfor.getPOINTTYPEID().setPOINTTYPECODE(taskChecklist.getPointType());
+			taskChecklistEAM.setPOINTTYPEID(new POINTTYPEID_Type());
+			taskChecklistEAM.getPOINTTYPEID().setPOINTTYPECODE(taskChecklist.getPointType());
 		}
 		//
 		// REPEATING OCCURRENCES
 		//
-		taskChecklistInfor.setREPEATINGOCCURRENCES(taskChecklist.getRepeatingOccurrences());
+		taskChecklistEAM.setREPEATINGOCCURRENCES(taskChecklist.getRepeatingOccurrences());
 		//
 		// FOLLOW-UP TASK PLAN
 		//
 		if (taskChecklist.getFollowUpTaskPlan() != null) {
-			taskChecklistInfor.setFOLLOWUPTASKID(new TASKLISTID_Type());
-			taskChecklistInfor.getFOLLOWUPTASKID().setORGANIZATIONID(tools.getOrganization(context));
-			taskChecklistInfor.getFOLLOWUPTASKID().setTASKCODE(taskChecklist.getFollowUpTaskPlan());
+			taskChecklistEAM.setFOLLOWUPTASKID(new TASKLISTID_Type());
+			taskChecklistEAM.getFOLLOWUPTASKID().setORGANIZATIONID(tools.getOrganization(context));
+			taskChecklistEAM.getFOLLOWUPTASKID().setTASKCODE(taskChecklist.getFollowUpTaskPlan());
 			if (taskChecklist.getFollowUpTaskPlanRevision() != null) {
-				taskChecklistInfor.getFOLLOWUPTASKID().setTASKREVISION(
+				taskChecklistEAM.getFOLLOWUPTASKID().setTASKREVISION(
 						tools.getDataTypeTools().encodeLong(taskChecklist.getFollowUpTaskPlanRevision(), "Follow Up Task Plan Revision"));
 			} else {
-				taskChecklistInfor.getFOLLOWUPTASKID().setTASKREVISION(0L);
+				taskChecklistEAM.getFOLLOWUPTASKID().setTASKREVISION(0L);
 			}
 		}
 		//
 		// CLASS
 		//
 		if (taskChecklist.getClassCode() != null && !taskChecklist.getClassCode().trim().equals("")) {
-			taskChecklistInfor.setCLASSID(new CLASSID_Type());
-			taskChecklistInfor.getCLASSID().setORGANIZATIONID(tools.getOrganization(context));
-			taskChecklistInfor.getCLASSID().setCLASSCODE(taskChecklist.getClassCode());
+			taskChecklistEAM.setCLASSID(new CLASSID_Type());
+			taskChecklistEAM.getCLASSID().setORGANIZATIONID(tools.getOrganization(context));
+			taskChecklistEAM.getCLASSID().setCLASSCODE(taskChecklist.getClassCode());
 		}
 		//
 		// CATEGORY
 		//
 		if (taskChecklist.getCategoryCode() != null && !taskChecklist.getCategoryCode().trim().equals("")) {
-			taskChecklistInfor.setCATEGORYID(new CATEGORYID());
-			taskChecklistInfor.getCATEGORYID().setCATEGORYCODE(taskChecklist.getCategoryCode());
+			taskChecklistEAM.setCATEGORYID(new CATEGORYID());
+			taskChecklistEAM.getCATEGORYID().setCATEGORYCODE(taskChecklist.getCategoryCode());
 		}
 
 		//
 		// EQUIPMENT FILTER
 		//
 		if (isNotEmpty(taskChecklist.getEquipmentFilter())) {
-			taskChecklistInfor.setEQUIPMENTFILTER(taskChecklist.getEquipmentFilter());
+			taskChecklistEAM.setEQUIPMENTFILTER(taskChecklist.getEquipmentFilter());
 		}
 
 		MP7916_AddTaskChecklist_001 addTaskChecklist = new MP7916_AddTaskChecklist_001();
-		addTaskChecklist.setTaskChecklist(taskChecklistInfor);
+		addTaskChecklist.setTaskChecklist(taskChecklistEAM);
 
-		tools.performInforOperation(context, inforws::addTaskChecklistOp, addTaskChecklist);
+		tools.performEAMOperation(context, eamws::addTaskChecklistOp, addTaskChecklist);
 		return "OK";
 	}
 
-	public WorkOrderActivityCheckList[] readWorkOrderChecklists(InforContext context, Activity activity) throws InforException {
+	public WorkOrderActivityCheckList[] readWorkOrderChecklists(EAMContext context, Activity activity) throws EAMException {
 		// Fetch the data
 		GridRequest gridRequest = new GridRequest("WSJOBS_ACK");
 		gridRequest.setRowCount(2000);
@@ -530,7 +530,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 	}
 
 
-	private WorkOrderActivityCheckList getCheckList(InforContext context, GridRequestRow row, Activity activity) throws InforException {
+	private WorkOrderActivityCheckList getCheckList(EAMContext context, GridRequestRow row, Activity activity) throws EAMException {
 		WorkOrderActivityCheckList checklist = new WorkOrderActivityCheckList();
 		checklist.setWorkOrderCode(activity.getWorkOrderNumber());
 		checklist.setActivityCode(activity.getActivityCode().toString());
@@ -705,7 +705,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 	 * @param row
 	 * @return
 	 */
-	private List<Finding> getPossibleFindings(InforContext context, GridRequestRow row) {
+	private List<Finding> getPossibleFindings(EAMContext context, GridRequestRow row) {
 		List<String> possibleFindings = Arrays.asList(getCellContent("possiblefindings", row).split(","));
 
 		for (String findingCode : possibleFindings) {
@@ -744,10 +744,10 @@ public class ChecklistServiceImpl implements ChecklistService {
 	 * @param context
 	 * @param activity
 	 * @return Number of work orders that were created
-	 * @throws InforException
+	 * @throws EAMException
 	 */
 
-	public Long createFollowUpWorkOrders(InforContext context, Activity activity) throws InforException {
+	public Long createFollowUpWorkOrders(EAMContext context, Activity activity) throws EAMException {
 		MP8000_CreateFollowUpWorkOrder_001 createFUWO = new MP8000_CreateFollowUpWorkOrder_001();
 
 		createFUWO.setACTIVITYID(new ACTIVITYID());
@@ -758,11 +758,11 @@ public class ChecklistServiceImpl implements ChecklistService {
 		createFUWO.getACTIVITYID().getWORKORDERID().setORGANIZATIONID(tools.getOrganization(context));
 
 		MP8000_CreateFollowUpWorkOrder_001_Result createFUWOResult =
-			tools.performInforOperation(context, inforws::createFollowUpWorkOrderOp, createFUWO);
+			tools.performEAMOperation(context, eamws::createFollowUpWorkOrderOp, createFUWO);
 		return createFUWOResult.getResultData().getWORKORDERCOUNT();
 	}
 
-	public WorkOrderActivityCheckListDefinition getChecklistDefinition(InforContext context, TaskPlan taskPlan, String code) throws InforException {
+	public WorkOrderActivityCheckListDefinition getChecklistDefinition(EAMContext context, TaskPlan taskPlan, String code) throws EAMException {
 		GridRequest gridRequest = new GridRequest("WSTASK_TCH", 1);
 		gridRequest.addParam("param.task", taskPlan.getCode());
 		gridRequest.addParam("param.revision", taskPlan.getTaskRevision() == null ? null : taskPlan.getTaskRevision().toString());

@@ -1,10 +1,10 @@
 package ch.cern.eam.wshub.core.services.equipment.impl;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.equipment.LinearReferenceService;
 import ch.cern.eam.wshub.core.services.equipment.entities.LinearReference;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_entities.equiplinearref_001.EquipLinearRef;
 import net.datastream.schemas.mp_entities.equiplinearref_001.OverviewDetails;
@@ -18,23 +18,23 @@ import net.datastream.schemas.mp_functions.mp3025_001.MP3025_DeleteEquipLinearRe
 import net.datastream.schemas.mp_functions.mp3026_001.MP3026_SyncEquipLinearRef_001;
 import net.datastream.schemas.mp_results.mp3023_001.MP3023_GetEquipLinearRef_001_Result;
 import net.datastream.schemas.mp_results.mp3024_001.MP3024_AddEquipLinearRef_001_Result;
-import net.datastream.wsdls.inforws.InforWebServicesPT;
-import javax.xml.ws.Holder;
+import net.datastream.wsdls.eamws.EAMWebServicesPT;
+import jakarta.xml.ws.Holder;
 
 public class LinearReferenceServiceImpl implements LinearReferenceService {
 
 	private Tools tools;
-	private InforWebServicesPT inforws;
+	private EAMWebServicesPT eamws;
 	private ApplicationData applicationData;
 
-	public LinearReferenceServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
+	public LinearReferenceServiceImpl(ApplicationData applicationData, Tools tools, EAMWebServicesPT eamWebServicesToolkitClient) {
 		this.applicationData = applicationData;
 		this.tools = tools;
-		this.inforws = inforWebServicesToolkitClient;
+		this.eamws = eamWebServicesToolkitClient;
 	}
 
 
-	public String updateEquipmentLinearReference(InforContext context, LinearReference linearReference) throws InforException {
+	public String updateEquipmentLinearReference(EAMContext context, LinearReference linearReference) throws EAMException {
 		//
 		// GET THE LINEAR REFERENCE ID
 		//
@@ -45,72 +45,72 @@ public class LinearReferenceServiceImpl implements LinearReferenceService {
 		getLinRef.setLRFID(tools.getDataTypeTools().encodeLong(linearReference.getID(), "Linear Reference ID"));
 
 		MP3023_GetEquipLinearRef_001_Result result =
-			tools.performInforOperation(context, inforws::getEquipLinearRefOp, getLinRef);
+			tools.performEAMOperation(context, eamws::getEquipLinearRefOp, getLinRef);
 		//
 		// UPDATE THE LINEAR REFERENCE
 		//
-		EquipLinearRef linearReferenceInfor = result.getResultData().getEquipLinearRef();
+		EquipLinearRef linearReferenceEAM = result.getResultData().getEquipLinearRef();
 
 		if (linearReference.getRelatedEquipmentCode() != null && !linearReference.getRelatedEquipmentCode().trim().equals(""))
 		{
-			linearReferenceInfor.setLRFRELATEDEQUIPMENTID(new EQUIPMENTID_Type());
-			linearReferenceInfor.getLRFRELATEDEQUIPMENTID().setORGANIZATIONID(tools.getOrganization(context));
-			linearReferenceInfor.getLRFRELATEDEQUIPMENTID().setEQUIPMENTCODE(linearReference.getRelatedEquipmentCode());
+			linearReferenceEAM.setLRFRELATEDEQUIPMENTID(new EQUIPMENTID_Type());
+			linearReferenceEAM.getLRFRELATEDEQUIPMENTID().setORGANIZATIONID(tools.getOrganization(context));
+			linearReferenceEAM.getLRFRELATEDEQUIPMENTID().setEQUIPMENTCODE(linearReference.getRelatedEquipmentCode());
 		}
 
 		if (linearReference.getUpdateCount() != null && !linearReference.getUpdateCount().trim().equals("")) {
-			linearReferenceInfor.setRecordid(tools.getDataTypeTools().encodeLong(linearReference.getUpdateCount(), "Update Count"));
+			linearReferenceEAM.setRecordid(tools.getDataTypeTools().encodeLong(linearReference.getUpdateCount(), "Update Count"));
 		}
 
 		if (linearReference.getTypeCode() != null && !linearReference.getTypeCode().trim().equals("")) {
-			linearReferenceInfor.setLRFTYPE(new TYPE_Type());
-			linearReferenceInfor.getLRFTYPE().setTYPECODE(linearReference.getTypeCode());
+			linearReferenceEAM.setLRFTYPE(new TYPE_Type());
+			linearReferenceEAM.getLRFTYPE().setTYPECODE(linearReference.getTypeCode());
 		}
 
 		if (linearReference.getEquipmentCode() != null && !linearReference.getEquipmentCode().trim().equals("")) {
-			linearReferenceInfor.setEQUIPMENTID(new EQUIPMENTID_Type());
-			linearReferenceInfor.getEQUIPMENTID().setORGANIZATIONID(tools.getOrganization(context));
-			linearReferenceInfor.getEQUIPMENTID().setEQUIPMENTCODE(linearReference.getEquipmentCode().toUpperCase());
+			linearReferenceEAM.setEQUIPMENTID(new EQUIPMENTID_Type());
+			linearReferenceEAM.getEQUIPMENTID().setORGANIZATIONID(tools.getOrganization(context));
+			linearReferenceEAM.getEQUIPMENTID().setEQUIPMENTCODE(linearReference.getEquipmentCode().toUpperCase());
 		}
 
 		if (linearReference.getDescription() != null && !linearReference.getDescription().trim().equals("")) {
-			linearReferenceInfor.setLRFDESC(linearReference.getDescription());
+			linearReferenceEAM.setLRFDESC(linearReference.getDescription());
 		}
 
 		if (linearReference.getFromPoint() != null) {
-			linearReferenceInfor.setLRFFROMPOINT(tools.getDataTypeTools().encodeQuantity(linearReference.getFromPoint(), "From Point"));
+			linearReferenceEAM.setLRFFROMPOINT(tools.getDataTypeTools().encodeQuantity(linearReference.getFromPoint(), "From Point"));
 		}
 
 		if (linearReference.getToPoint() != null) {
-			linearReferenceInfor.setLRFTOPOINT(tools.getDataTypeTools().encodeQuantity(linearReference.getToPoint(), "To Point"));
+			linearReferenceEAM.setLRFTOPOINT(tools.getDataTypeTools().encodeQuantity(linearReference.getToPoint(), "To Point"));
 		}
 
 		if (linearReference.getGeographicalReference() != null && !linearReference.getGeographicalReference().trim().equals("")) {
-			linearReferenceInfor.setLRFGEOREF(linearReference.getGeographicalReference());
+			linearReferenceEAM.setLRFGEOREF(linearReference.getGeographicalReference());
 		}
 
 		if (linearReference.getDisplayOnOverview() != null ||
 				linearReference.getColorCode() != null ||
 				linearReference.getIconCode() != null ||
 				linearReference.getIconPath() != null) {
-			linearReferenceInfor.setOverviewDetails(new OverviewDetails());
-			linearReferenceInfor.getOverviewDetails().setCOLOR(linearReference.getColorCode());
-			linearReferenceInfor.getOverviewDetails().setDISPLAYONOVERVIEW(linearReference.getDisplayOnOverview());
-			linearReferenceInfor.getOverviewDetails().setICONCODE(linearReference.getIconCode());
-			linearReferenceInfor.getOverviewDetails().setICONPATH(linearReference.getIconPath());
+			linearReferenceEAM.setOverviewDetails(new OverviewDetails());
+			linearReferenceEAM.getOverviewDetails().setCOLOR(linearReference.getColorCode());
+			linearReferenceEAM.getOverviewDetails().setDISPLAYONOVERVIEW(linearReference.getDisplayOnOverview());
+			linearReferenceEAM.getOverviewDetails().setICONCODE(linearReference.getIconCode());
+			linearReferenceEAM.getOverviewDetails().setICONPATH(linearReference.getIconPath());
 		}
 
 		if (linearReference.getClassCode() != null) {
-			linearReferenceInfor.setCLASSID(new CLASSID_Type());
-			linearReferenceInfor.getCLASSID().setORGANIZATIONID(tools.getOrganization(context));
-			linearReferenceInfor.getCLASSID().setCLASSCODE(linearReference.getClassCode().toUpperCase());
+			linearReferenceEAM.setCLASSID(new CLASSID_Type());
+			linearReferenceEAM.getCLASSID().setORGANIZATIONID(tools.getOrganization(context));
+			linearReferenceEAM.getCLASSID().setCLASSCODE(linearReference.getClassCode().toUpperCase());
 		}
 
 		MP3026_SyncEquipLinearRef_001 syncEquipLienarRef = new MP3026_SyncEquipLinearRef_001();
-		syncEquipLienarRef.setEquipLinearRef(linearReferenceInfor);
+		syncEquipLienarRef.setEquipLinearRef(linearReferenceEAM);
 
 		try {
-			tools.performInforOperation(context, inforws::syncEquipLinearRefOp, syncEquipLienarRef);
+			tools.performEAMOperation(context, eamws::syncEquipLinearRefOp, syncEquipLienarRef);
 		} catch (Exception e) {
 			if (!e.getMessage().contains("EquipLinearRef has been Synchronized.")) {
 				throw e;
@@ -121,77 +121,77 @@ public class LinearReferenceServiceImpl implements LinearReferenceService {
 		return linearReference.getID();
 	}
 
-	public String deleteEquipmentLinearReference(InforContext context, String linearReferenceID) throws InforException {
+	public String deleteEquipmentLinearReference(EAMContext context, String linearReferenceID) throws EAMException {
 		//
 		//
 		//
 		MP3025_DeleteEquipLinearRef_001 deleteEquipLinearRef = new MP3025_DeleteEquipLinearRef_001();
 		deleteEquipLinearRef.setLRFID(tools.getDataTypeTools().encodeLong(linearReferenceID, "Linear Ref. ID"));
-		tools.performInforOperation(context, inforws::deleteEquipLinearRefOp, deleteEquipLinearRef);
+		tools.performEAMOperation(context, eamws::deleteEquipLinearRefOp, deleteEquipLinearRef);
 		return linearReferenceID;
 	}
 
-	public String createEquipmentLinearReference(InforContext context, LinearReference linearReference) throws InforException {
+	public String createEquipmentLinearReference(EAMContext context, LinearReference linearReference) throws EAMException {
 
-		EquipLinearRef linearReferenceInfor = new EquipLinearRef();
+		EquipLinearRef linearReferenceEAM = new EquipLinearRef();
 
 		if (linearReference.getRelatedEquipmentCode() != null && !linearReference.getRelatedEquipmentCode().trim().equals(""))
 		{
-			linearReferenceInfor.setLRFRELATEDEQUIPMENTID(new EQUIPMENTID_Type());
-			linearReferenceInfor.getLRFRELATEDEQUIPMENTID().setORGANIZATIONID(tools.getOrganization(context));
-			linearReferenceInfor.getLRFRELATEDEQUIPMENTID().setEQUIPMENTCODE(linearReference.getRelatedEquipmentCode());
+			linearReferenceEAM.setLRFRELATEDEQUIPMENTID(new EQUIPMENTID_Type());
+			linearReferenceEAM.getLRFRELATEDEQUIPMENTID().setORGANIZATIONID(tools.getOrganization(context));
+			linearReferenceEAM.getLRFRELATEDEQUIPMENTID().setEQUIPMENTCODE(linearReference.getRelatedEquipmentCode());
 		}
 
 		if (linearReference.getTypeCode() != null && !linearReference.getTypeCode().trim().equals("")) {
-			linearReferenceInfor.setLRFTYPE(new TYPE_Type());
-			linearReferenceInfor.getLRFTYPE().setTYPECODE(linearReference.getTypeCode());
+			linearReferenceEAM.setLRFTYPE(new TYPE_Type());
+			linearReferenceEAM.getLRFTYPE().setTYPECODE(linearReference.getTypeCode());
 		}
 
 		if (linearReference.getEquipmentCode() != null && !linearReference.getEquipmentCode().trim().equals("")) {
-			linearReferenceInfor.setEQUIPMENTID(new EQUIPMENTID_Type());
-			linearReferenceInfor.getEQUIPMENTID().setORGANIZATIONID(tools.getOrganization(context));
-			linearReferenceInfor.getEQUIPMENTID().setEQUIPMENTCODE(linearReference.getEquipmentCode().toUpperCase());
+			linearReferenceEAM.setEQUIPMENTID(new EQUIPMENTID_Type());
+			linearReferenceEAM.getEQUIPMENTID().setORGANIZATIONID(tools.getOrganization(context));
+			linearReferenceEAM.getEQUIPMENTID().setEQUIPMENTCODE(linearReference.getEquipmentCode().toUpperCase());
 		}
 
 		if (linearReference.getDescription() != null && !linearReference.getDescription().trim().equals("")) {
-			linearReferenceInfor.setLRFDESC(linearReference.getDescription());
+			linearReferenceEAM.setLRFDESC(linearReference.getDescription());
 		}
 
 		if (linearReference.getFromPoint() != null) {
-			linearReferenceInfor.setLRFFROMPOINT(tools.getDataTypeTools().encodeQuantity(linearReference.getFromPoint(), "From Point"));
+			linearReferenceEAM.setLRFFROMPOINT(tools.getDataTypeTools().encodeQuantity(linearReference.getFromPoint(), "From Point"));
 		}
 
 		if (linearReference.getToPoint() != null) {
-			linearReferenceInfor.setLRFTOPOINT(tools.getDataTypeTools().encodeQuantity(linearReference.getToPoint(), "To Point"));
+			linearReferenceEAM.setLRFTOPOINT(tools.getDataTypeTools().encodeQuantity(linearReference.getToPoint(), "To Point"));
 		}
 
 		if (linearReference.getGeographicalReference() != null && !linearReference.getGeographicalReference().trim().equals("")) {
-			linearReferenceInfor.setLRFGEOREF(linearReference.getGeographicalReference());
+			linearReferenceEAM.setLRFGEOREF(linearReference.getGeographicalReference());
 		}
 
 		if (linearReference.getDisplayOnOverview() != null ||
 				linearReference.getColorCode() != null ||
 				linearReference.getIconCode() != null ||
 				linearReference.getIconPath() != null) {
-			linearReferenceInfor.setOverviewDetails(new OverviewDetails());
-			linearReferenceInfor.getOverviewDetails().setCOLOR(linearReference.getColorCode());
-			linearReferenceInfor.getOverviewDetails().setDISPLAYONOVERVIEW(linearReference.getDisplayOnOverview());
-			linearReferenceInfor.getOverviewDetails().setICONCODE(linearReference.getIconCode());
-			linearReferenceInfor.getOverviewDetails().setICONPATH(linearReference.getIconPath());
+			linearReferenceEAM.setOverviewDetails(new OverviewDetails());
+			linearReferenceEAM.getOverviewDetails().setCOLOR(linearReference.getColorCode());
+			linearReferenceEAM.getOverviewDetails().setDISPLAYONOVERVIEW(linearReference.getDisplayOnOverview());
+			linearReferenceEAM.getOverviewDetails().setICONCODE(linearReference.getIconCode());
+			linearReferenceEAM.getOverviewDetails().setICONPATH(linearReference.getIconPath());
 		}
 
 		if (linearReference.getClassCode() != null) {
-			linearReferenceInfor.setCLASSID(new CLASSID_Type());
-			linearReferenceInfor.getCLASSID().setORGANIZATIONID(tools.getOrganization(context));
-			linearReferenceInfor.getCLASSID().setCLASSCODE(linearReference.getClassCode());
+			linearReferenceEAM.setCLASSID(new CLASSID_Type());
+			linearReferenceEAM.getCLASSID().setORGANIZATIONID(tools.getOrganization(context));
+			linearReferenceEAM.getCLASSID().setCLASSCODE(linearReference.getClassCode());
 		}
 		//
 		//
 		//
 		MP3024_AddEquipLinearRef_001 addEquipLinearRef = new MP3024_AddEquipLinearRef_001();
-		addEquipLinearRef.setEquipLinearRef(linearReferenceInfor);
+		addEquipLinearRef.setEquipLinearRef(linearReferenceEAM);
 		MP3024_AddEquipLinearRef_001_Result result =
-			tools.performInforOperation(context, inforws::addEquipLinearRefOp, addEquipLinearRef);
+			tools.performEAMOperation(context, eamws::addEquipLinearRefOp, addEquipLinearRef);
 
 		return String.valueOf(result.getResultData().getLRFID());
 	}

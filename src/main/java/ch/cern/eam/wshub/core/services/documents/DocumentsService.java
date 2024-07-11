@@ -1,21 +1,21 @@
 package ch.cern.eam.wshub.core.services.documents;
 
-import ch.cern.eam.wshub.core.client.InforContext;
-import ch.cern.eam.wshub.core.services.documents.entities.InforDocument;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.client.EAMContext;
+import ch.cern.eam.wshub.core.services.documents.entities.EAMDocument;
+import ch.cern.eam.wshub.core.tools.EAMException;
 
 import java.util.List;
 
 public interface DocumentsService {
-    List<InforDocument> readInforDocuments(InforContext context, String entity, String objectCode
-                                           ) throws InforException;
+    List<EAMDocument> readEAMDocuments(EAMContext context, String entity, String objectCode
+                                           ) throws EAMException;
 
-    String createInforDocumentAndAssociation(InforContext context, InforDocument doc, String entity, String objectCode)
-                                                         throws InforException;
+    String createEAMDocumentAndAssociation(EAMContext context, EAMDocument doc, String entity, String objectCode)
+                                                         throws EAMException;
 
-    String createInforDocument(InforDocument doc, InforContext context)
-                                                                 throws InforException;
+    String createEAMDocument(EAMDocument doc, EAMContext context)
+                                                                 throws EAMException;
 
-    String createInforDocumentAssociation(String document, String entity, String objectCode, InforContext context)
-                                                                         throws InforException;
+    String createEAMDocumentAssociation(String document, String entity, String objectCode, EAMContext context)
+                                                                         throws EAMException;
 }

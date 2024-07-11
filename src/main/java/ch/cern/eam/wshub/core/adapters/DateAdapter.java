@@ -2,7 +2,7 @@ package ch.cern.eam.wshub.core.adapters;
 
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;

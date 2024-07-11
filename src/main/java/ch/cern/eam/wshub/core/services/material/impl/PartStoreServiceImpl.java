@@ -1,10 +1,10 @@
 package ch.cern.eam.wshub.core.services.material.impl;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.material.PartStoreService;
 import ch.cern.eam.wshub.core.services.material.entities.PartStore;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_fields.*;
 import net.datastream.schemas.mp_functions.SessionType;
@@ -12,23 +12,23 @@ import net.datastream.schemas.mp_functions.mp0254_001.MP0254_GetPartStores_001;
 import net.datastream.schemas.mp_functions.mp0255_001.MP0255_AddPartStores_001;
 import net.datastream.schemas.mp_functions.mp0256_001.MP0256_SyncPartStores_001;
 import net.datastream.schemas.mp_results.mp0254_001.MP0254_GetPartStores_001_Result;
-import net.datastream.wsdls.inforws.InforWebServicesPT;
-import javax.xml.ws.Holder;
+import net.datastream.wsdls.eamws.EAMWebServicesPT;
+import jakarta.xml.ws.Holder;
 
 
 public class PartStoreServiceImpl implements PartStoreService {
 
 	private Tools tools;
-	private InforWebServicesPT inforws;
+	private EAMWebServicesPT eamws;
 	private ApplicationData applicationData;
 
-	public PartStoreServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
+	public PartStoreServiceImpl(ApplicationData applicationData, Tools tools, EAMWebServicesPT eamWebServicesToolkitClient) {
 		this.applicationData = applicationData;
 		this.tools = tools;
-		this.inforws = inforWebServicesToolkitClient;
+		this.eamws = eamWebServicesToolkitClient;
 	}
 
-	public String updatePartStore(InforContext context, PartStore partStoreParam) throws InforException {
+	public String updatePartStore(EAMContext context, PartStore partStoreParam) throws EAMException {
 
 
 		// fetch the part first
@@ -46,7 +46,7 @@ public class PartStoreServiceImpl implements PartStoreService {
 		getPartStores.getSTOREPARTID().getSTOREID().setSTORECODE(partStoreParam.getStoreCode());
 
 		MP0254_GetPartStores_001_Result result =
-			tools.performInforOperation(context, inforws::getPartStoresOp, getPartStores);
+			tools.performEAMOperation(context, eamws::getPartStoresOp, getPartStores);
 		//
 		// DO THE UPDATE NOW
 		//
@@ -113,94 +113,94 @@ public class PartStoreServiceImpl implements PartStoreService {
 		MP0256_SyncPartStores_001 syncPartStores = new MP0256_SyncPartStores_001();
 		syncPartStores.setPartStores(partStoresResult);
 
-		tools.performInforOperation(context, inforws::syncPartStoresOp, syncPartStores);
+		tools.performEAMOperation(context, eamws::syncPartStoresOp, syncPartStores);
 		return null;
 	}
 
-	public String addPartStore(InforContext context, PartStore partStoreParam) throws InforException {
+	public String addPartStore(EAMContext context, PartStore partStoreParam) throws EAMException {
 
-		net.datastream.schemas.mp_entities.partstores_001.PartStores partStoresInfor = new net.datastream.schemas.mp_entities.partstores_001.PartStores();
+		net.datastream.schemas.mp_entities.partstores_001.PartStores partStoresEAM = new net.datastream.schemas.mp_entities.partstores_001.PartStores();
 
 		// PART ID
 		if (partStoreParam.getPartCode() != null) {
-			partStoresInfor.setPARTID(new PARTID_Type());
-			partStoresInfor.getPARTID().setORGANIZATIONID(tools.getOrganization(context));
-			partStoresInfor.getPARTID().setPARTCODE(partStoreParam.getPartCode());
+			partStoresEAM.setPARTID(new PARTID_Type());
+			partStoresEAM.getPARTID().setORGANIZATIONID(tools.getOrganization(context));
+			partStoresEAM.getPARTID().setPARTCODE(partStoreParam.getPartCode());
 		}
 
 		//
 		if (partStoreParam.getDefaultBin() != null) {
-			partStoresInfor.setDEFAULTBIN(new BINID_Type());
-			partStoresInfor.getDEFAULTBIN().setBIN(partStoreParam.getDefaultBin());
+			partStoresEAM.setDEFAULTBIN(new BINID_Type());
+			partStoresEAM.getDEFAULTBIN().setBIN(partStoreParam.getDefaultBin());
 		}
 
 		//
-		partStoresInfor.setLABELPRINTINGDEFAULT("");
+		partStoresEAM.setLABELPRINTINGDEFAULT("");
 
 		//
 		if (partStoreParam.getOrderQty() != null) {
-			partStoresInfor.setORDERQTY(tools.getDataTypeTools().encodeAmount(partStoreParam.getOrderQty(),"Ordery Qty."));
+			partStoresEAM.setORDERQTY(tools.getDataTypeTools().encodeAmount(partStoreParam.getOrderQty(),"Ordery Qty."));
 		}
 
 		//
 		if (partStoreParam.getReorderLevel() != null) {
-			partStoresInfor.setREORDERLEVEL(tools.getDataTypeTools().encodeAmount(partStoreParam.getReorderLevel(),"Reorder Level"));
+			partStoresEAM.setREORDERLEVEL(tools.getDataTypeTools().encodeAmount(partStoreParam.getReorderLevel(),"Reorder Level"));
 		}
 
 		//
 		if (partStoreParam.getDefaultReturnBin() != null) {
-			partStoresInfor.setDEFAULTRETURNBIN(new BINID_Type());
-			partStoresInfor.getDEFAULTRETURNBIN().setBIN(partStoreParam.getDefaultReturnBin());
+			partStoresEAM.setDEFAULTRETURNBIN(new BINID_Type());
+			partStoresEAM.getDEFAULTRETURNBIN().setBIN(partStoreParam.getDefaultReturnBin());
 		}
 
 		//
 		if (partStoreParam.getAbcClass() != null) {
-			partStoresInfor.setABCCODE(partStoreParam.getAbcClass());
+			partStoresEAM.setABCCODE(partStoreParam.getAbcClass());
 		}
 
 		//
 		if (partStoreParam.getPreferredSupplier() != null) {
-			partStoresInfor.setPREFERREDSUPPLIER(new SUPPLIERID_Type());
-			partStoresInfor.getPREFERREDSUPPLIER().setORGANIZATIONID(tools.getOrganization(context));
-			partStoresInfor.getPREFERREDSUPPLIER().setSUPPLIERCODE(partStoreParam.getPreferredSupplier());
+			partStoresEAM.setPREFERREDSUPPLIER(new SUPPLIERID_Type());
+			partStoresEAM.getPREFERREDSUPPLIER().setORGANIZATIONID(tools.getOrganization(context));
+			partStoresEAM.getPREFERREDSUPPLIER().setSUPPLIERCODE(partStoreParam.getPreferredSupplier());
 		}
 
 		//
 		if (partStoreParam.getStoreCode() != null) {
-			partStoresInfor.setSTOREID(new STOREID_Type());
-			partStoresInfor.getSTOREID().setORGANIZATIONID(tools.getOrganization(context));
-			partStoresInfor.getSTOREID().setSTORECODE(partStoreParam.getStoreCode());
+			partStoresEAM.setSTOREID(new STOREID_Type());
+			partStoresEAM.getSTOREID().setORGANIZATIONID(tools.getOrganization(context));
+			partStoresEAM.getSTOREID().setSTORECODE(partStoreParam.getStoreCode());
 		}
 
 		//
 		if (partStoreParam.getPreventIssueFromDefaultReturnBin() != null) {
-			partStoresInfor.setPREVENTISSUEDEFRTNBIN(partStoreParam.getPreventIssueFromDefaultReturnBin());
+			partStoresEAM.setPREVENTISSUEDEFRTNBIN(partStoreParam.getPreventIssueFromDefaultReturnBin());
 		} else {
-			partStoresInfor.setPREVENTISSUEDEFRTNBIN("true");
+			partStoresEAM.setPREVENTISSUEDEFRTNBIN("true");
 		}
 
 		//
 		if (partStoreParam.getPreferredStore() != null) {
-			partStoresInfor.setPREFERREDSTORE(new STOREID_Type());
-			partStoresInfor.getPREFERREDSTORE().setORGANIZATIONID(tools.getOrganization(context));
-			partStoresInfor.getPREFERREDSTORE().setSTORECODE(partStoreParam.getPreferredStore());
+			partStoresEAM.setPREFERREDSTORE(new STOREID_Type());
+			partStoresEAM.getPREFERREDSTORE().setORGANIZATIONID(tools.getOrganization(context));
+			partStoresEAM.getPREFERREDSTORE().setSTORECODE(partStoreParam.getPreferredStore());
 		}
 
 		//
 		if (partStoreParam.getMinimumQty() != null) {
-			partStoresInfor.setMINIMUMQTY(tools.getDataTypeTools().encodeAmount(partStoreParam.getMinimumQty(), "Minimum Qty"));
+			partStoresEAM.setMINIMUMQTY(tools.getDataTypeTools().encodeAmount(partStoreParam.getMinimumQty(), "Minimum Qty"));
 		}
 
 		//
 		if (partStoreParam.getStockMethod() != null) {
-			partStoresInfor.setONDEMAND(partStoreParam.getStockMethod());
+			partStoresEAM.setONDEMAND(partStoreParam.getStockMethod());
 		}
 
 		//
 		MP0255_AddPartStores_001 addPartStores = new  MP0255_AddPartStores_001();
-		addPartStores.setPartStores(partStoresInfor);
+		addPartStores.setPartStores(partStoresEAM);
 
-		tools.performInforOperation(context, inforws::addPartStoresOp, addPartStores);
+		tools.performEAMOperation(context, eamws::addPartStoresOp, addPartStores);
 		return null;
 	}
 

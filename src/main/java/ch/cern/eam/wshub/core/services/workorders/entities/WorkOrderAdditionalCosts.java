@@ -3,34 +3,34 @@ package ch.cern.eam.wshub.core.services.workorders.entities;
 import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
 import ch.cern.eam.wshub.core.adapters.BigIntegerAdapter;
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
-import ch.cern.eam.wshub.core.annotations.InforField;
+import ch.cern.eam.wshub.core.annotations.EAMField;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Date;
 
 public class WorkOrderAdditionalCosts {
 
-	@InforField(xpath = "DESCRIPTION")
+	@EAMField(xpath = "DESCRIPTION")
 	private String costDescription;
 
-	@InforField(xpath = "ACTIVITYID/ACTIVITYCODE/value")
+	@EAMField(xpath = "ACTIVITYID/ACTIVITYCODE/value")
 	private BigInteger activityCode;
 
-	@InforField(xpath = "COSTTYPEID/COSTTYPECODE")
+	@EAMField(xpath = "COSTTYPEID/COSTTYPECODE")
 	private String costType;
 
-	@InforField(xpath = "CREATEDDATE")
+	@EAMField(xpath = "CREATEDDATE")
 	private Date date;
 
-	@InforField(xpath = "UNITPRICE")
+	@EAMField(xpath = "UNITPRICE")
 	private BigDecimal cost;
 
-	@InforField(xpath = "ACTIVITYID/WORKORDERID/JOBNUM")
+	@EAMField(xpath = "ACTIVITYID/WORKORDERID/JOBNUM")
 	private String workOrderNumber;
 
-	@InforField(xpath = "WOADDITIONALCOSTQTY")
+	@EAMField(xpath = "WOADDITIONALCOSTQTY")
 	private BigDecimal quantity;
 
 	public String getCostDescription() {

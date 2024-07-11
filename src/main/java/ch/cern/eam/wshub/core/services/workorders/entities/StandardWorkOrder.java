@@ -3,70 +3,70 @@ package ch.cern.eam.wshub.core.services.workorders.entities;
 import ch.cern.eam.wshub.core.adapters.BigIntegerAdapter;
 import ch.cern.eam.wshub.core.adapters.BooleanAdapter;
 import ch.cern.eam.wshub.core.annotations.BooleanType;
-import ch.cern.eam.wshub.core.annotations.InforField;
+import ch.cern.eam.wshub.core.annotations.EAMField;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElementWrapper;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.math.BigInteger;
 
 public class StandardWorkOrder {
 
-    @InforField(xpath = "STANDARDWO/STDWOCODE")
+    @EAMField(xpath = "STANDARDWO/STDWOCODE")
     private String code;
-    @InforField(xpath = "STANDARDWO/DESCRIPTION")
+    @EAMField(xpath = "STANDARDWO/DESCRIPTION")
     private String desc;
 
-    @InforField(xpath = "TYPE/TYPECODE")
+    @EAMField(xpath = "TYPE/TYPECODE")
     private String typeCode;
-    @InforField(xpath = "TYPE/DESCRIPTION", readOnly = true)
+    @EAMField(xpath = "TYPE/DESCRIPTION", readOnly = true)
     private String typeDesc;
 
-    @InforField(xpath = "WORKORDERTYPE/TYPECODE")
+    @EAMField(xpath = "WORKORDERTYPE/TYPECODE")
     private String workOrderTypeCode;
-    @InforField(xpath = "WORKORDERTYPE/DESCRIPTION", readOnly = true)
+    @EAMField(xpath = "WORKORDERTYPE/DESCRIPTION", readOnly = true)
     private String workOrderTypeDesc;
 
-    @InforField(xpath = "DURATION")
+    @EAMField(xpath = "DURATION")
     private BigInteger duration;
 
-    @InforField(xpath = "CLASSID/CLASSCODE")
+    @EAMField(xpath = "CLASSID/CLASSCODE")
     private String classCode;
-    @InforField(xpath = "CLASSID/DESCRIPTION", readOnly = true)
+    @EAMField(xpath = "CLASSID/DESCRIPTION", readOnly = true)
     private String classDesc;
 
-    @InforField(xpath = "WORKORDERCLASSID/CLASSCODE")
+    @EAMField(xpath = "WORKORDERCLASSID/CLASSCODE")
     private String woClassCode;
-    @InforField(xpath = "WORKORDERCLASSID/DESCRIPTION", readOnly = true)
+    @EAMField(xpath = "WORKORDERCLASSID/DESCRIPTION", readOnly = true)
     private String woClassDesc;
 
-    @InforField(xpath = "EQUIPMENTCLASSID/CLASSCODE")
+    @EAMField(xpath = "EQUIPMENTCLASSID/CLASSCODE")
     private String equipmentClassCode;
-    @InforField(xpath = "EQUIPMENTCLASSID/DESCRIPTION", readOnly = true)
+    @EAMField(xpath = "EQUIPMENTCLASSID/DESCRIPTION", readOnly = true)
     private String equipmentCassDesc;
 
-    @InforField(xpath = "CATEGORYID/CATEGORYCODE")
+    @EAMField(xpath = "CATEGORYID/CATEGORYCODE")
     private String categoryCode;
-    @InforField(xpath = "CATEGORYID/DESCRIPTION", readOnly = true)
+    @EAMField(xpath = "CATEGORYID/DESCRIPTION", readOnly = true)
     private String categoryDesc;
 
-    @InforField(xpath = "PRIORITY/PRIORITYCODE")
+    @EAMField(xpath = "PRIORITY/PRIORITYCODE")
     private String priorityCode;
-    @InforField(xpath = "PRIORITY/DESCRIPTION", readOnly = true)
+    @EAMField(xpath = "PRIORITY/DESCRIPTION", readOnly = true)
     private String priorityDesc;
 
-    @InforField(xpath = "OUTOFSERVICE", booleanType = BooleanType.TRUE_FALSE)
+    @EAMField(xpath = "OUTOFSERVICE", booleanType = BooleanType.TRUE_FALSE)
     private Boolean outOfService = false;
 
-    @InforField(xpath = "USERDEFINEDAREA")
+    @EAMField(xpath = "USERDEFINEDAREA")
     private CustomField[] customFields;
 
-    @InforField(xpath = "UserDefinedFields")
+    @EAMField(xpath = "UserDefinedFields")
     private UserDefinedFields userDefinedFields;
 
-    @InforField(xpath = "PROBLEMCODEID/PROBLEMCODE")
+    @EAMField(xpath = "PROBLEMCODEID/PROBLEMCODE")
     private String problemCode;
 
     public String getCode() {

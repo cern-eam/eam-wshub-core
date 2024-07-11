@@ -1,9 +1,9 @@
 package ch.cern.eam.wshub.core.services.workorders.impl;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.workorders.InspectionService;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import ch.cern.eam.wshub.core.services.workorders.entities.Aspect;
 import ch.cern.eam.wshub.core.services.workorders.entities.AspectPoint;
@@ -19,26 +19,26 @@ import net.datastream.schemas.mp_functions.mp1022_001.MP1022_AddInspectionAspect
 import net.datastream.schemas.mp_functions.mp1027_001.MP1027_AddInspectionPoint_001;
 import net.datastream.schemas.mp_functions.mp1031_001.MP1031_AddInspectionAspectPoint_001;
 import net.datastream.schemas.mp_functions.mp7177_001.MP7177_AddInspectionsForWorkOrder_001;
-import net.datastream.wsdls.inforws.InforWebServicesPT;
-import javax.xml.ws.Holder;
+import net.datastream.wsdls.eamws.EAMWebServicesPT;
+import jakarta.xml.ws.Holder;
 import java.math.BigDecimal;
 
 public class InspectionServiceImpl implements InspectionService {
 
 	private Tools tools;
-	private InforWebServicesPT inforws;
+	private EAMWebServicesPT eamws;
 	private ApplicationData applicationData;
 
-	public InspectionServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
+	public InspectionServiceImpl(ApplicationData applicationData, Tools tools, EAMWebServicesPT eamWebServicesToolkitClient) {
 		this.applicationData = applicationData;
 		this.tools = tools;
-		this.inforws = inforWebServicesToolkitClient;
+		this.eamws = eamWebServicesToolkitClient;
 	}
 
 	//
 	//
 	//
-	private void addPoint(InforContext context, Point point, String pobject) throws InforException {
+	private void addPoint(EAMContext context, Point point, String pobject) throws EAMException {
 		InspectionPoint inspectionPoint = new InspectionPoint();
 
 		inspectionPoint.setINSPECTIONPOINTID(new INSPECTIONPOINTID_Type());
@@ -56,10 +56,10 @@ public class InspectionServiceImpl implements InspectionService {
 		MP1027_AddInspectionPoint_001 addInspPoint = new MP1027_AddInspectionPoint_001();
 		addInspPoint.setInspectionPoint(inspectionPoint);
 
-		tools.performInforOperation(context, inforws::addInspectionPointOp, addInspPoint);
+		tools.performEAMOperation(context, eamws::addInspectionPointOp, addInspPoint);
 	}
 
-	private void addInspectionAspect(InforContext context, Aspect aspect, String aobject) throws InforException {
+	private void addInspectionAspect(EAMContext context, Aspect aspect, String aobject) throws EAMException {
 		InspectionAspect inspectionAspect = new InspectionAspect();
 		inspectionAspect.setINSPECTIONASPECTID(new INSPECTIONASPECTID_Type());
 		inspectionAspect.getINSPECTIONASPECTID().setOBJTYPE("L");
@@ -73,11 +73,11 @@ public class InspectionServiceImpl implements InspectionService {
 
 		MP1022_AddInspectionAspect_001 addInspAspect = new MP1022_AddInspectionAspect_001();
 		addInspAspect.setInspectionAspect(inspectionAspect);
-		tools.performInforOperation(context, inforws::addInspectionAspectOp, addInspAspect);
+		tools.performEAMOperation(context, eamws::addInspectionAspectOp, addInspAspect);
 	}
 
-	private void addAspectPoint(InforContext context, AspectPoint aspectPoint, String aobject)
-			throws InforException {
+	private void addAspectPoint(EAMContext context, AspectPoint aspectPoint, String aobject)
+			throws EAMException {
 		InspectionAspectPoint inspectionAspectPoint = new InspectionAspectPoint();
 
 		inspectionAspectPoint.setINSPECTIONASPECTPOINTID(new INSPECTIONASPECTPOINTID_Type());
@@ -103,10 +103,10 @@ public class InspectionServiceImpl implements InspectionService {
 		MP1031_AddInspectionAspectPoint_001 addInspAspectPoint = new MP1031_AddInspectionAspectPoint_001();
 		addInspAspectPoint.setInspectionAspectPoint(inspectionAspectPoint);
 
-		tools.performInforOperation(context, inforws::addInspectionAspectPointOp, addInspAspectPoint);
+		tools.performEAMOperation(context, eamws::addInspectionAspectPointOp, addInspAspectPoint);
 	}
 
-	private void addWOInspections(InforContext context, AspectPoint aspectPoint, String inspobject, String woNumber, BigDecimal seqNumber) throws InforException {
+	private void addWOInspections(EAMContext context, AspectPoint aspectPoint, String inspobject, String woNumber, BigDecimal seqNumber) throws EAMException {
 		InspectionsForWorkOrder inspectionsForWO = new InspectionsForWorkOrder();
 		//
 		inspectionsForWO.setEVENTPOINTID(new EVENTPOINTID_Type());
@@ -136,20 +136,20 @@ public class InspectionServiceImpl implements InspectionService {
 		MP7177_AddInspectionsForWorkOrder_001 addInspForWO = new MP7177_AddInspectionsForWorkOrder_001();
 		addInspForWO.setInspectionsForWorkOrder(inspectionsForWO);
 
-		tools.performInforOperation(context, inforws::addInspectionsForWorkOrderOp, addInspForWO);
+		tools.performEAMOperation(context, eamws::addInspectionsForWorkOrderOp, addInspForWO);
 	}
 
 
-	public String addAspect(InforContext context, Aspect aspect) throws InforException {
-		net.datastream.schemas.mp_entities.aspect_001.Aspect inforAspect = new net.datastream.schemas.mp_entities.aspect_001.Aspect();
+	public String addAspect(EAMContext context, Aspect aspect) throws EAMException {
+		net.datastream.schemas.mp_entities.aspect_001.Aspect eamAspect = new net.datastream.schemas.mp_entities.aspect_001.Aspect();
 
-		inforAspect.setASPECTID(new ASPECTID_Type());
-		inforAspect.getASPECTID().setASPECTCODE(aspect.getCode());
-		inforAspect.getASPECTID().setDESCRIPTION(aspect.getDesc());
+		eamAspect.setASPECTID(new ASPECTID_Type());
+		eamAspect.getASPECTID().setASPECTCODE(aspect.getCode());
+		eamAspect.getASPECTID().setDESCRIPTION(aspect.getDesc());
 
 		MP1017_AddAspect_001 addAspect = new MP1017_AddAspect_001();
-		addAspect.setAspect(inforAspect);
-		tools.performInforOperation(context, inforws::addAspectOp, addAspect);
+		addAspect.setAspect(eamAspect);
+		tools.performEAMOperation(context, eamws::addAspectOp, addAspect);
 		return aspect.getCode();
 	}
 

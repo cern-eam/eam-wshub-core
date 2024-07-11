@@ -1,11 +1,11 @@
 package ch.cern.eam.wshub.core.services.equipment.impl;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.equipment.EquipmentOtherService;
 import ch.cern.eam.wshub.core.services.equipment.entities.EquipmentCampaign;
 import ch.cern.eam.wshub.core.services.equipment.entities.EquipmentDepreciation;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_entities.campaignequipment_001.CampaignEquipment;
 import net.datastream.schemas.mp_entities.depreciation_001.Depreciation;
@@ -21,26 +21,26 @@ import net.datastream.schemas.mp_functions.mp3291_001.ChangeEquipmentNumber;
 import net.datastream.schemas.mp_functions.mp3291_001.MP3291_ChangeEquipmentNumber_001;
 import net.datastream.schemas.mp_functions.mp5039_001.MP5039_AddCampaignEquipment_001;
 import net.datastream.schemas.mp_results.mp3016_001.MP3016_GetDepreciation_001_Result;
-import net.datastream.wsdls.inforws.InforWebServicesPT;
+import net.datastream.wsdls.eamws.EAMWebServicesPT;
 
-import javax.persistence.EntityManager;
-import javax.xml.ws.Holder;
+import jakarta.persistence.EntityManager;
+import jakarta.xml.ws.Holder;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
 public class EquipmentOtherServiceImpl implements EquipmentOtherService {
 
 	private Tools tools;
-	private InforWebServicesPT inforws;
+	private EAMWebServicesPT eamws;
 	private ApplicationData applicationData;
 
-	public EquipmentOtherServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
+	public EquipmentOtherServiceImpl(ApplicationData applicationData, Tools tools, EAMWebServicesPT eamWebServicesToolkitClient) {
 		this.applicationData = applicationData;
 		this.tools = tools;
-		this.inforws = inforWebServicesToolkitClient;
+		this.eamws = eamWebServicesToolkitClient;
 	}
 
-	public String createEquipmentDepreciation(InforContext context, EquipmentDepreciation equipmentDepreciation) throws InforException {
+	public String createEquipmentDepreciation(EAMContext context, EquipmentDepreciation equipmentDepreciation) throws EAMException {
 		//
 		// Fetch default values
 		//
@@ -67,10 +67,10 @@ public class EquipmentOtherServiceImpl implements EquipmentOtherService {
 		getdepdef.setFROMDATE(tools.getDataTypeTools().formatDate(equipmentDepreciation.getFromDate(), "From Date"));
 
 		DepreciationDefault depreciationDefault =
-			tools.performInforOperation(context, inforws::getDepreciationDefaultOp, getdepdef)
+			tools.performEAMOperation(context, eamws::getDepreciationDefaultOp, getdepdef)
 				.getResultData().getDepreciationDefault();
 
-		Depreciation depreciation = tools.getInforFieldTools().transformWSHubObject(new Depreciation(), equipmentDepreciation, context);
+		Depreciation depreciation = tools.getEAMFieldTools().transformWSHubObject(new Depreciation(), equipmentDepreciation, context);
 
 		// DEPRECIATION PK
 		depreciation.setDEPRECIATIONPK(tools.getDataTypeTools().encodeQuantity(BigDecimal.ZERO, "Depreciation PK"));
@@ -170,12 +170,12 @@ public class EquipmentOtherServiceImpl implements EquipmentOtherService {
 		// ADD DEPRECIATION
 		MP3017_AddDepreciation_001 adddep = new MP3017_AddDepreciation_001();
 		adddep.setDepreciation(depreciation);
-		tools.performInforOperation(context, inforws::addDepreciationOp, adddep);
+		tools.performEAMOperation(context, eamws::addDepreciationOp, adddep);
 
 		return "OK";
 	}
 
-	public String updateEquipmentDepreciation(InforContext context, EquipmentDepreciation equipmentDepreciation) throws InforException {
+	public String updateEquipmentDepreciation(EAMContext context, EquipmentDepreciation equipmentDepreciation) throws EAMException {
 		//
 		// GET THE DEPRECIATION VALUE FIRST
 		//
@@ -202,11 +202,11 @@ public class EquipmentOtherServiceImpl implements EquipmentOtherService {
 		getdep.setDEPRECIATIONPK(tools.getDataTypeTools().encodeQuantity(equipmentDepreciation.getDepreciationPK(), "Depreciation PK"));
 
 		MP3016_GetDepreciation_001_Result result =
-			tools.performInforOperation(context, inforws::getDepreciationOp, getdep);
+			tools.performEAMOperation(context, eamws::getDepreciationOp, getdep);
 		//
 		// UPDATE DEPRECIATION
 		//
-		Depreciation depreciation = tools.getInforFieldTools().transformWSHubObject(result.getResultData().getDepreciation(), equipmentDepreciation, context);
+		Depreciation depreciation = tools.getEAMFieldTools().transformWSHubObject(result.getResultData().getDepreciation(), equipmentDepreciation, context);
 
 		// ORIGINAL VALUE
 		if (equipmentDepreciation.getOriginalValue() != null) {
@@ -274,12 +274,12 @@ public class EquipmentOtherServiceImpl implements EquipmentOtherService {
 
 		MP3018_SyncDepreciation_001 syncdep = new MP3018_SyncDepreciation_001();
 		syncdep.setDepreciation(depreciation);
-		tools.performInforOperation(context, inforws::syncDepreciationOp, syncdep);
+		tools.performEAMOperation(context, eamws::syncDepreciationOp, syncdep);
 
 		return "OK";
 	}
 
-	public String updateEquipmentCode(InforContext context, String equipmentCode, String equipmentNewCode, String equipmentType) throws InforException {
+	public String updateEquipmentCode(EAMContext context, String equipmentCode, String equipmentNewCode, String equipmentType) throws EAMException {
 
 		MP3291_ChangeEquipmentNumber_001 changeeqpnum = new MP3291_ChangeEquipmentNumber_001();
 		changeeqpnum.setChangeEquipmentNumber(new ChangeEquipmentNumber());
@@ -293,12 +293,12 @@ public class EquipmentOtherServiceImpl implements EquipmentOtherService {
 		changeeqpnum.getChangeEquipmentNumber().getNEWEQUIPMENTID().setORGANIZATIONID(tools.getOrganization(context));
 		changeeqpnum.getChangeEquipmentNumber().getNEWEQUIPMENTID().setEQUIPMENTCODE(equipmentNewCode);
 
-		tools.performInforOperation(context, inforws::changeEquipmentNumberOp, changeeqpnum);
+		tools.performEAMOperation(context, eamws::changeEquipmentNumberOp, changeeqpnum);
 
 		return "OK";
 	}
 
-	public String createEquipmentCampaign(InforContext context, EquipmentCampaign equipmentCampaign) throws InforException {
+	public String createEquipmentCampaign(EAMContext context, EquipmentCampaign equipmentCampaign) throws EAMException {
 		CampaignEquipment campaignEquipment = new CampaignEquipment();
 		campaignEquipment.setCAMPAIGNEQUIPMENTID(new CAMPAIGNEQUIPMENTID_Type());
 		//
@@ -318,7 +318,7 @@ public class EquipmentOtherServiceImpl implements EquipmentOtherService {
 
 		addCampaignEquipment.setCampaignEquipment(campaignEquipment);
 
-		tools.performInforOperation(context, inforws::addCampaignEquipmentOp, addCampaignEquipment);
+		tools.performEAMOperation(context, eamws::addCampaignEquipmentOp, addCampaignEquipment);
 
 		return null;
 	}

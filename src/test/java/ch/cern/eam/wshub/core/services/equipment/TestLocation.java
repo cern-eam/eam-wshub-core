@@ -3,7 +3,7 @@ package ch.cern.eam.wshub.core.services.equipment;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import ch.cern.eam.wshub.core.services.equipment.entities.Location;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +18,7 @@ import static ch.cern.eam.wshub.core.GlobalContext.*;
         There are location classes "DES" and "FIC"
         There is a custom field "HMLPR019" on classes "DES" and "FIC"
         There is a custom field "HMLPR147" on class "*"
-        The intervals for the dates must be compatible with Infor EAM
+        The intervals for the dates must be compatible with EAM EAM
  */
 
 // test the CRUD operations on locations
@@ -28,7 +28,7 @@ public class TestLocation {
 
     @BeforeEach
     void setup() throws Exception {
-        locationService = inforClient.getLocationService();
+        locationService = eamClient.getLocationService();
         parentLocation = createLocation(false);
     }
 
@@ -266,7 +266,7 @@ public class TestLocation {
         try {
             locationService.readLocation(context, code);
             assertTrue(false); // successfully reading a location results in failure
-        } catch(InforException e) {
+        } catch(EAMException e) {
             assertEquals("Cannot find the location record.", e.getMessage());
         }
     }

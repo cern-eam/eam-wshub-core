@@ -1,6 +1,6 @@
 package ch.cern.eam.wshub.core.services.administration.impl;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.administration.ScreenLayoutService;
 import ch.cern.eam.wshub.core.services.administration.entities.*;
 import ch.cern.eam.wshub.core.services.grids.GridsService;
@@ -11,9 +11,9 @@ import ch.cern.eam.wshub.core.services.grids.entities.GridRequestRow;
 import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.GridTools;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 import ch.cern.eam.wshub.core.tools.Tools;
-import net.datastream.wsdls.inforws.InforWebServicesPT;
+import net.datastream.wsdls.eamws.EAMWebServicesPT;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,19 +29,19 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
     public static final Map<String, Map<String, String>> screenLayoutLabelCache = new ConcurrentHashMap<>();
 
     private Tools tools;
-    private InforWebServicesPT inforws;
+    private EAMWebServicesPT eamws;
     private ApplicationData applicationData;
     private GridsService gridsService;
 
-    public ScreenLayoutServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
+    public ScreenLayoutServiceImpl(ApplicationData applicationData, Tools tools, EAMWebServicesPT eamWebServicesToolkitClient) {
         this.applicationData = applicationData;
         this.tools = tools;
-        this.inforws = inforWebServicesToolkitClient;
-        gridsService = new GridsServiceImpl(applicationData, tools, inforws);
+        this.eamws = eamWebServicesToolkitClient;
+        gridsService = new GridsServiceImpl(applicationData, tools, eamws);
     }
 
 
-    public ScreenLayout readScreenLayout(InforContext context, String systemFunction, String userFunction, List<String> tabs, String userGroup, String entity) throws InforException {
+    public ScreenLayout readScreenLayout(EAMContext context, String systemFunction, String userFunction, List<String> tabs, String userGroup, String entity) throws EAMException {
         // Check if value not already in the cache
         String layoutCacheKey = userGroup + "_" + userFunction;
         if (screenLayoutCache.containsKey(layoutCacheKey)) {
@@ -75,8 +75,8 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
     private static final List<String> ALLOW_SEARCH_DESC = Collections.singletonList("LVPERS");
     private static final List<String> ALLOW_SEARCH_ALIAS = Collections.singletonList("LVOBJL");
 
-    public List<Map<String, String>> getGenericLov(InforContext context, GenericLov genericLov
-                ) throws InforException {
+    public List<Map<String, String>> getGenericLov(EAMContext context, GenericLov genericLov
+                ) throws EAMException {
         final Map<String, String> inputParams = new HashMap<>();
         inputParams.put("objectrtype", null);
         inputParams.put("filterutilitybill", null);
@@ -138,14 +138,14 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
         return response;
     }
 
-    private  Map<String, Tab> getTabs(InforContext context, List<String> tabCodes, String userGroup, String systemFunction, String userFunction, String entity) throws InforException {
+    private  Map<String, Tab> getTabs(EAMContext context, List<String> tabCodes, String userGroup, String systemFunction, String userFunction, String entity) throws EAMException {
         Map<String, Tab> result = new HashMap<>();
         tabCodes.forEach(tabCode -> {
             Tab tab = new Tab();
             try {
                 tab.setFields(getTabLayout(context, userGroup, systemFunction + "_" + tabCode, userFunction + "_" + tabCode, entity));
                 result.put(tabCode, tab);
-            } catch (InforException e) {
+            } catch (EAMException e) {
                 e.printStackTrace();
             }
         });
@@ -153,7 +153,7 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
         return result;
     }
 
-    private Map<String, Tab> getCustomGridTabs(InforContext context, String userGroup, String userFunction) throws InforException {
+    private Map<String, Tab> getCustomGridTabs(EAMContext context, String userGroup, String userFunction) throws EAMException {
         GridRequest gridRequest = new GridRequest("BSGROU_PRM");
         gridRequest.getParams().put("param.usergroupcode", userGroup);
         gridRequest.getParams().put("param.userfunction", userFunction);
@@ -166,7 +166,7 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
         return tabs;
     }
 
-    private Map<String, ElementInfo> getTabLayout(InforContext context, String userGroup, String systemFunction, String userFunction, String entity) throws InforException {
+    private Map<String, ElementInfo> getTabLayout(EAMContext context, String userGroup, String systemFunction, String userFunction, String entity) throws EAMException {
         GridRequest gridRequestLayout = new GridRequest( "EULLAY");
         gridRequestLayout.setRowCount(2000);
         gridRequestLayout.setUseNative(false);
@@ -188,9 +188,9 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
      *
      * @param context
      * @param userFunction
-     * @throws InforException
+     * @throws EAMException
      */
-    private Map<String, String> getTabLayoutLabels(InforContext context, String userFunction) throws InforException {
+    private Map<String, String> getTabLayoutLabels(EAMContext context, String userFunction) throws EAMException {
         // Check if value already not present in the cache
         if (screenLayoutLabelCache.containsKey(userFunction)) {
             return screenLayoutLabelCache.get(userFunction);
@@ -208,7 +208,7 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
         return labels;
     }
 
-    private Map<String, UserDefinedFieldDescription> getUdfDetails(InforContext context, String entity) throws InforException {
+    private Map<String, UserDefinedFieldDescription> getUdfDetails(EAMContext context, String entity) throws EAMException {
         GridRequest gridRequest = new GridRequest("BCUDFS");
         gridRequest.getParams().put("parameter.lastupdated", "01-Jan-1970");
         List<GridRequestFilter> filters = new ArrayList<GridRequestFilter>();
@@ -226,7 +226,7 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
         return result;
     }
 
-    private void getTabScreenPermissions(InforContext context, Map<String, Tab> tabs, List<String> tabCodes, String userGroup, String userFunction) throws InforException {
+    private void getTabScreenPermissions(EAMContext context, Map<String, Tab> tabs, List<String> tabCodes, String userGroup, String userFunction) throws EAMException {
         GridRequest gridRequest = new GridRequest("BSGROU_PRM");
         gridRequest.getParams().put("param.usergroupcode", userGroup);
         gridRequest.getParams().put("param.userfunction", userFunction);

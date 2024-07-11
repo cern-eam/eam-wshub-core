@@ -1,13 +1,13 @@
 package ch.cern.eam.wshub.core.services.equipment.impl;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.equipment.PositionService;
 import ch.cern.eam.wshub.core.services.equipment.entities.Equipment;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedListService;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.entities.EntityId;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.impl.UserDefinedListServiceImpl;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_entities.positionequipment_001.PositionEquipment;
 import net.datastream.schemas.mp_entities.positionhierarchy_002.*;
@@ -22,7 +22,7 @@ import net.datastream.schemas.mp_results.mp0306_001.MP0306_AddPositionEquipment_
 import net.datastream.schemas.mp_results.mp0307_001.MP0307_GetPositionEquipment_001_Result;
 import net.datastream.schemas.mp_results.mp0310_001.MP0310_GetPositionEquipmentDefault_001_Result;
 import net.datastream.schemas.mp_results.mp0328_002.MP0328_GetPositionParentHierarchy_002_Result;
-import net.datastream.wsdls.inforws.InforWebServicesPT;
+import net.datastream.wsdls.eamws.EAMWebServicesPT;
 
 import java.util.HashMap;
 import java.util.List;
@@ -34,22 +34,22 @@ import static ch.cern.eam.wshub.core.tools.DataTypeTools.*;
 public class PositionServiceImpl implements PositionService {
 
 	private Tools tools;
-	private InforWebServicesPT inforws;
+	private EAMWebServicesPT eamws;
 	private ApplicationData applicationData;
 	private UserDefinedListService userDefinedListService;
 
-	public PositionServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
+	public PositionServiceImpl(ApplicationData applicationData, Tools tools, EAMWebServicesPT eamWebServicesToolkitClient) {
 		this.applicationData = applicationData;
 		this.tools = tools;
-		this.inforws = inforWebServicesToolkitClient;
-		this.userDefinedListService = new UserDefinedListServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
+		this.eamws = eamWebServicesToolkitClient;
+		this.userDefinedListService = new UserDefinedListServiceImpl(applicationData, tools, eamWebServicesToolkitClient);
 	}
 
-	public String createPosition(InforContext context, Equipment positionParam) throws InforException {
+	public String createPosition(EAMContext context, Equipment positionParam) throws EAMException {
 
 		PositionEquipment positionEquipment = new PositionEquipment();
 		//
-		positionEquipment.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(
+		positionEquipment.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getEAMCustomFields(
 			context,
 			toCodeString(positionEquipment.getCLASSID()),
 			positionEquipment.getUSERDEFINEDAREA(),
@@ -58,30 +58,30 @@ public class PositionServiceImpl implements PositionService {
 
 		//
 		initializePositionObject(context, positionEquipment, positionParam);
-		tools.getInforFieldTools().transformWSHubObject(positionEquipment, positionParam, context);
+		tools.getEAMFieldTools().transformWSHubObject(positionEquipment, positionParam, context);
 		//
 		MP0306_AddPositionEquipment_001 addPosition = new MP0306_AddPositionEquipment_001();
 		addPosition.setPositionEquipment(positionEquipment);
 		MP0306_AddPositionEquipment_001_Result result =
-			tools.performInforOperation(context, inforws::addPositionEquipmentOp, addPosition);
+			tools.performEAMOperation(context, eamws::addPositionEquipmentOp, addPosition);
 		String equipmentCode = result.getResultData().getPOSITIONID().getEQUIPMENTCODE();
 		userDefinedListService.writeUDLToEntityCopyFrom(context, positionParam, new EntityId("OBJ", equipmentCode));
 		return equipmentCode;
 	}
 
-	public String deletePosition(InforContext context, String positionCode, String organization) throws InforException {
+	public String deletePosition(EAMContext context, String positionCode, String organization) throws EAMException {
 
 		MP0309_DeletePositionEquipment_001 deletePosition = new MP0309_DeletePositionEquipment_001();
 		deletePosition.setPOSITIONID(new EQUIPMENTID_Type());
 		deletePosition.getPOSITIONID().setORGANIZATIONID(tools.getOrganization(context, organization));
 		deletePosition.getPOSITIONID().setEQUIPMENTCODE(positionCode);
 
-		tools.performInforOperation(context, inforws::deletePositionEquipmentOp, deletePosition);
+		tools.performEAMOperation(context, eamws::deletePositionEquipmentOp, deletePosition);
 		userDefinedListService.deleteUDLFromEntity(context, new EntityId("OBJ", positionCode));
 		return positionCode;
 	}
 
-	private PositionParentHierarchy readInforPositionParentHierarchy(InforContext context, String positionCode, String organization) throws InforException {
+	private PositionParentHierarchy readEAMPositionParentHierarchy(EAMContext context, String positionCode, String organization) throws EAMException {
 
 		MP0328_GetPositionParentHierarchy_002 getpositionph = new MP0328_GetPositionParentHierarchy_002();
 		getpositionph.setPOSITIONID(new EQUIPMENTID_Type());
@@ -89,26 +89,26 @@ public class PositionServiceImpl implements PositionService {
 		getpositionph.getPOSITIONID().setEQUIPMENTCODE(positionCode);
 
 		MP0328_GetPositionParentHierarchy_002_Result result =
-			tools.performInforOperation(context, inforws::getPositionParentHierarchyOp, getpositionph);
+			tools.performEAMOperation(context, eamws::getPositionParentHierarchyOp, getpositionph);
 
 		return result.getResultData().getPositionParentHierarchy();
 	}
 
-	public Equipment readPositionDefault(InforContext context, String organization) throws InforException {
+	public Equipment readPositionDefault(EAMContext context, String organization) throws EAMException {
 
 		MP0310_GetPositionEquipmentDefault_001 getPositionEquipmentDefault_001 = new MP0310_GetPositionEquipmentDefault_001();
 		getPositionEquipmentDefault_001.setORGANIZATIONID(tools.getOrganization(context , organization));
 
-		MP0310_GetPositionEquipmentDefault_001_Result result = tools.performInforOperation(context, inforws::getPositionEquipmentDefaultOp, getPositionEquipmentDefault_001);
+		MP0310_GetPositionEquipmentDefault_001_Result result = tools.performEAMOperation(context, eamws::getPositionEquipmentDefaultOp, getPositionEquipmentDefault_001);
 
-		Equipment equipment = tools.getInforFieldTools().transformInforObject(new Equipment(), result.getResultData().getPositionEquipment(), context);
+		Equipment equipment = tools.getEAMFieldTools().transformEAMObject(new Equipment(), result.getResultData().getPositionEquipment(), context);
 		equipment.setUserDefinedList(new HashMap<>());
 		return equipment;
 	}
 
-	public Equipment readPosition(InforContext context, String positionCode, String organization) throws InforException {
-		PositionEquipment positionEquipment = readInforPosition(context, positionCode, organization);
-		Equipment position = tools.getInforFieldTools().transformInforObject(new Equipment(), positionEquipment, context);
+	public Equipment readPosition(EAMContext context, String positionCode, String organization) throws EAMException {
+		PositionEquipment positionEquipment = readEAMPosition(context, positionCode, organization);
+		Equipment position = tools.getEAMFieldTools().transformEAMObject(new Equipment(), positionEquipment, context);
 		position.setSystemTypeCode("P");
 
 		// HIERARCHY
@@ -128,24 +128,24 @@ public class PositionServiceImpl implements PositionService {
 		return position;
 	}
 
-	private PositionEquipment readInforPosition(InforContext context, String positionCode, String organization) throws InforException {
+	private PositionEquipment readEAMPosition(EAMContext context, String positionCode, String organization) throws EAMException {
 		MP0307_GetPositionEquipment_001 getPosition = new MP0307_GetPositionEquipment_001();
 		getPosition.setPOSITIONID(new EQUIPMENTID_Type());
 		getPosition.getPOSITIONID().setORGANIZATIONID(tools.getOrganization(context, organization));
 		getPosition.getPOSITIONID().setEQUIPMENTCODE(positionCode);
-		MP0307_GetPositionEquipment_001_Result getAssetResult = tools.performInforOperation(context, inforws::getPositionEquipmentOp, getPosition);
-		getAssetResult.getResultData().getPositionEquipment().setPositionParentHierarchy(readInforPositionParentHierarchy(context, positionCode, organization));
+		MP0307_GetPositionEquipment_001_Result getAssetResult = tools.performEAMOperation(context, eamws::getPositionEquipmentOp, getPosition);
+		getAssetResult.getResultData().getPositionEquipment().setPositionParentHierarchy(readEAMPositionParentHierarchy(context, positionCode, organization));
 
 		return getAssetResult.getResultData().getPositionEquipment();
 	}
 
-	public String updatePosition(InforContext context, Equipment positionParam) throws InforException {
+	public String updatePosition(EAMContext context, Equipment positionParam) throws EAMException {
 		// Read position
-		PositionEquipment positionEquipment = readInforPosition(context, positionParam.getCode(), positionParam.getOrganization());
+		PositionEquipment positionEquipment = readEAMPosition(context, positionParam.getCode(), positionParam.getOrganization());
 		//
 		//
 		//
-		positionEquipment.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(
+		positionEquipment.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getEAMCustomFields(
 			context,
 			toCodeString(positionEquipment.getCLASSID()),
 			positionEquipment.getUSERDEFINEDAREA(),
@@ -153,26 +153,26 @@ public class PositionServiceImpl implements PositionService {
 			"OBJ"));
 
 		initializePositionObject(context, positionEquipment, positionParam);
-		tools.getInforFieldTools().transformWSHubObject(positionEquipment, positionParam, context);
+		tools.getEAMFieldTools().transformWSHubObject(positionEquipment, positionParam, context);
 		// Update it
 		MP0308_SyncPositionEquipment_001 syncPosition = new MP0308_SyncPositionEquipment_001();
 		syncPosition.setPositionEquipment(positionEquipment);
-		tools.performInforOperation(context, inforws::syncPositionEquipmentOp, syncPosition);
+		tools.performEAMOperation(context, eamws::syncPositionEquipmentOp, syncPosition);
 		userDefinedListService.writeUDLToEntity(context, positionParam, new EntityId("OBJ", positionParam.getCode()));
 
 		return positionParam.getCode();
 	}
 
-	private void initializePositionObject(InforContext context, PositionEquipment positionInfor, Equipment positionParam) throws InforException {
+	private void initializePositionObject(EAMContext context, PositionEquipment positionEAM, Equipment positionParam) throws EAMException {
 		// == null means Position creation
-		if (positionInfor.getPOSITIONID() == null) {
-			positionInfor.setPOSITIONID(new EQUIPMENTID_Type());
-			positionInfor.getPOSITIONID().setORGANIZATIONID(tools.getOrganization(context, positionParam.getOrganization()));
-			positionInfor.getPOSITIONID().setEQUIPMENTCODE(positionParam.getCode().toUpperCase().trim());
+		if (positionEAM.getPOSITIONID() == null) {
+			positionEAM.setPOSITIONID(new EQUIPMENTID_Type());
+			positionEAM.getPOSITIONID().setORGANIZATIONID(tools.getOrganization(context, positionParam.getOrganization()));
+			positionEAM.getPOSITIONID().setEQUIPMENTCODE(positionParam.getCode().toUpperCase().trim());
 		}
 
 		if (positionParam.getDescription() != null) {
-			positionInfor.getPOSITIONID().setDESCRIPTION(positionParam.getDescription());
+			positionEAM.getPOSITIONID().setDESCRIPTION(positionParam.getDescription());
 		}
 
 		// HIERARCHY
@@ -180,11 +180,11 @@ public class PositionServiceImpl implements PositionService {
 				|| positionParam.getHierarchyPositionCode() != null
 				|| positionParam.getHierarchyPrimarySystemCode() != null
 				|| positionParam.getHierarchyLocationCode() != null) {
-			initializePositionHierarchy(positionInfor, positionParam, context);
+			initializePositionHierarchy(positionEAM, positionParam, context);
 		}
 	}
 
-	private void initializePositionHierarchy(PositionEquipment positionInfor, Equipment positionParam, InforContext context) {
+	private void initializePositionHierarchy(PositionEquipment positionEAM, Equipment positionParam, EAMContext context) {
 		PositionParentHierarchy hierarchy = new PositionParentHierarchy();
 
 		hierarchy.setPOSITIONID(new EQUIPMENTID_Type());
@@ -194,12 +194,12 @@ public class PositionServiceImpl implements PositionService {
 		hierarchy.getTYPE().setTYPECODE("A");
 
 		// Fetch all possible parent types that are present in only one object that indicates the current hierarchy type
-		ASSETPARENT_Type assetParent = readAssetParent(positionInfor.getPositionParentHierarchy());
-		POSITIONPARENT_Type positionParent = readPositionParent(positionInfor.getPositionParentHierarchy());
-		SYSTEMPARENT_Type primarySystemParent = readPrimarySystemParent(positionInfor.getPositionParentHierarchy());
-		LOCATIONPARENT_Type locationParent = readLocationParent(positionInfor.getPositionParentHierarchy());
-		List<SYSTEMPARENT_Type> systemParents = readSystemsParent(positionInfor.getPositionParentHierarchy());
-		HIERARCHY_TYPE currentHierarchyType = readHierarchyType(positionInfor.getPositionParentHierarchy());
+		ASSETPARENT_Type assetParent = readAssetParent(positionEAM.getPositionParentHierarchy());
+		POSITIONPARENT_Type positionParent = readPositionParent(positionEAM.getPositionParentHierarchy());
+		SYSTEMPARENT_Type primarySystemParent = readPrimarySystemParent(positionEAM.getPositionParentHierarchy());
+		LOCATIONPARENT_Type locationParent = readLocationParent(positionEAM.getPositionParentHierarchy());
+		List<SYSTEMPARENT_Type> systemParents = readSystemsParent(positionEAM.getPositionParentHierarchy());
+		HIERARCHY_TYPE currentHierarchyType = readHierarchyType(positionEAM.getPositionParentHierarchy());
 
 		// Incorporate user changes into the parent types
 		assetParent = createAssetParent(tools.getOrganizationCode(context, positionParam.getHierarchyAssetOrg()), positionParam.getHierarchyAssetCode(), positionParam.getHierarchyAssetCostRollUp(), assetParent);
@@ -225,7 +225,7 @@ public class PositionServiceImpl implements PositionService {
 				hierarchy.setNonDependentParents(createNonDependentParentsForPosition(assetParent, positionParent, primarySystemParent, systemParents));
 		}
 
-		positionInfor.setPositionParentHierarchy(hierarchy);
+		positionEAM.setPositionParentHierarchy(hierarchy);
 	}
 
 }

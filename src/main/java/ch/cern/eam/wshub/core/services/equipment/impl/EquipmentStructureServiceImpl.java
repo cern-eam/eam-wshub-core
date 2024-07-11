@@ -1,11 +1,11 @@
 package ch.cern.eam.wshub.core.services.equipment.impl;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.equipment.EquipmentStructureService;
 import ch.cern.eam.wshub.core.services.equipment.entities.EquipmentStructure;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.annotations.BooleanType;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_fields.EQUIPMENTID_Type;
 import net.datastream.schemas.mp_fields.EQUIPMENTSTRUCTUREID_Type;
@@ -16,22 +16,22 @@ import net.datastream.schemas.mp_functions.mp0356_001.ParentEquipment;
 import net.datastream.schemas.mp_functions.mp3057_001.MP3057_AddEquipmentStructure_001;
 import net.datastream.schemas.mp_functions.mp3058_001.MP3058_SyncEquipmentStructure_001;
 import net.datastream.schemas.mp_functions.mp3058_001.NewParentEquipment;
-import net.datastream.wsdls.inforws.InforWebServicesPT;
-import javax.xml.ws.Holder;
+import net.datastream.wsdls.eamws.EAMWebServicesPT;
+import jakarta.xml.ws.Holder;
 
 public class EquipmentStructureServiceImpl implements EquipmentStructureService {
 
 	private Tools tools;
-	private InforWebServicesPT inforws;
+	private EAMWebServicesPT eamws;
 	private ApplicationData applicationData;
 
-	public EquipmentStructureServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
+	public EquipmentStructureServiceImpl(ApplicationData applicationData, Tools tools, EAMWebServicesPT eamWebServicesToolkitClient) {
 		this.applicationData = applicationData;
 		this.tools = tools;
-		this.inforws = inforWebServicesToolkitClient;
+		this.eamws = eamWebServicesToolkitClient;
 	}
 
-	public String addEquipmentToStructure(InforContext context, EquipmentStructure equipmentStructure) throws InforException {
+	public String addEquipmentToStructure(EAMContext context, EquipmentStructure equipmentStructure) throws EAMException {
 
 		MP3057_AddEquipmentStructure_001 addEqStr = new MP3057_AddEquipmentStructure_001();
 
@@ -62,12 +62,12 @@ public class EquipmentStructureServiceImpl implements EquipmentStructureService 
 					.setSEQUENCENUMBER(tools.getDataTypeTools().encodeLong(equipmentStructure.getSequenceNumber(), "Sequence Number"));
 		}
 
-		tools.performInforOperation(context, inforws::addEquipmentStructureOp, addEqStr);
+		tools.performEAMOperation(context, eamws::addEquipmentStructureOp, addEqStr);
 
 		return "OK";
 	}
 
-	public String removeEquipmentFromStructure(InforContext context, EquipmentStructure equipmentStructure) throws InforException {
+	public String removeEquipmentFromStructure(EAMContext context, EquipmentStructure equipmentStructure) throws EAMException {
 		MP0356_RemoveEquipmentFromStructure_001 removeeq = new MP0356_RemoveEquipmentFromStructure_001();
 
 		if (equipmentStructure.getChildCode() != null) {
@@ -84,12 +84,12 @@ public class EquipmentStructureServiceImpl implements EquipmentStructureService 
 					.setEQUIPMENTCODE(equipmentStructure.getParentCode().trim().toUpperCase());
 		}
 
-		tools.performInforOperation(context, inforws::removeEquipmentFromStructureOp, removeeq);
+		tools.performEAMOperation(context, eamws::removeEquipmentFromStructureOp, removeeq);
 
 		return "OK";
 	}
 
-	public String updateEquipmentStructure(InforContext context, EquipmentStructure equipmentStructure) throws InforException {
+	public String updateEquipmentStructure(EAMContext context, EquipmentStructure equipmentStructure) throws EAMException {
 
 		//
 		// check if existing parent hierarchy will be updates
@@ -120,7 +120,7 @@ public class EquipmentStructureServiceImpl implements EquipmentStructureService 
 				updateEqStr.setDEPENDENTON(tools.getDataTypeTools().encodeBoolean(equipmentStructure.getDependent(), BooleanType.TRUE_FALSE));
 			}
 
-			tools.performInforOperation(context, inforws::updateEquipmentStructurePropertiesOp, updateEqStr);
+			tools.performEAMOperation(context, eamws::updateEquipmentStructurePropertiesOp, updateEqStr);
 
 		} else {
 
@@ -159,7 +159,7 @@ public class EquipmentStructureServiceImpl implements EquipmentStructureService 
 						.setEQUIPMENTCODE(equipmentStructure.getNewParentCode().trim().toUpperCase());
 			}
 
-			tools.performInforOperation(context, inforws::syncEquipmentStructureOp, synceqpstr);
+			tools.performEAMOperation(context, eamws::syncEquipmentStructureOp, synceqpstr);
 		}
 		return "OK";
 	}

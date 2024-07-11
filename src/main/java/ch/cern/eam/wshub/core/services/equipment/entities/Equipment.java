@@ -3,17 +3,17 @@ package ch.cern.eam.wshub.core.services.equipment.entities;
 import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
 import ch.cern.eam.wshub.core.adapters.BooleanAdapter;
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
-import ch.cern.eam.wshub.core.annotations.InforField;
+import ch.cern.eam.wshub.core.annotations.EAMField;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedListHelpable;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.entities.UDLValue;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElementWrapper;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -29,7 +29,7 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
     private static final long serialVersionUID = 7865040704362527306L;
 
     @Column(name = "OBJ_DESC")
-    @InforField(xpath = {
+    @EAMField(xpath = {
             "ASSETID/DESCRIPTION",
             "POSITIONID/DESCRIPTION",
             "SYSTEMID/DESCRIPTION"
@@ -37,7 +37,7 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
     private String description;
     @Id
     @Column(name = "OBJ_CODE")
-    @InforField(xpath = {
+    @EAMField(xpath = {
             "ASSETID/EQUIPMENTCODE",
             "POSITIONID/EQUIPMENTCODE",
             "SYSTEMID/EQUIPMENTCODE"
@@ -45,7 +45,7 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
     private String code;
 
     @Transient
-    @InforField(xpath = {
+    @EAMField(xpath = {
             "ASSETID/ORGANIZATIONID/ORGANIZATIONCODE",
             "POSITIONID/ORGANIZATIONID/ORGANIZATIONCODE",
             "SYSTEMID/ORGANIZATIONID/ORGANIZATIONCODE"
@@ -53,47 +53,47 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
     private String organization;
 
     @Column(name = "OBJ_OBTYPE")
-    @InforField(xpath = "TYPE/TYPECODE")
+    @EAMField(xpath = "TYPE/TYPECODE")
     private String typeCode;
-    @InforField(xpath = "TYPE/DESCRIPTION", readOnly = true)
+    @EAMField(xpath = "TYPE/DESCRIPTION", readOnly = true)
     private String typeDesc;
 
     private String systemTypeCode;
 
     @Transient
-    @InforField(xpath = "EQUIPMENTALIAS")
+    @EAMField(xpath = "EQUIPMENTALIAS")
     private String alias;
 
     @Transient
-    @InforField(xpath = "CLASSID/CLASSCODE", nullifyParentLevel = 1)
+    @EAMField(xpath = "CLASSID/CLASSCODE", nullifyParentLevel = 1)
     private String classCode;
     @Transient
-    @InforField(xpath = "CLASSID/DESCRIPTION", readOnly = true)
+    @EAMField(xpath = "CLASSID/DESCRIPTION", readOnly = true)
     private String classDesc;
     @Transient
-    @InforField(xpath = "CATEGORYID/CATEGORYCODE", nullifyParentLevel = 1)
+    @EAMField(xpath = "CATEGORYID/CATEGORYCODE", nullifyParentLevel = 1)
     private String categoryCode;
     @Transient
-    @InforField(xpath = "CATEGORYID/DESCRIPTION", readOnly = true)
+    @EAMField(xpath = "CATEGORYID/DESCRIPTION", readOnly = true)
     private String categoryDesc;
     @Transient
-    @InforField(xpath = "recordid")
+    @EAMField(xpath = "recordid")
     private BigInteger updateCount;
     @Transient
-    @InforField(xpath = "OUTOFSERVICE")
+    @EAMField(xpath = "OUTOFSERVICE")
     private Boolean outOfService;
     @Transient
-    @InforField(xpath = "INPRODUCTION")
+    @EAMField(xpath = "INPRODUCTION")
     private Boolean inProduction;
     @Transient
-    @InforField(xpath = "PROFILEID/OBJECTCODE")
+    @EAMField(xpath = "PROFILEID/OBJECTCODE")
     private String profileCode;
     //
     @Transient
-    @InforField(xpath = "STATUS/STATUSCODE", nullifyParentLevel = 1)
+    @EAMField(xpath = "STATUS/STATUSCODE", nullifyParentLevel = 1)
     private String statusCode;
     @Transient
-    @InforField(xpath = "STATUS/DESCRIPTION", readOnly = true)
+    @EAMField(xpath = "STATUS/DESCRIPTION", readOnly = true)
     private String statusDesc;
 
     @Transient
@@ -109,102 +109,102 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
 
     //
     @Transient
-    @InforField(xpath = "COSTCODEID/COSTCODE", nullifyParentLevel = 1)
+    @EAMField(xpath = "COSTCODEID/COSTCODE", nullifyParentLevel = 1)
     private String costCode;
     @Transient
-    @InforField(xpath = "COSTCODEID/DESCRIPTION", nullifyParentLevel = 0)
+    @EAMField(xpath = "COSTCODEID/DESCRIPTION", nullifyParentLevel = 0)
     private String costCodeDesc;
 
     @Transient
-    @InforField(xpath = "DEPARTMENTID/DEPARTMENTCODE", nullifyParentLevel = 1)
+    @EAMField(xpath = "DEPARTMENTID/DEPARTMENTCODE", nullifyParentLevel = 1)
     private String departmentCode;
     @Transient
-    @InforField(xpath = "DEPARTMENTID/DESCRIPTION", nullifyParentLevel = 0)
+    @EAMField(xpath = "DEPARTMENTID/DESCRIPTION", nullifyParentLevel = 0)
     private String departmentDesc;
     //
     @Transient
-    @InforField(xpath = "USERDEFINEDAREA")
+    @EAMField(xpath = "USERDEFINEDAREA")
     private CustomField[] customFields;
 
     //
     @Transient
-    @InforField(xpath = "COMMISSIONDATE")
+    @EAMField(xpath = "COMMISSIONDATE")
     private Date comissionDate;
     @Transient
-    @InforField(xpath = "ASSETVALUE")
+    @EAMField(xpath = "ASSETVALUE")
     private BigDecimal equipmentValue;
     @Transient
-    @InforField(xpath = "ASSIGNEDTO/PERSONCODE", nullifyParentLevel = 1)
+    @EAMField(xpath = "ASSIGNEDTO/PERSONCODE", nullifyParentLevel = 1)
     private String assignedTo;
     @Transient
-    @InforField(xpath = "ASSIGNEDTO/DESCRIPTION", readOnly = true)
+    @EAMField(xpath = "ASSIGNEDTO/DESCRIPTION", readOnly = true)
     private String assignedToDesc;
     @Transient
-    @InforField(xpath = "METERUNIT")
+    @EAMField(xpath = "METERUNIT")
     private String meterUnit;
     @Transient
-    @InforField(xpath = "CRITICALITYID/CRITICALITY", nullifyParentLevel = 1)
+    @EAMField(xpath = "CRITICALITYID/CRITICALITY", nullifyParentLevel = 1)
     private String criticality;
     @Transient
-    @InforField(xpath = "CGMP")
+    @EAMField(xpath = "CGMP")
     private String cGMP;
     @Transient
-    @InforField(xpath = "ORIGINALRECEIPTDATE")
+    @EAMField(xpath = "ORIGINALRECEIPTDATE")
     private Date originalReceiptDate;
     @Transient
-    @InforField(xpath = "EQUIPMENTSTATEID/STATECODE", enforceValidXpath = false, nullifyParentLevel = 1)
+    @EAMField(xpath = "EQUIPMENTSTATEID/STATECODE", enforceValidXpath = false, nullifyParentLevel = 1)
     private String stateCode;
     @Transient
-    @InforField(xpath = "EQUIPMENTSTATEID/DESCRIPTION", readOnly = true)
+    @EAMField(xpath = "EQUIPMENTSTATEID/DESCRIPTION", readOnly = true)
     private String stateDesc;
 
     @Transient
-    @InforField(xpath = "ManufacturerInfo/MANUFACTURERCODE", nullifyParentLevel = 0)
+    @EAMField(xpath = "ManufacturerInfo/MANUFACTURERCODE", nullifyParentLevel = 0)
     private String manufacturerCode;
     @Transient
     private String manufacturerDesc;
     @Transient
-    @InforField(xpath = "ManufacturerInfo/SERIALNUMBER", nullifyParentLevel = 0)
+    @EAMField(xpath = "ManufacturerInfo/SERIALNUMBER", nullifyParentLevel = 0)
     private String serialNumber;
     @Transient
-    @InforField(xpath = "ManufacturerInfo/MODEL", nullifyParentLevel = 0)
+    @EAMField(xpath = "ManufacturerInfo/MODEL", nullifyParentLevel = 0)
     private String model;
     @Transient
-    @InforField(xpath = "ManufacturerInfo/MODELREVISION", nullifyParentLevel = 0)
+    @EAMField(xpath = "ManufacturerInfo/MODELREVISION", nullifyParentLevel = 0)
     private String revision;
     @Transient
-    @InforField(xpath = "ManufacturerInfo/XCOORDINATE", nullifyParentLevel = 0)
+    @EAMField(xpath = "ManufacturerInfo/XCOORDINATE", nullifyParentLevel = 0)
     private BigDecimal xCoordinate;
     @Transient
-    @InforField(xpath = "ManufacturerInfo/YCOORDINATE", nullifyParentLevel = 0)
+    @EAMField(xpath = "ManufacturerInfo/YCOORDINATE", nullifyParentLevel = 0)
     private BigDecimal yCoordinate;
     @Transient
-    @InforField(xpath = "ManufacturerInfo/ZCOORDINATE", nullifyParentLevel = 0)
+    @EAMField(xpath = "ManufacturerInfo/ZCOORDINATE", nullifyParentLevel = 0)
     private BigDecimal zCoordinate;
     @Transient
-    @InforField(xpath = "VENDOR", nullifyParentLevel = 0)
+    @EAMField(xpath = "VENDOR", nullifyParentLevel = 0)
     private String vendor;
 
     @Transient
-    @InforField(xpath = "FacilityConditionIndex/COSTOFNEEDEDREPAIRS", nullifyParentLevel = 0)
+    @EAMField(xpath = "FacilityConditionIndex/COSTOFNEEDEDREPAIRS", nullifyParentLevel = 0)
     private BigDecimal costOfNeededRepairs;
     @Transient
-    @InforField(xpath = "FacilityConditionIndex/REPLACEMENTVALUE", nullifyParentLevel = 0)
+    @EAMField(xpath = "FacilityConditionIndex/REPLACEMENTVALUE", nullifyParentLevel = 0)
     private BigDecimal replacementValue;
     @Transient
-    @InforField(xpath = "FacilityConditionIndex/FACILITYCONDITIONINDEX", nullifyParentLevel = 0)
+    @EAMField(xpath = "FacilityConditionIndex/FACILITYCONDITIONINDEX", nullifyParentLevel = 0)
     private BigDecimal facilityConditionIndex;
     @Transient
-    @InforField(xpath = "FacilityConditionIndex/YEARBUILT", nullifyParentLevel = 0)
+    @EAMField(xpath = "FacilityConditionIndex/YEARBUILT", nullifyParentLevel = 0)
     private BigDecimal yearBuilt;
     @Transient
-    @InforField(xpath = "FacilityConditionIndex/SERVICELIFE", nullifyParentLevel = 0)
+    @EAMField(xpath = "FacilityConditionIndex/SERVICELIFE", nullifyParentLevel = 0)
     private BigDecimal serviceLifetime;
 
     // Hierarchy
     // Asset
     @Transient
-    @InforField(xpath = {
+    @EAMField(xpath = {
             "AssetParentHierarchy/AssetDependency/DEPENDENTASSET/ASSETID/EQUIPMENTCODE",
             "AssetParentHierarchy/PositionDependency/NONDEPENDENTASSET/ASSETID/EQUIPMENTCODE",
             "AssetParentHierarchy/PrimarySystemDependency/NONDEPENDENTASSET/ASSETID/EQUIPMENTCODE",
@@ -221,7 +221,7 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
             readOnly = true)
     private String hierarchyAssetCode;
     @Transient
-    @InforField(xpath = {
+    @EAMField(xpath = {
             "AssetParentHierarchy/AssetDependency/DEPENDENTASSET/ASSETID/DESCRIPTION",
             "AssetParentHierarchy/PositionDependency/NONDEPENDENTASSET/ASSETID/DESCRIPTION",
             "AssetParentHierarchy/PrimarySystemDependency/NONDEPENDENTASSET/ASSETID/DESCRIPTION",
@@ -239,7 +239,7 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
     private String hierarchyAssetDesc;
 
     @Transient
-    @InforField(xpath = {
+    @EAMField(xpath = {
             "AssetParentHierarchy/AssetDependency/DEPENDENTASSET/ASSETID/ORGANIZATIONID/ORGANIZATIONCODE",
             "AssetParentHierarchy/PositionDependency/NONDEPENDENTASSET/ASSETID/ORGANIZATIONID/ORGANIZATIONCODE",
             "AssetParentHierarchy/PrimarySystemDependency/NONDEPENDENTASSET/ASSETID/ORGANIZATIONID/ORGANIZATIONCODE",
@@ -258,7 +258,7 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
     @Transient
     private Boolean hierarchyAssetDependent;
     @Transient
-    @InforField(xpath = {
+    @EAMField(xpath = {
             "AssetParentHierarchy/AssetDependency/DEPENDENTASSET/COSTROLLUP",
             "AssetParentHierarchy/PositionDependency/NONDEPENDENTASSET/COSTROLLUP",
             "AssetParentHierarchy/PrimarySystemDependency/NONDEPENDENTASSET/COSTROLLUP",
@@ -276,7 +276,7 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
     private Boolean hierarchyAssetCostRollUp;
     // Position
     @Transient
-    @InforField(xpath = {
+    @EAMField(xpath = {
             "AssetParentHierarchy/AssetDependency/NONDEPENDENTPOSITION/POSITIONID/EQUIPMENTCODE",
             "AssetParentHierarchy/PositionDependency/DEPENDENTPOSITION/POSITIONID/EQUIPMENTCODE",
             "AssetParentHierarchy/PrimarySystemDependency/NONDEPENDENTPOSITION/POSITIONID/EQUIPMENTCODE",
@@ -293,7 +293,7 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
             readOnly = true)
     private String hierarchyPositionCode;
     @Transient
-    @InforField(xpath = {
+    @EAMField(xpath = {
             "AssetParentHierarchy/AssetDependency/NONDEPENDENTPOSITION/POSITIONID/DESCRIPTION",
             "AssetParentHierarchy/PositionDependency/DEPENDENTPOSITION/POSITIONID/DESCRIPTION",
             "AssetParentHierarchy/PrimarySystemDependency/NONDEPENDENTPOSITION/POSITIONID/DESCRIPTION",
@@ -311,7 +311,7 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
     private String hierarchyPositionDesc;
 
     @Transient
-    @InforField(xpath = {
+    @EAMField(xpath = {
             "AssetParentHierarchy/AssetDependency/NONDEPENDENTPOSITION/POSITIONID/ORGANIZATIONID/ORGANIZATIONCODE",
             "AssetParentHierarchy/PositionDependency/DEPENDENTPOSITION/POSITIONID/ORGANIZATIONID/ORGANIZATIONCODE",
             "AssetParentHierarchy/PrimarySystemDependency/NONDEPENDENTPOSITION/POSITIONID/ORGANIZATIONID/ORGANIZATIONCODE",
@@ -330,7 +330,7 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
     @Transient
     private Boolean hierarchyPositionDependent;
     @Transient
-    @InforField(xpath = {
+    @EAMField(xpath = {
             "AssetParentHierarchy/AssetDependency/NONDEPENDENTPOSITION/COSTROLLUP",
             "AssetParentHierarchy/PositionDependency/DEPENDENTPOSITION/COSTROLLUP",
             "AssetParentHierarchy/PrimarySystemDependency/NONDEPENDENTPOSITION/COSTROLLUP",
@@ -348,7 +348,7 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
     private Boolean hierarchyPositionCostRollUp;
     // Primary System
     @Transient
-    @InforField(xpath = {
+    @EAMField(xpath = {
             "AssetParentHierarchy/AssetDependency/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/EQUIPMENTCODE",
             "AssetParentHierarchy/PositionDependency/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/EQUIPMENTCODE",
             "AssetParentHierarchy/PrimarySystemDependency/DEPENDENTPRIMARYSYSTEM/SYSTEMID/EQUIPMENTCODE",
@@ -368,7 +368,7 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
             readOnly = true)
     private String hierarchyPrimarySystemCode;
     @Transient
-    @InforField(xpath = {
+    @EAMField(xpath = {
             "AssetParentHierarchy/AssetDependency/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/DESCRIPTION",
             "AssetParentHierarchy/PositionDependency/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/DESCRIPTION",
             "AssetParentHierarchy/PrimarySystemDependency/DEPENDENTPRIMARYSYSTEM/SYSTEMID/DESCRIPTION",
@@ -389,7 +389,7 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
     private String hierarchyPrimarySystemDesc;
 
     @Transient
-    @InforField(xpath = {
+    @EAMField(xpath = {
             "AssetParentHierarchy/AssetDependency/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/ORGANIZATIONID/ORGANIZATIONCODE",
             "AssetParentHierarchy/PositionDependency/NONDEPENDENTPRIMARYSYSTEM/SYSTEMID/ORGANIZATIONID/ORGANIZATIONCODE",
             "AssetParentHierarchy/PrimarySystemDependency/DEPENDENTPRIMARYSYSTEM/SYSTEMID/ORGANIZATIONID/ORGANIZATIONCODE",
@@ -411,7 +411,7 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
     @Transient
     private Boolean hierarchyPrimarySystemDependent;
     @Transient
-    @InforField(xpath = {
+    @EAMField(xpath = {
             "AssetParentHierarchy/AssetDependency/NONDEPENDENTPRIMARYSYSTEM/COSTROLLUP",
             "AssetParentHierarchy/PositionDependency/NONDEPENDENTPRIMARYSYSTEM/COSTROLLUP",
             "AssetParentHierarchy/PrimarySystemDependency/DEPENDENTPRIMARYSYSTEM/COSTROLLUP",
@@ -447,84 +447,84 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
 
     // Part Association
     @Transient
-    @InforField(xpath = "PartAssociation/PARTID/PARTCODE", enforceValidXpath = false, nullifyParentLevel = 0)
+    @EAMField(xpath = "PartAssociation/PARTID/PARTCODE", enforceValidXpath = false, nullifyParentLevel = 0)
     private String partCode;
     @Transient
-    @InforField(xpath = "PartAssociation/PARTID/DESCRIPTION", enforceValidXpath = false, readOnly = true)
+    @EAMField(xpath = "PartAssociation/PARTID/DESCRIPTION", enforceValidXpath = false, readOnly = true)
     private String partDesc;
     @Transient
-    @InforField(xpath = "PartAssociation/STORELOCATION/STOREID/STORECODE", enforceValidXpath = false, nullifyParentLevel = 0)
+    @EAMField(xpath = "PartAssociation/STORELOCATION/STOREID/STORECODE", enforceValidXpath = false, nullifyParentLevel = 0)
     private String storeCode;
     @Transient
-    @InforField(xpath = "PartAssociation/STORELOCATION/STOREID/DESCRIPTION", enforceValidXpath = false, readOnly = true)
+    @EAMField(xpath = "PartAssociation/STORELOCATION/STOREID/DESCRIPTION", enforceValidXpath = false, readOnly = true)
     private String storeDesc;
     @Transient
-    @InforField(xpath = "PartAssociation/STORELOCATION/BIN", enforceValidXpath = false, nullifyParentLevel = 0)
+    @EAMField(xpath = "PartAssociation/STORELOCATION/BIN", enforceValidXpath = false, nullifyParentLevel = 0)
     private String bin;
     @Transient
     private String binDesc;
     @Transient
-    @InforField(xpath = "PartAssociation/STORELOCATION/LOT", enforceValidXpath = false, nullifyParentLevel = 0)
+    @EAMField(xpath = "PartAssociation/STORELOCATION/LOT", enforceValidXpath = false, nullifyParentLevel = 0)
     private String lot;
 
     // Linear Reference
     @Transient
-    @InforField(xpath = "LINEARREFERENCEDETAILS/LINEARREFPRECISION", nullifyParentLevel = 0)
+    @EAMField(xpath = "LINEARREFERENCEDETAILS/LINEARREFPRECISION", nullifyParentLevel = 0)
     private String linearRefPrecision;
     @Transient
-    @InforField(xpath = "LINEARREFERENCEDETAILS/LINEARREFUOM", nullifyParentLevel = 0)
+    @EAMField(xpath = "LINEARREFERENCEDETAILS/LINEARREFUOM", nullifyParentLevel = 0)
     private String linearRefUOM;
     @Transient
-    @InforField(xpath = "LINEARREFERENCEDETAILS/EQUIPMENTLENGTH", nullifyParentLevel = 0)
+    @EAMField(xpath = "LINEARREFERENCEDETAILS/EQUIPMENTLENGTH", nullifyParentLevel = 0)
     private BigDecimal linearRefEquipmentLength;
     @Transient
-    @InforField(xpath = "LINEARREFERENCEDETAILS/EQUIPMENTLENGTHUOM", nullifyParentLevel = 0)
+    @EAMField(xpath = "LINEARREFERENCEDETAILS/EQUIPMENTLENGTHUOM", nullifyParentLevel = 0)
     private String linearRefEquipmentLengthUOM;
     @Transient
-    @InforField(xpath = "LINEARREFERENCEDETAILS/GEOGRAPHICALREFERENCE", nullifyParentLevel = 0)
+    @EAMField(xpath = "LINEARREFERENCEDETAILS/GEOGRAPHICALREFERENCE", nullifyParentLevel = 0)
     private String linearRefGeographicalRef;
 
     // Variables
     @Transient
-    @InforField(xpath = "Variables/VARIABLE1", nullifyParentLevel = 0)
+    @EAMField(xpath = "Variables/VARIABLE1", nullifyParentLevel = 0)
     private String variable1;
     @Transient
-    @InforField(xpath = "Variables/VARIABLE2", nullifyParentLevel = 0)
+    @EAMField(xpath = "Variables/VARIABLE2", nullifyParentLevel = 0)
     private String variable2;
     @Transient
-    @InforField(xpath = "Variables/VARIABLE3", nullifyParentLevel = 0)
+    @EAMField(xpath = "Variables/VARIABLE3", nullifyParentLevel = 0)
     private String variable3;
     @Transient
-    @InforField(xpath = "Variables/VARIABLE4", nullifyParentLevel = 0)
+    @EAMField(xpath = "Variables/VARIABLE4", nullifyParentLevel = 0)
     private String variable4;
     @Transient
-    @InforField(xpath = "Variables/VARIABLE5", nullifyParentLevel = 0)
+    @EAMField(xpath = "Variables/VARIABLE5", nullifyParentLevel = 0)
     private String variable5;
     @Transient
-    @InforField(xpath = "Variables/VARIABLE6", nullifyParentLevel = 0)
+    @EAMField(xpath = "Variables/VARIABLE6", nullifyParentLevel = 0)
     private String variable6;
 
     // Dormant
     @Transient
-    @InforField(xpath = "DORMANT/DORMANTSTART")
+    @EAMField(xpath = "DORMANT/DORMANTSTART")
     private Date dormantStart;
     @Transient
-    @InforField(xpath = "DORMANT/DORMANTEND")
+    @EAMField(xpath = "DORMANT/DORMANTEND")
     private Date dormantEnd;
     @Transient
-    @InforField(xpath = "DORMANT/DORMANTREUSE")
+    @EAMField(xpath = "DORMANT/DORMANTREUSE")
     private String dormantReusePeriod;
 
     @Transient
-    @InforField(xpath = "UserDefinedFields")
+    @EAMField(xpath = "UserDefinedFields")
     private UserDefinedFields userDefinedFields;
 
     @Transient
-    @InforField(xpath = "SAFETY")
+    @EAMField(xpath = "SAFETY")
     private String safety;
 
     @Transient
-    @InforField(xpath = "ORIGINALINSTALLDATE")
+    @EAMField(xpath = "ORIGINALINSTALLDATE")
     private Date originalInstallDate;
 
     public String getOrganization() {
@@ -536,11 +536,11 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
     }
 
     @Transient
-    @InforField(xpath = "XLOCATION")
+    @EAMField(xpath = "XLOCATION")
     private BigDecimal xLocation;
 
     @Transient
-    @InforField(xpath = "YLOCATION")
+    @EAMField(xpath = "YLOCATION")
     private BigDecimal yLocation;
 
     @Transient
@@ -571,48 +571,46 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
     private HashMap<String, ArrayList<UDLValue>> userDefinedList;
 
     @Transient
-    @InforField(xpath = "FleetVehicleInfo/ISVEHICLE", nullifyParentLevel = 0)
+    @EAMField(xpath = "FleetVehicleInfo/ISVEHICLE", nullifyParentLevel = 0)
     private Boolean vehicle;
 
     @Transient
-    @InforField(xpath = "FleetVehicleInfo/ISRENTAL", nullifyParentLevel = 0)
+    @EAMField(xpath = "FleetVehicleInfo/ISRENTAL", nullifyParentLevel = 0)
     private Boolean rental;
 
     @Transient
-    @InforField(xpath = "FleetVehicleInfo/VEHICLETYPE/TYPECODE", nullifyParentLevel = 1)
+    @EAMField(xpath = "FleetVehicleInfo/VEHICLETYPE/TYPECODE", nullifyParentLevel = 1)
     private String vehicleTypeCode;
 
     @Transient
-    @InforField(xpath = "FleetVehicleInfo/AVAILABILITYSTATUS/STATUSCODE", nullifyParentLevel = 1)
+    @EAMField(xpath = "FleetVehicleInfo/AVAILABILITYSTATUS/STATUSCODE", nullifyParentLevel = 1)
     private String availabilityStatus;
 
     @Transient
-    @InforField(xpath = "FleetVehicleInfo/ISSUETO/PERSONCODE", nullifyParentLevel = 1)
+    @EAMField(xpath = "FleetVehicleInfo/ISSUETO/PERSONCODE", nullifyParentLevel = 1)
     private String issueTo;
 
     @Transient
-    @InforField(xpath = "FleetVehicleInfo/CUSTOMERID/CUSTOMERCODE", nullifyParentLevel = 1)
+    @EAMField(xpath = "FleetVehicleInfo/CUSTOMERID/CUSTOMERCODE", nullifyParentLevel = 1)
     private String customerCode;
 
     @Transient
-    @InforField(xpath = "FleetVehicleInfo/RENTALTEMPLATEID/RENTALTEMPLATECODE", nullifyParentLevel = 1)
+    @EAMField(xpath = "FleetVehicleInfo/RENTALTEMPLATEID/RENTALTEMPLATECODE", nullifyParentLevel = 1)
     private String rentalTemplateCode;
 
     @Transient
-    @InforField(xpath = "FleetVehicleInfo/RENTALTEMPLATEID/DESCRIPTION", nullifyParentLevel = 1, readOnly = true)
+    @EAMField(xpath = "FleetVehicleInfo/RENTALTEMPLATEID/DESCRIPTION", nullifyParentLevel = 1, readOnly = true)
     private String rentalTemplateDesc;
 
     @Transient
-    @InforField(xpath="CHECKLISTFILTER")
+    @EAMField(xpath="CHECKLISTFILTER")
     private String equipmentFilter;
 
-    @InforField(xpath = "WORKSPACEID/WORKSPACENUMBER")
+    @EAMField(xpath = "WORKSPACEID/WORKSPACENUMBER")
     private String workspaceNo;
 
-    @InforField(xpath = "FUELID/FUELCODE")
+    @EAMField(xpath = "FUELID/FUELCODE")
     private String primaryFuel;
-
-
 
     public String getDescription() {
         return description;

@@ -1,13 +1,13 @@
 package ch.cern.eam.wshub.core.services.workorders.impl;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.comments.CommentService;
 import ch.cern.eam.wshub.core.services.comments.impl.CommentServiceImpl;
 import ch.cern.eam.wshub.core.services.workorders.StandardWorkOrderService;
 import ch.cern.eam.wshub.core.services.workorders.entities.StandardWorkOrder;
 import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrder;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_entities.workorder_001.UserDefinedFields;
 import net.datastream.schemas.mp_fields.STDWOID_Type;
@@ -19,29 +19,29 @@ import net.datastream.schemas.mp_functions.mp7082_001.MP7082_GetStandardWorkOrde
 import net.datastream.schemas.mp_results.mp0023_001.MP0023_AddWorkOrder_001_Result;
 import net.datastream.schemas.mp_results.mp7079_001.MP7079_AddStandardWorkOrder_001_Result;
 import net.datastream.schemas.mp_results.mp7082_001.MP7082_GetStandardWorkOrder_001_Result;
-import net.datastream.wsdls.inforws.InforWebServicesPT;
+import net.datastream.wsdls.eamws.EAMWebServicesPT;
 
-import javax.xml.ws.Holder;
+import jakarta.xml.ws.Holder;
 
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.toCodeString;
 
 public class StandardWorkOrderServiceImpl implements StandardWorkOrderService {
 
     private Tools tools;
-    private InforWebServicesPT inforws;
+    private EAMWebServicesPT eamws;
     private ApplicationData applicationData;
 
-    public StandardWorkOrderServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
+    public StandardWorkOrderServiceImpl(ApplicationData applicationData, Tools tools, EAMWebServicesPT eamWebServicesToolkitClient) {
         this.applicationData = applicationData;
         this.tools = tools;
-        this.inforws = inforWebServicesToolkitClient;
+        this.eamws = eamWebServicesToolkitClient;
     }
 
-    public StandardWorkOrder readStandardWorkOrder(InforContext context, String number) throws InforException {
-        return tools.getInforFieldTools().transformInforObject(new StandardWorkOrder(), readStandardWorkOrderInfor(context, number), context);
+    public StandardWorkOrder readStandardWorkOrder(EAMContext context, String number) throws EAMException {
+        return tools.getEAMFieldTools().transformEAMObject(new StandardWorkOrder(), readStandardWorkOrderEAM(context, number), context);
     }
 
-    public net.datastream.schemas.mp_entities.standardworkorder_001.StandardWorkOrder readStandardWorkOrderInfor(InforContext context, String number) throws InforException {
+    public net.datastream.schemas.mp_entities.standardworkorder_001.StandardWorkOrder readStandardWorkOrderEAM(EAMContext context, String number) throws EAMException {
         //
         // Fetch WO
         //
@@ -52,47 +52,47 @@ public class StandardWorkOrderServiceImpl implements StandardWorkOrderService {
         getStandardWorkOrder.getSTANDARDWO().setSTDWOCODE(number);
 
         MP7082_GetStandardWorkOrder_001_Result result =
-            tools.performInforOperation(context, inforws::getStandardWorkOrderOp, getStandardWorkOrder);
+            tools.performEAMOperation(context, eamws::getStandardWorkOrderOp, getStandardWorkOrder);
 
         return result.getResultData().getStandardWorkOrder();
     }
 
 
-    public String createStandardWorkOrder(InforContext context, StandardWorkOrder standardWorkOrder) throws InforException {
+    public String createStandardWorkOrder(EAMContext context, StandardWorkOrder standardWorkOrder) throws EAMException {
 
         MP7079_AddStandardWorkOrder_001 addStandardWorkOrder = new MP7079_AddStandardWorkOrder_001();
         addStandardWorkOrder.setStandardWorkOrder(new net.datastream.schemas.mp_entities.standardworkorder_001.StandardWorkOrder());
 
-        tools.getInforFieldTools().transformWSHubObject(addStandardWorkOrder.getStandardWorkOrder(), standardWorkOrder, context);
+        tools.getEAMFieldTools().transformWSHubObject(addStandardWorkOrder.getStandardWorkOrder(), standardWorkOrder, context);
 
         MP7079_AddStandardWorkOrder_001_Result result =
-            tools.performInforOperation(context, inforws::addStandardWorkOrderOp, addStandardWorkOrder);
+            tools.performEAMOperation(context, eamws::addStandardWorkOrderOp, addStandardWorkOrder);
 
         return result.getResultData().getSTANDARDWO().getSTDWOCODE();
     }
 
-    public String updateStandardWorkOrder(InforContext context, StandardWorkOrder standardWorkOrder) throws InforException {
-        net.datastream.schemas.mp_entities.standardworkorder_001.StandardWorkOrder inforStandardWorkOrder = readStandardWorkOrderInfor(context, standardWorkOrder.getCode());
+    public String updateStandardWorkOrder(EAMContext context, StandardWorkOrder standardWorkOrder) throws EAMException {
+        net.datastream.schemas.mp_entities.standardworkorder_001.StandardWorkOrder eamStandardWorkOrder = readStandardWorkOrderEAM(context, standardWorkOrder.getCode());
 
         // Check Custom fields. If they change, or now we have them
-//        inforStandardWorkOrder.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(
+//        eamStandardWorkOrder.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getEAMCustomFields(
 //            context,
-//            toCodeString(inforStandardWorkOrder.getCLASSID()),
-//            inforStandardWorkOrder.getUSERDEFINEDAREA(),
+//            toCodeString(eamStandardWorkOrder.getCLASSID()),
+//            eamStandardWorkOrder.getUSERDEFINEDAREA(),
 //            standardWorkOrder.getClassCode(),
 //            "STWO"));
 
-        tools.getInforFieldTools().transformWSHubObject(inforStandardWorkOrder, standardWorkOrder, context);
+        tools.getEAMFieldTools().transformWSHubObject(eamStandardWorkOrder, standardWorkOrder, context);
 
         //
         // CALL INFOR WEB SERVICE
         //
         MP7080_SyncStandardWorkOrder_001 syncStandardWorkOrder = new MP7080_SyncStandardWorkOrder_001();
-        syncStandardWorkOrder.setStandardWorkOrder(inforStandardWorkOrder);
+        syncStandardWorkOrder.setStandardWorkOrder(eamStandardWorkOrder);
 
-        tools.performInforOperation(context, inforws::syncStandardWorkOrderOp, syncStandardWorkOrder);
+        tools.performEAMOperation(context, eamws::syncStandardWorkOrderOp, syncStandardWorkOrder);
 
-        return inforStandardWorkOrder.getSTANDARDWO().getSTDWOCODE();
+        return eamStandardWorkOrder.getSTANDARDWO().getSTDWOCODE();
     }
 
 

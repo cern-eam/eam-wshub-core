@@ -1,6 +1,6 @@
 package ch.cern.eam.wshub.core.services.grids.entities;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 
 @Entity

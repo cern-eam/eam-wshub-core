@@ -1,7 +1,7 @@
 package ch.cern.eam.wshub.core.services.equipment;
 
 import ch.cern.eam.wshub.core.services.equipment.entities.Location;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -18,12 +18,12 @@ public class TestEquipmentFacadeService {
 
     @BeforeEach
     void setup() throws Exception {
-        locationService = inforClient.getLocationService();
-        equipmentFacadeService = inforClient.getEquipmentFacadeService();
+        locationService = eamClient.getLocationService();
+        equipmentFacadeService = eamClient.getEquipmentFacadeService();
     }
 
     @Test
-    public void testDeprecatedLocations() throws InforException {
+    public void testDeprecatedLocations() throws EAMException {
         String code = getCode(TypeCode.L);
         Location location = new Location();
         location.setCode(code);
@@ -31,7 +31,7 @@ public class TestEquipmentFacadeService {
         location.setDepartmentCode(DEPARTMENT);
         locationService.createLocation(context, location);
 
-        assertThrows(InforException.class, () -> equipmentFacadeService.readEquipment(context, code));
-        assertThrows(InforException.class, () -> equipmentFacadeService.deleteEquipment(context, code));
+        assertThrows(EAMException.class, () -> equipmentFacadeService.readEquipment(context, code));
+        assertThrows(EAMException.class, () -> equipmentFacadeService.deleteEquipment(context, code));
     }
 }

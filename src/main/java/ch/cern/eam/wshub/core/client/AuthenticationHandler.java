@@ -1,10 +1,10 @@
 package ch.cern.eam.wshub.core.client;
 
 import javax.xml.namespace.QName;
-import javax.xml.soap.Node;
-import javax.xml.ws.handler.MessageContext;
-import javax.xml.ws.handler.soap.SOAPHandler;
-import javax.xml.ws.handler.soap.SOAPMessageContext;
+import jakarta.xml.soap.Node;
+import jakarta.xml.ws.handler.MessageContext;
+import jakarta.xml.ws.handler.soap.SOAPHandler;
+import jakarta.xml.ws.handler.soap.SOAPMessageContext;
 import java.util.*;
 
 class AuthenticationHandler implements SOAPHandler<SOAPMessageContext> {

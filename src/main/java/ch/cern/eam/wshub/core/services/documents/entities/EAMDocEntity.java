@@ -5,16 +5,16 @@ package ch.cern.eam.wshub.core.services.documents.entities;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "R5DOCENTITIES")
-@IdClass(InforDocEntityPK.class)
-public class InforDocEntity implements Serializable {
+@IdClass(EAMDocEntityPK.class)
+public class EAMDocEntity implements Serializable {
 	private static final long serialVersionUID = -4636805288760053482L;
 	
 	@Id
@@ -27,10 +27,10 @@ public class InforDocEntity implements Serializable {
 	@Column(name = "DAE_RENTITY")
 	private String entity;
 
-	public InforDocEntity() {
+	public EAMDocEntity() {
 	}
 
-	public InforDocEntity(String document, String code, String entity) {
+	public EAMDocEntity(String document, String code, String entity) {
 		this.document = document;
 		this.code = code;
 		this.entity = entity;

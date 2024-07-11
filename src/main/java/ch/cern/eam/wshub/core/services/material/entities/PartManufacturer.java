@@ -2,35 +2,35 @@ package ch.cern.eam.wshub.core.services.material.entities;
 
 import ch.cern.eam.wshub.core.adapters.BooleanAdapter;
 import ch.cern.eam.wshub.core.annotations.BooleanType;
-import ch.cern.eam.wshub.core.annotations.InforField;
+import ch.cern.eam.wshub.core.annotations.EAMField;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 
 public class PartManufacturer implements Serializable {
 
-	@InforField(xpath = "MANUFACTURERID/MANUFACTURERCODE", nullifyParentLevel = 0)
+	@EAMField(xpath = "MANUFACTURERID/MANUFACTURERCODE", nullifyParentLevel = 0)
 	private String manufacturerCode;
 
-	@InforField(xpath = "MANUFACTURERID/DESCRIPTION")
+	@EAMField(xpath = "MANUFACTURERID/DESCRIPTION")
 	private String manufacturerDesc;
 
-	@InforField(xpath = "PARTID/PARTCODE", nullifyParentLevel = 0)
+	@EAMField(xpath = "PARTID/PARTCODE", nullifyParentLevel = 0)
 	private String partCode;
 
-	@InforField(xpath = "MANUFACTURERDRAW")
+	@EAMField(xpath = "MANUFACTURERDRAW")
 	private String drawingNumber;
 
-	@InforField(xpath = "OUTOFSERVICE", booleanType = BooleanType.TRUE_FALSE)
+	@EAMField(xpath = "OUTOFSERVICE", booleanType = BooleanType.TRUE_FALSE)
 	private Boolean outOfService;
 
-	@InforField(xpath = "ISPRIMARY", booleanType = BooleanType.TRUE_FALSE, nullifyParentLevel = 0)
+	@EAMField(xpath = "ISPRIMARY", booleanType = BooleanType.TRUE_FALSE, nullifyParentLevel = 0)
 	private Boolean primary;
 
-	@InforField(xpath = "MANUFACTURERPARTCODE", nullifyParentLevel = 0)
+	@EAMField(xpath = "MANUFACTURERPARTCODE", nullifyParentLevel = 0)
 	private String manufacturerPartNumber;
 
-	@InforField(xpath = "manufacturerpartcode_new", nullifyParentLevel = 0)
+	@EAMField(xpath = "manufacturerpartcode_new", nullifyParentLevel = 0)
 	private String manufacturerPartNumberNew;
 	
 	public String getManufacturerCode() {

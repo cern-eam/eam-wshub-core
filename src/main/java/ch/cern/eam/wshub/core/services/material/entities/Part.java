@@ -3,7 +3,7 @@ package ch.cern.eam.wshub.core.services.material.entities;
 import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
 import ch.cern.eam.wshub.core.adapters.BooleanAdapter;
 import ch.cern.eam.wshub.core.annotations.BooleanType;
-import ch.cern.eam.wshub.core.annotations.InforField;
+import ch.cern.eam.wshub.core.annotations.EAMField;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedListHelpable;
@@ -11,10 +11,10 @@ import ch.cern.eam.wshub.core.services.userdefinedscreens.entities.UDLValue;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.entities.xmlhashmap.XmlHashMapAdapter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElementWrapper;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -33,97 +33,97 @@ public class Part implements Serializable, UserDefinedListHelpable {
 
 	@Id
 	@Column(name = "PAR_CODE")
-	@InforField(xpath = "PARTID/PARTCODE")
+	@EAMField(xpath = "PARTID/PARTCODE")
 	private String code;
 
 	@Transient
 	private String newCode;
 
 	@Column(name = "PAR_DESC")
-	@InforField(xpath = "PARTID/DESCRIPTION")
+	@EAMField(xpath = "PARTID/DESCRIPTION")
 	private String description;
 
 	@Column(name = "PAR_ORG")
-	@InforField(xpath = "PARTID/ORGANIZATIONID/ORGANIZATIONCODE")
+	@EAMField(xpath = "PARTID/ORGANIZATIONID/ORGANIZATIONCODE")
 	private String organization;
 
 	@Column(name = "PAR_UOM")
-	@InforField(xpath = "UOMID/UOMCODE")
+	@EAMField(xpath = "UOMID/UOMCODE")
 	private String UOM;
 	@Transient
-	@InforField(xpath = "UOMID/DESCRIPTION", readOnly = true)
+	@EAMField(xpath = "UOMID/DESCRIPTION", readOnly = true)
 	private String UOMDesc;
 
 	@Column(name = "PAR_CLASS")
-	@InforField(xpath = "CLASSID/CLASSCODE")
+	@EAMField(xpath = "CLASSID/CLASSCODE")
 	private String classCode;
 	@Transient
-	@InforField(xpath = "CLASSID/DESCRIPTION", readOnly = true)
+	@EAMField(xpath = "CLASSID/DESCRIPTION", readOnly = true)
 	private String classDesc;
 
 	@Transient
-	@InforField(xpath = "CATEGORYID/CATEGORYCODE")
+	@EAMField(xpath = "CATEGORYID/CATEGORYCODE")
 	private String categoryCode;
 	@Transient
-	@InforField(xpath = "CATEGORYID/DESCRIPTION", readOnly = true)
+	@EAMField(xpath = "CATEGORYID/DESCRIPTION", readOnly = true)
 	private String categoryDesc;
 	@Transient
-	@InforField(xpath = "PRIMARYCOMMODITY/COMMODITYCODE")
+	@EAMField(xpath = "PRIMARYCOMMODITY/COMMODITYCODE")
 	private String commodityCode;
 	@Transient
-	@InforField(xpath = "PRIMARYCOMMODITY/DESCRIPTION", readOnly = true)
+	@EAMField(xpath = "PRIMARYCOMMODITY/DESCRIPTION", readOnly = true)
 	private String commodityDesc;
 	@Transient
-	@InforField(xpath = "TRACKMETHOD/TYPECODE")
+	@EAMField(xpath = "TRACKMETHOD/TYPECODE")
 	private String trackingMethod;
 	@Transient
-	@InforField(xpath = "PRICETYPE/TYPECODE")
+	@EAMField(xpath = "PRICETYPE/TYPECODE")
 	private String priceType;
 	@Transient
-	@InforField(xpath = "BASEPRICE")
+	@EAMField(xpath = "BASEPRICE")
 	private BigDecimal basePrice;
 	@Transient
-	@InforField(xpath = "AVERAGEPRICE")
+	@EAMField(xpath = "AVERAGEPRICE")
 	private BigDecimal averagePrice;
 	@Transient
-	@InforField(xpath = "STANDARDPRICE")
+	@EAMField(xpath = "STANDARDPRICE")
 	private BigDecimal standardPrice;
 	@Transient
-	@InforField(xpath = "LASTPRICE")
+	@EAMField(xpath = "LASTPRICE")
 	private BigDecimal lastPrice;
 	@Transient
-	@InforField(xpath = "BYASSET", booleanType = BooleanType.PLUS_MINUS)
+	@EAMField(xpath = "BYASSET", booleanType = BooleanType.PLUS_MINUS)
 	private Boolean trackByAsset;
 	@Transient
-	@InforField(xpath = "KIT")
+	@EAMField(xpath = "KIT")
 	private Boolean trackAsKit;
 	@Transient
-	@InforField(xpath = "REPAIRABLE")
+	@EAMField(xpath = "REPAIRABLE")
 	private Boolean trackCores;
 	@Transient
-	@InforField(xpath = "OUTOFSERVICE")
+	@EAMField(xpath = "OUTOFSERVICE")
 	private Boolean outOfService;
 	@Transient
-	@InforField(xpath = "BYLOT", booleanType = BooleanType.PLUS_MINUS)
+	@EAMField(xpath = "BYLOT", booleanType = BooleanType.PLUS_MINUS)
 	private Boolean trackByLot;
 	@Transient
-	@InforField(xpath = "PREVENTREORDERS")
+	@EAMField(xpath = "PREVENTREORDERS")
 	private Boolean preventReorders;
 	@Transient
-	@InforField(xpath = "BUYER/USERCODE")
+	@EAMField(xpath = "BUYER/USERCODE")
 	private String buyerCode;
 	@Transient
-	@InforField(xpath = "PREFERREDSUPPLIER/SUPPLIERCODE")
+	@EAMField(xpath = "PREFERREDSUPPLIER/SUPPLIERCODE")
 	private String preferredSupplier;
 	@Transient
-	@InforField(xpath = "LONGDESCRIPTION")
+	@EAMField(xpath = "LONGDESCRIPTION")
 	private String longDescription;
 
 	@Transient
-	@InforField(xpath = "USERDEFINEDAREA")
+	@EAMField(xpath = "USERDEFINEDAREA")
 	private CustomField[] customFields;
 	@Transient
-	@InforField(xpath = "UserDefinedFields")
+	@EAMField(xpath = "UserDefinedFields")
 	private UserDefinedFields userDefinedFields;
 
 	@Transient

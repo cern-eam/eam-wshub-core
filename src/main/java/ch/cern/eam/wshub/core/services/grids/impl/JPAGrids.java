@@ -1,6 +1,6 @@
 package ch.cern.eam.wshub.core.services.grids.impl;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.entities.Credentials;
 import ch.cern.eam.wshub.core.services.grids.customfields.GridCustomFieldHandler;
 import ch.cern.eam.wshub.core.services.grids.entities.*;
@@ -8,18 +8,18 @@ import ch.cern.eam.wshub.core.services.grids.exceptions.IncorrectParenthesesGrid
 import ch.cern.eam.wshub.core.services.grids.exceptions.IncorrectSortTypeException;
 import ch.cern.eam.wshub.core.services.grids.exceptions.MissingJoinerGridFilterException;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 import ch.cern.eam.wshub.core.tools.Tools;
-import net.datastream.wsdls.inforws.InforWebServicesPT;
+import net.datastream.wsdls.eamws.EAMWebServicesPT;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.persistence.QueryTimeoutException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+import jakarta.persistence.QueryTimeoutException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.Serializable;
@@ -48,19 +48,19 @@ public class JPAGrids implements Serializable {
 
 	private ApplicationData applicationData;
 	private Tools tools;
-	private InforWebServicesPT inforws;
+	private EAMWebServicesPT eamws;
 
-	public JPAGrids(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
+	public JPAGrids(ApplicationData applicationData, Tools tools, EAMWebServicesPT eamWebServicesToolkitClient) {
 		this.applicationData = applicationData;
 		this.tools = tools;
-		this.inforws = inforWebServicesToolkitClient;
+		this.eamws = eamWebServicesToolkitClient;
 		this.paramManager = new InstallParametersManager(tools);
 		this.gridCustomFieldHandler = new GridCustomFieldHandler(tools);
 	}
 
 	@SuppressWarnings("unchecked")
-	public GridRequestResult executeQuery(InforContext context, GridRequest gridRequest)
-			throws InforException {
+	public GridRequestResult executeQuery(EAMContext context, GridRequest gridRequest)
+			throws EAMException {
 		
 		// get information of query timeout
 		String queryTimeout = QUERY_TIMEOUT_DEFAULT_VALUE;
@@ -91,10 +91,10 @@ public class JPAGrids implements Serializable {
 		Integer rowCount;
 		Integer cursorPosition;
 		if (gridRequest.getRowCount() != null && gridRequest.getCursorPosition() != null) {
-			rowCount = new Integer(gridRequest.getRowCount());
+			rowCount = Integer.valueOf(gridRequest.getRowCount());
 			if (rowCount <= 0)
 				throw tools.generateFault("Please supply row count > 0");
-			cursorPosition = new Integer(gridRequest.getCursorPosition()) - 1;
+			cursorPosition = Integer.valueOf(gridRequest.getCursorPosition()) - 1;
 			if (cursorPosition < 0)
 				throw tools.generateFault("Please supply cursor position >= 1");
 		} else {
@@ -428,7 +428,7 @@ public class JPAGrids implements Serializable {
 				sqlStatement = filterOutNULLValues(sqlStatement, params);
 				q = em.createNativeQuery(sqlStatement);
 				if(gridRequest.getQueryTimeout()){
-					q.setHint("javax.persistence.query.timeout", queryTimeout.toString()); // only works for higher values than 500
+					q.setHint("jakarta.persistence.query.timeout", queryTimeout.toString()); // only works for higher values than 500
 				}
 				defineParameters(gridName, sqlStatement, q, context.getCredentials(), params, gridRequest.getLang());
 				d1 = new Date();
@@ -1021,11 +1021,11 @@ public class JPAGrids implements Serializable {
 		return tagNames.get(filter.getFieldName()).getDatatype().toString().equals("MIXVARCHAR");
 	}
 
-	public GridMetadataRequestResult getGridMetadata(InforContext context, String gridCode, String viewType, String language) throws InforException {
+	public GridMetadataRequestResult getGridMetadata(EAMContext context, String gridCode, String viewType, String language) throws EAMException {
 		return getGridMetadata(context, gridCode, viewType, language, null);
 	}
 
-    public GridMetadataRequestResult getGridMetadata(InforContext context, String gridCode, String viewType, String language, String dataspyId) throws InforException {
+    public GridMetadataRequestResult getGridMetadata(EAMContext context, String gridCode, String viewType, String language, String dataspyId) throws EAMException {
         tools.demandDatabaseConnection();
         if (gridCode == null || gridCode.trim().equals("")) {
             throw tools.generateFault("Grid code is a mandatory field.");
@@ -1086,7 +1086,7 @@ public class JPAGrids implements Serializable {
         }
     }
 
-    public GridDDSpyFieldsResult getDDspyFields(InforContext context, String gridCode, String viewType, String ddSpyId, String language) throws InforException {
+    public GridDDSpyFieldsResult getDDspyFields(EAMContext context, String gridCode, String viewType, String ddSpyId, String language) throws EAMException {
         tools.demandDatabaseConnection();
         if (gridCode == null || gridCode.trim().equals("")) {
             throw tools.generateFault("Grid code is a mandatory field.");
@@ -1127,7 +1127,7 @@ public class JPAGrids implements Serializable {
         }
     }
 
-    public GridDataspy getDefaultDataspy(InforContext context, String gridCode, String viewType) throws InforException {
+    public GridDataspy getDefaultDataspy(EAMContext context, String gridCode, String viewType) throws EAMException {
         tools.demandDatabaseConnection();
         if (gridCode == null || gridCode.trim().equals("")) {
             throw tools.generateFault("Grid code is a mandatory field.");

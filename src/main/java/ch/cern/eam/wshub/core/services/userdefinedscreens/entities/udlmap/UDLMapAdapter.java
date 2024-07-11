@@ -2,7 +2,7 @@ package ch.cern.eam.wshub.core.services.userdefinedscreens.entities.udlmap;
 
 import ch.cern.eam.wshub.core.services.userdefinedscreens.entities.UDLValue;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

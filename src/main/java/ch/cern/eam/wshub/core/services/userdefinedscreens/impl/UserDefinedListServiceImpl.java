@@ -1,14 +1,14 @@
 package ch.cern.eam.wshub.core.services.userdefinedscreens.impl;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedListHelpable;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedListService;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedTableService;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.entities.*;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 import ch.cern.eam.wshub.core.tools.Tools;
-import net.datastream.wsdls.inforws.InforWebServicesPT;
+import net.datastream.wsdls.eamws.EAMWebServicesPT;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -21,16 +21,16 @@ import static ch.cern.eam.wshub.core.tools.Tools.generateFault;
 public class UserDefinedListServiceImpl implements UserDefinedListService {
     final static private String TABLE_NAME = "U5PROPVALUESLISTS";
     private Tools tools;
-    private InforWebServicesPT inforws;
+    private EAMWebServicesPT eamws;
     private ApplicationData applicationData;
     private UserDefinedTableService userDefinedTableService;
     public UserDefinedListServiceImpl(ApplicationData applicationData, Tools tools,
-                                      InforWebServicesPT inforWebServicesToolkitClient) {
+                                      EAMWebServicesPT eamWebServicesToolkitClient) {
         this.applicationData = applicationData;
         this.tools = tools;
-        this.inforws = inforWebServicesToolkitClient;
+        this.eamws = eamWebServicesToolkitClient;
         userDefinedTableService =
-                new UserDefinedTableServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
+                new UserDefinedTableServiceImpl(applicationData, tools, eamWebServicesToolkitClient);
     }
 
     private UDTRow initUDLRow(UDLEntryId entryId) {
@@ -102,7 +102,7 @@ public class UserDefinedListServiceImpl implements UserDefinedListService {
     }
 
     @Override
-    public HashMap<String, ArrayList<UDLValue>> readUserDefinedLists(InforContext context, UDLEntryId entryId) throws InforException {
+    public HashMap<String, ArrayList<UDLValue>> readUserDefinedLists(EAMContext context, UDLEntryId entryId) throws EAMException {
 
         List<UDLEntry> entries = readUserDefinedListEntries(context, entryId);
 
@@ -128,7 +128,7 @@ public class UserDefinedListServiceImpl implements UserDefinedListService {
     }
 
     @Override
-    public String setUserDefinedLists(InforContext context, EntityId entityId, Map<String, ArrayList<UDLValue>> values) throws InforException {
+    public String setUserDefinedLists(EAMContext context, EntityId entityId, Map<String, ArrayList<UDLValue>> values) throws EAMException {
 
         List<UDTRow> rows = new ArrayList<>();
         for(String property : values.keySet()) {
@@ -152,8 +152,8 @@ public class UserDefinedListServiceImpl implements UserDefinedListService {
     }
 
     @Override
-    public List<UDLEntry> readUserDefinedListEntries(InforContext context, UDLEntryId property)
-            throws InforException {
+    public List<UDLEntry> readUserDefinedListEntries(EAMContext context, UDLEntryId property)
+            throws EAMException {
         UDTRow filters = initUDLRow(property);
 
         List<Map<String, Object> > rows = userDefinedTableService.readUserDefinedTableRows(context, TABLE_NAME, filters,
@@ -185,13 +185,13 @@ public class UserDefinedListServiceImpl implements UserDefinedListService {
     }
 
     @Override
-    public String createUserDefinedListEntry(InforContext context, UDLEntry entry) throws InforException {
+    public String createUserDefinedListEntry(EAMContext context, UDLEntry entry) throws EAMException {
         userDefinedTableService.createUserDefinedTableRows(context, TABLE_NAME, Arrays.asList(initUDLRow(entry)));
         return "OK";
     }
 
     @Override
-    public String updateUserDefinedListEntry(InforContext context, UDLEntry entry) throws InforException {
+    public String updateUserDefinedListEntry(EAMContext context, UDLEntry entry) throws EAMException {
         UDTRow row = initUDLRow(entry);
         UDTRow filters = initUDLRow(entry.getEntryId());
         int updates = userDefinedTableService.updateUserDefinedTableRows(context, TABLE_NAME, row, filters);
@@ -205,14 +205,14 @@ public class UserDefinedListServiceImpl implements UserDefinedListService {
     }
 
     @Override
-    public String deleteUserDefinedListEntries(InforContext context, UDLEntryId filters) throws InforException {
+    public String deleteUserDefinedListEntries(EAMContext context, UDLEntryId filters) throws EAMException {
         UDTRow tableFilters = initUDLRow(filters);
         userDefinedTableService.deleteUserDefinedTableRows(context, TABLE_NAME, tableFilters);
         return "OK";
     }
 
     @Override
-    public void readUDLToEntity(InforContext context, UserDefinedListHelpable entity, EntityId entityId) {
+    public void readUDLToEntity(EAMContext context, UserDefinedListHelpable entity, EntityId entityId) {
         try {
             HashMap<String, ArrayList<UDLValue>> entries = readUserDefinedLists(context, new UDLEntryId(entityId));
             entity.setUserDefinedList(entries);
@@ -222,7 +222,7 @@ public class UserDefinedListServiceImpl implements UserDefinedListService {
     }
 
     @Override
-    public void writeUDLToEntityCopyFrom(InforContext context, UserDefinedListHelpable entity, EntityId entityId) {
+    public void writeUDLToEntityCopyFrom(EAMContext context, UserDefinedListHelpable entity, EntityId entityId) {
         try {
             HashMap<String, ArrayList<UDLValue>> entries = entity.getUserDefinedList();
             if (entries != null) {
@@ -239,7 +239,7 @@ public class UserDefinedListServiceImpl implements UserDefinedListService {
     }
 
     @Override
-    public void writeUDLToEntity(InforContext context, UserDefinedListHelpable entity, EntityId entityId) {
+    public void writeUDLToEntity(EAMContext context, UserDefinedListHelpable entity, EntityId entityId) {
         try {
             if(entity.getUserDefinedList() != null) {
                 setUserDefinedLists(
@@ -253,7 +253,7 @@ public class UserDefinedListServiceImpl implements UserDefinedListService {
     }
 
     @Override
-    public void deleteUDLFromEntity(InforContext context, EntityId entityId) {
+    public void deleteUDLFromEntity(EAMContext context, EntityId entityId) {
         try {
             deleteUserDefinedListEntries(context, new UDLEntryId(entityId));
         } catch(Exception e) {

@@ -1,14 +1,14 @@
 package ch.cern.eam.wshub.core.services.entities;
 
-import ch.cern.eam.wshub.core.annotations.InforField;
+import ch.cern.eam.wshub.core.annotations.EAMField;
 
 public class Signature {
 
-    @InforField(xpath = "USERID/USERCODE")
+    @EAMField(xpath = "USERID/USERCODE")
     private String userCode;
-    @InforField(xpath = "PASSWORD")
+    @EAMField(xpath = "PASSWORD")
     private String password;
-    @InforField(xpath = "SIGNATURETYPE")
+    @EAMField(xpath = "SIGNATURETYPE")
     private String signatureType;
 
     public String getUserCode() {

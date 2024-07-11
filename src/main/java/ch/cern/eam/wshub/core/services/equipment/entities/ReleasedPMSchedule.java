@@ -1,18 +1,18 @@
 package ch.cern.eam.wshub.core.services.equipment.entities;
 
-import ch.cern.eam.wshub.core.annotations.InforField;
+import ch.cern.eam.wshub.core.annotations.EAMField;
 import java.math.BigInteger;
 import java.util.Date;
 
 public class ReleasedPMSchedule {
 
-    @InforField(xpath = "WORKORDERID/JOBNUM")
+    @EAMField(xpath = "WORKORDERID/JOBNUM")
     private String workOrder;
-    @InforField(xpath = "STATUS/STATUSCODE")
+    @EAMField(xpath = "STATUS/STATUSCODE")
     private String statusCode;
-    @InforField(xpath = "TARGETDATE")
+    @EAMField(xpath = "TARGETDATE")
     private Date scheduledStart;
-    @InforField(xpath = "recordid")
+    @EAMField(xpath = "recordid")
     private BigInteger updateCount;
 
     public String getWorkOrder() {

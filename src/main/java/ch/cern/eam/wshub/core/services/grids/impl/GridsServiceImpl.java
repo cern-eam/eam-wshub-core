@@ -1,19 +1,19 @@
 package ch.cern.eam.wshub.core.services.grids.impl;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.administration.impl.UserSetupServiceImpl;
 import ch.cern.eam.wshub.core.services.entities.BatchResponse;
 import ch.cern.eam.wshub.core.services.grids.GridsService;
 
 import ch.cern.eam.wshub.core.services.grids.entities.*;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.isEmpty;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import net.datastream.wsdls.inforws.InforWebServicesPT;
+import net.datastream.wsdls.eamws.EAMWebServicesPT;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -24,55 +24,55 @@ import static ch.cern.eam.wshub.core.tools.GridTools.getCellContent;
 public class GridsServiceImpl implements GridsService {
 
 	private Tools tools;
-	private InforWebServicesPT inforws;
+	private EAMWebServicesPT eamws;
 
-	private InforGrids inforGrids;
+	private EAMGrids eamGrids;
 	private JPAGrids jpaGrids;
 	private ApplicationData applicationData;
 	public static final Map<String, GridMetadataRequestResult> gridIdCache = new ConcurrentHashMap<>();
 
-	public GridsServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
+	public GridsServiceImpl(ApplicationData applicationData, Tools tools, EAMWebServicesPT eamWebServicesToolkitClient) {
 		this.tools = tools;
-		this.inforws = inforWebServicesToolkitClient;
+		this.eamws = eamWebServicesToolkitClient;
 		this.applicationData = applicationData;
-		inforGrids = new InforGrids(applicationData, tools, inforws);
+		eamGrids = new EAMGrids(applicationData, tools, eamws);
 		// Init JPA Grids only when DB connection is present
 		if (tools.isDatabaseConnectionConfigured()) {
-			jpaGrids = new JPAGrids(applicationData, tools, inforws);
+			jpaGrids = new JPAGrids(applicationData, tools, eamws);
 		}
 	}
 
 	@Override
-	public BatchResponse<GridRequestResult> executeQueryBatch(InforContext context, List<GridRequest> gridRequests) throws InforException {
+	public BatchResponse<GridRequestResult> executeQueryBatch(EAMContext context, List<GridRequest> gridRequests) throws EAMException {
 		return tools.batchOperation(context, this::executeQuery, gridRequests);
 	}
 
-	public GridRequestResult executeQuery(InforContext context, GridRequest gridRequest) throws InforException {
+	public GridRequestResult executeQuery(EAMContext context, GridRequest gridRequest) throws EAMException {
 		if (gridRequest.getUseNative() || !tools.isDatabaseConnectionConfigured()) {
-			return inforGrids.executeQuery(context, gridRequest);
+			return eamGrids.executeQuery(context, gridRequest);
 		}
 		tools.demandDatabaseConnection();
 		if (isEmpty(gridRequest.getDataspyID()) || isEmpty(gridRequest.getGridID()) || isEmpty(gridRequest.getGridName())) {
-			GridMetadataRequestResult gridMetadataInfor = getGridMetadataInfor(context, gridRequest.getGridName(), gridRequest.getGridID());
-			gridRequest.setGridID(gridMetadataInfor.getGridCode());
-			gridRequest.setGridName(gridMetadataInfor.getGridName());
-			if (gridRequest.getDataspyID() == null) gridRequest.setDataspyID(gridMetadataInfor.getDataSpyId());
-			if (gridRequest.getUserFunctionName() == null) gridRequest.setUserFunctionName(gridMetadataInfor.getGridName());
+			GridMetadataRequestResult gridMetadataEAM = getGridMetadataEAM(context, gridRequest.getGridName(), gridRequest.getGridID());
+			gridRequest.setGridID(gridMetadataEAM.getGridCode());
+			gridRequest.setGridName(gridMetadataEAM.getGridName());
+			if (gridRequest.getDataspyID() == null) gridRequest.setDataspyID(gridMetadataEAM.getDataSpyId());
+			if (gridRequest.getUserFunctionName() == null) gridRequest.setUserFunctionName(gridMetadataEAM.getGridName());
 		}
 
 		if (applicationData.getWithJPAGridsAuthentication()) {
 			// Invoke the EAM login web service before JPA Grid invocation
-			UserSetupServiceImpl.login(context, null, tools, inforws);
+			UserSetupServiceImpl.login(context, null, tools, eamws);
 		}
 		GridRequestResult gridRequestResult = jpaGrids.executeQuery(context, gridRequest);
 		return gridRequestResult;
 	}
 
-	public GridMetadataRequestResult getGridMetadataInfor(InforContext context, String gridName) {
-		return getGridMetadataInfor(context, gridName, null);
+	public GridMetadataRequestResult getGridMetadataEAM(EAMContext context, String gridName) {
+		return getGridMetadataEAM(context, gridName, null);
 	}
 
-	public GridMetadataRequestResult getGridMetadataInfor(InforContext context, String gridName, String gridId) {
+	public GridMetadataRequestResult getGridMetadataEAM(EAMContext context, String gridName, String gridId) {
 		try {
 			String cacheName = gridName + "#" + gridId;
 			if (gridIdCache.containsKey(cacheName)) {
@@ -87,7 +87,7 @@ public class GridsServiceImpl implements GridsService {
 			if (gridId != null) {
 				gridRequest.getGridRequestFilters().add(new GridRequestFilter("grd_gridid", gridId, "="));
 			}
-			GridRequestResult result = inforGrids.executeQuery(context, gridRequest);
+			GridRequestResult result = eamGrids.executeQuery(context, gridRequest);
 
 			GridMetadataRequestResult gridData = new GridMetadataRequestResult();
 			gridData.setGridName(getCellContent("grd_gridname", result.getRows()[0]));
@@ -102,30 +102,30 @@ public class GridsServiceImpl implements GridsService {
 		}
 	}
 
-	public GridMetadataRequestResult getGridMetadata(InforContext context, String gridCode, String viewType) throws InforException {
+	public GridMetadataRequestResult getGridMetadata(EAMContext context, String gridCode, String viewType) throws EAMException {
 		tools.demandDatabaseConnection();
 		return getGridMetadata(context, gridCode, viewType, "EN");
 	}
 
-	public GridMetadataRequestResult getGridMetadata(InforContext context, String gridCode, String viewType, String language) throws InforException {
+	public GridMetadataRequestResult getGridMetadata(EAMContext context, String gridCode, String viewType, String language) throws EAMException {
 		tools.demandDatabaseConnection();
 		return jpaGrids.getGridMetadata(context, gridCode, viewType, language);
 	}
 
-	public GridDDSpyFieldsResult getDDspyFields(InforContext context, String gridCode, String viewType, String ddSpyId, String language) throws InforException {
+	public GridDDSpyFieldsResult getDDspyFields(EAMContext context, String gridCode, String viewType, String ddSpyId, String language) throws EAMException {
 		tools.demandDatabaseConnection();
 		return jpaGrids.getDDspyFields(context, gridCode, viewType, ddSpyId, language);
 	}
 
-	public GridDataspy getDefaultDataspy(InforContext context, String gridCode, String viewType) throws InforException {
+	public GridDataspy getDefaultDataspy(EAMContext context, String gridCode, String viewType) throws EAMException {
 		tools.demandDatabaseConnection();
 		return jpaGrids.getDefaultDataspy(context, gridCode, viewType);
 	}
 
-    public String getGridCsvData(InforContext context, GridRequest gridRequest) throws InforException {
+    public String getGridCsvData(EAMContext context, GridRequest gridRequest) throws EAMException {
 		// Always fetch the meta data to ensure that the grid fields will be included
 		gridRequest.setIncludeMetadata(true);
-        GridRequestResult gridRequestResult = inforGrids.executeQuery(context, gridRequest);
+        GridRequestResult gridRequestResult = eamGrids.executeQuery(context, gridRequest);
         return CSVUtils.convertGridRequestResultToCsv(gridRequestResult);
     }
 

@@ -1,13 +1,13 @@
 package ch.cern.eam.wshub.core.services.equipment.entities;
 
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
-import ch.cern.eam.wshub.core.annotations.InforField;
+import ch.cern.eam.wshub.core.annotations.EAMField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Transient;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.persistence.Transient;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -15,95 +15,95 @@ import java.util.Date;
 @Setter
 public class EquipmentReservation {
     // Main identifying fields
-    @InforField(xpath = "CUSTOMERRENTALID/CUSTOMERRENTALCODE")
+    @EAMField(xpath = "CUSTOMERRENTALID/CUSTOMERRENTALCODE")
     private String code;
-    @InforField(xpath = "CUSTOMERRENTALID/ORGANIZATIONID/ORGANIZATIONCODE")
+    @EAMField(xpath = "CUSTOMERRENTALID/ORGANIZATIONID/ORGANIZATIONCODE")
     private String organizationCode;
-    @InforField(xpath = "CUSTOMERRENTALID/DESCRIPTION")
+    @EAMField(xpath = "CUSTOMERRENTALID/DESCRIPTION")
     private String description;
 
     // Rental Details
-    @InforField(xpath = "RentalDetails/RENTALTYPE/STATUSCODE")
+    @EAMField(xpath = "RentalDetails/RENTALTYPE/STATUSCODE")
     private String rentalType;
-    @InforField(xpath = "RentalDetails/STATUS/STATUSCODE")
+    @EAMField(xpath = "RentalDetails/STATUS/STATUSCODE")
     private String status;
-    @InforField(xpath = "RentalDetails/EQUIPMENTID/EQUIPMENTCODE")
+    @EAMField(xpath = "RentalDetails/EQUIPMENTID/EQUIPMENTCODE")
     private String equipmentCode;
-    @InforField(xpath = "RentalDetails/LOCATIONID/LOCATIONCODE")
+    @EAMField(xpath = "RentalDetails/LOCATIONID/LOCATIONCODE")
     private String locationCode;
-    @InforField(xpath = "RentalDetails/CLASSID/CLASSCODE")
+    @EAMField(xpath = "RentalDetails/CLASSID/CLASSCODE")
     private String classCode;
-    @InforField(xpath = "RentalDetails/REFERENCE")
+    @EAMField(xpath = "RentalDetails/REFERENCE")
     private String reference;
-    @InforField(xpath = "RentalDetails/VEHICLETYPE/TYPECODE")
+    @EAMField(xpath = "RentalDetails/VEHICLETYPE/TYPECODE")
     private String vehicleType;
-    @InforField(xpath = "RentalDetails/ISSUETO/PERSONCODE")
+    @EAMField(xpath = "RentalDetails/ISSUETO/PERSONCODE")
     private String issueTo;
-    @InforField(xpath = "RentalDetails/COSTCODE")
+    @EAMField(xpath = "RentalDetails/COSTCODE")
     private String costCode;
-    @InforField(xpath = "RentalDetails/RENTALTEMPLATEID/RENTALTEMPLATECODE")
+    @EAMField(xpath = "RentalDetails/RENTALTEMPLATEID/RENTALTEMPLATECODE")
     private String rentalTemplate;
-    @InforField(xpath = "RentalDetails/CUSTOMERID/CUSTOMERCODE")
+    @EAMField(xpath = "RentalDetails/CUSTOMERID/CUSTOMERCODE")
     private String customer;
 
-    @InforField(xpath = "RentalDetails/COMPLETEDDATE")
+    @EAMField(xpath = "RentalDetails/COMPLETEDDATE")
     private Date completedDate;
-    @InforField(xpath = "RentalDetails/CREATEDBY/USERCODE")
+    @EAMField(xpath = "RentalDetails/CREATEDBY/USERCODE")
     private String createdBy;
-    @InforField(xpath = "RentalDetails/CREATEDDATE")
+    @EAMField(xpath = "RentalDetails/CREATEDDATE")
     private Date createdDate;
 
     // Issue Details
-    @InforField(xpath = "IssueDetails/ESTIMATEDISSUEDATE")
+    @EAMField(xpath = "IssueDetails/ESTIMATEDISSUEDATE")
     private Date estimatedIssueDate;
-    @InforField(xpath = "IssueDetails/ISSUEDDATE")
+    @EAMField(xpath = "IssueDetails/ISSUEDDATE")
     private Date issuedDate;
-    @InforField(xpath = "IssueDetails/ISSUELOCATION/LOCATIONCODE")
+    @EAMField(xpath = "IssueDetails/ISSUELOCATION/LOCATIONCODE")
     private String issueLocation;
-    @InforField(xpath = "IssueDetails/ISSUEDBY/USERCODE")
+    @EAMField(xpath = "IssueDetails/ISSUEDBY/USERCODE")
     private String issuedBy;
 
     // Return Details
-    @InforField(xpath = "ReturnDetails/RETURNDATE")
+    @EAMField(xpath = "ReturnDetails/RETURNDATE")
     private Date returnDate;
-    @InforField(xpath = "ReturnDetails/ESTIMATEDRETURNDATE")
+    @EAMField(xpath = "ReturnDetails/ESTIMATEDRETURNDATE")
     private Date estimatedReturnDate;
-    @InforField(xpath = "ReturnDetails/RETURNLOCATION/LOCATIONCODE")
+    @EAMField(xpath = "ReturnDetails/RETURNLOCATION/LOCATIONCODE")
     private String returnLocation;
 
     // Invoicing Details
-    @InforField(xpath = "InvoicingDetails/INVOICEDAMOUNT")
+    @EAMField(xpath = "InvoicingDetails/INVOICEDAMOUNT")
     private BigDecimal invoicedAmount;
-    @InforField(xpath = "InvoicingDetails/CALCULATEDDAYS")
+    @EAMField(xpath = "InvoicingDetails/CALCULATEDDAYS")
     private BigDecimal calculatedDays;
-    @InforField(xpath = "InvoicingDetails/CALCULATEDHOURS")
+    @EAMField(xpath = "InvoicingDetails/CALCULATEDHOURS")
     private BigDecimal calculatedHours;
-    @InforField(xpath = "InvoicingDetails/CORRECTEDDAYS")
+    @EAMField(xpath = "InvoicingDetails/CORRECTEDDAYS")
     private BigDecimal correctedDays;
-    @InforField(xpath = "InvoicingDetails/CORRECTEDHOURS")
+    @EAMField(xpath = "InvoicingDetails/CORRECTEDHOURS")
     private BigDecimal correctedHours;
-    @InforField(xpath = "InvoicingDetails/ADJUSTMENTS")
+    @EAMField(xpath = "InvoicingDetails/ADJUSTMENTS")
     private BigDecimal adjustments;
-    @InforField(xpath = "InvoicingDetails/NETAMOUNT")
+    @EAMField(xpath = "InvoicingDetails/NETAMOUNT")
     private BigDecimal netAmount;
-    @InforField(xpath = "InvoicingDetails/GROSSAMOUNT")
+    @EAMField(xpath = "InvoicingDetails/GROSSAMOUNT")
     private BigDecimal grossAmount;
-    @InforField(xpath = "InvoicingDetails/TAXAMOUNT")
+    @EAMField(xpath = "InvoicingDetails/TAXAMOUNT")
     private BigDecimal taxAmount;
-    @InforField(xpath = "IssueDetails/ISSUEVEFUELLEVEL")
+    @EAMField(xpath = "IssueDetails/ISSUEVEFUELLEVEL")
     private BigDecimal issueFuelLevel;
-    @InforField(xpath = "IssueDetails/ISSUEREADING")
+    @EAMField(xpath = "IssueDetails/ISSUEREADING")
     private BigDecimal issueReading;
-    @InforField(xpath = "ReturnDetails/RETURNEDTO/USERCODE")
+    @EAMField(xpath = "ReturnDetails/RETURNEDTO/USERCODE")
     private String returnedTo;
-    @InforField(xpath = "ReturnDetails/RETURNFUELLEVEL")
+    @EAMField(xpath = "ReturnDetails/RETURNFUELLEVEL")
     private BigDecimal returnFuelLevel;
-    @InforField(xpath = "ReturnDetails/RETURNREADING")
+    @EAMField(xpath = "ReturnDetails/RETURNREADING")
     private BigDecimal returnReading;
-    @InforField(xpath = "IssueDetails/UOMID/UOMCODE")
+    @EAMField(xpath = "IssueDetails/UOMID/UOMCODE")
     private String uom;
     @Transient
-    @InforField(xpath = "StandardUserDefinedFields")
+    @EAMField(xpath = "StandardUserDefinedFields")
     private UserDefinedFields userDefinedFields;
 
     @XmlJavaTypeAdapter(DateAdapter.class)

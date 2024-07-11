@@ -5,17 +5,17 @@ import ch.cern.eam.wshub.core.adapters.DateAdapter;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElementWrapper;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
 
 @Entity
-@NamedNativeQuery(name = InforCaseTask.GET_TASKS_FOR_CASE,
+@NamedNativeQuery(name = EAMCaseTask.GET_TASKS_FOR_CASE,
 				  query = "select TCM_CHKLST_TASK,\n" + 
 				  		"TCM_ESTIMATEDCOST,\n" + 
 				  		"TCM_CALCULATEDCOST,\n" + 
@@ -113,13 +113,13 @@ import java.util.Date;
 				  		"TCM_PLANNEDDURATION,\n" +
 				  		"TCM_DURATION_UNIT,\n" +
 				  		"TCM_PRIORITY from R5CASEMANAGEMENTTASKS where TCM_CASEMANAGEMENT = :caseID",
-				  resultClass=InforCaseTask.class)
+				  resultClass=EAMCaseTask.class)
 @Table(name = "R5CASEMANAGEMENTTASKS")
-public class InforCaseTask implements Serializable {
+public class EAMCaseTask implements Serializable {
 
 	private static final long serialVersionUID = -6048773043890563354L;
 	
-	public static final String GET_TASKS_FOR_CASE = "InforCaseTask.GET_TASKS_FOR_CASE";
+	public static final String GET_TASKS_FOR_CASE = "EAMCaseTask.GET_TASKS_FOR_CASE";
 
 	@Id
 	@Column(name = "TCM_CODE")
@@ -384,7 +384,7 @@ public class InforCaseTask implements Serializable {
 	}
 	@Override
 	public String toString() {
-		return "InforCaseTask [" + (taskCode != null ? "taskCode=" + taskCode + ", " : "")
+		return "EAMCaseTask [" + (taskCode != null ? "taskCode=" + taskCode + ", " : "")
 				+ (caseCode != null ? "caseCode=" + caseCode + ", " : "")
 				+ (description != null ? "description=" + description + ", " : "")
 				+ (sequence != null ? "sequence=" + sequence + ", " : "") + (step != null ? "step=" + step + ", " : "")

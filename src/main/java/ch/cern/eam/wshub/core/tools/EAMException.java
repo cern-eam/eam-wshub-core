@@ -1,15 +1,17 @@
 package ch.cern.eam.wshub.core.tools;
 
-import javax.xml.ws.WebFault;
+
+import jakarta.xml.ws.WebFault;
+
 import java.util.Arrays;
 
 @WebFault(name="ExceptionInfoList")
-public class InforException extends Exception {
+public class EAMException extends Exception {
 
 	private static final long serialVersionUID = 2888535819761291339L;
 	private ExceptionInfo[] ExceptionInfoList;
 
-	public InforException(String msg, Throwable cause, ExceptionInfo[] details) {
+	public EAMException(String msg, Throwable cause, ExceptionInfo[] details) {
 		super(msg);
 		ExceptionInfoList = details;
 	}
@@ -24,7 +26,7 @@ public class InforException extends Exception {
 
 	@Override
 	public String toString() {
-		return "InforException{" +
+		return "EAMException{" +
 				"Message: " + getMessage() + ", " +
 				"ExceptionInfoList=" + Arrays.toString(ExceptionInfoList) +
 				'}';

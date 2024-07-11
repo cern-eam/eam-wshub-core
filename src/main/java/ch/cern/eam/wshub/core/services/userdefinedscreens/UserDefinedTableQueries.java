@@ -1,10 +1,10 @@
 package ch.cern.eam.wshub.core.services.userdefinedscreens;
 
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceException;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.Query;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -28,7 +28,7 @@ public class UserDefinedTableQueries {
         DATA_TYPE_CLASS_MAP.put("CLOB", String.class);
     }
 
-    public static <T> void executeInsertQuery(String tableName, Map<String, T> map, EntityManager em) throws InforException {
+    public static <T> void executeInsertQuery(String tableName, Map<String, T> map, EntityManager em) throws EAMException {
         //Create list to guarantee ordering
         String query = getInsertQuery(tableName, map);
         try {
@@ -38,7 +38,7 @@ public class UserDefinedTableQueries {
             );
             nativeQuery.executeUpdate();
         } catch (PersistenceException e) {
-            throw UserDefinedTableValidator.generateInforException("", e.getMessage());
+            throw UserDefinedTableValidator.generateEAMException("", e.getMessage());
         }
     }
 
@@ -66,7 +66,7 @@ public class UserDefinedTableQueries {
 
     public static <T> List<Map<String, Object>> executeReadQuery(String tableName, Map<String, T> whereFiltersMap,
                                              List<String> fieldsToRead, Long maxRows, EntityManager em)
-            throws InforException {
+            throws EAMException {
         //Create list to guarantee ordering
         String query = getReadQuery(tableName, whereFiltersMap, fieldsToRead, maxRows);
         try {
@@ -90,13 +90,13 @@ public class UserDefinedTableQueries {
             return lista;
         } catch (PersistenceException e) {
             //String msg, Throwable cause, ExceptionInfo[] details
-            throw UserDefinedTableValidator.generateInforException("", e.getMessage());
+            throw UserDefinedTableValidator.generateEAMException("", e.getMessage());
         } catch (Exception e) {
             throw e;
         }
     }
 
-    private static <T, U> U castType(T entity, Class<U> clazz) throws InforException {
+    private static <T, U> U castType(T entity, Class<U> clazz) throws EAMException {
         try {
             if (entity instanceof Clob) {
                 Reader r = ((Clob) entity).getCharacterStream();
@@ -116,7 +116,7 @@ public class UserDefinedTableQueries {
             }
             return (U) entity;
         } catch (Exception e) {
-            throw UserDefinedTableValidator.generateInforException("", "Cannot cast "+ entity + " to " + clazz.getName());
+            throw UserDefinedTableValidator.generateEAMException("", "Cannot cast "+ entity + " to " + clazz.getName());
         }
     }
 
@@ -127,7 +127,7 @@ public class UserDefinedTableQueries {
             ;
 
     public static Map<String, Class<?>> getColumnTypes(String tableName, EntityManager em)
-            throws InforException {
+            throws EAMException {
         try {
             Query nativeQuery = em.createNativeQuery(GET_TABLE_TYPES);
             nativeQuery.setParameter("tableName", tableName);
@@ -141,12 +141,12 @@ public class UserDefinedTableQueries {
             return classMap;
         } catch (PersistenceException e) {
             //String msg, Throwable cause, ExceptionInfo[] details
-            throw UserDefinedTableValidator.generateInforException("", e.getMessage());
+            throw UserDefinedTableValidator.generateEAMException("", e.getMessage());
         }
     }
 
 
-    private static Map<String, Object> castObjects(Map<String, Object> map, Map<String, Class<?>> classMap) throws InforException {
+    private static Map<String, Object> castObjects(Map<String, Object> map, Map<String, Class<?>> classMap) throws EAMException {
         HashMap<String, Object> collect = new LinkedHashMap<>();
         for (Map.Entry<String, Object> entry: map.entrySet()) {
             Object o = castType(entry.getValue(), classMap.get(entry.getKey()));
@@ -173,7 +173,7 @@ public class UserDefinedTableQueries {
 
     public static <T> int executeUpdateQuery(String tableName, Map<String, T> updateColumns,
                                               Map<String, T> whereFilters, EntityManager em)
-            throws InforException {
+            throws EAMException {
         //Create list to guarantee ordering
         String query = getUpdateQuery(tableName, updateColumns, whereFilters);
         try {
@@ -181,7 +181,7 @@ public class UserDefinedTableQueries {
             return nativeQuery.executeUpdate();
         } catch (PersistenceException e) {
             //String msg, Throwable cause, ExceptionInfo[] details
-            throw UserDefinedTableValidator.generateInforException("", e.getMessage());
+            throw UserDefinedTableValidator.generateEAMException("", e.getMessage());
         }
     }
 
@@ -209,7 +209,7 @@ public class UserDefinedTableQueries {
     }
 
     public static <T> int executeDeleteQuery(String tableName, Map<String, T> whereFilters, EntityManager em)
-            throws InforException {
+            throws EAMException {
         //Create list to guarantee ordering
         String query = getDeleteQuery(tableName, whereFilters);
         try {
@@ -217,7 +217,7 @@ public class UserDefinedTableQueries {
             return nativeQuery.executeUpdate();
         } catch (PersistenceException e) {
             //String msg, Throwable cause, ExceptionInfo[] details
-            throw UserDefinedTableValidator.generateInforException("", e.getMessage());
+            throw UserDefinedTableValidator.generateEAMException("", e.getMessage());
         }
     }
 

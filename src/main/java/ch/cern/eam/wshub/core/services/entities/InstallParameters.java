@@ -1,7 +1,7 @@
 package ch.cern.eam.wshub.core.services.entities;
 
-import javax.persistence.*;
-import javax.persistence.Entity;
+import jakarta.persistence.*;
+import jakarta.persistence.Entity;
 import java.io.Serializable;
 
 @Entity

@@ -1,18 +1,18 @@
 package ch.cern.eam.wshub.core.interceptors.beans;
 
 /**
- * Bean containing details about a response from Infor
+ * Bean containing details about a response from EAM
  */
-public class InforResponseData {
+public class EAMResponseData {
 
     // Response time in nanoseconds
     private long responseTime;
 
-    // Response of the Infor service
+    // Response of the EAM service
     private Object response;
 
 
-    private InforResponseData(long responseTime, Object response) {
+    private EAMResponseData(long responseTime, Object response) {
         this.responseTime = responseTime;
         this.response = response;
     }
@@ -31,8 +31,8 @@ public class InforResponseData {
             return this;
         }
 
-        public InforResponseData build() {
-            return new InforResponseData(responseTime, response);
+        public EAMResponseData build() {
+            return new EAMResponseData(responseTime, response);
         }
     }
 

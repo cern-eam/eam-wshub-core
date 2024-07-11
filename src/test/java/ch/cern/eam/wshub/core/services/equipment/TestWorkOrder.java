@@ -5,7 +5,7 @@ import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import ch.cern.eam.wshub.core.services.equipment.entities.Location;
 import ch.cern.eam.wshub.core.services.workorders.WorkOrderService;
 import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrder;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
         There is a custom field "P214" in the "RP01" class
  */
 public class TestWorkOrder {
-    private static WorkOrderService workOrderService = inforClient.getWorkOrderService();
+    private static WorkOrderService workOrderService = eamClient.getWorkOrderService();
 
     // this helper function creates a test work order
     WorkOrder createWorkOrder() throws Exception {

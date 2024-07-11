@@ -1,18 +1,18 @@
 package ch.cern.eam.wshub.core.services.material.entities;
 
-import ch.cern.eam.wshub.core.annotations.InforField;
+import ch.cern.eam.wshub.core.annotations.EAMField;
 
 import java.io.Serializable;
 import java.util.List;
 
 public class Store2StoreTransferDTO implements Serializable {
-    @InforField(xpath = "DESCRIPTION")
+    @EAMField(xpath = "DESCRIPTION")
     private String description;
-    @InforField(xpath = "FROMSTOREID/STORECODE")
+    @EAMField(xpath = "FROMSTOREID/STORECODE")
     private String fromStoreCode;
-    @InforField(xpath = "TOSTOREID/STORECODE")
+    @EAMField(xpath = "TOSTOREID/STORECODE")
     private String toStoreCode;
-    @InforField(xpath = "ADVICENUMBER")
+    @EAMField(xpath = "ADVICENUMBER")
     private String adviceNumber;
     private List<StoreTransactionPartLine> partLines;
 

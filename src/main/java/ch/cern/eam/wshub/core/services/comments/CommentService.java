@@ -1,23 +1,23 @@
 package ch.cern.eam.wshub.core.services.comments;
 
 import ch.cern.eam.wshub.core.annotations.Operation;
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.interceptors.LogDataReferenceType;
-import ch.cern.eam.wshub.core.services.INFOR_OPERATION;
+import ch.cern.eam.wshub.core.services.EAM_OPERATION;
 import ch.cern.eam.wshub.core.services.comments.entities.Comment;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 
 public interface CommentService {
 
-    @Operation(logOperation = INFOR_OPERATION.COMMENT_C, logDataReference1 = LogDataReferenceType.INPUTFIELD, logDataReference1FieldName = "entityKeyCode", logDataReference2 = LogDataReferenceType.RESULT)
-    String createComment(InforContext context, Comment comment) throws InforException;
+    @Operation(logOperation = EAM_OPERATION.COMMENT_C, logDataReference1 = LogDataReferenceType.INPUTFIELD, logDataReference1FieldName = "entityKeyCode", logDataReference2 = LogDataReferenceType.RESULT)
+    String createComment(EAMContext context, Comment comment) throws EAMException;
 
-    @Operation(logOperation = INFOR_OPERATION.COMMENT_R)
-    Comment[] readComments(InforContext context, String entityCode, String entityKeyCode, String typeCode) throws InforException;
+    @Operation(logOperation = EAM_OPERATION.COMMENT_R)
+    Comment[] readComments(EAMContext context, String entityCode, String entityKeyCode, String typeCode) throws EAMException;
 
-    @Operation(logOperation = INFOR_OPERATION.COMMENT_U, logDataReference1 = LogDataReferenceType.INPUTFIELD, logDataReference1FieldName = "entityKeyCode", logDataReference2 = LogDataReferenceType.RESULT)
-    String updateComment(InforContext context, Comment comment) throws InforException;
+    @Operation(logOperation = EAM_OPERATION.COMMENT_U, logDataReference1 = LogDataReferenceType.INPUTFIELD, logDataReference1FieldName = "entityKeyCode", logDataReference2 = LogDataReferenceType.RESULT)
+    String updateComment(EAMContext context, Comment comment) throws EAMException;
 
-    @Operation(logOperation = INFOR_OPERATION.COMMENT_D)
-    String deleteComment(InforContext context, Comment comment) throws InforException;
+    @Operation(logOperation = EAM_OPERATION.COMMENT_D)
+    String deleteComment(EAMContext context, Comment comment) throws EAMException;
 }

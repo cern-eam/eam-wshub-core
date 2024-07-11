@@ -3,34 +3,34 @@ package ch.cern.eam.wshub.core.services.workorders.entities;
 import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
 import ch.cern.eam.wshub.core.adapters.BooleanAdapter;
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
-import ch.cern.eam.wshub.core.annotations.InforField;
+import ch.cern.eam.wshub.core.annotations.EAMField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.math.BigDecimal;
 import java.util.Date;
 
 public class SalesPrice {
 
-    @InforField(xpath = "CUSTOMERCONTRACTSALESPRICEID/CUSTOMERCONTRACTSALESPRICECODE")
+    @EAMField(xpath = "CUSTOMERCONTRACTSALESPRICEID/CUSTOMERCONTRACTSALESPRICECODE")
     private String salesPriceCode;
-    @InforField(xpath = "USERCONTRACTID/USERCONTRACTCODE")
+    @EAMField(xpath = "USERCONTRACTID/USERCONTRACTCODE")
     private String customerContractCode;
-    @InforField(xpath = "USERCONTRACTID/USERCONTRACTREVISION")
+    @EAMField(xpath = "USERCONTRACTID/USERCONTRACTREVISION")
     private BigDecimal customerContractRevision;
-    @InforField(xpath = "ENTITYID/ENTITY")
+    @EAMField(xpath = "ENTITYID/ENTITY")
     private String entityCode;
-    @InforField(xpath = "ENTITYCODEID/CODE")
+    @EAMField(xpath = "ENTITYCODEID/CODE")
     private String code;
-    @InforField(xpath = "DATEEFFECTIVE")
+    @EAMField(xpath = "DATEEFFECTIVE")
     private Date dateEffective;
-    @InforField(xpath = "DATEEXPIRED")
+    @EAMField(xpath = "DATEEXPIRED")
     private Date dateExpired;
-    @InforField(xpath = "SALESPRICE")
+    @EAMField(xpath = "SALESPRICE")
     private BigDecimal salesPrice;
-    @InforField(xpath = "STOREID/STORECODE")
+    @EAMField(xpath = "STOREID/STORECODE")
     private String storeCode;
-    @InforField(xpath = "StandardUserDefinedFields")
+    @EAMField(xpath = "StandardUserDefinedFields")
     private UserDefinedFields userDefinedFields;
 
     public String getCustomerContractCode() {
