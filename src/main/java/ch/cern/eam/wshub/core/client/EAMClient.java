@@ -225,7 +225,7 @@ public class EAMClient implements Serializable {
 
             // EAM Web Services Client
             Service service = Service.create(new QName("eamws"));
-            if (this.soapHandlerResolver != null) {
+            if (this.soapHandlerResolver == null) {
                 this.soapHandlerResolver = new SOAPHandlerResolver();
             }
             service.setHandlerResolver(soapHandlerResolver);

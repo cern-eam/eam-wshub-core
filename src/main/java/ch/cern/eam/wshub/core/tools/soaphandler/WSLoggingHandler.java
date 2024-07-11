@@ -18,10 +18,11 @@ import java.util.regex.Pattern;
 
 public class WSLoggingHandler implements SOAPHandler<SOAPMessageContext> {
 
-    Pattern regex = null;
-    Logger logger = Logger.getGlobal();
+    final Pattern regex;
+    final Logger logger;
 
-    public WSLoggingHandler() {
+    public WSLoggingHandler(Logger logger) {
+        this.logger = logger;
         regex = Pattern.compile("(<([a-zA-Z0-9]+:)?password>)([\\s\\S]*?)(</([a-zA-Z0-9]+:)?password>)", Pattern.CASE_INSENSITIVE);
     }
 
@@ -32,7 +33,6 @@ public class WSLoggingHandler implements SOAPHandler<SOAPMessageContext> {
         System.out.println(soapMessage);
         try {
             Iterator<Node> it = context.getMessage().getSOAPBody().getChildElements();
-
             while (it.hasNext()) {
                 SOAPElement se = (SOAPElement) it.next();
                 if (se.getElementName().getLocalName().equalsIgnoreCase("InformationAlert")) {
