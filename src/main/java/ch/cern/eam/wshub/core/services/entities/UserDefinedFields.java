@@ -4,10 +4,10 @@ import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
 import ch.cern.eam.wshub.core.adapters.BooleanAdapter;
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
 import ch.cern.eam.wshub.core.annotations.GridField;
-import ch.cern.eam.wshub.core.annotations.InforField;
+import ch.cern.eam.wshub.core.annotations.EAMField;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import javax.persistence.Embeddable;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.persistence.Embeddable;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.*;
@@ -19,146 +19,146 @@ public class UserDefinedFields implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 8838910762758979180L;
 
-	@InforField(xpath = "UDFCHAR01")
+	@EAMField(xpath = "UDFCHAR01")
 	@GridField(name = "udfchar01")
 	private String udfchar01;
-	@InforField(xpath = "UDFCHAR02")
+	@EAMField(xpath = "UDFCHAR02")
 	@GridField(name = "udfchar02")
 	private String udfchar02;
-	@InforField(xpath = "UDFCHAR03")
+	@EAMField(xpath = "UDFCHAR03")
 	@GridField(name = "udfchar03")
 	private String udfchar03;
-	@InforField(xpath = "UDFCHAR04")
+	@EAMField(xpath = "UDFCHAR04")
 	@GridField(name = "udfchar04")
 	private String udfchar04;
-	@InforField(xpath = "UDFCHAR05")
+	@EAMField(xpath = "UDFCHAR05")
 	@GridField(name = "udfchar05")
 	private String udfchar05;
-	@InforField(xpath = "UDFCHAR06")
+	@EAMField(xpath = "UDFCHAR06")
 	@GridField(name = "udfchar06")
 	private String udfchar06;
-	@InforField(xpath = "UDFCHAR07")
+	@EAMField(xpath = "UDFCHAR07")
 	@GridField(name = "udfchar07")
 	private String udfchar07;
-	@InforField(xpath = "UDFCHAR08")
+	@EAMField(xpath = "UDFCHAR08")
 	@GridField(name = "udfchar08")
 	private String udfchar08;
-	@InforField(xpath = "UDFCHAR09")
+	@EAMField(xpath = "UDFCHAR09")
 	@GridField(name = "udfchar09")
 	private String udfchar09;
-	@InforField(xpath = "UDFCHAR10")
+	@EAMField(xpath = "UDFCHAR10")
 	@GridField(name = "udfchar10")
 	private String udfchar10;
-	@InforField(xpath = "UDFCHAR11")
+	@EAMField(xpath = "UDFCHAR11")
 	@GridField(name = "udfchar11")
 	private String udfchar11;
-	@InforField(xpath = "UDFCHAR12")
+	@EAMField(xpath = "UDFCHAR12")
 	@GridField(name = "udfchar12")
 	private String udfchar12;
-	@InforField(xpath = "UDFCHAR13")
+	@EAMField(xpath = "UDFCHAR13")
 	@GridField(name = "udfchar13")
 	private String udfchar13;
-	@InforField(xpath = "UDFCHAR14")
+	@EAMField(xpath = "UDFCHAR14")
 	@GridField(name = "udfchar14")
 	private String udfchar14;
-	@InforField(xpath = "UDFCHAR15")
+	@EAMField(xpath = "UDFCHAR15")
 	@GridField(name = "udfchar15")
 	private String udfchar15;
-	@InforField(xpath = "UDFCHAR16")
+	@EAMField(xpath = "UDFCHAR16")
 	@GridField(name = "udfchar16")
 	private String udfchar16;
-	@InforField(xpath = "UDFCHAR17")
+	@EAMField(xpath = "UDFCHAR17")
 	@GridField(name = "udfchar17")
 	private String udfchar17;
-	@InforField(xpath = "UDFCHAR18")
+	@EAMField(xpath = "UDFCHAR18")
 	@GridField(name = "udfchar18")
 	private String udfchar18;
-	@InforField(xpath = "UDFCHAR19")
+	@EAMField(xpath = "UDFCHAR19")
 	@GridField(name = "udfchar19")
 	private String udfchar19;
-	@InforField(xpath = "UDFCHAR20")
+	@EAMField(xpath = "UDFCHAR20")
 	@GridField(name = "udfchar20")
 	private String udfchar20;
-	@InforField(xpath = "UDFCHAR21")
+	@EAMField(xpath = "UDFCHAR21")
 	@GridField(name = "udfchar21")
 	private String udfchar21;
-	@InforField(xpath = "UDFCHAR22")
+	@EAMField(xpath = "UDFCHAR22")
 	@GridField(name = "udfchar22")
 	private String udfchar22;
-	@InforField(xpath = "UDFCHAR23")
+	@EAMField(xpath = "UDFCHAR23")
 	@GridField(name = "udfchar23")
 	private String udfchar23;
-	@InforField(xpath = "UDFCHAR24")
+	@EAMField(xpath = "UDFCHAR24")
 	@GridField(name = "udfchar24")
 	private String udfchar24;
-	@InforField(xpath = "UDFCHAR25")
+	@EAMField(xpath = "UDFCHAR25")
 	@GridField(name = "udfchar25")
 	private String udfchar25;
-	@InforField(xpath = "UDFCHAR26")
+	@EAMField(xpath = "UDFCHAR26")
 	@GridField(name = "udfchar26")
 	private String udfchar26;
-	@InforField(xpath = "UDFCHAR27")
+	@EAMField(xpath = "UDFCHAR27")
 	@GridField(name = "udfchar27")
 	private String udfchar27;
-	@InforField(xpath = "UDFCHAR28")
+	@EAMField(xpath = "UDFCHAR28")
 	@GridField(name = "udfchar28")
 	private String udfchar28;
-	@InforField(xpath = "UDFCHAR29")
+	@EAMField(xpath = "UDFCHAR29")
 	@GridField(name = "udfchar29")
 	private String udfchar29;
-	@InforField(xpath = "UDFCHAR30")
+	@EAMField(xpath = "UDFCHAR30")
 	@GridField(name = "udfchar30")
 	private String udfchar30;
-	@InforField(xpath = "UDFCHAR31", enforceValidXpath = false)
+	@EAMField(xpath = "UDFCHAR31", enforceValidXpath = false)
 	@GridField(name = "udfchar31")
 	private String udfchar31;
-	@InforField(xpath = "UDFCHAR32", enforceValidXpath = false)
+	@EAMField(xpath = "UDFCHAR32", enforceValidXpath = false)
 	@GridField(name = "udfchar32")
 	private String udfchar32;
-	@InforField(xpath = "UDFCHAR33", enforceValidXpath = false)
+	@EAMField(xpath = "UDFCHAR33", enforceValidXpath = false)
 	@GridField(name = "udfchar33")
 	private String udfchar33;
-	@InforField(xpath = "UDFCHAR34", enforceValidXpath = false)
+	@EAMField(xpath = "UDFCHAR34", enforceValidXpath = false)
 	@GridField(name = "udfchar34")
 	private String udfchar34;
-	@InforField(xpath = "UDFCHAR35", enforceValidXpath = false)
+	@EAMField(xpath = "UDFCHAR35", enforceValidXpath = false)
 	@GridField(name = "udfchar35")
 	private String udfchar35;
-	@InforField(xpath = "UDFCHAR36", enforceValidXpath = false)
+	@EAMField(xpath = "UDFCHAR36", enforceValidXpath = false)
 	@GridField(name = "udfchar36")
 	private String udfchar36;
-	@InforField(xpath = "UDFCHAR37", enforceValidXpath = false)
+	@EAMField(xpath = "UDFCHAR37", enforceValidXpath = false)
 	@GridField(name = "udfchar37")
 	private String udfchar37;
-	@InforField(xpath = "UDFCHAR38", enforceValidXpath = false)
+	@EAMField(xpath = "UDFCHAR38", enforceValidXpath = false)
 	@GridField(name = "udfchar38")
 	private String udfchar38;
-	@InforField(xpath = "UDFCHAR39", enforceValidXpath = false)
+	@EAMField(xpath = "UDFCHAR39", enforceValidXpath = false)
 	@GridField(name = "udfchar39")
 	private String udfchar39;
-	@InforField(xpath = "UDFCHAR40", enforceValidXpath = false)
+	@EAMField(xpath = "UDFCHAR40", enforceValidXpath = false)
 	@GridField(name = "udfchar40")
 	private String udfchar40;
-	@InforField(xpath = "UDFCHAR41", enforceValidXpath = false)
+	@EAMField(xpath = "UDFCHAR41", enforceValidXpath = false)
 	@GridField(name = "udfchar41")
 	private String udfchar41;
-	@InforField(xpath = "UDFCHAR42", enforceValidXpath = false)
+	@EAMField(xpath = "UDFCHAR42", enforceValidXpath = false)
 	@GridField(name = "udfchar42")
 	private String udfchar42;
-	@InforField(xpath = "UDFCHAR43", enforceValidXpath = false)
+	@EAMField(xpath = "UDFCHAR43", enforceValidXpath = false)
 	@GridField(name = "udfchar43")
 	private String udfchar43;
-	@InforField(xpath = "UDFCHAR44", enforceValidXpath = false)
+	@EAMField(xpath = "UDFCHAR44", enforceValidXpath = false)
 	@GridField(name = "udfchar44")
 	private String udfchar44;
-	@InforField(xpath = "UDFCHAR45", enforceValidXpath = false)
+	@EAMField(xpath = "UDFCHAR45", enforceValidXpath = false)
 	@GridField(name = "udfchar45")
 	private String udfchar45;
 
-	@InforField(xpath = "UDFNOTE01", enforceValidXpath = false)
+	@EAMField(xpath = "UDFNOTE01", enforceValidXpath = false)
 	@GridField(name = "udfnote01")
 	private String udfnote01;
-	@InforField(xpath = "UDFNOTE02", enforceValidXpath = false)
+	@EAMField(xpath = "UDFNOTE02", enforceValidXpath = false)
 	@GridField(name = "udfnote02")
 	private String udfnote02;
 
@@ -208,96 +208,96 @@ public class UserDefinedFields implements Serializable, Cloneable {
 	private String udfchar44Desc;
 	private String udfchar45Desc;
 
-	@InforField(xpath = "UDFCHKBOX01")
+	@EAMField(xpath = "UDFCHKBOX01")
 	@GridField(name = "udfchkbox01")
 	private Boolean udfchkbox01;
-	@InforField(xpath = "UDFCHKBOX02")
+	@EAMField(xpath = "UDFCHKBOX02")
 	@GridField(name = "udfchkbox02")
 	private Boolean udfchkbox02;
-	@InforField(xpath = "UDFCHKBOX03")
+	@EAMField(xpath = "UDFCHKBOX03")
 	@GridField(name = "udfchkbox03")
 	private Boolean udfchkbox03;
-	@InforField(xpath = "UDFCHKBOX04")
+	@EAMField(xpath = "UDFCHKBOX04")
 	@GridField(name = "udfchkbox04")
 	private Boolean udfchkbox04;
-	@InforField(xpath = "UDFCHKBOX05")
+	@EAMField(xpath = "UDFCHKBOX05")
 	@GridField(name = "udfchkbox05")
 	private Boolean udfchkbox05;
-	@InforField(xpath = "UDFCHKBOX06", enforceValidXpath = false)
+	@EAMField(xpath = "UDFCHKBOX06", enforceValidXpath = false)
 	@GridField(name = "udfchkbox06")
 	private Boolean udfchkbox06;
-	@InforField(xpath = "UDFCHKBOX07", enforceValidXpath = false)
+	@EAMField(xpath = "UDFCHKBOX07", enforceValidXpath = false)
 	@GridField(name = "udfchkbox07")
 	private Boolean udfchkbox07;
-	@InforField(xpath = "UDFCHKBOX08", enforceValidXpath = false)
+	@EAMField(xpath = "UDFCHKBOX08", enforceValidXpath = false)
 	@GridField(name = "udfchkbox08")
 	private Boolean udfchkbox08;
-	@InforField(xpath = "UDFCHKBOX09", enforceValidXpath = false)
+	@EAMField(xpath = "UDFCHKBOX09", enforceValidXpath = false)
 	@GridField(name = "udfchkbox09")
 	private Boolean udfchkbox09;
-	@InforField(xpath = "UDFCHKBOX10", enforceValidXpath = false)
+	@EAMField(xpath = "UDFCHKBOX10", enforceValidXpath = false)
 	@GridField(name = "udfchkbox10")
 	private Boolean udfchkbox10;
 
-	@InforField(xpath = "UDFNUM01")
+	@EAMField(xpath = "UDFNUM01")
 	@GridField(name = "udfnum01")
 	private BigDecimal udfnum01;
-	@InforField(xpath = "UDFNUM02")
+	@EAMField(xpath = "UDFNUM02")
 	@GridField(name = "udfnum02")
 	private BigDecimal udfnum02;
-	@InforField(xpath = "UDFNUM03")
+	@EAMField(xpath = "UDFNUM03")
 	@GridField(name = "udfnum03")
 	private BigDecimal udfnum03;
-	@InforField(xpath = "UDFNUM04")
+	@EAMField(xpath = "UDFNUM04")
 	@GridField(name = "udfnum04")
 	private BigDecimal udfnum04;
-	@InforField(xpath = "UDFNUM05")
+	@EAMField(xpath = "UDFNUM05")
 	@GridField(name = "udfnum05")
 	private BigDecimal udfnum05;
-	@InforField(xpath = "UDFNUM06", enforceValidXpath = false)
+	@EAMField(xpath = "UDFNUM06", enforceValidXpath = false)
 	@GridField(name = "udfnum06")
 	private BigDecimal udfnum06;
-	@InforField(xpath = "UDFNUM07", enforceValidXpath = false)
+	@EAMField(xpath = "UDFNUM07", enforceValidXpath = false)
 	@GridField(name = "udfnum07")
 	private BigDecimal udfnum07;
-	@InforField(xpath = "UDFNUM08", enforceValidXpath = false)
+	@EAMField(xpath = "UDFNUM08", enforceValidXpath = false)
 	@GridField(name = "udfnum08")
 	private BigDecimal udfnum08;
-	@InforField(xpath = "UDFNUM09", enforceValidXpath = false)
+	@EAMField(xpath = "UDFNUM09", enforceValidXpath = false)
 	@GridField(name = "udfnum09")
 	private BigDecimal udfnum09;
-	@InforField(xpath = "UDFNUM10", enforceValidXpath = false)
+	@EAMField(xpath = "UDFNUM10", enforceValidXpath = false)
 	@GridField(name = "udfnum10")
 	private BigDecimal udfnum10;
 
-	@InforField(xpath = "UDFDATE01")
+	@EAMField(xpath = "UDFDATE01")
 	@GridField(name = "udfdate01")
 	private Date udfdate01;
-	@InforField(xpath = "UDFDATE02")
+	@EAMField(xpath = "UDFDATE02")
 	@GridField(name = "udfdate02")
 	private Date udfdate02;
-	@InforField(xpath = "UDFDATE03")
+	@EAMField(xpath = "UDFDATE03")
 	@GridField(name = "udfdate03")
 	private Date udfdate03;
-	@InforField(xpath = "UDFDATE04")
+	@EAMField(xpath = "UDFDATE04")
 	@GridField(name = "udfdate04")
 	private Date udfdate04;
-	@InforField(xpath = "UDFDATE05")
+	@EAMField(xpath = "UDFDATE05")
 	@GridField(name = "udfdate05")
 	private Date udfdate05;
-	@InforField(xpath = "UDFDATE06", enforceValidXpath = false)
+	@EAMField(xpath = "UDFDATE06", enforceValidXpath = false)
 	@GridField(name = "udfdate06")
 	private Date udfdate06;
-	@InforField(xpath = "UDFDATE07", enforceValidXpath = false)
+	@EAMField(xpath = "UDFDATE07", enforceValidXpath = false)
 	@GridField(name = "udfdate07")
 	private Date udfdate07;
-	@InforField(xpath = "UDFDATE08", enforceValidXpath = false)
+	@EAMField(xpath = "UDFDATE08", enforceValidXpath = false)
 	@GridField(name = "udfdate08")
 	private Date udfdate08;
-	@InforField(xpath = "UDFDATE09", enforceValidXpath = false)
+	@EAMField(xpath = "UDFDATE09", enforceValidXpath = false)
 	@GridField(name = "udfdate09")
 	private Date udfdate09;
-	@InforField(xpath = "UDFDATE10", enforceValidXpath = false)
+	@EAMField(xpath = "UDFDATE10", enforceValidXpath = false)
 	@GridField(name = "udfdate10")
 	private Date udfdate10;
 	

@@ -1,18 +1,18 @@
 package ch.cern.eam.wshub.core.services.equipment;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.equipment.entities.Equipment;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 
 public interface AssetService {
 
-	Equipment readAsset(InforContext context, String assetCode, String organization) throws InforException;
+	Equipment readAsset(EAMContext context, String assetCode, String organization) throws EAMException;
 
-	String updateAsset(InforContext context, Equipment assetParam) throws InforException;
+	String updateAsset(EAMContext context, Equipment assetParam) throws EAMException;
 
-	String createAsset(InforContext context, Equipment assetParam) throws InforException;
+	String createAsset(EAMContext context, Equipment assetParam) throws EAMException;
 
-	String deleteAsset(InforContext context, String assetCode, String organization) throws InforException;
+	String deleteAsset(EAMContext context, String assetCode, String organization) throws EAMException;
 
-	Equipment readAssetDefault(InforContext context, String organizationCode) throws InforException;
+	Equipment readAssetDefault(EAMContext context, String organizationCode) throws EAMException;
 }

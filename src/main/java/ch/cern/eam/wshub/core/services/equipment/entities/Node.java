@@ -1,6 +1,6 @@
 package ch.cern.eam.wshub.core.services.equipment.entities;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
 @XmlRootElement

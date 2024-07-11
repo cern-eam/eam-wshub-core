@@ -6,9 +6,9 @@ import ch.cern.eam.wshub.core.services.entities.Signature;
 import java.io.Serializable;
 
 /**
- * Context necessary to make a request to Infor
+ * Context necessary to make a request to EAM
  */
-public class InforContext implements Serializable {
+public class EAMContext implements Serializable {
 
     private Credentials credentials;
     private String sessionID;
@@ -20,13 +20,13 @@ public class InforContext implements Serializable {
 
     private Boolean localizeResults = true;
 
-    public InforContext () { }
+    public EAMContext () { }
 
-    public InforContext(Credentials credentials) {
+    public EAMContext(Credentials credentials) {
         this.credentials = credentials;
     }
 
-    public InforContext(String sessionID) {
+    public EAMContext(String sessionID) {
         this.sessionID = sessionID;
     }
 

@@ -1,11 +1,11 @@
 package ch.cern.eam.wshub.core.services.equipment.impl;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.entities.BatchResponse;
 import ch.cern.eam.wshub.core.services.equipment.LocationService;
 import ch.cern.eam.wshub.core.services.equipment.entities.Location;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_entities.location_001.LocationParentHierarchy;
 import net.datastream.schemas.mp_entities.location_001.ParentLocation;
@@ -17,7 +17,7 @@ import net.datastream.schemas.mp_functions.mp0320_001.MP0320_DeleteLocation_001;
 import net.datastream.schemas.mp_functions.mp0361_001.MP0361_GetLocationParentHierarchy_001;
 import net.datastream.schemas.mp_results.mp0318_001.MP0318_GetLocation_001_Result;
 import net.datastream.schemas.mp_results.mp0361_001.MP0361_GetLocationParentHierarchy_001_Result;
-import net.datastream.wsdls.inforws.InforWebServicesPT;
+import net.datastream.wsdls.eamws.EAMWebServicesPT;
 import java.util.List;
 
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.toCodeString;
@@ -25,36 +25,36 @@ import static ch.cern.eam.wshub.core.tools.DataTypeTools.toCodeString;
 public class LocationServiceImpl implements LocationService {
 
 	private Tools tools;
-	private InforWebServicesPT inforws;
+	private EAMWebServicesPT eamws;
 	private ApplicationData applicationData;
 
-	public LocationServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
+	public LocationServiceImpl(ApplicationData applicationData, Tools tools, EAMWebServicesPT eamWebServicesToolkitClient) {
 		this.applicationData = applicationData;
 		this.tools = tools;
-		this.inforws = inforWebServicesToolkitClient;
+		this.eamws = eamWebServicesToolkitClient;
 	}
 
 	//
 	// BATCH WEB SERVICES
 	//
 
-	public BatchResponse<String> createLocationBatch(InforContext context, List<Location> locations) {
+	public BatchResponse<String> createLocationBatch(EAMContext context, List<Location> locations) {
 		return tools.batchOperation(context, this::createLocation, locations);
 	}
 
-	public BatchResponse<Location> readLocationBatch(InforContext context, List<String> locationCodes) {
+	public BatchResponse<Location> readLocationBatch(EAMContext context, List<String> locationCodes) {
 		return tools.batchOperation(context, this::readLocation, locationCodes);
 	}
 
-	public BatchResponse<String> updateLocationBatch(InforContext context, List<Location> locations) {
+	public BatchResponse<String> updateLocationBatch(EAMContext context, List<Location> locations) {
 		return tools.batchOperation(context, this::updateLocation, locations);
 	}
 
-	public BatchResponse<String> deleteLocationBatch(InforContext context, List<String> locationCodes) {
+	public BatchResponse<String> deleteLocationBatch(EAMContext context, List<String> locationCodes) {
 		return tools.batchOperation(context, this::deleteLocation, locationCodes);
 	}
 
-	public Location readLocation(InforContext context, String locationCode) throws InforException
+	public Location readLocation(EAMContext context, String locationCode) throws EAMException
 	{
 		MP0318_GetLocation_001 getLocation = new MP0318_GetLocation_001();
 		getLocation.setLOCATIONID(new LOCATIONID_Type());
@@ -62,112 +62,112 @@ public class LocationServiceImpl implements LocationService {
 		getLocation.getLOCATIONID().setLOCATIONCODE(locationCode);
 		MP0318_GetLocation_001_Result getLocationResult = new MP0318_GetLocation_001_Result();
 
-		getLocationResult = tools.performInforOperation(context, inforws::getLocationOp, getLocation);
+		getLocationResult = tools.performEAMOperation(context, eamws::getLocationOp, getLocation);
 
-		net.datastream.schemas.mp_entities.location_001.Location locationInfor =
+		net.datastream.schemas.mp_entities.location_001.Location locationEAM =
 			getLocationResult.getResultData().getLocation();
 
-		Location location = tools.getInforFieldTools().transformInforObject(new Location(), locationInfor, context);
+		Location location = tools.getEAMFieldTools().transformEAMObject(new Location(), locationEAM, context);
 
-		if(locationInfor.getParentLocationID() != null) {
-			location.setHierarchyLocationCode(locationInfor.getParentLocationID().getLOCATIONCODE());
+		if(locationEAM.getParentLocationID() != null) {
+			location.setHierarchyLocationCode(locationEAM.getParentLocationID().getLOCATIONCODE());
 		}
 
 		return location;
 	}
 
-	public String createLocation(InforContext context, Location locationParam) throws InforException {
-		net.datastream.schemas.mp_entities.location_001.Location locationInfor =
+	public String createLocation(EAMContext context, Location locationParam) throws EAMException {
+		net.datastream.schemas.mp_entities.location_001.Location locationEAM =
 			new net.datastream.schemas.mp_entities.location_001.Location();
 
-		locationInfor.setLOCATIONID(new LOCATIONID_Type());
-		locationInfor.getLOCATIONID().setLOCATIONCODE(locationParam.getCode());
-		locationInfor.getLOCATIONID().setORGANIZATIONID(tools.getOrganization(context));
+		locationEAM.setLOCATIONID(new LOCATIONID_Type());
+		locationEAM.getLOCATIONID().setLOCATIONCODE(locationParam.getCode());
+		locationEAM.getLOCATIONID().setORGANIZATIONID(tools.getOrganization(context));
 
-		locationInfor.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(
+		locationEAM.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getEAMCustomFields(
 			context,
-			toCodeString(locationInfor.getCLASSID()),
-			locationInfor.getUSERDEFINEDAREA(),
+			toCodeString(locationEAM.getCLASSID()),
+			locationEAM.getUSERDEFINEDAREA(),
 			locationParam.getClassCode(),
 			"LOC"));
 
-		tools.getInforFieldTools().transformWSHubObject(locationInfor, locationParam, context);
+		tools.getEAMFieldTools().transformWSHubObject(locationEAM, locationParam, context);
 
 		if(locationParam.getHierarchyLocationCode() != null) {
-			locationInfor.setLocationParentHierarchy(getLocationParentHierarchy(context, locationParam));
+			locationEAM.setLocationParentHierarchy(getLocationParentHierarchy(context, locationParam));
 		}
 
 		MP0317_AddLocation_001 addLocation = new MP0317_AddLocation_001();
-		addLocation.setLocation(locationInfor);
-		tools.performInforOperation(context, inforws::addLocationOp, addLocation);
+		addLocation.setLocation(locationEAM);
+		tools.performEAMOperation(context, eamws::addLocationOp, addLocation);
 
-		return locationInfor.getLOCATIONID().getLOCATIONCODE();
+		return locationEAM.getLOCATIONID().getLOCATIONCODE();
 	}
 
-	public String updateLocation(InforContext context, Location locationParam) throws InforException {
+	public String updateLocation(EAMContext context, Location locationParam) throws EAMException {
 		MP0318_GetLocation_001 getLocation = new MP0318_GetLocation_001();
 		getLocation.setLOCATIONID(new LOCATIONID_Type());
 		getLocation.getLOCATIONID().setLOCATIONCODE(locationParam.getCode());
 		getLocation.getLOCATIONID().setORGANIZATIONID(tools.getOrganization(context));
 
 		MP0318_GetLocation_001_Result result =
-			tools.performInforOperation(context, inforws::getLocationOp, getLocation);
+			tools.performEAMOperation(context, eamws::getLocationOp, getLocation);
 
-		net.datastream.schemas.mp_entities.location_001.Location locationInfor = result.getResultData().getLocation();
+		net.datastream.schemas.mp_entities.location_001.Location locationEAM = result.getResultData().getLocation();
 
-		locationInfor.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(
+		locationEAM.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getEAMCustomFields(
 			context,
-			toCodeString(locationInfor.getCLASSID()),
-			locationInfor.getUSERDEFINEDAREA(),
+			toCodeString(locationEAM.getCLASSID()),
+			locationEAM.getUSERDEFINEDAREA(),
 			locationParam.getClassCode(),
 			"LOC"));
 
 		if(locationParam.getHierarchyLocationCode() == null) {
-			locationParam.setHierarchyLocationCode(toCodeString(locationInfor.getParentLocationID()));
+			locationParam.setHierarchyLocationCode(toCodeString(locationEAM.getParentLocationID()));
 		}
 
 		if(locationParam.getHierarchyLocationCode() != null && !locationParam.getHierarchyLocationCode().equals("")) {
-			locationInfor.setLocationParentHierarchy(getLocationParentHierarchy(context, locationParam));
+			locationEAM.setLocationParentHierarchy(getLocationParentHierarchy(context, locationParam));
 		}
 
-		locationInfor.setParentLocationID(null);
+		locationEAM.setParentLocationID(null);
 
-		tools.getInforFieldTools().transformWSHubObject(locationInfor, locationParam, context);
+		tools.getEAMFieldTools().transformWSHubObject(locationEAM, locationParam, context);
 
-		// call infor web service
+		// call eam web service
 		MP0319_SyncLocation_001 syncLocation = new MP0319_SyncLocation_001();
-		syncLocation.setLocation(locationInfor);
+		syncLocation.setLocation(locationEAM);
 
-		tools.performInforOperation(context, inforws::syncLocationOp, syncLocation);
+		tools.performEAMOperation(context, eamws::syncLocationOp, syncLocation);
 
-		return locationInfor.getLOCATIONID().getLOCATIONCODE();
+		return locationEAM.getLOCATIONID().getLOCATIONCODE();
 	}
 
 	@Override
-	public String deleteLocation(InforContext context, String locationCode) throws InforException {
+	public String deleteLocation(EAMContext context, String locationCode) throws EAMException {
 		MP0320_DeleteLocation_001 deleteLocation = new MP0320_DeleteLocation_001();
 		deleteLocation.setLOCATIONID(new LOCATIONID_Type());
 		deleteLocation.getLOCATIONID().setORGANIZATIONID(tools.getOrganization(context));
 		deleteLocation.getLOCATIONID().setLOCATIONCODE(locationCode);
 
-		tools.performInforOperation(context, inforws::deleteLocationOp, deleteLocation);
+		tools.performEAMOperation(context, eamws::deleteLocationOp, deleteLocation);
 
 		return locationCode;
 	}
 
-	private LocationParentHierarchy getLocationParentHierarchy(InforContext context, String locationCode) throws InforException {
+	private LocationParentHierarchy getLocationParentHierarchy(EAMContext context, String locationCode) throws EAMException {
 		MP0361_GetLocationParentHierarchy_001 getLocationParentHierarchy = new MP0361_GetLocationParentHierarchy_001();
 		getLocationParentHierarchy.setLOCATIONID(new LOCATIONID_Type());
 		getLocationParentHierarchy.getLOCATIONID().setLOCATIONCODE(locationCode);
 		getLocationParentHierarchy.getLOCATIONID().setORGANIZATIONID(tools.getOrganization(context));
 
 		MP0361_GetLocationParentHierarchy_001_Result getLocationParentHierarchyResult =
-			tools.performInforOperation(context, inforws::getLocationParentHierarchyOp, getLocationParentHierarchy);
+			tools.performEAMOperation(context, eamws::getLocationParentHierarchyOp, getLocationParentHierarchy);
 
 		return getLocationParentHierarchyResult.getResultData().getLocationParentHierarchy();
 	}
 
-	private LocationParentHierarchy getLocationParentHierarchy(InforContext context, Location location) {
+	private LocationParentHierarchy getLocationParentHierarchy(EAMContext context, Location location) {
 		if(location.getHierarchyLocationCode() == null)
 			return null;
 

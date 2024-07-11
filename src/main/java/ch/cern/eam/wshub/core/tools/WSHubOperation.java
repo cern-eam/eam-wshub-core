@@ -1,8 +1,8 @@
 package ch.cern.eam.wshub.core.tools;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 
 @FunctionalInterface
 public interface WSHubOperation<A, R> {
-    R apply(InforContext inforContext, A a) throws InforException;
+    R apply(EAMContext eamContext, A a) throws EAMException;
 }

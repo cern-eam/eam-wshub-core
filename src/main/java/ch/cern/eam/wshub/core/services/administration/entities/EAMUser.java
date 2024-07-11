@@ -1,16 +1,16 @@
 package ch.cern.eam.wshub.core.services.administration.entities;
 
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
-import ch.cern.eam.wshub.core.annotations.InforField;
+import ch.cern.eam.wshub.core.annotations.EAMField;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.entities.Department;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElementWrapper;
+import jakarta.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.util.*;
 
@@ -27,45 +27,45 @@ public class EAMUser implements Serializable {
 
 	@Id
 	@Column(name = "USR_CODE")
-	@InforField(xpath = "USERID/USERCODE")
+	@EAMField(xpath = "USERID/USERCODE")
 	private String userCode;
 
 	@Column(name = "USR_DESC")
-	@InforField(xpath = "USERID/DESCRIPTION")
+	@EAMField(xpath = "USERID/DESCRIPTION")
 	private String userDesc;
 
 	@Column(name = "USR_GROUP")
-	@InforField(xpath = "USERGROUP")
+	@EAMField(xpath = "USERGROUP")
 	private String userGroup;
 
 	@Column(name = "USR_EXPUSER")
 	@Temporal(TemporalType.DATE)
-	@InforField(xpath = "USEREXPIREDATE")
+	@EAMField(xpath = "USEREXPIREDATE")
 	private Date userIDExpirationDate;
 
 	@XmlTransient
 	@Transient
-	@InforField(xpath = "PASSWORD")
+	@EAMField(xpath = "PASSWORD")
 	private String password;
 
 	@Transient
-	@InforField(xpath = "PASSEXPIREDATE")
+	@EAMField(xpath = "PASSEXPIREDATE")
 	private Date passwordExpirationDate;
 
 	@Column(name = "USR_EMAILADDRESS")
-	@InforField(xpath = "EMAIL")
+	@EAMField(xpath = "EMAIL")
 	private String emailAddress;
 
 	@Column(name = "USR_MRC")
-	@InforField(xpath = "DEPARTMENTCODE")
+	@EAMField(xpath = "DEPARTMENTCODE")
 	private String department;
 
 	@Column(name = "USR_CLASS")
-	@InforField(xpath = "CLASSID/CLASSCODE")
+	@EAMField(xpath = "CLASSID/CLASSCODE")
 	private String classCode;
 
 	@Column(name = "USR_LOCALE")
-	@InforField(xpath = "LOCALE")
+	@EAMField(xpath = "LOCALE")
 	private String locale;
 
 	@Transient
@@ -75,11 +75,11 @@ public class EAMUser implements Serializable {
 	private String employeeDesc;
 
 	@Transient
-	@InforField(xpath = "USERDEFINEDAREA")
+	@EAMField(xpath = "USERDEFINEDAREA")
 	private CustomField[] customFields;
 
 	@Transient
-	@InforField(xpath = "StandardUserDefinedFields")
+	@EAMField(xpath = "StandardUserDefinedFields")
 	private UserDefinedFields userDefinedFields;
 
 	@Transient

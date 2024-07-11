@@ -1,12 +1,12 @@
 package ch.cern.eam.wshub.core.services.material.impl;
 
 import java.math.BigDecimal;
-import javax.xml.ws.Holder;
+import jakarta.xml.ws.Holder;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.material.PartKitService;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import org.openapplications.oagis_segments.QUANTITY;
 import ch.cern.eam.wshub.core.services.material.entities.BuildKitParam;
@@ -23,22 +23,22 @@ import net.datastream.schemas.mp_functions.mp2231_001.MP2231_CreateKitSession_00
 import net.datastream.schemas.mp_functions.mp2235_001.MP2235_CreateKit_001;
 import net.datastream.schemas.mp_results.mp2231_001.MP2231_CreateKitSession_001_Result;
 import net.datastream.schemas.mp_results.mp2235_001.MP2235_CreateKit_001_Result;
-import net.datastream.wsdls.inforws.InforWebServicesPT;
+import net.datastream.wsdls.eamws.EAMWebServicesPT;
 
 public class PartKitServiceImpl implements PartKitService {
 
 	private Tools tools;
-	private InforWebServicesPT inforws;
+	private EAMWebServicesPT eamws;
 	private ApplicationData applicationData;
 
-	public PartKitServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
+	public PartKitServiceImpl(ApplicationData applicationData, Tools tools, EAMWebServicesPT eamWebServicesToolkitClient) {
 		this.applicationData = applicationData;
 		this.tools = tools;
-		this.inforws = inforWebServicesToolkitClient;
+		this.eamws = eamWebServicesToolkitClient;
 	}
 
 	@Override
-	public String addPartKitTemplate(InforContext context, PartKitTemplate partKitParam) throws InforException {
+	public String addPartKitTemplate(EAMContext context, PartKitTemplate partKitParam) throws EAMException {
 
 		KitTemplate kitTemplate = new KitTemplate();
 		
@@ -77,13 +77,13 @@ public class PartKitServiceImpl implements PartKitService {
 		MP2227_AddKitTemplate_001 addKitTemplate = new MP2227_AddKitTemplate_001();
 		addKitTemplate.setKitTemplate(kitTemplate);
 
-		tools.performInforOperation(context, inforws::addKitTemplateOp, addKitTemplate);
+		tools.performEAMOperation(context, eamws::addKitTemplateOp, addKitTemplate);
 
 		return null;
 	}	
 
 
-	public String createKitSession(InforContext context, BuildKitParam buildKitParam) throws InforException{
+	public String createKitSession(EAMContext context, BuildKitParam buildKitParam) throws EAMException{
 
 		// CREATE KIT SESSION
 		
@@ -120,13 +120,13 @@ public class PartKitServiceImpl implements PartKitService {
 		kitSessionMsg.setKitSession(kitSession);
 
 		MP2231_CreateKitSession_001_Result r =
-			tools.performInforOperation(context, inforws::createKitSessionOp, kitSessionMsg);
+			tools.performEAMOperation(context, eamws::createKitSessionOp, kitSessionMsg);
 
 		return r.getResultData().getDBSESSIONID().getVALUE().toString();
 	}
 
 
-	public String buildKit(InforContext context, String kitSessionId) throws InforException{
+	public String buildKit(EAMContext context, String kitSessionId) throws EAMException{
 		MP2235_CreateKit_001 createKitMsg = new MP2235_CreateKit_001();
 		MP2235_CreateKit_001_Result createKitResult = new MP2235_CreateKit_001_Result();
 		createKitMsg.setDBSESSIONID(new QUANTITY());
@@ -135,7 +135,7 @@ public class PartKitServiceImpl implements PartKitService {
 		createKitMsg.getDBSESSIONID().setSIGN("+");
 		createKitMsg.getDBSESSIONID().setUOM("default");
 		createKitMsg.getDBSESSIONID().setQualifier("OTHER");
-		tools.performInforOperation(context, inforws::createKitOp, createKitMsg);
+		tools.performEAMOperation(context, eamws::createKitOp, createKitMsg);
 
 		return createKitResult.getResultData().getDBSESSIONID().getVALUE().toString();
 	}

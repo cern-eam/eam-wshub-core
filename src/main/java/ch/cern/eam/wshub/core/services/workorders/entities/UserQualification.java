@@ -1,15 +1,15 @@
 package ch.cern.eam.wshub.core.services.workorders.entities;
 
-import ch.cern.eam.wshub.core.annotations.InforField;
+import ch.cern.eam.wshub.core.annotations.EAMField;
 
 public class UserQualification {
-    @InforField(xpath = "ENTITY")
+    @EAMField(xpath = "ENTITY")
     String entity;
 
-    @InforField(xpath = "USERDEFINEDCODE")
+    @EAMField(xpath = "USERDEFINEDCODE")
     String userDefinedCode;
 
-    @InforField(xpath = "DESCRIPTION")
+    @EAMField(xpath = "DESCRIPTION")
     String description;
 
     public String getEntity() {

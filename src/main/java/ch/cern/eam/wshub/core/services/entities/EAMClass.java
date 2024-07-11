@@ -1,6 +1,6 @@
 package ch.cern.eam.wshub.core.services.entities;
 
-public class InforClass {
+public class EAMClass {
 
 	private String code;
 	private String description;
@@ -33,7 +33,7 @@ public class InforClass {
 	}
 	@Override
 	public String toString() {
-		return "InforClass ["
+		return "EAMClass ["
 				+ (code != null ? "code=" + code + ", " : "")
 				+ (description != null ? "description=" + description + ", "
 						: "")

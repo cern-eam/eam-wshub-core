@@ -1,18 +1,18 @@
 package ch.cern.eam.wshub.core.services.equipment;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.equipment.entities.Equipment;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 
 public interface PositionService {
 
-    String createPosition(InforContext context, Equipment positionParam) throws InforException;
+    String createPosition(EAMContext context, Equipment positionParam) throws EAMException;
 
-    Equipment readPosition(InforContext context, String positionCode, String organization) throws InforException;
+    Equipment readPosition(EAMContext context, String positionCode, String organization) throws EAMException;
 
-    String deletePosition(InforContext context, String positionCode, String organization) throws InforException;
+    String deletePosition(EAMContext context, String positionCode, String organization) throws EAMException;
 
-    String updatePosition(InforContext context, Equipment positionParam) throws InforException;
+    String updatePosition(EAMContext context, Equipment positionParam) throws EAMException;
 
-    Equipment readPositionDefault(InforContext context, String organizationCode) throws InforException;
+    Equipment readPositionDefault(EAMContext context, String organizationCode) throws EAMException;
 }

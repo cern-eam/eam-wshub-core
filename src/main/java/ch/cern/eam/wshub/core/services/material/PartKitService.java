@@ -1,15 +1,15 @@
 package ch.cern.eam.wshub.core.services.material;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.material.entities.BuildKitParam;
 import ch.cern.eam.wshub.core.services.material.entities.PartKitTemplate;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 
 public interface PartKitService {
 
-    String addPartKitTemplate(InforContext context, PartKitTemplate partKitParam) throws InforException;
+    String addPartKitTemplate(EAMContext context, PartKitTemplate partKitParam) throws EAMException;
 
-    String createKitSession(InforContext context, BuildKitParam buildKitParam) throws InforException;
+    String createKitSession(EAMContext context, BuildKitParam buildKitParam) throws EAMException;
 
-    String buildKit(InforContext context, String kitSessionId) throws InforException;
+    String buildKit(EAMContext context, String kitSessionId) throws EAMException;
 }

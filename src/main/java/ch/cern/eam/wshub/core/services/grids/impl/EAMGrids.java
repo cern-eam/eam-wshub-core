@@ -1,11 +1,11 @@
 package ch.cern.eam.wshub.core.services.grids.impl;
 
 import ch.cern.eam.wshub.core.annotations.BooleanType;
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.grids.entities.*;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.DataTypeTools;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_functions.gridrequest.*;
 import net.datastream.schemas.mp_functions.gridrequest.LOV.LOV_PARAMETERS;
@@ -18,7 +18,7 @@ import net.datastream.schemas.mp_functions.mp0116_getgriddataonly_001_result.MP0
 import net.datastream.schemas.mp_functions.mp0118_getgridheaderdata_001.MP0118_GetGridHeaderData_001;
 import net.datastream.schemas.mp_functions.mp0118_getgridheaderdata_001_result.FIELD;
 import net.datastream.schemas.mp_functions.mp0118_getgridheaderdata_001_result.MP0118_GetGridHeaderData_001_Result;
-import net.datastream.wsdls.inforws.InforWebServicesPT;
+import net.datastream.wsdls.eamws.EAMWebServicesPT;
 
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
@@ -33,21 +33,21 @@ import java.util.stream.Collectors;
 
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.decodeBoolean;
 
-public class InforGrids implements Serializable {
+public class EAMGrids implements Serializable {
 	private static final long serialVersionUID = 5957161022766799698L;
 
 	private ApplicationData applicationData;
 	private Tools tools;
-	private InforWebServicesPT inforws;
+	private EAMWebServicesPT eamws;
 	public static final Map<String, Map<BigInteger, GridField>> gridFieldCache = new ConcurrentHashMap<>();
 
-	public InforGrids(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
+	public EAMGrids(ApplicationData applicationData, Tools tools, EAMWebServicesPT eamWebServicesToolkitClient) {
 		this.applicationData = applicationData;
 		this.tools = tools;
-		this.inforws = inforWebServicesToolkitClient;
+		this.eamws = eamWebServicesToolkitClient;
 	}
 
-	public GridRequestResult executeQuery(InforContext context, GridRequest gridRequest) throws InforException {
+	public GridRequestResult executeQuery(EAMContext context, GridRequest gridRequest) throws EAMException {
 		if (gridRequest.getIncludeMetadata() || !gridFieldCache.containsKey(gridRequest.getRequestKey())) {
 			return executeQueryHeaderData(context, gridRequest);
 		} else {
@@ -55,7 +55,7 @@ public class InforGrids implements Serializable {
 		}
 	}
 
-	public GridRequestResult executeQueryDataOnly(InforContext context, GridRequest gridRequest) throws InforException {
+	public GridRequestResult executeQueryDataOnly(EAMContext context, GridRequest gridRequest) throws EAMException {
 		//
 		FUNCTION_REQUEST_INFO funRequest = new FUNCTION_REQUEST_INFO();
 
@@ -90,7 +90,7 @@ public class InforGrids implements Serializable {
 		getgridd.setFUNCTION_REQUEST_INFO(funRequest);
 		getgridd.getFUNCTION_REQUEST_INFO().getGRID().setLOCALIZE_RESULT(DataTypeTools.encodeBoolean(context.getLocalizeResults(), BooleanType.TRUE_FALSE));
 		MP0116_GetGridDataOnly_001_Result result =
-			tools.performInforOperation(context, inforws::getGridDataOnlyOp, getgridd);
+			tools.performEAMOperation(context, eamws::getGridDataOnlyOp, getgridd);
 
 		GridRequestResult grr = new GridRequestResult();
 		//
@@ -117,18 +117,18 @@ public class InforGrids implements Serializable {
 				result.getGRIDRESULT().getGRID().getDATA().getROW().size() > 0) {
 
 			LinkedList<GridRequestRow> rows = new LinkedList<GridRequestRow>();
-			for (net.datastream.schemas.mp_functions.mp0116_getgriddataonly_001_result.DATA.ROW inforRow : result.getGRIDRESULT().getGRID().getDATA().getROW()) {
+			for (net.datastream.schemas.mp_functions.mp0116_getgriddataonly_001_result.DATA.ROW eamRow : result.getGRIDRESULT().getGRID().getDATA().getROW()) {
 
 				//
-				List<GridRequestCell> cells = inforRow.getD().stream().map(inforCell -> {
-					// If current column is not in the grid cache (or there is no grid cache :-) ) extract only the ID and content from Infor grid cell
-					if (gridFieldCache.get(gridRequest.getRequestKey()) == null || gridFieldCache.get(gridRequest.getRequestKey()).get(inforCell.getN()) == null) {
-						return new GridRequestCell(inforCell.getN().toString(), inforCell.getContent(), -99999, "UNKNOWN_TAGNAME");
+				List<GridRequestCell> cells = eamRow.getD().stream().map(eamCell -> {
+					// If current column is not in the grid cache (or there is no grid cache :-) ) extract only the ID and content from EAM grid cell
+					if (gridFieldCache.get(gridRequest.getRequestKey()) == null || gridFieldCache.get(gridRequest.getRequestKey()).get(eamCell.getN()) == null) {
+						return new GridRequestCell(eamCell.getN().toString(), eamCell.getContent(), -99999, "UNKNOWN_TAGNAME");
 					}
 					// Extract the ID, content, order and the tag name from the grid cell
-					GridField gridField = gridFieldCache.get(gridRequest.getRequestKey()).get(inforCell.getN());
-					return new GridRequestCell(inforCell.getN().toString(),
-							decodeCellContent(gridField, inforCell.getContent()),
+					GridField gridField = gridFieldCache.get(gridRequest.getRequestKey()).get(eamCell.getN());
+					return new GridRequestCell(eamCell.getN().toString(),
+							decodeCellContent(gridField, eamCell.getContent()),
 							gridField.getOrder(),
 							gridField.getName());
 
@@ -140,7 +140,7 @@ public class InforGrids implements Serializable {
 				cells = cells.stream().sorted(Comparator.comparing(GridRequestCell::getOrder)).collect(Collectors.toList());
 				
 				GridRequestRow row = new GridRequestRow();
-				row.setId(inforRow.getId().toString());
+				row.setId(eamRow.getId().toString());
 				row.setCells(cells.toArray(new GridRequestCell[0]));
 				rows.add(row);
 			}
@@ -153,7 +153,7 @@ public class InforGrids implements Serializable {
 		return grr;
 	}
 
-	public GridRequestResult executeQueryHeaderData(InforContext context, GridRequest gridRequest) throws InforException {
+	public GridRequestResult executeQueryHeaderData(EAMContext context, GridRequest gridRequest) throws EAMException {
 		//
 		net.datastream.schemas.mp_functions.mp0118_getgridheaderdata_001.FUNCTION_REQUEST_INFO funRequest = new net.datastream.schemas.mp_functions.mp0118_getgridheaderdata_001.FUNCTION_REQUEST_INFO();
 
@@ -191,7 +191,7 @@ public class InforGrids implements Serializable {
 		getgridd.setFUNCTION_REQUEST_INFO(funRequest);
 		getgridd.getFUNCTION_REQUEST_INFO().getGRID().setLOCALIZE_RESULT(DataTypeTools.encodeBoolean(context.getLocalizeResults(), BooleanType.TRUE_FALSE));
 		MP0118_GetGridHeaderData_001_Result result =
-			tools.performInforOperation(context, inforws::getGridHeaderDataOp, getgridd);
+			tools.performEAMOperation(context, eamws::getGridHeaderDataOp, getgridd);
 
 		GridRequestResult grr = new GridRequestResult();
 		//
@@ -199,7 +199,7 @@ public class InforGrids implements Serializable {
 		//
 		gridFieldCache.put(gridRequest.getRequestKey(), new ConcurrentHashMap<>());
 		for (FIELD field : result.getGRIDRESULT().getGRID().getFIELDS().getFIELD()) {
-			gridFieldCache.get(gridRequest.getRequestKey()).put(field.getAliasnum(), decodeInforGridField(field));
+			gridFieldCache.get(gridRequest.getRequestKey()).put(field.getAliasnum(), decodeEAMGridField(field));
 		}
 
 		//
@@ -227,7 +227,7 @@ public class InforGrids implements Serializable {
 
 		grr.setGridFields(result.getGRIDRESULT().getGRID().getFIELDS().getFIELD().stream()
 				.filter(field -> Integer.parseInt(field.getOrder()) >= 0)
-				.map(field -> decodeInforGridField(field))
+				.map(field -> decodeEAMGridField(field))
 				.collect(Collectors.toList()));
 
 		//
@@ -238,21 +238,21 @@ public class InforGrids implements Serializable {
 				result.getGRIDRESULT().getGRID().getDATA().getROW().size() > 0) {
 
 			LinkedList<GridRequestRow> rows = new LinkedList<GridRequestRow>();
-			for (net.datastream.schemas.mp_functions.mp0118_getgridheaderdata_001_result.DATA.ROW inforRow : result.getGRIDRESULT().getGRID().getDATA().getROW()) {
+			for (net.datastream.schemas.mp_functions.mp0118_getgridheaderdata_001_result.DATA.ROW eamRow : result.getGRIDRESULT().getGRID().getDATA().getROW()) {
 
 				//
-				List<GridRequestCell> cells = inforRow.getD().stream().map(inforCell ->
-					 new GridRequestCell(inforCell.getN().toString(),
-											   decodeCellContent(gridFieldCache.get(gridRequest.getRequestKey()).get(inforCell.getN()), inforCell.getContent()),
-											   gridFieldCache.get(gridRequest.getRequestKey()).get(inforCell.getN()).getOrder(),
-											   gridFieldCache.get(gridRequest.getRequestKey()).get(inforCell.getN()).getName())
+				List<GridRequestCell> cells = eamRow.getD().stream().map(eamCell ->
+					 new GridRequestCell(eamCell.getN().toString(),
+											   decodeCellContent(gridFieldCache.get(gridRequest.getRequestKey()).get(eamCell.getN()), eamCell.getContent()),
+											   gridFieldCache.get(gridRequest.getRequestKey()).get(eamCell.getN()).getOrder(),
+											   gridFieldCache.get(gridRequest.getRequestKey()).get(eamCell.getN()).getName())
 				).collect(Collectors.toList());
 
 				// Sort using the order
 				cells = cells.stream().sorted(Comparator.comparing(GridRequestCell::getOrder)).collect(Collectors.toList());
 
 				GridRequestRow row = new GridRequestRow();
-				row.setId(inforRow.getId().toString());
+				row.setId(eamRow.getId().toString());
 				row.setCells(cells.toArray(new GridRequestCell[0]));
 				rows.add(row);
 			}
@@ -265,7 +265,7 @@ public class InforGrids implements Serializable {
 		return grr;
 	}
 
-	private GRID createGrid(GridRequest gridRequest) throws InforException {
+	private GRID createGrid(GridRequest gridRequest) throws EAMException {
 		//
 		// GRID BASICS
 		//
@@ -312,55 +312,55 @@ public class InforGrids implements Serializable {
 		if (gridRequest.getGridRequestFilters() != null && gridRequest.getGridRequestFilters().size() > 0) {
 			int counter = 0;
 			for (GridRequestFilter filter: gridRequest.getGridRequestFilters()) {
-				MADDON_FILTER inforFilter = new MADDON_FILTER();
-				inforFilter.setSEQNUM(BigInteger.valueOf(counter++));
+				MADDON_FILTER eamFilter = new MADDON_FILTER();
+				eamFilter.setSEQNUM(BigInteger.valueOf(counter++));
 
 				// JOINER
 				if (filter.getJoiner() == GridRequestFilter.JOINER.AND) {
-					inforFilter.setJOINER(AND_OR.AND);
+					eamFilter.setJOINER(AND_OR.AND);
 				}
 				if (filter.getJoiner() == GridRequestFilter.JOINER.OR) {
-					inforFilter.setJOINER(AND_OR.OR);
+					eamFilter.setJOINER(AND_OR.OR);
 				}
 				//
-				inforFilter.setOPERATOR(filter.getOperator());
-				inforFilter.setALIAS_NAME(filter.getFieldName());
+				eamFilter.setOPERATOR(filter.getOperator());
+				eamFilter.setALIAS_NAME(filter.getFieldName());
 				try {
 					String fieldValue = applicationData.isEncodeGridFilter() && filter.getFieldValue() != null ?
 							java.net.URLEncoder.encode(filter.getFieldValue(), "UTF-8")
 							: filter.getFieldValue();
-					inforFilter.setVALUE(fieldValue);
+					eamFilter.setVALUE(fieldValue);
 				} catch (UnsupportedEncodingException e) {
 					tools.log(Level.WARNING, e.getMessage());
 				}
-				inforFilter.setLPAREN(tools.getDataTypeTools().decodeBoolean(filter.getLeftParenthesis()));
-				inforFilter.setRPAREN(tools.getDataTypeTools().decodeBoolean(filter.getRightParenthesis()));
-				switch(inforFilter.getOPERATOR()) {
+				eamFilter.setLPAREN(tools.getDataTypeTools().decodeBoolean(filter.getLeftParenthesis()));
+				eamFilter.setRPAREN(tools.getDataTypeTools().decodeBoolean(filter.getRightParenthesis()));
+				switch(eamFilter.getOPERATOR()) {
 					case "EQUALS":
-						inforFilter.setOPERATOR("=");
+						eamFilter.setOPERATOR("=");
 						break;
 					case "LESS_THAN":
-						inforFilter.setOPERATOR("<");
+						eamFilter.setOPERATOR("<");
 						break;
 					case "GREATER_THAN":
-						inforFilter.setOPERATOR(">");
+						eamFilter.setOPERATOR(">");
 						break;
 					case "LESS_THAN_EQUALS":
-						inforFilter.setOPERATOR("<=");
+						eamFilter.setOPERATOR("<=");
 						break;
 					case "SELECTED":
-						inforFilter.setOPERATOR("=");
-						inforFilter.setVALUE("-1");
+						eamFilter.setOPERATOR("=");
+						eamFilter.setVALUE("-1");
 						break;
 					case "NOT_SELECTED":
-						inforFilter.setOPERATOR("=");
-						inforFilter.setVALUE("0");
+						eamFilter.setOPERATOR("=");
+						eamFilter.setVALUE("0");
 						break;
 					case "":
 						continue;
 				}
 
-				multiaddon_filters.getMADDON_FILTER().add(inforFilter);
+				multiaddon_filters.getMADDON_FILTER().add(eamFilter);
 			}
 		}
 		return multiaddon_filters;
@@ -417,7 +417,7 @@ public class InforGrids implements Serializable {
 		}
 	}
 
-	private GridField decodeInforGridField(FIELD field) {
+	private GridField decodeEAMGridField(FIELD field) {
 		GridField gridField = new GridField();
 		if (field.getType() != null) {
 			gridField.setDataType(field.getType().value());

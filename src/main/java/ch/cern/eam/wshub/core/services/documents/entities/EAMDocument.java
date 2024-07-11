@@ -2,23 +2,23 @@ package ch.cern.eam.wshub.core.services.documents.entities;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "R5DOCUMENTS")
 @NamedQueries({ 
-	@NamedQuery(name = InforDocument.GET_DOCUMENTS, query = "select doc from InforDocument doc, InforDocEntity dae where"
+	@NamedQuery(name = EAMDocument.GET_DOCUMENTS, query = "select doc from EAMDocument doc, EAMDocEntity dae where"
 		+ " dae.code = :code and dae.entity = :entity and doc.code = dae.document order by doc.code asc") 
 })
-public class InforDocument implements Serializable {
+public class EAMDocument implements Serializable {
 	private static final long serialVersionUID = 2632244342851353370L;
 
-	public static final String GET_DOCUMENTS = "InforDocument.GET_DOCUMENTS";
+	public static final String GET_DOCUMENTS = "EAMDocument.GET_DOCUMENTS";
 	
 	@Id
 	@Column(name = "DOC_CODE")
@@ -39,10 +39,10 @@ public class InforDocument implements Serializable {
 	@Column(name = "DOC_TYPE")
 	private String type;
 	
-	public InforDocument() {
+	public EAMDocument() {
 	}
 
-	public InforDocument(String code) {
+	public EAMDocument(String code) {
 		super();
 		this.code = code;
 	}
@@ -116,7 +116,7 @@ public class InforDocument implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		InforDocument other = (InforDocument) obj;
+		EAMDocument other = (EAMDocument) obj;
 		if (code == null) {
 			if (other.code != null)
 				return false;

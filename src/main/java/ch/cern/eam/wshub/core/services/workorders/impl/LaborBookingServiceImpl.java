@@ -1,6 +1,6 @@
 package ch.cern.eam.wshub.core.services.workorders.impl;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.grids.GridsService;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
@@ -10,7 +10,7 @@ import ch.cern.eam.wshub.core.services.workorders.TaskPlanService;
 import ch.cern.eam.wshub.core.services.workorders.entities.*;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.GridTools;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_fields.*;
 import net.datastream.schemas.mp_functions.mp0035_001.MP0035_GetActivity_001;
@@ -23,7 +23,7 @@ import net.datastream.schemas.mp_results.mp0037_001.MP0037_AddActivity_001_Resul
 import net.datastream.schemas.mp_results.mp0038_001.MP0038_SyncActivity_001_Result;
 import net.datastream.schemas.mp_results.mp0039_001.MP0039_DeleteActivity_001_Result;
 import net.datastream.schemas.mp_results.mp0042_001.MP0042_AddLaborBooking_001_Result;
-import net.datastream.wsdls.inforws.InforWebServicesPT;
+import net.datastream.wsdls.eamws.EAMWebServicesPT;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -36,22 +36,22 @@ import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
 public class LaborBookingServiceImpl implements LaborBookingService {
 
 	private Tools tools;
-	private InforWebServicesPT inforws;
+	private EAMWebServicesPT eamws;
 	private ApplicationData applicationData;
 	private ChecklistService checklistService;
 	private GridsService gridsService;
 	private TaskPlanService taskPlanService;
 
-	public LaborBookingServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
+	public LaborBookingServiceImpl(ApplicationData applicationData, Tools tools, EAMWebServicesPT eamWebServicesToolkitClient) {
 		this.applicationData = applicationData;
 		this.tools = tools;
-		this.inforws = inforWebServicesToolkitClient;
-		this.checklistService = new ChecklistServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
-		this.gridsService = new GridsServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
-		this.taskPlanService = new TaskPlanServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
+		this.eamws = eamWebServicesToolkitClient;
+		this.checklistService = new ChecklistServiceImpl(applicationData, tools, eamWebServicesToolkitClient);
+		this.gridsService = new GridsServiceImpl(applicationData, tools, eamWebServicesToolkitClient);
+		this.taskPlanService = new TaskPlanServiceImpl(applicationData, tools, eamWebServicesToolkitClient);
 	}
 
-	public List<LaborBooking> readLaborBookings(InforContext context, String workOrderNumber) throws InforException {
+	public List<LaborBooking> readLaborBookings(EAMContext context, String workOrderNumber) throws EAMException {
 		GridRequest gridRequest = new GridRequest("WSJOBS_BOO");
 		gridRequest.setUserFunctionName("WSJOBS");
 		gridRequest.getParams().put("param.jobnum", workOrderNumber);
@@ -62,82 +62,82 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 		return GridTools.convertGridResultToObject(LaborBooking.class, null, gridsService.executeQuery(context, gridRequest));
 	}
 
-	public String createLaborBooking(InforContext context, LaborBooking laborBookingParam) throws InforException {
-		net.datastream.schemas.mp_entities.laborbooking_001.LaborBooking laborBookingInfor = new net.datastream.schemas.mp_entities.laborbooking_001.LaborBooking();
+	public String createLaborBooking(EAMContext context, LaborBooking laborBookingParam) throws EAMException {
+		net.datastream.schemas.mp_entities.laborbooking_001.LaborBooking laborBookingEAM = new net.datastream.schemas.mp_entities.laborbooking_001.LaborBooking();
 
 		//
 		if (laborBookingParam.getEmployeeCode() != null) {
-			laborBookingInfor.setEMPLOYEE(new PERSONID_Type());
-			laborBookingInfor.getEMPLOYEE().setPERSONCODE(laborBookingParam.getEmployeeCode());
+			laborBookingEAM.setEMPLOYEE(new PERSONID_Type());
+			laborBookingEAM.getEMPLOYEE().setPERSONCODE(laborBookingParam.getEmployeeCode());
 		}
 
 		//
 		if (laborBookingParam.getDepartmentCode() != null) {
-			laborBookingInfor.setDEPARTMENTID(new DEPARTMENTID_Type());
-			laborBookingInfor.getDEPARTMENTID().setORGANIZATIONID(tools.getOrganization(context));
-			laborBookingInfor.getDEPARTMENTID().setDEPARTMENTCODE(laborBookingParam.getDepartmentCode());
+			laborBookingEAM.setDEPARTMENTID(new DEPARTMENTID_Type());
+			laborBookingEAM.getDEPARTMENTID().setORGANIZATIONID(tools.getOrganization(context));
+			laborBookingEAM.getDEPARTMENTID().setDEPARTMENTCODE(laborBookingParam.getDepartmentCode());
 		}
 
 		//
 		if (laborBookingParam.getDateWorked() != null) {
-			laborBookingInfor.setDATEWORKED(tools.getDataTypeTools().encodeInforDate(laborBookingParam.getDateWorked(), "Date Worked"));
+			laborBookingEAM.setDATEWORKED(tools.getDataTypeTools().encodeEAMDate(laborBookingParam.getDateWorked(), "Date Worked"));
 		}
 
 		//
 		if (laborBookingParam.getStartTime() != null) {
-			laborBookingInfor.setSTARTTIME(tools.getDataTypeTools().encodeAmount(laborBookingParam.getStartTime(), "Start Time"));
+			laborBookingEAM.setSTARTTIME(tools.getDataTypeTools().encodeAmount(laborBookingParam.getStartTime(), "Start Time"));
 		}
 
 		//
 		if (laborBookingParam.getEndTime() != null) {
-			laborBookingInfor.setENDTIME(tools.getDataTypeTools().encodeAmount(laborBookingParam.getEndTime(), "End Time"));
+			laborBookingEAM.setENDTIME(tools.getDataTypeTools().encodeAmount(laborBookingParam.getEndTime(), "End Time"));
 		}
 
 		//
 		if (laborBookingParam.getHoursWorked() != null) {
-			laborBookingInfor.setHOURSWORKED(tools.getDataTypeTools().encodeAmount(laborBookingParam.getHoursWorked(),"Hours Worked"));
+			laborBookingEAM.setHOURSWORKED(tools.getDataTypeTools().encodeAmount(laborBookingParam.getHoursWorked(),"Hours Worked"));
 		}
 
 		//
-		laborBookingInfor.setTRADERATE(tools.getDataTypeTools().encodeAmount(BigDecimal.ZERO,"Trade Rate"));
+		laborBookingEAM.setTRADERATE(tools.getDataTypeTools().encodeAmount(BigDecimal.ZERO,"Trade Rate"));
 
 		//
 		if (laborBookingParam.getTypeOfHours() != null) {
-			laborBookingInfor.setOCCUPATIONTYPE(new OCCUPATIONTYPEID_Type());
-			laborBookingInfor.getOCCUPATIONTYPE().setOCCUPATIONTYPECODE(laborBookingParam.getTypeOfHours());
+			laborBookingEAM.setOCCUPATIONTYPE(new OCCUPATIONTYPEID_Type());
+			laborBookingEAM.getOCCUPATIONTYPE().setOCCUPATIONTYPECODE(laborBookingParam.getTypeOfHours());
 		}
 
 		//
 		if (laborBookingParam.getTradeCode() != null) {
-			laborBookingInfor.setTRADEID(new TRADEID_Type());
-			laborBookingInfor.getTRADEID().setORGANIZATIONID(tools.getOrganization(context));
-			laborBookingInfor.getTRADEID().setTRADECODE(laborBookingParam.getTradeCode());
+			laborBookingEAM.setTRADEID(new TRADEID_Type());
+			laborBookingEAM.getTRADEID().setORGANIZATIONID(tools.getOrganization(context));
+			laborBookingEAM.getTRADEID().setTRADECODE(laborBookingParam.getTradeCode());
 		}
 
 		//
-		laborBookingInfor.setACTIVITYID(new ACTIVITYID());
+		laborBookingEAM.setACTIVITYID(new ACTIVITYID());
 		if (laborBookingParam.getActivityCode() != null) {
-			laborBookingInfor.getACTIVITYID().setACTIVITYCODE(new ACTIVITYCODE());
-			laborBookingInfor.getACTIVITYID().getACTIVITYCODE().setValue(Long.parseLong(laborBookingParam.getActivityCode()));
+			laborBookingEAM.getACTIVITYID().setACTIVITYCODE(new ACTIVITYCODE());
+			laborBookingEAM.getACTIVITYID().getACTIVITYCODE().setValue(Long.parseLong(laborBookingParam.getActivityCode()));
 		}
 		if (laborBookingParam.getWorkOrderNumber() != null) {
-			laborBookingInfor.getACTIVITYID().setWORKORDERID(new WOID_Type());
-			laborBookingInfor.getACTIVITYID().getWORKORDERID().setORGANIZATIONID(tools.getOrganization(context));
-			laborBookingInfor.getACTIVITYID().getWORKORDERID().setJOBNUM(laborBookingParam.getWorkOrderNumber());
+			laborBookingEAM.getACTIVITYID().setWORKORDERID(new WOID_Type());
+			laborBookingEAM.getACTIVITYID().getWORKORDERID().setORGANIZATIONID(tools.getOrganization(context));
+			laborBookingEAM.getACTIVITYID().getWORKORDERID().setJOBNUM(laborBookingParam.getWorkOrderNumber());
 		}
 		//
 		// CALL THE WS
 		//
 		MP0042_AddLaborBooking_001 addLaborBoking = new MP0042_AddLaborBooking_001();
-		addLaborBoking.setLaborBooking(laborBookingInfor);
+		addLaborBoking.setLaborBooking(laborBookingEAM);
 
 		MP0042_AddLaborBooking_001_Result result =
-			tools.performInforOperation(context, inforws::addLaborBookingOp, addLaborBoking);
+			tools.performEAMOperation(context, eamws::addLaborBookingOp, addLaborBoking);
 		return laborBookingParam.getActivityCode();
 	}
 
 
-	public Activity[] readActivities(InforContext context, String workOrderNumber, Boolean includeChecklists) throws InforException {
+	public Activity[] readActivities(EAMContext context, String workOrderNumber, Boolean includeChecklists) throws EAMException {
 		try {
 			GridRequest gridRequest = new GridRequest("WSJOBS_ACT");
 			gridRequest.setRowCount(1000);
@@ -184,30 +184,30 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 		}
 	}
 
-	public String createActivity (InforContext context, Activity activityParam) throws InforException {
-		net.datastream.schemas.mp_entities.activity_001.Activity activityInfor = new net.datastream.schemas.mp_entities.activity_001.Activity();
+	public String createActivity (EAMContext context, Activity activityParam) throws EAMException {
+		net.datastream.schemas.mp_entities.activity_001.Activity activityEAM = new net.datastream.schemas.mp_entities.activity_001.Activity();
 
-		tools.getInforFieldTools().transformWSHubObject(activityInfor, activityParam, context);
+		tools.getEAMFieldTools().transformWSHubObject(activityEAM, activityParam, context);
 
 		if (isNotEmpty(activityParam.getTaskCode())) {
-			activityInfor.getTASKSID().setTASKREVISION(0L);
+			activityEAM.getTASKSID().setTASKREVISION(0L);
 		}
 
 		// CALL THE WS
 		//
 		MP0037_AddActivity_001 addActivity = new MP0037_AddActivity_001();
-		addActivity.setActivity(activityInfor);
+		addActivity.setActivity(activityEAM);
 
 		MP0037_AddActivity_001_Result result =
-			tools.performInforOperation(context, inforws::addActivityOp, addActivity);
+			tools.performEAMOperation(context, eamws::addActivityOp, addActivity);
 		return result.getResultData().getACTIVITYID().getACTIVITYCODE().getValue() + "";
 	}
 
-	public String updateActivity(InforContext context, Activity activityParam) throws InforException {
+	public String updateActivity(EAMContext context, Activity activityParam) throws EAMException {
 		return updateActivity(context, activityParam, null);
 	}
 
-	public String updateActivity(InforContext context, Activity activityParam, String confirmDeleteChecklist) throws InforException {
+	public String updateActivity(EAMContext context, Activity activityParam, String confirmDeleteChecklist) throws EAMException {
 		//
 		// READ THE ACTIVITY FIRST
 		//
@@ -224,29 +224,29 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 		getActivity.getACTIVITYID().getWORKORDERID().setJOBNUM(activityParam.getWorkOrderNumber());
 
 		MP0035_GetActivity_001_Result getresult =
-				tools.performInforOperation(context, inforws::getActivityOp, getActivity);
+				tools.performEAMOperation(context, eamws::getActivityOp, getActivity);
 
-		net.datastream.schemas.mp_entities.activity_001.Activity activityInfor = getresult.getResultData().getActivity();
+		net.datastream.schemas.mp_entities.activity_001.Activity activityEAM = getresult.getResultData().getActivity();
 
-		tools.getInforFieldTools().transformWSHubObject(activityInfor, activityParam, context);
+		tools.getEAMFieldTools().transformWSHubObject(activityEAM, activityParam, context);
 
 		if (isNotEmpty(activityParam.getTaskCode())) {
-			activityInfor.getTASKSID().setTASKREVISION(0L);
+			activityEAM.getTASKSID().setTASKREVISION(0L);
 		}
 
 		//
 		// CALL THE WS
 		//
 		MP0038_SyncActivity_001 syncActivity = new MP0038_SyncActivity_001();
-		syncActivity.setActivity(activityInfor);
+		syncActivity.setActivity(activityEAM);
 		syncActivity.setConfirmadddeletechecklist(confirmDeleteChecklist);
 
 		MP0038_SyncActivity_001_Result syncresult =
-				tools.performInforOperation(context, inforws::syncActivityOp, syncActivity);
+				tools.performEAMOperation(context, eamws::syncActivityOp, syncActivity);
 		return syncresult.getResultData().getACTIVITYID().getACTIVITYCODE().getValue() + "";
 	}
 
-	public String deleteActivity(InforContext context, Activity activityParam) throws InforException {
+	public String deleteActivity(EAMContext context, Activity activityParam) throws EAMException {
 		//
 		// CALL THE WS
 		//
@@ -260,7 +260,7 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 		deleteActivity.setConfirmdeletechecklist("true");
 
 		MP0039_DeleteActivity_001_Result result =
-			tools.performInforOperation(context, inforws::deleteActivityOp, deleteActivity);
+			tools.performEAMOperation(context, eamws::deleteActivityOp, deleteActivity);
 		return result.getResultData().getACTIVITYID().getACTIVITYCODE().getValue() + "";
 	}
 

@@ -1,10 +1,10 @@
 package ch.cern.eam.wshub.core.services.equipment.impl;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.equipment.NonconformityService;
 import ch.cern.eam.wshub.core.services.equipment.entities.NonConformity;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_fields.STANDARDENTITYID_Type;
 import net.datastream.schemas.mp_functions.mp3396_001.MP3396_GetNonconformityDefault_001;
@@ -16,60 +16,60 @@ import net.datastream.schemas.mp_results.mp3396_001.MP3396_GetNonconformityDefau
 import net.datastream.schemas.mp_results.mp3397_001.MP3397_AddNonconformity_001_Result;
 import net.datastream.schemas.mp_results.mp3398_001.MP3398_SyncNonconformity_001_Result;
 import net.datastream.schemas.mp_results.mp3400_001.MP3400_GetNonconformity_001_Result;
-import net.datastream.wsdls.inforws.InforWebServicesPT;
+import net.datastream.wsdls.eamws.EAMWebServicesPT;
 
 public class NonconformityServiceImpl implements NonconformityService {
 
     private ApplicationData applicationData;
     private Tools tools;
-    private InforWebServicesPT inforws;
+    private EAMWebServicesPT eamws;
 
-    public NonconformityServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
+    public NonconformityServiceImpl(ApplicationData applicationData, Tools tools, EAMWebServicesPT eamWebServicesToolkitClient) {
         this.applicationData = applicationData;
         this.tools = tools;
-        this.inforws = inforWebServicesToolkitClient;
+        this.eamws = eamWebServicesToolkitClient;
     }
 
     @Override
-    public NonConformity readNonconformityDefault(InforContext context) throws InforException {
+    public NonConformity readNonconformityDefault(EAMContext context) throws EAMException {
         MP3396_GetNonconformityDefault_001 getNonconformityDefault = new MP3396_GetNonconformityDefault_001();
 
         getNonconformityDefault.setORGANIZATIONID(tools.getOrganization(context));
 
         MP3396_GetNonconformityDefault_001_Result result =
-                tools.performInforOperation(context, inforws::getNonconformityDefaultOp, getNonconformityDefault);
+                tools.performEAMOperation(context, eamws::getNonconformityDefaultOp, getNonconformityDefault);
 
-        return tools.getInforFieldTools().transformInforObject(
+        return tools.getEAMFieldTools().transformEAMObject(
                 new NonConformity(), result.getResultData().getNonconformityDefault(), context
         );
     }
 
     @Override
-    public String createNonconformity(InforContext context, NonConformity nonconformityParam) throws InforException {
+    public String createNonconformity(EAMContext context, NonConformity nonconformityParam) throws EAMException {
         net.datastream.schemas.mp_entities.nonconformity_001.Nonconformity nonconformity =
                 new net.datastream.schemas.mp_entities.nonconformity_001.Nonconformity();
 
-        tools.getInforFieldTools().transformWSHubObject(nonconformity, nonconformityParam, context);
+        tools.getEAMFieldTools().transformWSHubObject(nonconformity, nonconformityParam, context);
 
         MP3397_AddNonconformity_001 addNonconformity = new MP3397_AddNonconformity_001();
         addNonconformity.setNonconformity(nonconformity);
 
         MP3397_AddNonconformity_001_Result result =
-                tools.performInforOperation(context, inforws::addNonconformityOp, addNonconformity);
+                tools.performEAMOperation(context, eamws::addNonconformityOp, addNonconformity);
 
         return result.getResultData().getNONCONFORMITYID().getSTANDARDENTITYCODE();
     }
 
     @Override
-    public NonConformity readNonconformity(InforContext context, String nonconformityCode) throws InforException {
+    public NonConformity readNonconformity(EAMContext context, String nonconformityCode) throws EAMException {
         net.datastream.schemas.mp_entities.nonconformity_001.Nonconformity nonconformity =
-                readNonconformityInfor(context, nonconformityCode);
+                readNonconformityEAM(context, nonconformityCode);
 
-        return tools.getInforFieldTools().transformInforObject(new NonConformity(), nonconformity, context);
+        return tools.getEAMFieldTools().transformEAMObject(new NonConformity(), nonconformity, context);
     }
 
-    private net.datastream.schemas.mp_entities.nonconformity_001.Nonconformity readNonconformityInfor(
-            InforContext context, String nonconformityCode) throws InforException {
+    private net.datastream.schemas.mp_entities.nonconformity_001.Nonconformity readNonconformityEAM(
+            EAMContext context, String nonconformityCode) throws EAMException {
         MP3400_GetNonconformity_001 getNonconformity = new MP3400_GetNonconformity_001();
 
         getNonconformity.setNONCONFORMITYID(new STANDARDENTITYID_Type());
@@ -77,36 +77,36 @@ public class NonconformityServiceImpl implements NonconformityService {
         getNonconformity.getNONCONFORMITYID().setORGANIZATIONID(tools.getOrganization(context));
 
         MP3400_GetNonconformity_001_Result result =
-                tools.performInforOperation(context, inforws::getNonconformityOp, getNonconformity);
+                tools.performEAMOperation(context, eamws::getNonconformityOp, getNonconformity);
 
         return result.getResultData().getNonconformity();
     }
 
     @Override
-    public String updateNonconformity(InforContext context, NonConformity nonconformityParam) throws InforException {
+    public String updateNonconformity(EAMContext context, NonConformity nonconformityParam) throws EAMException {
         net.datastream.schemas.mp_entities.nonconformity_001.Nonconformity nonconformity =
-                readNonconformityInfor(context, nonconformityParam.getCode());
+                readNonconformityEAM(context, nonconformityParam.getCode());
 
-        tools.getInforFieldTools().transformWSHubObject(nonconformity, nonconformityParam, context);
+        tools.getEAMFieldTools().transformWSHubObject(nonconformity, nonconformityParam, context);
 
         MP3398_SyncNonconformity_001 syncNonconformity = new MP3398_SyncNonconformity_001();
         syncNonconformity.setNonconformity(nonconformity);
 
         MP3398_SyncNonconformity_001_Result syncResult =
-                tools.performInforOperation(context, inforws::syncNonconformityOp, syncNonconformity);
+                tools.performEAMOperation(context, eamws::syncNonconformityOp, syncNonconformity);
 
         return syncResult.getResultData().getNONCONFORMITYID().getSTANDARDENTITYCODE();
     }
 
     @Override
-    public String deleteNonconformity(InforContext context, String nonconformityCode) throws InforException {
+    public String deleteNonconformity(EAMContext context, String nonconformityCode) throws EAMException {
         MP3399_DeleteNonconformity_001 deleteNonconformity = new MP3399_DeleteNonconformity_001();
 
         deleteNonconformity.setNONCONFORMITYID(new STANDARDENTITYID_Type());
         deleteNonconformity.getNONCONFORMITYID().setSTANDARDENTITYCODE(nonconformityCode);
         deleteNonconformity.getNONCONFORMITYID().setORGANIZATIONID(tools.getOrganization(context));
 
-        tools.performInforOperation(context, inforws::deleteNonconformityOp, deleteNonconformity);
+        tools.performEAMOperation(context, eamws::deleteNonconformityOp, deleteNonconformity);
 
         return nonconformityCode;
     }

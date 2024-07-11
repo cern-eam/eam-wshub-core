@@ -1,6 +1,6 @@
 package ch.cern.eam.wshub.core.services.workorders.impl;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.entities.BatchResponse;
 import ch.cern.eam.wshub.core.services.grids.GridsService;
 import ch.cern.eam.wshub.core.services.grids.entities.*;
@@ -8,7 +8,7 @@ import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.services.workorders.MECService;
 import ch.cern.eam.wshub.core.services.workorders.entities.MEC;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_entities.workorderequipment_001.AdditionalDetails;
 import net.datastream.schemas.mp_entities.workorderequipment_001.LinearReferenceInfo;
@@ -20,7 +20,7 @@ import net.datastream.schemas.mp_functions.mp7395_001.MP7395_SyncWorkOrderEquipm
 import net.datastream.schemas.mp_functions.mp7396_001.MP7396_RemoveWorkOrderEquipment_001;
 import net.datastream.schemas.mp_results.mp7394_001.MP7394_AddWorkOrderEquipment_001_Result;
 import net.datastream.schemas.mp_results.mp7395_001.MP7395_SyncWorkOrderEquipment_001_Result;
-import net.datastream.wsdls.inforws.InforWebServicesPT;
+import net.datastream.wsdls.eamws.EAMWebServicesPT;
 
 import java.util.Arrays;
 import java.util.List;
@@ -31,15 +31,15 @@ import static ch.cern.eam.wshub.core.tools.Tools.extractOrganizationCode;
 
 public class MECServiceImpl implements MECService {
     private Tools tools;
-    private InforWebServicesPT inforws;
+    private EAMWebServicesPT eamws;
     private ApplicationData applicationData;
     private GridsService gridsService;
 
-    public MECServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
+    public MECServiceImpl(ApplicationData applicationData, Tools tools, EAMWebServicesPT eamWebServicesToolkitClient) {
         this.applicationData = applicationData;
         this.tools = tools;
-        this.inforws = inforWebServicesToolkitClient;
-        this.gridsService = new GridsServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
+        this.eamws = eamWebServicesToolkitClient;
+        this.gridsService = new GridsServiceImpl(applicationData, tools, eamWebServicesToolkitClient);
     }
 
     /**
@@ -48,24 +48,24 @@ public class MECServiceImpl implements MECService {
      * @param context       the user credentials
      * @param mecToAdd      the MEC object to add
      * @return              the ID of the added equipment
-     * @throws InforException
+     * @throws EAMException
      */
     @Override
-    public String addWorkOrderEquipment(InforContext context, MEC mecToAdd) throws InforException {
+    public String addWorkOrderEquipment(EAMContext context, MEC mecToAdd) throws EAMException {
         MECService.validateInput(mecToAdd);
 
         MP7394_AddWorkOrderEquipment_001 mp7394_addWorkOrderEquipment_001 = new MP7394_AddWorkOrderEquipment_001();
         net.datastream.schemas.mp_entities.workorderequipment_001.WorkOrderEquipment workOrderEquipment = new net.datastream.schemas.mp_entities.workorderequipment_001.WorkOrderEquipment();
 
-        tools.getInforFieldTools().transformWSHubObject(workOrderEquipment, mecToAdd, context);
+        tools.getEAMFieldTools().transformWSHubObject(workOrderEquipment, mecToAdd, context);
         mp7394_addWorkOrderEquipment_001.getWorkOrderEquipment().add(workOrderEquipment);
-        MP7394_AddWorkOrderEquipment_001_Result res = tools.performInforOperation(context, inforws::addWorkOrderEquipmentOp, mp7394_addWorkOrderEquipment_001);
+        MP7394_AddWorkOrderEquipment_001_Result res = tools.performEAMOperation(context, eamws::addWorkOrderEquipmentOp, mp7394_addWorkOrderEquipment_001);
 
         return res.getResultData().getRELATEDWORKORDERID().get(0).getJOBNUM();
     }
 
     @Override
-    public BatchResponse<String> addWorkOrderEquipmentBatch(InforContext context, List<MEC> mecsToAdd) throws InforException {
+    public BatchResponse<String> addWorkOrderEquipmentBatch(EAMContext context, List<MEC> mecsToAdd) throws EAMException {
         return tools.batchOperation(context, this::addWorkOrderEquipment, mecsToAdd);
     }
 
@@ -76,10 +76,10 @@ public class MECServiceImpl implements MECService {
      * @param parentWorkorderID the ID of the parent workorder
      * @param mecID             the ID of the MEC to delete
      * @return
-     * @throws InforException
+     * @throws EAMException
      */
     @Override
-    public String deleteWorkOrderMEC(InforContext context, String parentWorkorderID, String mecID) throws InforException {
+    public String deleteWorkOrderMEC(EAMContext context, String parentWorkorderID, String mecID) throws EAMException {
         MECService.validateInput(parentWorkorderID, mecID);
 
         MP7396_RemoveWorkOrderEquipment_001 mp7396_removeWorkOrderEquipment_001 = new MP7396_RemoveWorkOrderEquipment_001();
@@ -98,7 +98,7 @@ public class MECServiceImpl implements MECService {
         mp7396_removeWorkOrderEquipment_001.setWORKORDERID(woid_typeParent);
         mp7396_removeWorkOrderEquipment_001.setRELATEDWORKORDERID(woid_typeEquipment);
 
-        tools.performInforOperation(context, inforws::removeWorkOrderEquipmentOp, mp7396_removeWorkOrderEquipment_001);
+        tools.performEAMOperation(context, eamws::removeWorkOrderEquipmentOp, mp7396_removeWorkOrderEquipment_001);
 
         return "OK";
     }
@@ -109,9 +109,9 @@ public class MECServiceImpl implements MECService {
      * @param context     the user credentials
      * @param workorderID the ID of the parent workorder
      * @return            the list of MEC ids
-     * @throws InforException
+     * @throws EAMException
      */
-    public List<String> getWorkOrderMecIDList(InforContext context, String workorderID) throws InforException {
+    public List<String> getWorkOrderMecIDList(EAMContext context, String workorderID) throws EAMException {
         MECService.validateInput(workorderID);
 
         GridRequest gridRequest = new GridRequest(MECService.GRID_ID, GridRequest.GRIDTYPE.LIST, 50);
@@ -140,9 +140,9 @@ public class MECServiceImpl implements MECService {
     }
 
     @Override
-    public WorkOrderEquipment getWorkOrderMecInfor(InforContext context, String workorderID) throws InforException{
-        WorkOrderServiceImpl wos = new WorkOrderServiceImpl(applicationData, tools, this.inforws); // Creating service here so it is easily removed when infor ws is implemented later
-        net.datastream.schemas.mp_entities.workorder_001.WorkOrder res = wos.readWorkOrderInfor(context, extractEntityCode(workorderID), extractOrganizationCode(workorderID)).getResultData().getWorkOrder();
+    public WorkOrderEquipment getWorkOrderMecEAM(EAMContext context, String workorderID) throws EAMException{
+        WorkOrderServiceImpl wos = new WorkOrderServiceImpl(applicationData, tools, this.eamws); // Creating service here so it is easily removed when eam ws is implemented later
+        net.datastream.schemas.mp_entities.workorder_001.WorkOrder res = wos.readWorkOrderEAM(context, extractEntityCode(workorderID), extractOrganizationCode(workorderID)).getResultData().getWorkOrder();
         WorkOrderEquipment woeq = new WorkOrderEquipment();
         woeq.setWORKORDERID(res.getPARENTWO());
         woeq.setEQUIPMENTID(res.getEQUIPMENTID());
@@ -170,19 +170,19 @@ public class MECServiceImpl implements MECService {
      * @param context    the user credentials
      * @param updatedMEC the updated mec object
      * @return
-     * @throws InforException
+     * @throws EAMException
      */
     @Override
-    public String syncWorkOrderEquipment(InforContext context, MEC updatedMEC) throws InforException {
+    public String syncWorkOrderEquipment(EAMContext context, MEC updatedMEC) throws EAMException {
         MECService.validateInput(updatedMEC);
 
-        WorkOrderEquipment originalMecInfor = this.getWorkOrderMecInfor(context, updatedMEC.getRelatedWorkorderID());
-        tools.getInforFieldTools().transformWSHubObject(originalMecInfor, updatedMEC, context);
+        WorkOrderEquipment originalMecEAM = this.getWorkOrderMecEAM(context, updatedMEC.getRelatedWorkorderID());
+        tools.getEAMFieldTools().transformWSHubObject(originalMecEAM, updatedMEC, context);
 
         MP7395_SyncWorkOrderEquipment_001 mp7395_syncWorkOrderEquipment_001 = new MP7395_SyncWorkOrderEquipment_001();
-        mp7395_syncWorkOrderEquipment_001.setWorkOrderEquipment(originalMecInfor);
+        mp7395_syncWorkOrderEquipment_001.setWorkOrderEquipment(originalMecEAM);
 
-        MP7395_SyncWorkOrderEquipment_001_Result res = tools.performInforOperation(context, inforws::syncWorkOrderEquipmentOp, mp7395_syncWorkOrderEquipment_001);
+        MP7395_SyncWorkOrderEquipment_001_Result res = tools.performEAMOperation(context, eamws::syncWorkOrderEquipmentOp, mp7395_syncWorkOrderEquipment_001);
 
         return res.getResultData().getRELATEDWORKORDERID().getJOBNUM();
     }

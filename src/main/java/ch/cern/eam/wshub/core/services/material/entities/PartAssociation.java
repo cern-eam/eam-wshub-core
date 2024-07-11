@@ -2,8 +2,8 @@ package ch.cern.eam.wshub.core.services.material.entities;
 
 import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.math.BigDecimal;
 

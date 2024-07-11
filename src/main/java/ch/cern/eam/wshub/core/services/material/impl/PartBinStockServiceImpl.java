@@ -1,10 +1,10 @@
 package ch.cern.eam.wshub.core.services.material.impl;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.material.PartBinStockService;
 import ch.cern.eam.wshub.core.services.material.entities.PartStock;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_entities.binstock_001.BinStock;
 import net.datastream.schemas.mp_fields.BINSTOCKID;
@@ -15,22 +15,22 @@ import net.datastream.schemas.mp_functions.mp0248_001.MP0248_AddBinStock_001;
 import net.datastream.schemas.mp_functions.mp0249_001.MP0249_SyncBinStock_001;
 import net.datastream.schemas.mp_functions.mp0250_001.MP0250_GetBinStock_001;
 import net.datastream.schemas.mp_results.mp0250_001.MP0250_GetBinStock_001_Result;
-import net.datastream.wsdls.inforws.InforWebServicesPT;
-import javax.xml.ws.Holder;
+import net.datastream.wsdls.eamws.EAMWebServicesPT;
+import jakarta.xml.ws.Holder;
 
 public class PartBinStockServiceImpl implements PartBinStockService {
 
 	private Tools tools;
-	private InforWebServicesPT inforws;
+	private EAMWebServicesPT eamws;
 	private ApplicationData applicationData;
 
-	public PartBinStockServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
+	public PartBinStockServiceImpl(ApplicationData applicationData, Tools tools, EAMWebServicesPT eamWebServicesToolkitClient) {
 		this.applicationData = applicationData;
 		this.tools = tools;
-		this.inforws = inforWebServicesToolkitClient;
+		this.eamws = eamWebServicesToolkitClient;
 	}
 
-	public String addPartStock(InforContext context, PartStock partStockParam) throws InforException {
+	public String addPartStock(EAMContext context, PartStock partStockParam) throws EAMException {
 
 		BinStock binStock = new BinStock();
 
@@ -65,12 +65,12 @@ public class PartBinStockServiceImpl implements PartBinStockService {
 		MP0248_AddBinStock_001 addbinstock = new MP0248_AddBinStock_001();
 		addbinstock.setBinStock(binStock);
 
-		tools.performInforOperation(context, inforws::addBinStockOp, addbinstock);
+		tools.performEAMOperation(context, eamws::addBinStockOp, addbinstock);
 
 		return null;
 	}
 
-	public String updatePartStock(InforContext context, PartStock partStockParam) throws InforException {
+	public String updatePartStock(EAMContext context, PartStock partStockParam) throws EAMException {
 		if (partStockParam == null || partStockParam.getPartCode() == null || partStockParam.getStoreCode() == null || partStockParam.getBin() == null || partStockParam.getLot() == null) {
 			throw tools.generateFault("You must supply valid Part, Store, Bin and Lot in order to update the part stock");
 		}
@@ -91,7 +91,7 @@ public class PartBinStockServiceImpl implements PartBinStockService {
 		getBinStock.getBINSTOCKID().getSTOREID().setSTORECODE(partStockParam.getStoreCode());
 
 		MP0250_GetBinStock_001_Result result =
-			tools.performInforOperation(context, inforws::getBinStockOp, getBinStock);
+			tools.performEAMOperation(context, eamws::getBinStockOp, getBinStock);
 		//
 		// UPDATE AFTERWARDS
 		//
@@ -103,7 +103,7 @@ public class PartBinStockServiceImpl implements PartBinStockService {
 			syncBinStock.getBinStock().setQTYONHAND(tools.getDataTypeTools().encodeAmount(partStockParam.getQtyOnHand(),"Qty. On Hand"));
 		}
 
-		tools.performInforOperation(context, inforws::syncBinStockOp, syncBinStock);
+		tools.performEAMOperation(context, eamws::syncBinStockOp, syncBinStock);
 
 		return null;
 	}

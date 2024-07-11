@@ -1,6 +1,6 @@
 package ch.cern.eam.wshub.core.adapters;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.decodeBoolean;
 
 public class BooleanAdapter extends XmlAdapter<String, Boolean> {

@@ -1,6 +1,6 @@
 package ch.cern.eam.wshub.core.services.administration.impl;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.administration.UserGroupMenuService;
 import ch.cern.eam.wshub.core.services.administration.entities.MenuEntryNode;
 import ch.cern.eam.wshub.core.services.administration.entities.MenuRequestType;
@@ -8,7 +8,7 @@ import ch.cern.eam.wshub.core.services.administration.entities.MenuSpecification
 import ch.cern.eam.wshub.core.services.administration.entities.MenuType;
 import ch.cern.eam.wshub.core.services.entities.BatchResponse;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_entities.extmenus_001.ExtMenus;
 import net.datastream.schemas.mp_entities.extmenushierarchy_001.ExtMenusHierarchy;
@@ -17,7 +17,7 @@ import net.datastream.schemas.mp_functions.mp6005_001.MP6005_GetExtMenusHierarch
 import net.datastream.schemas.mp_functions.mp6043_001.MP6043_AddExtMenus_001;
 import net.datastream.schemas.mp_functions.mp6045_001.MP6045_DeleteExtMenus_001;
 import net.datastream.schemas.mp_results.mp6043_001.MP6043_AddExtMenus_001_Result;
-import net.datastream.wsdls.inforws.InforWebServicesPT;
+import net.datastream.wsdls.eamws.EAMWebServicesPT;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,13 +25,13 @@ import java.util.function.Predicate;
 
 public class UserGroupMenuServiceImpl implements UserGroupMenuService {
     private Tools tools;
-    private InforWebServicesPT inforws;
+    private EAMWebServicesPT eamws;
     private ApplicationData applicationData;
 
-    public UserGroupMenuServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
+    public UserGroupMenuServiceImpl(ApplicationData applicationData, Tools tools, EAMWebServicesPT eamWebServicesToolkitClient) {
         this.applicationData = applicationData;
         this.tools = tools;
-        this.inforws = inforWebServicesToolkitClient;
+        this.eamws = eamWebServicesToolkitClient;
     }
 
     /**
@@ -42,7 +42,7 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
      * @return
      */
     @Override
-    public String addToMenuHierarchy(InforContext context, MenuSpecification menuSpecification) throws InforException {
+    public String addToMenuHierarchy(EAMContext context, MenuSpecification menuSpecification) throws EAMException {
         UserGroupMenuService.validateInputNode(menuSpecification);
 
         // Get menu entries as tree
@@ -87,10 +87,10 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
      *
      * @param context               the user credentials
      * @param menuSpecificationList the list of menu specifications to add
-     * @return                      the batch of infor responses
+     * @return                      the batch of eam responses
      */
     @Override
-    public BatchResponse<String> addToMenuHierarchyBatch(InforContext context, List<MenuSpecification> menuSpecificationList) {
+    public BatchResponse<String> addToMenuHierarchyBatch(EAMContext context, List<MenuSpecification> menuSpecificationList) {
         return tools.batchOperation(context, this::addToMenuHierarchy, menuSpecificationList);
     }
 
@@ -100,10 +100,10 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
      * @param context           the user credentials
      * @param userGroups        the list of specific user groups to add the menu specification
      * @param menuSpecification the specified full path and function to add; the user group is not used
-     * @return                  the batch of infor responses
+     * @return                  the batch of eam responses
      */
     @Override
-    public BatchResponse<String> addToMenuHierarchyManyUsergroups(InforContext context, List<String> userGroups, MenuSpecification menuSpecification) {
+    public BatchResponse<String> addToMenuHierarchyManyUsergroups(EAMContext context, List<String> userGroups, MenuSpecification menuSpecification) {
         List<MenuSpecification> menuSpecificationList = new ArrayList<MenuSpecification>();
         userGroups.stream().forEach(u -> menuSpecificationList.add(new MenuSpecification(menuSpecification.getMenuPath(), menuSpecification.getFunctionCode(), u)));
 
@@ -117,10 +117,10 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
      *
      * @param context               the user credentials
      * @param menuSpecificationList the list of menu specifications to add
-     * @return                      the batch of infor responses
+     * @return                      the batch of eam responses
      */
     @Override
-    public BatchResponse<String> deleteFromMenuHierarchyBatch(InforContext context, List<MenuSpecification> menuSpecificationList) {
+    public BatchResponse<String> deleteFromMenuHierarchyBatch(EAMContext context, List<MenuSpecification> menuSpecificationList) {
         return tools.batchOperation(context, this::deleteFromMenuHierarchy, menuSpecificationList);
     }
 
@@ -132,30 +132,30 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
      * @param context           the user credentials
      * @param userGroups        the list of specific user groups to delete the menu specification
      * @param menuSpecification the specified full path and function to delete; the user group is not used
-     * @return                  the batch of infor responses
+     * @return                  the batch of eam responses
      */
     @Override
-    public BatchResponse<String> deleteFromMenuHierarchyManyUsergroups(InforContext context, List<String> userGroups, MenuSpecification menuSpecification) {
+    public BatchResponse<String> deleteFromMenuHierarchyManyUsergroups(EAMContext context, List<String> userGroups, MenuSpecification menuSpecification) {
         List<MenuSpecification> menuSpecificationList = new ArrayList<MenuSpecification>();
         userGroups.stream().forEach(u -> menuSpecificationList.add(new MenuSpecification(menuSpecification.getMenuPath(), menuSpecification.getFunctionCode(), u)));
 
         return deleteFromMenuHierarchyBatch(context, menuSpecificationList);
     }
 
-    private ExtMenusHierarchy getExtMenuHierarchy(InforContext context, String userGroup, MenuRequestType requestType) throws InforException {
+    private ExtMenusHierarchy getExtMenuHierarchy(EAMContext context, String userGroup, MenuRequestType requestType) throws EAMException {
         MP6005_GetExtMenusHierarchy_001 getExtMenusHierarchy = new MP6005_GetExtMenusHierarchy_001();
         getExtMenusHierarchy.setUSERGROUPID(new USERGROUPID_Type());
         getExtMenusHierarchy.getUSERGROUPID().setUSERGROUPCODE(userGroup);
         getExtMenusHierarchy.setRequest(EXTMENUSHIERARCHYREQUEST_Type.fromValue(requestType.value()));
 
         ExtMenusHierarchy result =
-                tools.performInforOperation(context, inforws::getExtMenusHierarchyOp, getExtMenusHierarchy)
+                tools.performEAMOperation(context, eamws::getExtMenusHierarchyOp, getExtMenusHierarchy)
                         .getResultData().getExtMenusHierarchy();
 
         return result;
     }
 
-    public MenuEntryNode getExtMenuHierarchyAsTree(InforContext context, String userGroup, MenuRequestType requestType) throws InforException {
+    public MenuEntryNode getExtMenuHierarchyAsTree(EAMContext context, String userGroup, MenuRequestType requestType) throws EAMException {
         MenuEntryNode root = new MenuEntryNode();
         ExtMenusHierarchy result = this.getExtMenuHierarchy(context, userGroup, requestType);
 
@@ -186,7 +186,7 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         currentNode.add(newNode);
     }
 
-    private MP6043_AddExtMenus_001 fillExtMenus(MenuEntryNode parent, String folderName, String userGroup, InforContext context, String code, String menuType) {
+    private MP6043_AddExtMenus_001 fillExtMenus(MenuEntryNode parent, String folderName, String userGroup, EAMContext context, String code, String menuType) {
         // With the previous ID found and the menu type determined, fill the request object for both menu item or function item
         String id = parent != null ? parent.getId() : ""; // Which would be the extMenuCode of the parent..
         MP6043_AddExtMenus_001 addExtMenus = new MP6043_AddExtMenus_001();
@@ -208,16 +208,16 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         return addExtMenus;
     }
 
-    private MenuEntryNode performAddFunctionOperation(MenuEntryNode parent, String functionCode, String userGroup, InforContext context) throws InforException {
+    private MenuEntryNode performAddFunctionOperation(MenuEntryNode parent, String functionCode, String userGroup, EAMContext context) throws EAMException {
         MP6043_AddExtMenus_001 addExtMenus = this.fillExtMenus(parent, "", userGroup, context, functionCode, MenuType.FUNCTION.getType());
 
         // With the request object created, perform the add operation
-        MP6043_AddExtMenus_001_Result result = tools.performInforOperation(context, inforws::addExtMenusOp, addExtMenus);
+        MP6043_AddExtMenus_001_Result result = tools.performEAMOperation(context, eamws::addExtMenusOp, addExtMenus);
 
         return new MenuEntryNode(result.getResultData().getExtMenus());
     }
 
-    private MenuEntryNode performAddFolderOperation(MenuEntryNode parent, String folderName, String userGroup, InforContext context) throws InforException {
+    private MenuEntryNode performAddFolderOperation(MenuEntryNode parent, String folderName, String userGroup, EAMContext context) throws EAMException {
         String menuType = MenuType.SUBMENU.getType(); // Assume entry is submenu
         if (parent.getDescription().equals("ROOT_NODE")) {
             menuType = MenuType.MAIN_MENU.getType(); // Entry is main menu
@@ -226,7 +226,7 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         MP6043_AddExtMenus_001 addExtMenus = this.fillExtMenus(parent, folderName, userGroup, context, UserGroupMenuService.MENU_FUNCTION_CODE, menuType);
 
         // With the request object created, perform the add operation
-        MP6043_AddExtMenus_001_Result result = tools.performInforOperation(context, inforws::addExtMenusOp, addExtMenus);
+        MP6043_AddExtMenus_001_Result result = tools.performEAMOperation(context, eamws::addExtMenusOp, addExtMenus);
 
         return new MenuEntryNode(result.getResultData().getExtMenus());
     }
@@ -264,7 +264,7 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
      * @return
      */
     @Override
-    public String deleteFromMenuHierarchy(InforContext context, MenuSpecification menuSpecification) throws InforException {
+    public String deleteFromMenuHierarchy(EAMContext context, MenuSpecification menuSpecification) throws EAMException {
         UserGroupMenuService.validateInputNode(menuSpecification);
 
         // Get menu entries as tree
@@ -293,13 +293,13 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         return "OK";
     }
 
-    private void performDeleteFunctionOperation(MenuEntryNode entryToDelete, String functionCode, String userGroup, InforContext context) throws InforException {
+    private void performDeleteFunctionOperation(MenuEntryNode entryToDelete, String functionCode, String userGroup, EAMContext context) throws EAMException {
         // Find id of the menu item to be removed
         entryToDelete.getFunctionId();
         this.performDeleteOperation(entryToDelete, functionCode, userGroup, context, MenuType.FUNCTION.getType());
     }
 
-    private void performDeleteFolderOperation(MenuEntryNode entryToDelete, String functionCode, String userGroup, InforContext context) throws InforException {
+    private void performDeleteFolderOperation(MenuEntryNode entryToDelete, String functionCode, String userGroup, EAMContext context) throws EAMException {
         String menuType = MenuType.SUBMENU.getType(); // Assume entry is submenu
         if (entryToDelete.getParentMenuEntry().getDescription().equals("ROOT_NODE")) {
             menuType = MenuType.MAIN_MENU.getType(); // Entry is main menu
@@ -307,7 +307,7 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         this.performDeleteOperation(entryToDelete, UserGroupMenuService.MENU_FUNCTION_CODE, userGroup, context, menuType);
     }
 
-    private void performDeleteOperation(MenuEntryNode entryToDelete, String functionCode, String userGroup, InforContext context, String menuType) throws InforException {
+    private void performDeleteOperation(MenuEntryNode entryToDelete, String functionCode, String userGroup, EAMContext context, String menuType) throws EAMException {
         // With the id of the item, fill the request object
         MP6045_DeleteExtMenus_001 deleteExtMenus = new MP6045_DeleteExtMenus_001();
         ExtMenus extMenus = new ExtMenus();
@@ -321,7 +321,7 @@ public class UserGroupMenuServiceImpl implements UserGroupMenuService {
         extMenus.setEXTMENUTYPE(menuType);
 
         // With the request object created, perform the add operation
-        tools.performInforOperation(context, inforws::deleteExtMenusOp, deleteExtMenus);
+        tools.performEAMOperation(context, eamws::deleteExtMenusOp, deleteExtMenus);
     }
 
 }

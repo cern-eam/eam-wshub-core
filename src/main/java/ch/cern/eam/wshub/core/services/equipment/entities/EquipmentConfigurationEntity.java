@@ -1,11 +1,11 @@
 package ch.cern.eam.wshub.core.services.equipment.entities;
 
-import ch.cern.eam.wshub.core.annotations.InforField;
+import ch.cern.eam.wshub.core.annotations.EAMField;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 
-import javax.persistence.Entity;
-import javax.persistence.Transient;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Transient;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -16,168 +16,168 @@ import java.util.Date;
 public class EquipmentConfigurationEntity implements Serializable {
 
     @Transient
-    @InforField(xpath = "EQUIPMENTCONFIGURATIONID/EQUIPMENTCONFIGURATIONCODE")
+    @EAMField(xpath = "EQUIPMENTCONFIGURATIONID/EQUIPMENTCONFIGURATIONCODE")
     private String equipmentConfigCode;
     @Transient
-    @InforField(xpath = "EQUIPMENTCONFIGURATIONID/DESCRIPTION")
+    @EAMField(xpath = "EQUIPMENTCONFIGURATIONID/DESCRIPTION")
     private String equipmentConfigDesc;
 
     @Transient
-    @InforField(xpath = "EQUIPMENTCONFIGURATIONID/ORGANIZATIONID/ORGANIZATIONCODE")
+    @EAMField(xpath = "EQUIPMENTCONFIGURATIONID/ORGANIZATIONID/ORGANIZATIONCODE")
     private String organizationCode;
 
     @Transient
-    @InforField(xpath = "EQUIPMENTCONFIGURATIONID/ORGANIZATIONID/DESCRIPTION", readOnly = true)
+    @EAMField(xpath = "EQUIPMENTCONFIGURATIONID/ORGANIZATIONID/DESCRIPTION", readOnly = true)
     private String organizationDesc;
 
     @Transient
-    @InforField(xpath = "EQUIPMENTCONFIGSTATUS/STATUSCODE")
+    @EAMField(xpath = "EQUIPMENTCONFIGSTATUS/STATUSCODE")
     private String equipmentConfigStatusCode;
 
     @Transient
-    @InforField(xpath = "EQUIPMENTCONFIGSTATUS/DESCRIPTION", readOnly = true)
+    @EAMField(xpath = "EQUIPMENTCONFIGSTATUS/DESCRIPTION", readOnly = true)
     private String equipmentConfigStatusDesc;
 
     @Transient
-    @InforField(xpath = "DEPARTMENTID/DEPARTMENTCODE", nullifyParentLevel = 1)
+    @EAMField(xpath = "DEPARTMENTID/DEPARTMENTCODE", nullifyParentLevel = 1)
     private String configurationDepartmentCode;
 
     @Transient
-    @InforField(xpath = "DEPARTMENTID/DESCRIPTION", nullifyParentLevel = 0)
+    @EAMField(xpath = "DEPARTMENTID/DESCRIPTION", nullifyParentLevel = 0)
     private String configurationDepartmentDesc;
 
     @Transient
-    @InforField(xpath = "EQUIPMENTCONFIGURATIONID/REVISIONNUM")
+    @EAMField(xpath = "EQUIPMENTCONFIGURATIONID/REVISIONNUM")
     private BigDecimal revisionNum;
 
     @Transient
-    @InforField(xpath = "TYPE/TYPECODE")
+    @EAMField(xpath = "TYPE/TYPECODE")
     private String equipmentTypeCode;
 
     @Transient
-    @InforField(xpath = "TYPE/DESCRIPTION")
+    @EAMField(xpath = "TYPE/DESCRIPTION")
     private String equipmentTypeDesc;
 
     @Transient
-    @InforField(xpath = "USERDEFINEDAREA")
+    @EAMField(xpath = "USERDEFINEDAREA")
     private CustomField[] customFields;
 
 
     // Configuration Details
     @Transient
-    @InforField(xpath = "ConfigurationDetails/CLASSID/CLASSCODE")
+    @EAMField(xpath = "ConfigurationDetails/CLASSID/CLASSCODE")
     private String configurationClassCode;
 
     @Transient
-    @InforField(xpath = "ConfigurationDetails/CLASSID/DESCRIPTION", readOnly = true)
+    @EAMField(xpath = "ConfigurationDetails/CLASSID/DESCRIPTION", readOnly = true)
     private String configurationClassDesc;
 
     @Transient
-    @InforField(xpath = "ConfigurationDetails/CATEGORYID/CATEGORYCODE")
+    @EAMField(xpath = "ConfigurationDetails/CATEGORYID/CATEGORYCODE")
     private String configurationCategoryCode;
 
     @Transient
-    @InforField(xpath = "ConfigurationDetails/CATEGORYID/DESCRIPTION", readOnly = true)
+    @EAMField(xpath = "ConfigurationDetails/CATEGORYID/DESCRIPTION", readOnly = true)
     private String configurationCategoryDesc;
 
     @Transient
-    @InforField(xpath = "ConfigurationDetails/CREATEDDATE")
+    @EAMField(xpath = "ConfigurationDetails/CREATEDDATE")
     private Date dateCreated;
 
     @Transient
-    @InforField(xpath = "ConfigurationDetails/DATEUPDATED")
+    @EAMField(xpath = "ConfigurationDetails/DATEUPDATED")
     private Date dateUpdated;
 
     @Transient
-    @InforField(xpath = "ConfigurationDetails/CREATEDBY/USERCODE")
+    @EAMField(xpath = "ConfigurationDetails/CREATEDBY/USERCODE")
     private String createdBy;
 
     @Transient
-    @InforField(xpath = "ConfigurationDetails/UPDATEDBY/USERCODE")
+    @EAMField(xpath = "ConfigurationDetails/UPDATEDBY/USERCODE")
     private String updatedBy;
 
     @Transient
-    @InforField(xpath = "ConfigurationDetails/CLASSID/ORGANIZATIONID/ORGANIZATIONCODE")
+    @EAMField(xpath = "ConfigurationDetails/CLASSID/ORGANIZATIONID/ORGANIZATIONCODE")
     private String classOrganizationCode;
 
     @Transient
-    @InforField(xpath = "ConfigurationDetails/CLASSID/ORGANIZATIONID/DESCRIPTION")
+    @EAMField(xpath = "ConfigurationDetails/CLASSID/ORGANIZATIONID/DESCRIPTION")
     private String getClassOrganizationDesc;
 
     @Transient
-    @InforField(xpath = "ConfigurationDetails/COSTCODEID/COSTCODE")
+    @EAMField(xpath = "ConfigurationDetails/COSTCODEID/COSTCODE")
     private String costCode;
 
     @Transient
-    @InforField(xpath = "ConfigurationDetails/COSTCODEID/DESCRIPTION")
+    @EAMField(xpath = "ConfigurationDetails/COSTCODEID/DESCRIPTION")
     private String costCodeDesc;
 
     @Transient
-    @InforField(xpath = "ConfigurationDetails/ASSETVALUE")
+    @EAMField(xpath = "ConfigurationDetails/ASSETVALUE")
     private BigDecimal equipmentValue;
 
 
     // Equipment Generation Details
     @Transient
-    @InforField(xpath = "EquipmentGenerationDetails/EQUIPMENTPREFIX")
+    @EAMField(xpath = "EquipmentGenerationDetails/EQUIPMENTPREFIX")
     private String equipmentPrefix;
 
     @Transient
-    @InforField(xpath = "EquipmentGenerationDetails/EQUIPMENTSUFFIX")
+    @EAMField(xpath = "EquipmentGenerationDetails/EQUIPMENTSUFFIX")
     private String equipmentSuffix;
 
     @Transient
-    @InforField(xpath = "EquipmentGenerationDetails/CREATEASSPECIFIC")
+    @EAMField(xpath = "EquipmentGenerationDetails/CREATEASSPECIFIC")
     private Boolean createAsSpecific;
 
     @Transient
-    @InforField(xpath = "EquipmentGenerationDetails/STATUS/STATUSCODE")
+    @EAMField(xpath = "EquipmentGenerationDetails/STATUS/STATUSCODE")
     private String equipmentStatusCode;
 
     @Transient
-    @InforField(xpath = "EquipmentGenerationDetails/STATUS/DESCRIPTION", readOnly = true)
+    @EAMField(xpath = "EquipmentGenerationDetails/STATUS/DESCRIPTION", readOnly = true)
     private String equipmentStatusDesc;
 
     @Transient
-    @InforField(xpath = "EquipmentGenerationDetails/SEQUENCELENGTH")
+    @EAMField(xpath = "EquipmentGenerationDetails/SEQUENCELENGTH")
     private BigInteger equipmentSequenceLength;
 
     @Transient
-    @InforField(xpath = "EquipmentGenerationDetails/AUTONUMBER")
+    @EAMField(xpath = "EquipmentGenerationDetails/AUTONUMBER")
     private Boolean autoNumber;
 
     @Transient
-    @InforField(xpath = "EquipmentGenerationDetails/SAMPLECODE")
+    @EAMField(xpath = "EquipmentGenerationDetails/SAMPLECODE")
     private String sampleCode;
 
     @Transient
-    @InforField(xpath = "EquipmentGenerationDetails/COMMISSIONINGWORKORDERID/JOBNUM")
+    @EAMField(xpath = "EquipmentGenerationDetails/COMMISSIONINGWORKORDERID/JOBNUM")
     private String commissioningWONum;
 
     @Transient
-    @InforField(xpath = "EquipmentGenerationDetails/COMMISSIONINGWORKORDERID/DESCRIPTION", readOnly = true)
+    @EAMField(xpath = "EquipmentGenerationDetails/COMMISSIONINGWORKORDERID/DESCRIPTION", readOnly = true)
     private String commissioningWODesc;
 
 
     // Tracking Details
     @Transient
-    @InforField(xpath = "TrackingDetails/MANUFACTURERCODE")
+    @EAMField(xpath = "TrackingDetails/MANUFACTURERCODE")
     private String manufacturerCode;
 
     @Transient
-    @InforField(xpath = "TrackingDetails/MODEL")
+    @EAMField(xpath = "TrackingDetails/MODEL")
     private String model;
 
     @Transient
-    @InforField(xpath = "TrackingDetails/MODELREVISION")
+    @EAMField(xpath = "TrackingDetails/MODELREVISION")
     private String modelRevision;
 
     @Transient
-    @InforField(xpath = "PARTID/PARTCODE")
+    @EAMField(xpath = "PARTID/PARTCODE")
     private String partCode;
 
     @Transient
-    @InforField(xpath = "UserDefinedFields")
+    @EAMField(xpath = "UserDefinedFields")
     private UserDefinedFields userDefinedFields;
 
     public String getEquipmentConfigCode() {

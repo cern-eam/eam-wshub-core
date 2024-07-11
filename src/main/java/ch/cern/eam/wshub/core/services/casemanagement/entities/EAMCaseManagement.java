@@ -1,14 +1,14 @@
 package ch.cern.eam.wshub.core.services.casemanagement.entities;
 
 import ch.cern.eam.wshub.core.annotations.BooleanType;
-import ch.cern.eam.wshub.core.annotations.InforField;
+import ch.cern.eam.wshub.core.annotations.EAMField;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import net.datastream.schemas.mp_fields.StandardUserDefinedFields;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -17,207 +17,207 @@ import java.util.Map;
 
 @XmlAccessorType(XmlAccessType.PROPERTY)
 public class EAMCaseManagement implements Serializable {
-	@InforField(xpath = "CASEID/CASECODE")
+	@EAMField(xpath = "CASEID/CASECODE")
 	protected String caseCode;
-	@InforField(xpath = "CASEID/DESCRIPTION", nullifyParentLevel = 0)
+	@EAMField(xpath = "CASEID/DESCRIPTION", nullifyParentLevel = 0)
 	protected String caseDescription;
-	@InforField(xpath = "EQUIPMENTID/EQUIPMENTCODE")
+	@EAMField(xpath = "EQUIPMENTID/EQUIPMENTCODE")
 	protected String equipmentCode;
-	@InforField(xpath = "CASETYPE/TYPECODE")
+	@EAMField(xpath = "CASETYPE/TYPECODE")
 	protected String caseType;
-	@InforField(xpath = "DEPARTMENTID/DEPARTMENTCODE")
+	@EAMField(xpath = "DEPARTMENTID/DEPARTMENTCODE")
 	protected String departmentCode;
-	@InforField(xpath = "STATUS/STATUSCODE")
+	@EAMField(xpath = "STATUS/STATUSCODE")
 	protected String statusCode;
-	@InforField(xpath = "RSTATUS/STATUSCODE")
+	@EAMField(xpath = "RSTATUS/STATUSCODE")
 	protected String systemStatusCode;
-	@InforField(xpath = "REVIEWEDBYESIGN/ESIGNATURE/USERID/DESCRIPTION")
+	@EAMField(xpath = "REVIEWEDBYESIGN/ESIGNATURE/USERID/DESCRIPTION")
 	protected String reviewedByDesign;
-	@InforField(xpath = "DATEREVIEWED")
+	@EAMField(xpath = "DATEREVIEWED")
 	protected Date dateReviewed;
-	@InforField(xpath = "CREATEDBY/USERCODE")
+	@EAMField(xpath = "CREATEDBY/USERCODE")
 	protected String createdBy;
-	@InforField(xpath = "CREATEDDATE")
+	@EAMField(xpath = "CREATEDDATE")
 	protected Date createdDate;
-	@InforField(xpath = "UPDATEDBY/USERCODE")
+	@EAMField(xpath = "UPDATEDBY/USERCODE")
 	protected String updatedby;
-	@InforField(xpath = "DATEUPDATED")
+	@EAMField(xpath = "DATEUPDATED")
 	protected Date dateUpdated;
 
 	//CASE DETAILS
-	@InforField(xpath = "CaseDetails/CASECLASSID/CLASSCODE", nullifyParentLevel = 1)
+	@EAMField(xpath = "CaseDetails/CASECLASSID/CLASSCODE", nullifyParentLevel = 1)
 	protected String classCode;
-	@InforField(xpath = "CaseDetails/LOCATIONID/LOCATIONCODE", nullifyParentLevel = 1)
+	@EAMField(xpath = "CaseDetails/LOCATIONID/LOCATIONCODE", nullifyParentLevel = 1)
 	protected String locationCode;
-	@InforField(xpath = "CaseDetails/SERVICEPROBLEMID/SERVICEPROBLEMCODE", nullifyParentLevel = 1)
+	@EAMField(xpath = "CaseDetails/SERVICEPROBLEMID/SERVICEPROBLEMCODE", nullifyParentLevel = 1)
 	protected String serviceProblemCode;
-	@InforField(xpath = "CaseDetails/AREA", nullifyParentLevel = 0)
+	@EAMField(xpath = "CaseDetails/AREA", nullifyParentLevel = 0)
 	protected String area;
-	@InforField(xpath = "CaseDetails/WORKADDRESS", nullifyParentLevel = 0)
+	@EAMField(xpath = "CaseDetails/WORKADDRESS", nullifyParentLevel = 0)
 	protected String workaddress;
-	@InforField(xpath = "CaseDetails/CASEPRIORITY/USERDEFINEDCODE", nullifyParentLevel = 1)
+	@EAMField(xpath = "CaseDetails/CASEPRIORITY/USERDEFINEDCODE", nullifyParentLevel = 1)
 	protected String casePriorityCode;
-	@InforField(xpath = "CaseDetails/CASEPRIORITY/ENTITY", nullifyParentLevel = 0)
+	@EAMField(xpath = "CaseDetails/CASEPRIORITY/ENTITY", nullifyParentLevel = 0)
 	protected String casePriorityEntity;
-	@InforField(xpath = "CaseDetails/COSTCODEID/COSTCODE", nullifyParentLevel = 1)
+	@EAMField(xpath = "CaseDetails/COSTCODEID/COSTCODE", nullifyParentLevel = 1)
 	protected String costCode;
-	@InforField(xpath = "CaseDetails/EVENTSTARTDATE", nullifyParentLevel = 0)
+	@EAMField(xpath = "CaseDetails/EVENTSTARTDATE", nullifyParentLevel = 0)
 	protected Date eventStartDate;
-	@InforField(xpath = "CaseDetails/EVENTENDDATE", nullifyParentLevel = 0)
+	@EAMField(xpath = "CaseDetails/EVENTENDDATE", nullifyParentLevel = 0)
 	protected Date eventEndDate;
-	@InforField(xpath = "CaseDetails/REGULATORY", booleanType = BooleanType.TRUE_FALSE, nullifyParentLevel = 0)
+	@EAMField(xpath = "CaseDetails/REGULATORY", booleanType = BooleanType.TRUE_FALSE, nullifyParentLevel = 0)
 	protected Boolean regulatory;
-	@InforField(xpath = "CaseDetails/CASEFOLLOWUPREQUIRED", booleanType = BooleanType.TRUE_FALSE, nullifyParentLevel
+	@EAMField(xpath = "CaseDetails/CASEFOLLOWUPREQUIRED", booleanType = BooleanType.TRUE_FALSE, nullifyParentLevel
 			= 0)
 	protected Boolean followUpRequired;
-	@InforField(xpath = "CaseDetails/ISHAZARDOUSMATERIAL", booleanType = BooleanType.TRUE_FALSE, nullifyParentLevel = 0)
+	@EAMField(xpath = "CaseDetails/ISHAZARDOUSMATERIAL", booleanType = BooleanType.TRUE_FALSE, nullifyParentLevel = 0)
 	protected Boolean isHazardousMaterial;
-	@InforField(xpath = "CaseDetails/ESTIMATEDTOTALCOST", nullifyParentLevel = 0)
+	@EAMField(xpath = "CaseDetails/ESTIMATEDTOTALCOST", nullifyParentLevel = 0)
 	protected BigDecimal estimatedTotalCost;
-	@InforField(xpath = "CaseDetails/TOTALCOST", nullifyParentLevel = 0)
+	@EAMField(xpath = "CaseDetails/TOTALCOST", nullifyParentLevel = 0)
 	protected BigDecimal totalCost;
-	@InforField(xpath = "CaseDetails/CURRENCYCODE", nullifyParentLevel = 0)
+	@EAMField(xpath = "CaseDetails/CURRENCYCODE", nullifyParentLevel = 0)
 	protected String currencyCode;
-	@InforField(xpath = "CaseDetails/COSTREFRESHREQUIRED", booleanType = BooleanType.TRUE_FALSE, nullifyParentLevel = 0)
+	@EAMField(xpath = "CaseDetails/COSTREFRESHREQUIRED", booleanType = BooleanType.TRUE_FALSE, nullifyParentLevel = 0)
 	protected Boolean costRefreshRequired;
-	@InforField(xpath = "CaseDetails/CASEPARENT/CASECODE", nullifyParentLevel = 1)
+	@EAMField(xpath = "CaseDetails/CASEPARENT/CASECODE", nullifyParentLevel = 1)
 	protected String caseParentCode;
-	@InforField(xpath = "CaseDetails/WORKORDERID/JOBNUM", nullifyParentLevel = 1)
+	@EAMField(xpath = "CaseDetails/WORKORDERID/JOBNUM", nullifyParentLevel = 1)
 	protected String workOrderCode;
-	@InforField(xpath = "CaseDetails/PERMITTOWORKID/PERMITTOWORKCODE", nullifyParentLevel = 1)
+	@EAMField(xpath = "CaseDetails/PERMITTOWORKID/PERMITTOWORKCODE", nullifyParentLevel = 1)
 	protected String permitToWorkCode;
-	@InforField(xpath = "CaseDetails/SHIFTID/SHIFTCODE", nullifyParentLevel = 1)
+	@EAMField(xpath = "CaseDetails/SHIFTID/SHIFTCODE", nullifyParentLevel = 1)
 	protected String shiftCode;
-	@InforField(xpath = "CaseDetails/PROJECTID/PROJECTCODE", nullifyParentLevel = 1)
+	@EAMField(xpath = "CaseDetails/PROJECTID/PROJECTCODE", nullifyParentLevel = 1)
 	protected String projectCode;
-	@InforField(xpath = "CaseDetails/CAMPAIGNID/CAMPAIGNCODE", nullifyParentLevel = 1)
+	@EAMField(xpath = "CaseDetails/CAMPAIGNID/CAMPAIGNCODE", nullifyParentLevel = 1)
 	protected String campaignCode;
 	// --- //
 
 	// Liner Reference Details
-	@InforField(xpath = "LinearReferenceDetails/LINEARREFUOM", nullifyParentLevel = 0)
+	@EAMField(xpath = "LinearReferenceDetails/LINEARREFUOM", nullifyParentLevel = 0)
 	protected String linearRefUom;
-//	@InforField(xpath = "LinearReferenceDetails/LINEARREFERENCEEVENT", nullifyParentLevel = 0)
+//	@EAMField(xpath = "LinearReferenceDetails/LINEARREFERENCEEVENT", nullifyParentLevel = 0)
 //	protected LINEARREFERENCEEVENT_Type linearreferenceevent;
-	@InforField(xpath = "LinearReferenceDetails/INSPECTIONDIRECTIONCODE", nullifyParentLevel = 0)
+	@EAMField(xpath = "LinearReferenceDetails/INSPECTIONDIRECTIONCODE", nullifyParentLevel = 0)
 	protected String inspectionDirectionCode;
-	@InforField(xpath = "LinearReferenceDetails/FLOWCODE", nullifyParentLevel = 0)
+	@EAMField(xpath = "LinearReferenceDetails/FLOWCODE", nullifyParentLevel = 0)
 	protected String flowCode;
-	@InforField(xpath = "LinearReferenceDetails/STARTINGAT", nullifyParentLevel = 0)
+	@EAMField(xpath = "LinearReferenceDetails/STARTINGAT", nullifyParentLevel = 0)
 	protected BigDecimal startingAt;
-	@InforField(xpath = "LinearReferenceDetails/EQUIPMENTLENGTH", nullifyParentLevel = 0)
+	@EAMField(xpath = "LinearReferenceDetails/EQUIPMENTLENGTH", nullifyParentLevel = 0)
 	protected BigDecimal equipmentLength;
 	// --- //
 
 	// Tracking Details
-	@InforField(xpath = "TrackingDetails/REQUESTEDBY/PERSONCODE", nullifyParentLevel = 1)
+	@EAMField(xpath = "TrackingDetails/REQUESTEDBY/PERSONCODE", nullifyParentLevel = 1)
 	protected String requestedBy;
-	@InforField(xpath = "TrackingDetails/DATEREQUESTED", nullifyParentLevel = 0)
+	@EAMField(xpath = "TrackingDetails/DATEREQUESTED", nullifyParentLevel = 0)
 	protected Date dateRequested;
-	@InforField(xpath = "TrackingDetails/PERSONRESPONSIBLE/EMPLOYEECODE", nullifyParentLevel = 1)
+	@EAMField(xpath = "TrackingDetails/PERSONRESPONSIBLE/EMPLOYEECODE", nullifyParentLevel = 1)
 	protected String personResponsible;
-	@InforField(xpath = "TrackingDetails/EMAIL", nullifyParentLevel = 0)
+	@EAMField(xpath = "TrackingDetails/EMAIL", nullifyParentLevel = 0)
 	protected String email;
-	@InforField(xpath = "TrackingDetails/PREPAREDBY/USERCODE", nullifyParentLevel = 1)
+	@EAMField(xpath = "TrackingDetails/PREPAREDBY/USERCODE", nullifyParentLevel = 1)
 	protected String preparedBy;
-	@InforField(xpath = "TrackingDetails/PREPAREDBYEMAIL", nullifyParentLevel = 0)
+	@EAMField(xpath = "TrackingDetails/PREPAREDBYEMAIL", nullifyParentLevel = 0)
 	protected String preparedByEmail;
-	@InforField(xpath = "TrackingDetails/ASSIGNEDTO/PERSONCODE", nullifyParentLevel = 1)
+	@EAMField(xpath = "TrackingDetails/ASSIGNEDTO/PERSONCODE", nullifyParentLevel = 1)
 	protected String assignedTo;
-	@InforField(xpath = "TrackingDetails/ASSIGNEDTOEMAIL", nullifyParentLevel = 0)
+	@EAMField(xpath = "TrackingDetails/ASSIGNEDTOEMAIL", nullifyParentLevel = 0)
 	protected String assignedToEmail;
-	@InforField(xpath = "TrackingDetails/SCHEDULEDSTARTDATE", nullifyParentLevel = 0)
+	@EAMField(xpath = "TrackingDetails/SCHEDULEDSTARTDATE", nullifyParentLevel = 0)
 	protected Date scheduledStartDate;
-	@InforField(xpath = "TrackingDetails/SCHEDULEDENDDATE", nullifyParentLevel = 0)
+	@EAMField(xpath = "TrackingDetails/SCHEDULEDENDDATE", nullifyParentLevel = 0)
 	protected Date scheduledEndDate;
-	@InforField(xpath = "TrackingDetails/REQUESTEDSTART", nullifyParentLevel = 0)
+	@EAMField(xpath = "TrackingDetails/REQUESTEDSTART", nullifyParentLevel = 0)
 	protected Date requestedStart;
-	@InforField(xpath = "TrackingDetails/REQUESTEDEND", nullifyParentLevel = 0)
+	@EAMField(xpath = "TrackingDetails/REQUESTEDEND", nullifyParentLevel = 0)
 	protected Date requestedEnd;
-	@InforField(xpath = "TrackingDetails/STARTDATE", nullifyParentLevel = 0)
+	@EAMField(xpath = "TrackingDetails/STARTDATE", nullifyParentLevel = 0)
 	protected Date startDate;
-	@InforField(xpath = "TrackingDetails/COMPLETEDDATE", nullifyParentLevel = 0)
+	@EAMField(xpath = "TrackingDetails/COMPLETEDDATE", nullifyParentLevel = 0)
 	protected Date completedDate;
-	@InforField(xpath = "TrackingDetails/CONTACTRECORDID/CONTACTRECORDCODE", nullifyParentLevel = 1)
+	@EAMField(xpath = "TrackingDetails/CONTACTRECORDID/CONTACTRECORDCODE", nullifyParentLevel = 1)
 	protected String contactRecordCode;
-	@InforField(xpath = "TrackingDetails/CONTACTRECORDSTATUS/STATUSCODE", nullifyParentLevel = 1)
+	@EAMField(xpath = "TrackingDetails/CONTACTRECORDSTATUS/STATUSCODE", nullifyParentLevel = 1)
 	protected String contactRecordStatus;
-	@InforField(xpath = "TrackingDetails/SOURCETYPE/TYPECODE", nullifyParentLevel = 1)
+	@EAMField(xpath = "TrackingDetails/SOURCETYPE/TYPECODE", nullifyParentLevel = 1)
 	protected String sourceType;
 	// --- //
 
 	// Follow-Up Details
-	@InforField(xpath = "FollowupWODetails/WODESCRIPTION", nullifyParentLevel = 0)
+	@EAMField(xpath = "FollowupWODetails/WODESCRIPTION", nullifyParentLevel = 0)
 	protected String woDescription;
-	@InforField(xpath = "FollowupWODetails/STANDARDWO/STDWOCODE", nullifyParentLevel = 1)
+	@EAMField(xpath = "FollowupWODetails/STANDARDWO/STDWOCODE", nullifyParentLevel = 1)
 	protected String standardWo;
-	@InforField(xpath = "FollowupWODetails/WORKORDERTYPE/TYPECODE", nullifyParentLevel = 1)
+	@EAMField(xpath = "FollowupWODetails/WORKORDERTYPE/TYPECODE", nullifyParentLevel = 1)
 	protected String workOrderType;
-	@InforField(xpath = "FollowupWODetails/WORKORDERCLASSID/CLASSCODE", nullifyParentLevel = 1)
+	@EAMField(xpath = "FollowupWODetails/WORKORDERCLASSID/CLASSCODE", nullifyParentLevel = 1)
 	protected String workorderClassCode;
-	@InforField(xpath = "FollowupWODetails/WORKORDERSTATUS/STATUSCODE", nullifyParentLevel = 1)
+	@EAMField(xpath = "FollowupWODetails/WORKORDERSTATUS/STATUSCODE", nullifyParentLevel = 1)
 	protected String workorderStatus;
-	@InforField(xpath = "FollowupWODetails/WOPRIORITY/PRIORITYCODE", nullifyParentLevel = 1)
+	@EAMField(xpath = "FollowupWODetails/WOPRIORITY/PRIORITYCODE", nullifyParentLevel = 1)
 	protected String woPriority;
-	@InforField(xpath = "FollowupWODetails/TASKSID/TASKCODE", nullifyParentLevel = 1)
+	@EAMField(xpath = "FollowupWODetails/TASKSID/TASKCODE", nullifyParentLevel = 1)
 	protected String taskCode;
-	@InforField(xpath = "FollowupWODetails/CASETASKJOBPLANID/TASKCODE", nullifyParentLevel = 0)
+	@EAMField(xpath = "FollowupWODetails/CASETASKJOBPLANID/TASKCODE", nullifyParentLevel = 0)
 	protected String casetaskJobPlan;
-	@InforField(xpath = "FollowupWODetails/TRADEID/TRADECODE", nullifyParentLevel = 0)
+	@EAMField(xpath = "FollowupWODetails/TRADEID/TRADECODE", nullifyParentLevel = 0)
 	protected String tradeCode;
-	@InforField(xpath = "FollowupWODetails/ESTIMATEDHOURS", nullifyParentLevel = 0)
+	@EAMField(xpath = "FollowupWODetails/ESTIMATEDHOURS", nullifyParentLevel = 0)
 	protected BigDecimal estimatedHours;
-	@InforField(xpath = "FollowupWODetails/PERSONS", nullifyParentLevel = 0)
+	@EAMField(xpath = "FollowupWODetails/PERSONS", nullifyParentLevel = 0)
 	protected BigInteger persons;
-	@InforField(xpath = "FollowupWODetails/FOLLOWUPWORKORDER/JOBNUM", nullifyParentLevel = 1)
+	@EAMField(xpath = "FollowupWODetails/FOLLOWUPWORKORDER/JOBNUM", nullifyParentLevel = 1)
 	protected String followupWorkOrder;
 	// --- //
 
 	// Root Cause Details
-	@InforField(xpath = "RouteCauseAnalysisDetails/DOWNTIMEHOURS", nullifyParentLevel = 0)
+	@EAMField(xpath = "RouteCauseAnalysisDetails/DOWNTIMEHOURS", nullifyParentLevel = 0)
 	private BigDecimal downtimehours;
-	@InforField(xpath = "RouteCauseAnalysisDetails/DOWNTIMECOSTVALUE", nullifyParentLevel = 0)
+	@EAMField(xpath = "RouteCauseAnalysisDetails/DOWNTIMECOSTVALUE", nullifyParentLevel = 0)
 	private BigDecimal downtimecostvalue;
-	@InforField(xpath = "RouteCauseAnalysisDetails/TOTALCOST", nullifyParentLevel = 0)
+	@EAMField(xpath = "RouteCauseAnalysisDetails/TOTALCOST", nullifyParentLevel = 0)
 	private BigDecimal totalcost;
-	@InforField(xpath = "RouteCauseAnalysisDetails/LOSTPRODUCTIVITYHOURS", nullifyParentLevel = 0)
+	@EAMField(xpath = "RouteCauseAnalysisDetails/LOSTPRODUCTIVITYHOURS", nullifyParentLevel = 0)
 	private BigDecimal lostproductivityhours;
-	@InforField(xpath = "RouteCauseAnalysisDetails/PROBLEMDESCRIPTION", nullifyParentLevel = 0)
+	@EAMField(xpath = "RouteCauseAnalysisDetails/PROBLEMDESCRIPTION", nullifyParentLevel = 0)
 	private String problemdescription;
-	@InforField(xpath = "RouteCauseAnalysisDetails/WHATHAPPENED", nullifyParentLevel = 0)
+	@EAMField(xpath = "RouteCauseAnalysisDetails/WHATHAPPENED", nullifyParentLevel = 0)
 	private String whathappened;
-	@InforField(xpath = "RouteCauseAnalysisDetails/WHY1", nullifyParentLevel = 0)
+	@EAMField(xpath = "RouteCauseAnalysisDetails/WHY1", nullifyParentLevel = 0)
 	private String why1;
-	@InforField(xpath = "RouteCauseAnalysisDetails/WHY2", nullifyParentLevel = 0)
+	@EAMField(xpath = "RouteCauseAnalysisDetails/WHY2", nullifyParentLevel = 0)
 	private String why2;
-	@InforField(xpath = "RouteCauseAnalysisDetails/WHY3", nullifyParentLevel = 0)
+	@EAMField(xpath = "RouteCauseAnalysisDetails/WHY3", nullifyParentLevel = 0)
 	private String why3;
-	@InforField(xpath = "RouteCauseAnalysisDetails/WHY4", nullifyParentLevel = 0)
+	@EAMField(xpath = "RouteCauseAnalysisDetails/WHY4", nullifyParentLevel = 0)
 	private String why4;
-	@InforField(xpath = "RouteCauseAnalysisDetails/WHY5", nullifyParentLevel = 0)
+	@EAMField(xpath = "RouteCauseAnalysisDetails/WHY5", nullifyParentLevel = 0)
 	private String why5;
-	@InforField(xpath = "RouteCauseAnalysisDetails/SOLUTION", nullifyParentLevel = 0)
+	@EAMField(xpath = "RouteCauseAnalysisDetails/SOLUTION", nullifyParentLevel = 0)
 	private String solution;
 	// --- //
 
 
 	@JsonIgnore
-	@InforField(xpath = "USERDEFINEDAREA")
+	@EAMField(xpath = "USERDEFINEDAREA")
 	private CustomField[] customFields;
 
 	private Map<String, String> customFieldMap;
 
-	@InforField(xpath = "StandardUserDefinedFields")
+	@EAMField(xpath = "StandardUserDefinedFields")
 	private UserDefinedFields userDefinedFields;
 
-	@InforField(xpath = "recordid")
+	@EAMField(xpath = "recordid")
 	private BigInteger updateCount;
 
-	@InforField(xpath = "has_department_security")
+	@EAMField(xpath = "has_department_security")
 	protected String hasDepartmentSecurity;
-	@InforField(xpath = "is_enhancedplanning_task")
+	@EAMField(xpath = "is_enhancedplanning_task")
 	protected String isEnhancedPlanningTask;
-	@InforField(xpath = "is_casehavetasks")
+	@EAMField(xpath = "is_casehavetasks")
 	protected String isCaseHaveTasks;
 
 	public String getCaseCode() {

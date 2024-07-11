@@ -1,9 +1,9 @@
 package ch.cern.eam.wshub.core.services.material.entities;
 
-import ch.cern.eam.wshub.core.annotations.InforField;
+import ch.cern.eam.wshub.core.annotations.EAMField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -14,15 +14,15 @@ public class PhysicalInventory implements Serializable {
 
     @Id
     @Column(name = "TRA_CODE")
-    @InforField(xpath = "TRANSACTIONID/TRANSACTIONCODE")
+    @EAMField(xpath = "TRANSACTIONID/TRANSACTIONCODE")
     private String code;
 
     @Column(name = "TRA_DESC")
-    @InforField(xpath = "TRANSACTIONID/DESCRIPTION")
+    @EAMField(xpath = "TRANSACTIONID/DESCRIPTION")
     private String description;
 
     @Column(name = "TRA_FROMCODE")
-    @InforField(xpath = "STOREID/STORECODE")
+    @EAMField(xpath = "STOREID/STORECODE")
     private String store;
 
     @Column(name = "TRA_AUTH")
@@ -32,46 +32,46 @@ public class PhysicalInventory implements Serializable {
     private Date createdDate;
 
     @Column(name = "TRA_PERS")
-    @InforField(xpath = "ASSIGNEDTO/PERSONCODE")
+    @EAMField(xpath = "ASSIGNEDTO/PERSONCODE")
     private String assignedTo;
 
     @Column(name = "TRA_STATUS")
-    @InforField(xpath = "TRANSACTIONSTATUS/STATUSCODE")
+    @EAMField(xpath = "TRANSACTIONSTATUS/STATUSCODE")
     private String status;
 
     @Transient
-    @InforField(xpath = "StandardUserDefinedFields")
+    @EAMField(xpath = "StandardUserDefinedFields")
     private UserDefinedFields userDefinedFields;
 
     // the fields below are not stored on the database and are only used for creation
-    @InforField(xpath = "PARTID/PARTCODE")
+    @EAMField(xpath = "PARTID/PARTCODE")
     private String part;
 
-    @InforField(xpath = "PARTCLASSID/CLASSCODE")
+    @EAMField(xpath = "PARTCLASSID/CLASSCODE")
     private String partClass;
 
-    @InforField(xpath = "STOCKCLASSID/CLASSCODE")
+    @EAMField(xpath = "STOCKCLASSID/CLASSCODE")
     private String stockClass;
 
-    @InforField(xpath = "ABCCODE")
+    @EAMField(xpath = "ABCCODE")
     private String abcClass;
 
-    @InforField(xpath = "INCLUDECONSIGNMENTITEM")
+    @EAMField(xpath = "INCLUDECONSIGNMENTITEM")
     private Boolean includeConsignmentItem;
 
-    @InforField(xpath = "FROMBIN/BIN")
+    @EAMField(xpath = "FROMBIN/BIN")
     private String fromBin;
 
-    @InforField(xpath = "TOBIN/BIN")
+    @EAMField(xpath = "TOBIN/BIN")
     private String toBin;
 
-    @InforField(xpath = "STOCKDATE")
+    @EAMField(xpath = "STOCKDATE")
     private Date physicalInventoryDate;
 
-    @InforField(xpath = "INCLUDECHILDSTORES")
+    @EAMField(xpath = "INCLUDECHILDSTORES")
     private Boolean includeChildStores;
 
-    @InforField(xpath = "INCLUDEOUTOFSERVICEITEM")
+    @EAMField(xpath = "INCLUDEOUTOFSERVICEITEM")
     private Boolean includeOutOfServiceItem;
 
     public String getCode() {

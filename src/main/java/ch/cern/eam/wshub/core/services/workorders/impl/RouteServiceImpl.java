@@ -1,9 +1,9 @@
 package ch.cern.eam.wshub.core.services.workorders.impl;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.workorders.entities.Route;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_entities.workroute_001.WorkRoute;
 import net.datastream.schemas.mp_fields.ROUTE_Type;
@@ -11,37 +11,37 @@ import net.datastream.schemas.mp_functions.mp7063_001.MP7063_AddWorkRoute_001;
 import net.datastream.schemas.mp_functions.mp7064_001.MP7064_GetWorkRoute_001;
 import net.datastream.schemas.mp_results.mp7063_001.MP7063_AddWorkRoute_001_Result;
 import net.datastream.schemas.mp_results.mp7064_001.MP7064_GetWorkRoute_001_Result;
-import net.datastream.wsdls.inforws.InforWebServicesPT;
+import net.datastream.wsdls.eamws.EAMWebServicesPT;
 import ch.cern.eam.wshub.core.services.workorders.RouteService;
 
 public class RouteServiceImpl implements RouteService {
 
     private Tools tools;
-    private InforWebServicesPT inforws;
+    private EAMWebServicesPT eamws;
     private ApplicationData applicationData;
 
-    public RouteServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
+    public RouteServiceImpl(ApplicationData applicationData, Tools tools, EAMWebServicesPT eamWebServicesToolkitClient) {
         this.applicationData = applicationData;
         this.tools = tools;
-        this.inforws = inforWebServicesToolkitClient;
+        this.eamws = eamWebServicesToolkitClient;
     }
 
-    public Route readRoute(InforContext inforContext, String routeCode) throws InforException {
+    public Route readRoute(EAMContext eamContext, String routeCode) throws EAMException {
         MP7064_GetWorkRoute_001 getWorkRoute = new MP7064_GetWorkRoute_001();
         getWorkRoute.setROUTEID(new ROUTE_Type());
 
-        MP7064_GetWorkRoute_001_Result result = tools.performInforOperation(inforContext, inforws::getWorkRouteOp, getWorkRoute);
-        return tools.getInforFieldTools().transformInforObject(new Route(), result.getResultData().getWorkRoute(), inforContext);
+        MP7064_GetWorkRoute_001_Result result = tools.performEAMOperation(eamContext, eamws::getWorkRouteOp, getWorkRoute);
+        return tools.getEAMFieldTools().transformEAMObject(new Route(), result.getResultData().getWorkRoute(), eamContext);
     }
 
-    public String createRoute(InforContext inforContext, Route route) throws InforException {
+    public String createRoute(EAMContext eamContext, Route route) throws EAMException {
         WorkRoute workRoute = new WorkRoute();
-        tools.getInforFieldTools().transformWSHubObject(workRoute, route, inforContext);
+        tools.getEAMFieldTools().transformWSHubObject(workRoute, route, eamContext);
 
         MP7063_AddWorkRoute_001 addWorkRoute = new MP7063_AddWorkRoute_001();
         addWorkRoute.setWorkRoute(workRoute);
 
-        MP7063_AddWorkRoute_001_Result result = tools.performInforOperation(inforContext, inforws::addWorkRouteOp, addWorkRoute);
+        MP7063_AddWorkRoute_001_Result result = tools.performEAMOperation(eamContext, eamws::addWorkRouteOp, addWorkRoute);
         return result.getResultData().getROUTEID().getROUTECODE();
     }
 

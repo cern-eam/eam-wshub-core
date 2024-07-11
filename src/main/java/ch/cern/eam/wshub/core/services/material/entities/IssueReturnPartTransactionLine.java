@@ -1,39 +1,39 @@
 package ch.cern.eam.wshub.core.services.material.entities;
 
 import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
-import ch.cern.eam.wshub.core.annotations.InforField;
+import ch.cern.eam.wshub.core.annotations.EAMField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
 public class IssueReturnPartTransactionLine implements Serializable {
 	private static final long serialVersionUID = 8532103426384418187L;
 
-	@InforField(xpath="PARTID/PARTCODE")
+	@EAMField(xpath="PARTID/PARTCODE")
 	private String partCode;
 
-	@InforField(xpath="PARTID/DESCRIPTION", readOnly = true)
+	@EAMField(xpath="PARTID/DESCRIPTION", readOnly = true)
 	private String partDesc;
 	private String partOrg;
 
-	@InforField(xpath = "BIN")
+	@EAMField(xpath = "BIN")
 	private String bin;
 
-	@InforField(xpath = "LOT")
+	@EAMField(xpath = "LOT")
 	private String lot;
 
-	@InforField(xpath = "TRANSACTIONQUANTITY")
+	@EAMField(xpath = "TRANSACTIONQUANTITY")
 	private BigDecimal transactionQty = BigDecimal.ONE;
 
-	@InforField(xpath="EQUIPMENTID/EQUIPMENTCODE")
+	@EAMField(xpath="EQUIPMENTID/EQUIPMENTCODE")
 	private String assetIDCode;
 
-	@InforField(xpath="EQUIPMENTID/DESCRIPTION", readOnly = true)
+	@EAMField(xpath="EQUIPMENTID/DESCRIPTION", readOnly = true)
 	private String assetIDDesc;
 
-	@InforField(xpath = "StandardUserDefinedFields")
+	@EAMField(xpath = "StandardUserDefinedFields")
 	private UserDefinedFields userDefinedFields;
 	
 	public IssueReturnPartTransactionLine() {

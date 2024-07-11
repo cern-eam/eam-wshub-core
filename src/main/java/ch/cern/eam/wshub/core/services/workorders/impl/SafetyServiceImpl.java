@@ -1,6 +1,6 @@
 package ch.cern.eam.wshub.core.services.workorders.impl;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.entities.BatchResponse;
 import ch.cern.eam.wshub.core.services.grids.GridsService;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
@@ -19,7 +19,7 @@ import net.datastream.schemas.mp_functions.mp7983_001.MP7983_GetWorkSafety_001;
 import net.datastream.schemas.mp_functions.mp7984_001.MP7984_AddWorkSafety_001;
 import net.datastream.schemas.mp_functions.mp7985_001.MP7985_SyncWorkSafety_001;
 import net.datastream.schemas.mp_functions.mp7986_001.MP7986_DeleteWorkSafety_001;
-import net.datastream.wsdls.inforws.InforWebServicesPT;
+import net.datastream.wsdls.eamws.EAMWebServicesPT;
 import org.openapplications.oagis_segments.QUANTITY;
 
 import java.math.BigDecimal;
@@ -31,19 +31,19 @@ import java.util.stream.Collectors;
 
 public class SafetyServiceImpl implements SafetyService {
     private Tools tools;
-    private InforWebServicesPT inforws;
+    private EAMWebServicesPT eamws;
     private ApplicationData applicationData;
     private GridsService gridsService;
 
-    public SafetyServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
+    public SafetyServiceImpl(ApplicationData applicationData, Tools tools, EAMWebServicesPT eamWebServicesToolkitClient) {
         this.applicationData = applicationData;
         this.tools = tools;
-        this.inforws = inforWebServicesToolkitClient;
-        this.gridsService = new GridsServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
+        this.eamws = eamWebServicesToolkitClient;
+        this.gridsService = new GridsServiceImpl(applicationData, tools, eamWebServicesToolkitClient);
     }
 
     @Override
-    public BatchResponse<List<Safety>> readSafetiesBatch(InforContext context, String entityType, List<String> entityCode) {
+    public BatchResponse<List<Safety>> readSafetiesBatch(EAMContext context, String entityType, List<String> entityCode) {
         List<Callable<List<Safety>>> callableList = entityCode.stream()
                 .<Callable<List<Safety>>>map(code -> () -> readSafeties(context, entityType, code))
                 .collect(Collectors.toList());
@@ -52,7 +52,7 @@ public class SafetyServiceImpl implements SafetyService {
     }
 
     @Override
-    public BatchResponse<String> setSafetiesBatch(InforContext context, String entityType, Map<String, List<Safety>> entityCodeToSafeties) {
+    public BatchResponse<String> setSafetiesBatch(EAMContext context, String entityType, Map<String, List<Safety>> entityCodeToSafeties) {
         List<Callable<String>> callableList = entityCodeToSafeties.keySet().stream()
                 .<Callable<String>>map(code -> () -> setSafeties(context, entityType, code, entityCodeToSafeties.get(code)))
                 .collect(Collectors.toList());
@@ -63,7 +63,7 @@ public class SafetyServiceImpl implements SafetyService {
     // The entityType argument takes either "EVNT" or "OBJ"
     // Note that this method does not return the user defined fields, use the readSafety method for now to get these
     @Override
-    public List<Safety> readSafeties(InforContext context, String entityType, String entityCode) throws InforException {
+    public List<Safety> readSafeties(EAMContext context, String entityType, String entityCode) throws EAMException {
         GridRequest request = new GridRequest();
         request.setGridType(GridRequest.GRIDTYPE.LIST);
 
@@ -91,7 +91,7 @@ public class SafetyServiceImpl implements SafetyService {
 
     // The entityType argument takes either "EVNT" or "OBJ"
     @Override
-    public String setSafeties(InforContext context, String entityType, String entityCode, List<Safety> safeties) throws InforException {
+    public String setSafeties(EAMContext context, String entityType, String entityCode, List<Safety> safeties) throws EAMException {
         if (!isWorkOrder(entityType) && !isObject(entityType)) {
             throw Tools.generateFault("Invalid entityType");
         }
@@ -133,155 +133,155 @@ public class SafetyServiceImpl implements SafetyService {
     }
 
     @Override
-    public Safety readSafety(InforContext context, String entityType, String safetyCode) throws InforException {
+    public Safety readSafety(EAMContext context, String entityType, String safetyCode) throws EAMException {
         if (isObject(entityType)) {
             MP3222_GetEntitySafety_001 getEntitySafety = new MP3222_GetEntitySafety_001();
             getEntitySafety.setSAFETYCODE(safetyCode);
-            EntitySafety inforSafety = tools.performInforOperation(context, inforws::getEntitySafetyOp, getEntitySafety)
+            EntitySafety eamSafety = tools.performEAMOperation(context, eamws::getEntitySafetyOp, getEntitySafety)
                     .getResultData().getEntitySafety();
             Safety safety = new Safety();
-            return tools.getInforFieldTools().transformInforObject(safety, inforSafety, context);
+            return tools.getEAMFieldTools().transformEAMObject(safety, eamSafety, context);
         } else if(isWorkOrder(entityType)) {
             MP7983_GetWorkSafety_001 getWorkSafety = new MP7983_GetWorkSafety_001();
             getWorkSafety.setSAFETYCODE(safetyCode);
-            WorkSafety workSafety = tools.performInforOperation(context, inforws::getWorkSafetyOp, getWorkSafety)
+            WorkSafety workSafety = tools.performEAMOperation(context, eamws::getWorkSafetyOp, getWorkSafety)
                     .getResultData().getWorkSafety();
             Safety safety = new Safety();
-            return tools.getInforFieldTools().transformInforObject(safety, workSafety, context);
+            return tools.getEAMFieldTools().transformEAMObject(safety, workSafety, context);
         } else {
             throw Tools.generateFault("Invalid entityType");
         }
     }
 
-    private String getFullEntityCode(InforContext context, String entityType, String entityCode) {
+    private String getFullEntityCode(EAMContext context, String entityType, String entityCode) {
         String extension = isObject(entityType) ? "#" + tools.getOrganizationCode(context) : "";
         return entityCode + extension;
     }
 
     private EntitySafety transformToEntitySafety(
-            InforContext context,
+            EAMContext context,
             String entityType,
             String entityCode,
             Safety safety,
             EntitySafety original
-    ) throws InforException {
+    ) throws EAMException {
 
-        EntitySafety entitySafetyInfor = original == null ? new EntitySafety() : original;
-        tools.getInforFieldTools().transformWSHubObject(entitySafetyInfor, safety, context);
+        EntitySafety entitySafetyEAM = original == null ? new EntitySafety() : original;
+        tools.getEAMFieldTools().transformWSHubObject(entitySafetyEAM, safety, context);
 
         if (safety.getId() == null) {
-            entitySafetyInfor.setSAFETYCODE("0");
+            entitySafetyEAM.setSAFETYCODE("0");
         }
 
-        entitySafetyInfor.setENTITY(entityType);
-        entitySafetyInfor.setENTITYSAFETYCODE(getFullEntityCode(context, entityType, entityCode));
-        entitySafetyInfor.getHAZARDID().setREVISIONNUM(getRevisionQUANTITY(
-                context, safety, entitySafetyInfor.getHAZARDID().getREVISIONNUM(), true));
-        entitySafetyInfor.getPRECAUTIONID().setREVISIONNUM(getRevisionQUANTITY(
-                context, safety, entitySafetyInfor.getPRECAUTIONID().getREVISIONNUM(), false));
+        entitySafetyEAM.setENTITY(entityType);
+        entitySafetyEAM.setENTITYSAFETYCODE(getFullEntityCode(context, entityType, entityCode));
+        entitySafetyEAM.getHAZARDID().setREVISIONNUM(getRevisionQUANTITY(
+                context, safety, entitySafetyEAM.getHAZARDID().getREVISIONNUM(), true));
+        entitySafetyEAM.getPRECAUTIONID().setREVISIONNUM(getRevisionQUANTITY(
+                context, safety, entitySafetyEAM.getPRECAUTIONID().getREVISIONNUM(), false));
 
-        return entitySafetyInfor;
+        return entitySafetyEAM;
     }
 
     private WorkSafety transformToWorkSafety(
-            InforContext context,
+            EAMContext context,
             String entityType,
             String entityCode,
             Safety safety,
             WorkSafety original
-    ) throws InforException {
+    ) throws EAMException {
 
-        WorkSafety workSafetyInfor = original == null ? new WorkSafety() : original;
-        tools.getInforFieldTools().transformWSHubObject(workSafetyInfor, safety, context);
+        WorkSafety workSafetyEAM = original == null ? new WorkSafety() : original;
+        tools.getEAMFieldTools().transformWSHubObject(workSafetyEAM, safety, context);
 
         if (safety.getId() == null) {
-            workSafetyInfor.setSAFETYCODE("0");
+            workSafetyEAM.setSAFETYCODE("0");
         }
 
-        workSafetyInfor.setENTITY(entityType);
-        workSafetyInfor.setENTITYSAFETYCODE(getFullEntityCode(context, entityType, entityCode));
-        workSafetyInfor.getHAZARDID().setREVISIONNUM(getRevisionQUANTITY(
-                context, safety, workSafetyInfor.getHAZARDID().getREVISIONNUM(), true));
-        workSafetyInfor.getPRECAUTIONID().setREVISIONNUM(getRevisionQUANTITY(
-                context, safety, workSafetyInfor.getPRECAUTIONID().getREVISIONNUM(), false));
+        workSafetyEAM.setENTITY(entityType);
+        workSafetyEAM.setENTITYSAFETYCODE(getFullEntityCode(context, entityType, entityCode));
+        workSafetyEAM.getHAZARDID().setREVISIONNUM(getRevisionQUANTITY(
+                context, safety, workSafetyEAM.getHAZARDID().getREVISIONNUM(), true));
+        workSafetyEAM.getPRECAUTIONID().setREVISIONNUM(getRevisionQUANTITY(
+                context, safety, workSafetyEAM.getPRECAUTIONID().getREVISIONNUM(), false));
 
-        return workSafetyInfor;
+        return workSafetyEAM;
     }
 
-    private void addSafety(InforContext context, String entityType, String entityCode, Safety safety)
-            throws InforException {
+    private void addSafety(EAMContext context, String entityType, String entityCode, Safety safety)
+            throws EAMException {
         if (isObject(entityType)) {
-            EntitySafety entitySafetyInfor = transformToEntitySafety(context, entityType, entityCode, safety, null);
-            entitySafetyInfor.setSAFETYCODE("0"); // Safety code must be set (Infor will assign value later)
+            EntitySafety entitySafetyEAM = transformToEntitySafety(context, entityType, entityCode, safety, null);
+            entitySafetyEAM.setSAFETYCODE("0"); // Safety code must be set (EAM will assign value later)
 
             MP3219_AddEntitySafety_001 addEntitySafety = new MP3219_AddEntitySafety_001();
-            addEntitySafety.getEntitySafety().add(entitySafetyInfor);
+            addEntitySafety.getEntitySafety().add(entitySafetyEAM);
 
-            tools.performInforOperation(context, inforws::addEntitySafetyOp, addEntitySafety);
+            tools.performEAMOperation(context, eamws::addEntitySafetyOp, addEntitySafety);
         } else if(isWorkOrder(entityType)) {
-            WorkSafety workSafetyInfor = transformToWorkSafety(context, entityType, entityCode, safety, null);
-            workSafetyInfor.setSAFETYCODE("0"); // Safety code must be set (Infor will assign value later)
+            WorkSafety workSafetyEAM = transformToWorkSafety(context, entityType, entityCode, safety, null);
+            workSafetyEAM.setSAFETYCODE("0"); // Safety code must be set (EAM will assign value later)
 
             MP7984_AddWorkSafety_001 addWorkSafety_001 = new MP7984_AddWorkSafety_001();
-            addWorkSafety_001.getWorkSafety().add(workSafetyInfor);
+            addWorkSafety_001.getWorkSafety().add(workSafetyEAM);
 
-            tools.performInforOperation(context, inforws::addWorkSafetyOp, addWorkSafety_001);
+            tools.performEAMOperation(context, eamws::addWorkSafetyOp, addWorkSafety_001);
         } else {
             throw Tools.generateFault("Invalid entityType");
         }
     }
 
-    private void removeSafety(InforContext context, String entityType, String safetyId) throws InforException {
+    private void removeSafety(EAMContext context, String entityType, String safetyId) throws EAMException {
         if (isObject(entityType)) {
             MP3221_DeleteEntitySafety_001 deleteEntitySafety = new MP3221_DeleteEntitySafety_001();
             deleteEntitySafety.setSAFETYCODE(safetyId);
-            tools.performInforOperation(context, inforws::deleteEntitySafetyOp, deleteEntitySafety);
+            tools.performEAMOperation(context, eamws::deleteEntitySafetyOp, deleteEntitySafety);
         } else if (isWorkOrder(entityType)) {
             MP7986_DeleteWorkSafety_001 deleteWorkSafety = new MP7986_DeleteWorkSafety_001();
             deleteWorkSafety.setSAFETYCODE(safetyId);
-            tools.performInforOperation(context, inforws::deleteWorkSafetyOp, deleteWorkSafety);
+            tools.performEAMOperation(context, eamws::deleteWorkSafetyOp, deleteWorkSafety);
         } else {
             throw Tools.generateFault("Invalid entityType");
         }
     }
 
-    private void syncSafety(InforContext context, String entityType, String entityCode, Safety safety)
-            throws InforException {
+    private void syncSafety(EAMContext context, String entityType, String entityCode, Safety safety)
+            throws EAMException {
         if (isObject(entityType)) {
             MP3222_GetEntitySafety_001 getEntitySafety = new MP3222_GetEntitySafety_001();
             getEntitySafety.setSAFETYCODE(safety.getId());
-            EntitySafety previousSafety = tools.performInforOperation(
-                    context, inforws::getEntitySafetyOp, getEntitySafety
+            EntitySafety previousSafety = tools.performEAMOperation(
+                    context, eamws::getEntitySafetyOp, getEntitySafety
             ).getResultData().getEntitySafety();
 
-            EntitySafety entitySafetyInfor =
+            EntitySafety entitySafetyEAM =
                     transformToEntitySafety(context, entityType, entityCode, safety, previousSafety);
             MP3220_SyncEntitySafety_001 syncEntitySafety = new MP3220_SyncEntitySafety_001();
-            syncEntitySafety.setEntitySafety(entitySafetyInfor);
-            tools.performInforOperation(context, inforws::syncEntitySafetyOp, syncEntitySafety);
+            syncEntitySafety.setEntitySafety(entitySafetyEAM);
+            tools.performEAMOperation(context, eamws::syncEntitySafetyOp, syncEntitySafety);
         } else if(isWorkOrder(entityType)) {
             MP7983_GetWorkSafety_001 getWorkSafety = new MP7983_GetWorkSafety_001();
             getWorkSafety.setSAFETYCODE(safety.getId());
-            WorkSafety previousSafety = tools.performInforOperation(
-                    context, inforws::getWorkSafetyOp, getWorkSafety
+            WorkSafety previousSafety = tools.performEAMOperation(
+                    context, eamws::getWorkSafetyOp, getWorkSafety
             ).getResultData().getWorkSafety();
 
-            WorkSafety workSafetyInfor =
+            WorkSafety workSafetyEAM =
                     transformToWorkSafety(context, entityType, entityCode, safety, previousSafety);
 
             MP7985_SyncWorkSafety_001 syncWorkSafety = new MP7985_SyncWorkSafety_001();
-            syncWorkSafety.setWorkSafety(workSafetyInfor);
-            tools.performInforOperation(context, inforws::syncWorkSafetyOp, syncWorkSafety);
+            syncWorkSafety.setWorkSafety(workSafetyEAM);
+            tools.performEAMOperation(context, eamws::syncWorkSafetyOp, syncWorkSafety);
         } else {
             throw Tools.generateFault("Invalid entityType");
         }
     }
 
     private QUANTITY getRevisionQUANTITY(
-            InforContext context,
+            EAMContext context,
             Safety safety,
             QUANTITY oldQuantity,
-            boolean isHazard) throws InforException {
+            boolean isHazard) throws EAMException {
 
         String id = isHazard ? safety.getHazardCode() : safety.getPrecautionCode();
         String label = isHazard ? "Hazard Code" : "Precaution Code";
@@ -290,7 +290,7 @@ public class SafetyServiceImpl implements SafetyService {
                 : oldQuantity;
     }
 
-    private BigDecimal getLatestRevision(InforContext context, String id, boolean isHazard) throws InforException {
+    private BigDecimal getLatestRevision(EAMContext context, String id, boolean isHazard) throws EAMException {
         if (id == null) {
             throw Tools.generateFault(isHazard ? "Hazard Code is null" : "Precaution Code is null");
         }

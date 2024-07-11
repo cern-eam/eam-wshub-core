@@ -2,7 +2,7 @@ package ch.cern.eam.wshub.core.services.documents.entities;
 
 import java.io.Serializable;
 
-public class InforDocEntityPK implements Serializable {
+public class EAMDocEntityPK implements Serializable {
 	private static final long serialVersionUID = -4636805288760053482L;
 
 	private String document;
@@ -46,7 +46,7 @@ public class InforDocEntityPK implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		InforDocEntityPK other = (InforDocEntityPK) obj;
+		EAMDocEntityPK other = (EAMDocEntityPK) obj;
 		if (code == null) {
 			if (other.code != null)
 				return false;

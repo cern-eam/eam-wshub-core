@@ -5,7 +5,7 @@ import ch.cern.eam.wshub.core.adapters.BigIntegerAdapter;
 import ch.cern.eam.wshub.core.adapters.BooleanAdapter;
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
 import ch.cern.eam.wshub.core.annotations.BooleanType;
-import ch.cern.eam.wshub.core.annotations.InforField;
+import ch.cern.eam.wshub.core.annotations.EAMField;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.UserDefinedListHelpable;
@@ -13,12 +13,12 @@ import ch.cern.eam.wshub.core.services.userdefinedscreens.entities.UDLValue;
 import ch.cern.eam.wshub.core.services.userdefinedscreens.entities.xmlhashmap.XmlHashMapAdapter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElementWrapper;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -34,193 +34,193 @@ public class WorkOrder implements Serializable, UserDefinedListHelpable {
 	private static final long serialVersionUID = -2035481937868647264L;
 	@Column(name = "EVT_CODE")
 	@Id
-	@InforField(xpath = "WORKORDERID/JOBNUM")
+	@EAMField(xpath = "WORKORDERID/JOBNUM")
 	private String number;
 	@Column(name = "EVT_DESC")
-	@InforField(xpath = "WORKORDERID/DESCRIPTION")
+	@EAMField(xpath = "WORKORDERID/DESCRIPTION")
 	private String description;
 	@Column(name = "EVT_ORG")
-	@InforField(xpath = "WORKORDERID/ORGANIZATIONID/ORGANIZATIONCODE")
+	@EAMField(xpath = "WORKORDERID/ORGANIZATIONID/ORGANIZATIONCODE")
 	private String organization;
 	@Transient
-	@InforField(xpath = "CLASSID/CLASSCODE", nullifyParentLevel = 1)
+	@EAMField(xpath = "CLASSID/CLASSCODE", nullifyParentLevel = 1)
 	private String classCode;
 	@Transient
-	@InforField(xpath = "CLASSID/DESCRIPTION", readOnly = true)
+	@EAMField(xpath = "CLASSID/DESCRIPTION", readOnly = true)
 	private String classDesc;
 	@Transient
-	@InforField(xpath = "CLASSID/ORGANIZATIONID/ORGANIZATIONCODE")
+	@EAMField(xpath = "CLASSID/ORGANIZATIONID/ORGANIZATIONCODE")
 	private String classOrganization;
 	@Transient
-	@InforField(xpath = "recordid")
+	@EAMField(xpath = "recordid")
 	private BigInteger updateCount;
 	@Transient
 	private String eventType;
 	//
 	@Column(name = "EVT_STATUS")
-	@InforField(xpath = "STATUS/STATUSCODE")
+	@EAMField(xpath = "STATUS/STATUSCODE")
 	private String statusCode;
 	@Transient
-	@InforField(xpath = "STATUS/DESCRIPTION", readOnly = true)
+	@EAMField(xpath = "STATUS/DESCRIPTION", readOnly = true)
 	private String statusDesc;
 
 	@Transient
 	private String systemStatusCode;
 	//
 	@Transient
-	@InforField(xpath = "TYPE/TYPECODE")
+	@EAMField(xpath = "TYPE/TYPECODE")
 	private String typeCode;
 	@Transient
-	@InforField(xpath = "TYPE/DESCRIPTION", readOnly = true)
+	@EAMField(xpath = "TYPE/DESCRIPTION", readOnly = true)
 	private String typeDesc;
 	//
 	@Column(name = "EVT_MRC")
-	@InforField(xpath = "DEPARTMENTID/DEPARTMENTCODE")
+	@EAMField(xpath = "DEPARTMENTID/DEPARTMENTCODE")
 	private String departmentCode;
 	@Transient
-	@InforField(xpath = "DEPARTMENTID/DESCRIPTION", readOnly = true)
+	@EAMField(xpath = "DEPARTMENTID/DESCRIPTION", readOnly = true)
 	private String departmentDesc;
 	@Transient
-	@InforField(xpath = "DEPARTMENTID/ORGANIZATIONID/ORGANIZATIONCODE")
+	@EAMField(xpath = "DEPARTMENTID/ORGANIZATIONID/ORGANIZATIONCODE")
 	private String departmentOrganization;
 	//
 	@Column(name = "EVT_OBJECT")
-	@InforField(xpath = "EQUIPMENTID/EQUIPMENTCODE")
+	@EAMField(xpath = "EQUIPMENTID/EQUIPMENTCODE")
 	private String equipmentCode;
 	@Transient
-	@InforField(xpath = "EQUIPMENTID/DESCRIPTION", readOnly = true)
+	@EAMField(xpath = "EQUIPMENTID/DESCRIPTION", readOnly = true)
 	private String equipmentDesc;
 	@Column(name = "EVT_OBJECT_ORG")
-	@InforField(xpath = "EQUIPMENTID/ORGANIZATIONID/ORGANIZATIONCODE")
+	@EAMField(xpath = "EQUIPMENTID/ORGANIZATIONID/ORGANIZATIONCODE")
 	private String equipmentOrganization;
 	//
 	@Transient
-	@InforField(xpath = "PROJECTID/PROJECTCODE")
+	@EAMField(xpath = "PROJECTID/PROJECTCODE")
 	private String projectCode;
 	@Transient
-	@InforField(xpath = "PROJECTID/DESCRIPTION", readOnly = true)
+	@EAMField(xpath = "PROJECTID/DESCRIPTION", readOnly = true)
 	private String projectDesc;
 	@Transient
-	@InforField(xpath = "PROJBUD")
+	@EAMField(xpath = "PROJBUD")
 	private String projectBudget;
 	//
 	@Transient
-	@InforField(xpath = "LOCATIONID/LOCATIONCODE")
+	@EAMField(xpath = "LOCATIONID/LOCATIONCODE")
 	private String locationCode;
 	@Transient
-	@InforField(xpath = "LOCATIONID/DESCRIPTION", readOnly = true)
+	@EAMField(xpath = "LOCATIONID/DESCRIPTION", readOnly = true)
 	private String locationDesc;
 	@Transient
-	@InforField(xpath = "LOCATIONID/ORGANIZATIONID/ORGANIZATIONCODE", nullifyParentLevel = 2)
+	@EAMField(xpath = "LOCATIONID/ORGANIZATIONID/ORGANIZATIONCODE", nullifyParentLevel = 2)
 	private String locationOrganization;
 	//
 	@Transient
-	@InforField(xpath = "PRIORITY/PRIORITYCODE")
+	@EAMField(xpath = "PRIORITY/PRIORITYCODE")
 	private String priorityCode;
 	@Transient
-	@InforField(xpath = "PRIORITY/DESCRIPTION", readOnly = true)
+	@EAMField(xpath = "PRIORITY/DESCRIPTION", readOnly = true)
 	private String priorityDesc;
 	//
 	@Transient
-	@InforField(xpath = "USERDEFINEDAREA")
+	@EAMField(xpath = "USERDEFINEDAREA")
 	private CustomField[] customFields;
 	//
 	@Transient
-	@InforField(xpath = "REPORTED")
+	@EAMField(xpath = "REPORTED")
 	private Date reportedDate;
 	@Transient
-	@InforField(xpath = "REQUESTEDEND")
+	@EAMField(xpath = "REQUESTEDEND")
 	private Date requestedEndDate;
 	@Transient
-	@InforField(xpath = "REQUESTEDSTART")
+	@EAMField(xpath = "REQUESTEDSTART")
 	private Date requestedStartDate;
 	@Transient
-	@InforField(xpath = "TARGETDATE")
+	@EAMField(xpath = "TARGETDATE")
 	private Date scheduledStartDate; // target date
 	@Transient
-	@InforField(xpath = "SCHEDEND")
+	@EAMField(xpath = "SCHEDEND")
 	private Date scheduledEndDate;
 	@Transient
-	@InforField(xpath = "STARTDATE")
+	@EAMField(xpath = "STARTDATE")
 	private Date startDate;
 	@Transient
-	@InforField(xpath = "COMPLETEDDATE")
+	@EAMField(xpath = "COMPLETEDDATE")
 	private Date completedDate;
 	@Transient
-	@InforField(xpath = "DUEDATE")
+	@EAMField(xpath = "DUEDATE")
 	private Date dueDate;
 	@Transient
-	@InforField(xpath = "CREATEDDATE")
+	@EAMField(xpath = "CREATEDDATE")
 	private Date createdDate;
 	@Column(name = "EVT_CREATEDBY")
-	@InforField(xpath = "CREATEDBY/USERCODE")
+	@EAMField(xpath = "CREATEDBY/USERCODE")
 	private String createdBy;
 	@Transient
-	@InforField(xpath = "CREATEDBY/DESCRIPTION", readOnly = true)
+	@EAMField(xpath = "CREATEDBY/DESCRIPTION", readOnly = true)
 	private String createdByDesc;
 
 	@Transient
-	@InforField(xpath = "PROBLEMCODEID/PROBLEMCODE")
+	@EAMField(xpath = "PROBLEMCODEID/PROBLEMCODE")
 	private String problemCode;
 	@Transient
-	@InforField(xpath = "FAILURECODEID/FAILURECODE")
+	@EAMField(xpath = "FAILURECODEID/FAILURECODE")
 	private String failureCode;
 	@Transient
-	@InforField(xpath = "CAUSECODEID/CAUSECODE")
+	@EAMField(xpath = "CAUSECODEID/CAUSECODE")
 	private String causeCode;
 	@Transient
-	@InforField(xpath = "ACTIONCODEID/ACTIONCODE")
+	@EAMField(xpath = "ACTIONCODEID/ACTIONCODE")
 	private String actionCode;
 	@Transient
-	@InforField(xpath = "COSTCODEID/COSTCODE")
+	@EAMField(xpath = "COSTCODEID/COSTCODE")
 	private String costCode;
 	@Transient
-	@InforField(xpath = "COSTCODEID/DESCRIPTION", readOnly = true)
+	@EAMField(xpath = "COSTCODEID/DESCRIPTION", readOnly = true)
 	private String costCodeDesc;
 
 	@Transient
-	@InforField(xpath = "SCHEDGROUP")
+	@EAMField(xpath = "SCHEDGROUP")
 	private String assignedBy; // schedgroup
 	@Transient
-	@InforField(xpath = "REQUESTEDBY/PERSONCODE")
+	@EAMField(xpath = "REQUESTEDBY/PERSONCODE")
 	private String reportedBy; // requested by
 	@Transient
-	@InforField(xpath = "REQUESTEDBY/DESCRIPTION", readOnly = true)
+	@EAMField(xpath = "REQUESTEDBY/DESCRIPTION", readOnly = true)
 	private String reportedByDesc;
 	@Transient
-	@InforField(xpath = "ASSIGNEDTO/PERSONCODE")
+	@EAMField(xpath = "ASSIGNEDTO/PERSONCODE")
 	private String assignedTo;
 	@Transient
-	@InforField(xpath = "ASSIGNEDTO/DESCRIPTION", readOnly = true)
+	@EAMField(xpath = "ASSIGNEDTO/DESCRIPTION", readOnly = true)
 	private String assignedToDesc;
 	@Transient
-	@InforField(xpath = "STANDARDWO/STDWOCODE")
+	@EAMField(xpath = "STANDARDWO/STDWOCODE")
 	private String standardWO;
 	@Transient
-	@InforField(xpath = "STANDARDWO/DESCRIPTION", readOnly = true)
+	@EAMField(xpath = "STANDARDWO/DESCRIPTION", readOnly = true)
 	private String standardWODesc;
 	@Transient
-	@InforField(xpath = "PARENTWO/JOBNUM")
+	@EAMField(xpath = "PARENTWO/JOBNUM")
 	private String parentWO;
 	@Transient
-	@InforField(xpath = "PARENTWO/DESCRIPTION", readOnly = true)
+	@EAMField(xpath = "PARENTWO/DESCRIPTION", readOnly = true)
 	private String parentWODesc;
 	@Transient
-	@InforField(xpath = "ROUTE/ROUTECODE")
+	@EAMField(xpath = "ROUTE/ROUTECODE")
 	private String route;
 	@Transient
-	@InforField(xpath = "ROUTE/ROUTEREVISION")
+	@EAMField(xpath = "ROUTE/ROUTEREVISION")
 	private BigInteger routeRevision;
 	@Transient
 	private String comment;
 	@Transient
-	@InforField(xpath = "TARGETVALUE")
+	@EAMField(xpath = "TARGETVALUE")
 	private BigDecimal targetValue;
 	@Transient
-	@InforField(xpath = "DOWNTIMEHOURS")
+	@EAMField(xpath = "DOWNTIMEHOURS")
 	private BigDecimal downtimeHours;
 	@Transient
-	@InforField(xpath = "UserDefinedFields")
+	@EAMField(xpath = "UserDefinedFields")
 	private UserDefinedFields userDefinedFields;
 
 	@Transient
@@ -234,23 +234,23 @@ public class WorkOrder implements Serializable, UserDefinedListHelpable {
 
 
 	@Transient
-	@InforField(xpath = "BILLABLE", booleanType = BooleanType.PLUS_MINUS)
+	@EAMField(xpath = "BILLABLE", booleanType = BooleanType.PLUS_MINUS)
 	private Boolean billable;
 
 	@Transient
-	@InforField(xpath = "DEPEND", booleanType = BooleanType.TRUE_FALSE)
+	@EAMField(xpath = "DEPEND", booleanType = BooleanType.TRUE_FALSE)
 	private Boolean depend;
 
 	@Transient
-	@InforField(xpath = "EVTISSTYPE")
+	@EAMField(xpath = "EVTISSTYPE")
 	private String issType;
 
 	@Transient
-	@InforField(xpath = "WARRANTY", booleanType = BooleanType.TRUE_FALSE)
+	@EAMField(xpath = "WARRANTY", booleanType = BooleanType.TRUE_FALSE)
 	private Boolean warranty;
 
 	@Transient
-	@InforField(xpath = "VENDOR")
+	@EAMField(xpath = "VENDOR")
 	private String vendor;
 
 	@Transient

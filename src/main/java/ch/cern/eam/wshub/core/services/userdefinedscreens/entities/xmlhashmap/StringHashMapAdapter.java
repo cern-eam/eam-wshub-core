@@ -1,6 +1,6 @@
 package ch.cern.eam.wshub.core.services.userdefinedscreens.entities.xmlhashmap;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 import java.util.*;
 
 public class StringHashMapAdapter extends XmlAdapter<StringHashMap, HashMap<String, String>> {

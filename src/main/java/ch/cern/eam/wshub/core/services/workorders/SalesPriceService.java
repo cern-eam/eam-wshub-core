@@ -1,14 +1,14 @@
 package ch.cern.eam.wshub.core.services.workorders;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.workorders.entities.SalesPrice;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 
 public interface SalesPriceService {
 
-    String createSalesPrice(InforContext context, SalesPrice salesPrice) throws InforException;
+    String createSalesPrice(EAMContext context, SalesPrice salesPrice) throws EAMException;
 
-    String updateSalesPrice(InforContext context, SalesPrice salesPrice) throws InforException;
+    String updateSalesPrice(EAMContext context, SalesPrice salesPrice) throws EAMException;
 
 
 }

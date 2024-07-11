@@ -1,11 +1,11 @@
 package ch.cern.eam.wshub.core.services.material.entities;
 
-import ch.cern.eam.wshub.core.annotations.InforField;
+import ch.cern.eam.wshub.core.annotations.EAMField;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -14,36 +14,36 @@ import java.math.BigInteger;
 public class PhysicalInventoryRow {
     @Id
     @Column(name = "STL_TRANS")
-    @InforField(xpath = "TRANSACTIONLINEID/TRANSACTIONID/TRANSACTIONCODE")
+    @EAMField(xpath = "TRANSACTIONLINEID/TRANSACTIONID/TRANSACTIONCODE")
     String physicalInventoryCode;
 
     @Id
     @Column(name = "STL_LINE")
-    @InforField(xpath = "TRANSACTIONLINEID/TRANSACTIONLINENUM")
+    @EAMField(xpath = "TRANSACTIONLINEID/TRANSACTIONLINENUM")
     BigInteger lineNumber;
 
     @Column(name = "STL_PART")
-    @InforField(xpath = "PARTID/PARTCODE")
+    @EAMField(xpath = "PARTID/PARTCODE")
     String part;
 
     @Column(name = "STL_STORE")
-    @InforField(xpath = "STOREID/STORECODE")
+    @EAMField(xpath = "STOREID/STORECODE")
     String store;
 
     @Column(name = "STL_BIN")
-    @InforField(xpath = "BIN")
+    @EAMField(xpath = "BIN")
     String bin;
 
     @Column(name = "STL_LOT")
-    @InforField(xpath = "LOT")
+    @EAMField(xpath = "LOT")
     String lot;
 
     @Column(name = "STL_EXPQTY")
-    @InforField(xpath = "EXPECTEDQUANTITY")
+    @EAMField(xpath = "EXPECTEDQUANTITY")
     BigDecimal expectedQuantity;
 
     @Column(name = "STL_PHYQTY")
-    @InforField(xpath = "PHYSICALQUANTITY")
+    @EAMField(xpath = "PHYSICALQUANTITY")
     BigDecimal physicalQuantity;
 
     // Field missing: description

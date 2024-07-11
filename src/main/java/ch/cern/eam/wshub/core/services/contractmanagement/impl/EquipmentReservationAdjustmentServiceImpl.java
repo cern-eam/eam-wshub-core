@@ -1,12 +1,12 @@
 package ch.cern.eam.wshub.core.services.contractmanagement.impl;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.contractmanagement.EquipmentReservationAdjustmentService;
 import ch.cern.eam.wshub.core.services.contractmanagement.entities.EquipmentReservationAdjustment;
 import ch.cern.eam.wshub.core.services.equipment.EquipmentReservationService;
 import ch.cern.eam.wshub.core.services.equipment.impl.EquipmentReservationServiceImpl;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_entities.customerrentaladjustment_001.CustomerRentalAdjustment;
 import net.datastream.schemas.mp_fields.CUSTOMERRENTALADJUSTMENTID_Type;
@@ -20,7 +20,7 @@ import net.datastream.schemas.mp_results.mp7863_001.MP7863_GetCustomerRentalAdju
 import net.datastream.schemas.mp_results.mp7864_001.MP7864_AddCustomerRentalAdjustment_001_Result;
 import net.datastream.schemas.mp_results.mp7865_001.MP7865_SyncCustomerRentalAdjustment_001_Result;
 import net.datastream.schemas.mp_results.mp7866_001.MP7866_DeleteCustomerRentalAdjustment_001_Result;
-import net.datastream.wsdls.inforws.InforWebServicesPT;
+import net.datastream.wsdls.eamws.EAMWebServicesPT;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -29,26 +29,26 @@ import java.util.Objects;
 
 public class EquipmentReservationAdjustmentServiceImpl implements EquipmentReservationAdjustmentService {
     private final Tools tools;
-    private final InforWebServicesPT inforws;
+    private final EAMWebServicesPT eamws;
     private ApplicationData applicationData;
 
     private EquipmentReservationService equipmentReservationService;
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-    public EquipmentReservationAdjustmentServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
+    public EquipmentReservationAdjustmentServiceImpl(ApplicationData applicationData, Tools tools, EAMWebServicesPT eamWebServicesToolkitClient) {
         this.applicationData = applicationData;
         this.tools = tools;
-        this.inforws = inforWebServicesToolkitClient;
-        this.equipmentReservationService = new EquipmentReservationServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
+        this.eamws = eamWebServicesToolkitClient;
+        this.equipmentReservationService = new EquipmentReservationServiceImpl(applicationData, tools, eamWebServicesToolkitClient);
     }
 
     @Override
-    public String createEquipmentReservationAdjustment(InforContext context, EquipmentReservationAdjustment equipmentReservationAdjustment) throws InforException {
+    public String createEquipmentReservationAdjustment(EAMContext context, EquipmentReservationAdjustment equipmentReservationAdjustment) throws EAMException {
         MP7864_AddCustomerRentalAdjustment_001 addCustomerRentalAdjustment = new MP7864_AddCustomerRentalAdjustment_001();
-        CustomerRentalAdjustment customerRentalAdjustment = tools.getInforFieldTools().transformWSHubObject(createDefaultEquipmentReservationAdjustment(), equipmentReservationAdjustment, context);
+        CustomerRentalAdjustment customerRentalAdjustment = tools.getEAMFieldTools().transformWSHubObject(createDefaultEquipmentReservationAdjustment(), equipmentReservationAdjustment, context);
         addCustomerRentalAdjustment.setCustomerRentalAdjustment(customerRentalAdjustment);
-        MP7864_AddCustomerRentalAdjustment_001_Result addOperationResult = tools.performInforOperation(context, inforws::addCustomerRentalAdjustmentOp, addCustomerRentalAdjustment);
+        MP7864_AddCustomerRentalAdjustment_001_Result addOperationResult = tools.performEAMOperation(context, eamws::addCustomerRentalAdjustmentOp, addCustomerRentalAdjustment);
 
         // Since EAM always returns a 0 as the primary key of the created Equipment Reservation Adjustment, we have to use an alternative method to retrieve it
         // The solution might return incorrect results if multiple clients are creating requests at the same time, but it's still
@@ -61,43 +61,43 @@ public class EquipmentReservationAdjustmentServiceImpl implements EquipmentReser
                 || !Objects.equals(s.getAdjustmentCode(), equipmentReservationAdjustment.getAdjustmentCode())
             );
         if (equipmentReservationAdjustments.isEmpty()) {
-            throw new InforException("Could not retrieve Equipment Reservation Adjustment id.", null, null);
+            throw new EAMException("Could not retrieve Equipment Reservation Adjustment id.", null, null);
         }
         return equipmentReservationAdjustments.get(0).getCode();
     }
 
     @Override
-    public EquipmentReservationAdjustment readEquipmentReservationAdjustment(InforContext context, String number) throws InforException {
+    public EquipmentReservationAdjustment readEquipmentReservationAdjustment(EAMContext context, String number) throws EAMException {
         CustomerRentalAdjustment customerRentalAdjustment = readCustomerRentalAdjustment(context, number);
-        return tools.getInforFieldTools().transformInforObject(new EquipmentReservationAdjustment(), customerRentalAdjustment, context);
+        return tools.getEAMFieldTools().transformEAMObject(new EquipmentReservationAdjustment(), customerRentalAdjustment, context);
     }
 
     @Override
-    public String updateEquipmentReservationAdjustment(InforContext context, EquipmentReservationAdjustment equipmentReservationAdjustment) throws InforException {
+    public String updateEquipmentReservationAdjustment(EAMContext context, EquipmentReservationAdjustment equipmentReservationAdjustment) throws EAMException {
         MP7865_SyncCustomerRentalAdjustment_001 syncCustomerRentalAdjustment = new MP7865_SyncCustomerRentalAdjustment_001();
         CustomerRentalAdjustment prevCustomerRentalAdjustment = readCustomerRentalAdjustment(context, equipmentReservationAdjustment.getCode());
-        CustomerRentalAdjustment newCustomerRentalAdjustment = tools.getInforFieldTools().transformWSHubObject(prevCustomerRentalAdjustment, equipmentReservationAdjustment, context);
+        CustomerRentalAdjustment newCustomerRentalAdjustment = tools.getEAMFieldTools().transformWSHubObject(prevCustomerRentalAdjustment, equipmentReservationAdjustment, context);
         syncCustomerRentalAdjustment.setCustomerRentalAdjustment(newCustomerRentalAdjustment);
-        MP7865_SyncCustomerRentalAdjustment_001_Result updateOperationResult = tools.performInforOperation(context, inforws::syncCustomerRentalAdjustmentOp, syncCustomerRentalAdjustment);
+        MP7865_SyncCustomerRentalAdjustment_001_Result updateOperationResult = tools.performEAMOperation(context, eamws::syncCustomerRentalAdjustmentOp, syncCustomerRentalAdjustment);
         return updateOperationResult.getResultData().getCUSTOMERRENTALADJUSTMENTID().getCUSTOMERRENTALADJUSTMENTPK();
     }
 
     @Override
-    public String deleteEquipmentReservationAdjustment(InforContext context, String number) throws InforException {
+    public String deleteEquipmentReservationAdjustment(EAMContext context, String number) throws EAMException {
         MP7866_DeleteCustomerRentalAdjustment_001 deleteCustomerRentalAdjustment = new MP7866_DeleteCustomerRentalAdjustment_001();
         CUSTOMERRENTALADJUSTMENTID_Type idType = new CUSTOMERRENTALADJUSTMENTID_Type();
         idType.setCUSTOMERRENTALADJUSTMENTPK(number);
         deleteCustomerRentalAdjustment.setCUSTOMERRENTALADJUSTMENTID(idType);
-        MP7866_DeleteCustomerRentalAdjustment_001_Result deleteOperationResult = tools.performInforOperation(context, inforws::deleteCustomerRentalAdjustmentOp, deleteCustomerRentalAdjustment);
+        MP7866_DeleteCustomerRentalAdjustment_001_Result deleteOperationResult = tools.performEAMOperation(context, eamws::deleteCustomerRentalAdjustmentOp, deleteCustomerRentalAdjustment);
         return deleteOperationResult.getResultData().getCUSTOMERRENTALADJUSTMENTID().getCUSTOMERRENTALADJUSTMENTPK();
     }
 
-    private CustomerRentalAdjustment readCustomerRentalAdjustment(InforContext context, String number) throws InforException {
+    private CustomerRentalAdjustment readCustomerRentalAdjustment(EAMContext context, String number) throws EAMException {
         MP7863_GetCustomerRentalAdjustment_001 getCustomerRentalAdjustment = new MP7863_GetCustomerRentalAdjustment_001();
         CUSTOMERRENTALADJUSTMENTID_Type idType = new CUSTOMERRENTALADJUSTMENTID_Type();
         idType.setCUSTOMERRENTALADJUSTMENTPK(number);
         getCustomerRentalAdjustment.setCUSTOMERRENTALADJUSTMENTID(idType);
-        MP7863_GetCustomerRentalAdjustment_001_Result getOperationResult = tools.performInforOperation(context, inforws::getCustomerRentalAdjustmentOp, getCustomerRentalAdjustment);
+        MP7863_GetCustomerRentalAdjustment_001_Result getOperationResult = tools.performEAMOperation(context, eamws::getCustomerRentalAdjustmentOp, getCustomerRentalAdjustment);
         return getOperationResult.getResultData().getCustomerRentalAdjustment();
     }
 

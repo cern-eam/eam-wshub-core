@@ -3,16 +3,16 @@ package ch.cern.eam.wshub.core.tools;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.logging.Level;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import ch.cern.eam.wshub.core.services.grids.GridsService;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
 import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
-import net.datastream.wsdls.inforws.InforWebServicesPT;
+import net.datastream.wsdls.eamws.EAMWebServicesPT;
 import static ch.cern.eam.wshub.core.tools.GridTools.extractSingleResult;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.isEmpty;
 
@@ -25,27 +25,27 @@ public class FieldDescriptionTools {
 
 	private Tools tools;
 	private ApplicationData applicationData;
-	private InforWebServicesPT inforws;
+	private EAMWebServicesPT eamws;
 	private GridsService gridsService;
 
-	public FieldDescriptionTools(Tools tools, ApplicationData applicationData, InforWebServicesPT inforws) {
+	public FieldDescriptionTools(Tools tools, ApplicationData applicationData, EAMWebServicesPT eamws) {
 		this.tools = tools;
 		this.applicationData = applicationData;
-		this.inforws = inforws;
-		gridsService = new GridsServiceImpl(applicationData, tools, inforws);
+		this.eamws = eamws;
+		gridsService = new GridsServiceImpl(applicationData, tools, eamws);
 
 	}
 
-	private String getDescription(InforContext context, GridRequest gridRequest, String descriptionKey) {
+	private String getDescription(EAMContext context, GridRequest gridRequest, String descriptionKey) {
 		try {
 			return extractSingleResult(gridsService.executeQuery(context, gridRequest), descriptionKey);
-		} catch (InforException inforException ) {
+		} catch (EAMException eamException ) {
 			tools.log(Level.WARNING, "Couldn't fetch description for " + descriptionKey);
 			return null;
 		}
 	}
 
-	public String readPersonDesc(InforContext context, String personCode)  {
+	public String readPersonDesc(EAMContext context, String personCode)  {
 		if (isEmpty(personCode)) {
 			return null;
 		}
@@ -59,7 +59,7 @@ public class FieldDescriptionTools {
 		return getDescription(context, gridRequest, "description");
 	}
 
-	public String readDepartmentDesc(InforContext context, String departmentCode)  {
+	public String readDepartmentDesc(EAMContext context, String departmentCode)  {
 		if (isEmpty(departmentCode)) {
 			return null;
 		}
@@ -70,7 +70,7 @@ public class FieldDescriptionTools {
 		return getDescription(context, gridRequest, "des_text");
 	}
 
-	public String readClassDesc(InforContext context, String entity, String classCode) {
+	public String readClassDesc(EAMContext context, String entity, String classCode) {
 		if (isEmpty(classCode)) {
 			return null;
 		}
@@ -82,78 +82,78 @@ public class FieldDescriptionTools {
 		return getDescription(context, gridRequest, "des_text");
 	}
 
-	public String readUOMDesc(InforContext inforContext, String uomCode) {
+	public String readUOMDesc(EAMContext eamContext, String uomCode) {
 		if (isEmpty(uomCode)) {
 			return null;
 		}
 		GridRequest gridRequest = new GridRequest("LVUOMS", GridRequest.GRIDTYPE.LOV, 1);
 		gridRequest.addFilter("uomcode", uomCode, "=");
 		gridRequest.addParam("param.aspect", "");
-		return getDescription(inforContext, gridRequest, "description");
+		return getDescription(eamContext, gridRequest, "description");
 	}
 
-	public String readCategoryDesc(InforContext inforContext, String categoryCode) {
+	public String readCategoryDesc(EAMContext eamContext, String categoryCode) {
 		if (isEmpty(categoryCode)) {
 			return null;
 		}
 		GridRequest gridRequest = new GridRequest("LVPARTCAT", GridRequest.GRIDTYPE.LOV, 1);
 		gridRequest.addFilter("category", categoryCode, "=");
-		return getDescription(inforContext, gridRequest, "description");
+		return getDescription(eamContext, gridRequest, "description");
 	}
 
-	public String readCommodityDesc(InforContext inforContext, String commodityCode) {
+	public String readCommodityDesc(EAMContext eamContext, String commodityCode) {
 		if (isEmpty(commodityCode)) {
 			return null;
 		}
 		GridRequest gridRequest = new GridRequest("LVCOMM", GridRequest.GRIDTYPE.LOV, 1);
 		gridRequest.addFilter("commoditycode", commodityCode, "=");
-		return getDescription(inforContext, gridRequest, "des_text");
+		return getDescription(eamContext, gridRequest, "des_text");
 	}
 
-	public String readManufacturerDesc(InforContext inforContext, String manufacturerCode) {
+	public String readManufacturerDesc(EAMContext eamContext, String manufacturerCode) {
 		if (isEmpty(manufacturerCode)) {
 			return null;
 		}
 		GridRequest gridRequest = new GridRequest("LVMANU", GridRequest.GRIDTYPE.LOV, 1);
 		gridRequest.addFilter("manufacturercode", manufacturerCode, "=");
-		return getDescription(inforContext, gridRequest, "des_text");
+		return getDescription(eamContext, gridRequest, "des_text");
 	}
 
-	public String readBinDesc(InforContext inforContext, String storeCode, String binCode) {
+	public String readBinDesc(EAMContext eamContext, String storeCode, String binCode) {
 		if (isEmpty(binCode) || isEmpty(storeCode)) {
 			return null;
 		}
 		GridRequest gridRequest = new GridRequest("LVBINALL", GridRequest.GRIDTYPE.LOV, 1);
 		gridRequest.addFilter("code", binCode, "=", GridRequestFilter.JOINER.AND);
 		gridRequest.addFilter("bis_store", storeCode, "=");
-		return getDescription(inforContext, gridRequest, "description");
+		return getDescription(eamContext, gridRequest, "description");
 	}
 
-	public String readCostCodeDesc(InforContext inforContext, String costCode) {
+	public String readCostCodeDesc(EAMContext eamContext, String costCode) {
 		if (isEmpty(costCode)) {
 			return null;
 		}
 		GridRequest gridRequest = new GridRequest("LVCSTC", GridRequest.GRIDTYPE.LOV, 1);
 		gridRequest.addFilter("costcode", costCode, "=");
-		return getDescription(inforContext, gridRequest, "des_text");
+		return getDescription(eamContext, gridRequest, "des_text");
 	}
 
-	public String readUserCodeDesc(InforContext inforContext, String entity, String userCode) {
+	public String readUserCodeDesc(EAMContext eamContext, String entity, String userCode) {
 		if (isEmpty(userCode)) return null;
 		GridRequest gridRequest = new GridRequest("BSUCOD_HDR", GridRequest.GRIDTYPE.LOV, 1);
 		gridRequest.addParam("param.entitycode", entity);
 		gridRequest.setUserFunctionName("BSUCOD");
 		gridRequest.addFilter("usercode", userCode, "EQUALS");
-		return getDescription(inforContext, gridRequest, "usercodedescription");
+		return getDescription(eamContext, gridRequest, "usercodedescription");
 	}
 
-	public String readSystemCodeForUserCode(InforContext inforContext, String entity, String userCode) {
+	public String readSystemCodeForUserCode(EAMContext eamContext, String entity, String userCode) {
 		if (isEmpty(userCode)) return null;
 		GridRequest gridRequest = new GridRequest("BSUCOD_HDR", GridRequest.GRIDTYPE.LOV, 1);
 		gridRequest.addParam("param.entitycode", entity);
 		gridRequest.setUserFunctionName("BSUCOD");
 		gridRequest.addFilter("usercode", userCode, "EQUALS");
-		return getDescription(inforContext, gridRequest, "systemcode");
+		return getDescription(eamContext, gridRequest, "systemcode");
 	}
 
 	/**

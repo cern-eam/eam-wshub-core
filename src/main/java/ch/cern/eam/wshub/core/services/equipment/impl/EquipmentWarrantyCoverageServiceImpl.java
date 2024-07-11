@@ -1,11 +1,11 @@
 package ch.cern.eam.wshub.core.services.equipment.impl;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.equipment.EquipmentWarrantyCoverageService;
 import ch.cern.eam.wshub.core.services.equipment.entities.EquipmentWarranty;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.annotations.BooleanType;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_entities.warrantycoverage_001.CoverageByDate;
 import net.datastream.schemas.mp_fields.EQUIPMENTID_Type;
@@ -17,26 +17,26 @@ import net.datastream.schemas.mp_functions.mp3238_001.MP3238_GetWarrantyCoverage
 import net.datastream.schemas.mp_results.mp0344_001.MP0344_AddWarrantyCoverage_001_Result;
 import net.datastream.schemas.mp_results.mp0345_001.MP0345_SyncWarrantyCoverage_001_Result;
 import net.datastream.schemas.mp_results.mp3238_001.MP3238_GetWarrantyCoverage_001_Result;
-import net.datastream.wsdls.inforws.InforWebServicesPT;
+import net.datastream.wsdls.eamws.EAMWebServicesPT;
 
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import javax.xml.ws.Holder;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+import jakarta.xml.ws.Holder;
 
 public class EquipmentWarrantyCoverageServiceImpl implements EquipmentWarrantyCoverageService {
 
 	private Tools tools;
-	private InforWebServicesPT inforws;
+	private EAMWebServicesPT eamws;
 	private ApplicationData applicationData;
 
-	public EquipmentWarrantyCoverageServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
+	public EquipmentWarrantyCoverageServiceImpl(ApplicationData applicationData, Tools tools, EAMWebServicesPT eamWebServicesToolkitClient) {
 		this.applicationData = applicationData;
 		this.tools = tools;
-		this.inforws = inforWebServicesToolkitClient;
+		this.eamws = eamWebServicesToolkitClient;
 	}
 
 
-	public String createEquipmentWarrantyCoverage(InforContext context, EquipmentWarranty equipmentWarrantyParam) throws InforException {
+	public String createEquipmentWarrantyCoverage(EAMContext context, EquipmentWarranty equipmentWarrantyParam) throws EAMException {
 		//
 		//
 		//
@@ -77,11 +77,11 @@ public class EquipmentWarrantyCoverageServiceImpl implements EquipmentWarrantyCo
 		addwarrantycoverage.setEquipmentWarranty(equipmentWarranty);
 
 		MP0344_AddWarrantyCoverage_001_Result result =
-			tools.performInforOperation(context, inforws::addWarrantyCoverageOp, addwarrantycoverage);
+			tools.performEAMOperation(context, eamws::addWarrantyCoverageOp, addwarrantycoverage);
 		return result.getResultData().getWARRANTYCOVERAGESEQNUM() + "";
 	}
 
-	public String updateEquipmentWarrantyCoverage(InforContext context, EquipmentWarranty equipmentWarrantyParam) throws InforException {
+	public String updateEquipmentWarrantyCoverage(EAMContext context, EquipmentWarranty equipmentWarrantyParam) throws EAMException {
 		//
 		// Get it first
 		//
@@ -107,7 +107,7 @@ public class EquipmentWarrantyCoverageServiceImpl implements EquipmentWarrantyCo
 		getwarrantycoverege.setWARRANTYCOVERAGESEQNUM(Long.parseLong(equipmentWarrantyParam.getSequenceNumber()));
 
 		getwarrantycoveregeResult =
-			tools.performInforOperation(context, inforws::getWarrantyCoverageOp, getwarrantycoverege);
+			tools.performEAMOperation(context, eamws::getWarrantyCoverageOp, getwarrantycoverege);
 		//
 		//
 		//
@@ -145,7 +145,7 @@ public class EquipmentWarrantyCoverageServiceImpl implements EquipmentWarrantyCo
 		syncwarrantycoverege.setWarrantyCoverage(warrantyCoverege);
 
 		MP0345_SyncWarrantyCoverage_001_Result result =
-			tools.performInforOperation(context, inforws::syncWarrantyCoverageOp, syncwarrantycoverege);
+			tools.performEAMOperation(context, eamws::syncWarrantyCoverageOp, syncwarrantycoverege);
 		return result.getResultData().getWARRANTYCOVERAGESEQNUM() + "";
 	}
 

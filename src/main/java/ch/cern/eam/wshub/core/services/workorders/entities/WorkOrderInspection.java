@@ -1,7 +1,7 @@
 package ch.cern.eam.wshub.core.services.workorders.entities;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElementWrapper;
 import java.util.Arrays;
 
 public class WorkOrderInspection {

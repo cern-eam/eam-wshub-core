@@ -3,92 +3,92 @@ package ch.cern.eam.wshub.core.services.workorders.entities;
 import ch.cern.eam.wshub.core.adapters.BigDecimalAdapter;
 import ch.cern.eam.wshub.core.adapters.BigIntegerAdapter;
 import ch.cern.eam.wshub.core.adapters.BooleanAdapter;
-import ch.cern.eam.wshub.core.annotations.InforField;
+import ch.cern.eam.wshub.core.annotations.EAMField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
 public class TaskPlan {
 
-	@InforField(xpath = "TASKLISTID/TASKCODE")
+	@EAMField(xpath = "TASKLISTID/TASKCODE")
 	private String code;
 
-	@InforField(xpath = "TASKLISTID/DESCRIPTION")
+	@EAMField(xpath = "TASKLISTID/DESCRIPTION")
 	private String description;
 
-	@InforField(xpath = "TASKLISTID/TASKREVISION")
+	@EAMField(xpath = "TASKLISTID/TASKREVISION")
 	private BigInteger taskRevision;
 
-	@InforField(xpath = "CHECKLISTPERFORMEDBYREQUIRED")
+	@EAMField(xpath = "CHECKLISTPERFORMEDBYREQUIRED")
 	private Boolean performedByRequired;
 
-	@InforField(xpath = "CHECKLISTREVIEWEDBYREQUIRED")
+	@EAMField(xpath = "CHECKLISTREVIEWEDBYREQUIRED")
 	private Boolean reviewedByRequired;
 
-	@InforField(xpath = "VIEWONLYRESPONSIBILITY/USERDEFINEDCODE")
+	@EAMField(xpath = "VIEWONLYRESPONSIBILITY/USERDEFINEDCODE")
 	private String viewOnlyResponsibility;
 
-	@InforField(xpath = "REVIEWRESPONSIBILITY/USERDEFINEDCODE")
+	@EAMField(xpath = "REVIEWRESPONSIBILITY/USERDEFINEDCODE")
 	private String reviewResponsibility;
 
-	@InforField(xpath = "PERFORMBYRESPONSIBILITY/USERDEFINEDCODE")
+	@EAMField(xpath = "PERFORMBYRESPONSIBILITY/USERDEFINEDCODE")
 	private String performByResponsibility;
 
-	@InforField(xpath = "PERFORMBY2RESPONSIBILITY/USERDEFINEDCODE")
+	@EAMField(xpath = "PERFORMBY2RESPONSIBILITY/USERDEFINEDCODE")
 	private String performBy2Responsibility;
 
-	@InforField(xpath = "ACTIVECHECKLIST")
+	@EAMField(xpath = "ACTIVECHECKLIST")
 	private Boolean activeChecklist;
 
-	@InforField(xpath = "TRADEID/TRADECODE")
+	@EAMField(xpath = "TRADEID/TRADECODE")
 
 	private String tradeCode;
 
-	@InforField(xpath = "CLASSID/CLASSCODE")
+	@EAMField(xpath = "CLASSID/CLASSCODE")
 	private String classCode;
 
-	@InforField(xpath = "HOURSREQUESTED")
+	@EAMField(xpath = "HOURSREQUESTED")
 	private BigDecimal estimatedHours;
 
-	@InforField(xpath = "PERSONS")
+	@EAMField(xpath = "PERSONS")
 	private BigInteger peopleRequired;
 
-	@InforField(xpath = "TASKPLANTYPE")
+	@EAMField(xpath = "TASKPLANTYPE")
 	private String typeCode;
 
-	@InforField(xpath = "STATUS/STATUSCODE")
+	@EAMField(xpath = "STATUS/STATUSCODE")
 	private String revisionStatus;
 
-	@InforField(xpath = "OUTOFSERVICE")
+	@EAMField(xpath = "OUTOFSERVICE")
 	private Boolean outOfService;
 
-	@InforField(xpath = "EQUIPMENTTYPE")
+	@EAMField(xpath = "EQUIPMENTTYPE")
 	private String equipmentType;
 
-	@InforField(xpath = "EQUIPMENTCLASSID/CLASSCODE")
+	@EAMField(xpath = "EQUIPMENTCLASSID/CLASSCODE")
 	private String equipmentClass;
 
-	@InforField(xpath = "MATERIALLISTID/MTLCODE")
+	@EAMField(xpath = "MATERIALLISTID/MTLCODE")
 	private String materialList;
 
-	@InforField(xpath = "StandardUserDefinedFields")
+	@EAMField(xpath = "StandardUserDefinedFields")
 	private UserDefinedFields userDefinedFields;
 
-	@InforField(xpath = "WODESCRIPTION")
+	@EAMField(xpath = "WODESCRIPTION")
 	private String workOrderDescription;
 
-	@InforField(xpath = "WOTYPE/TYPECODE")
+	@EAMField(xpath = "WOTYPE/TYPECODE")
 	private String workOrderType;
 
-	@InforField(xpath = "WOCLASS/CLASSCODE")
+	@EAMField(xpath = "WOCLASS/CLASSCODE")
 	private String workOrderClass;
 
-	@InforField(xpath = "WOSTATUS")
+	@EAMField(xpath = "WOSTATUS")
 	private String workOrderStatus;
 
-	@InforField(xpath = "WOPRIORITY/PRIORITYCODE")
+	@EAMField(xpath = "WOPRIORITY/PRIORITYCODE")
 	private String workOrderPriority;
 
 	public String getCode() {

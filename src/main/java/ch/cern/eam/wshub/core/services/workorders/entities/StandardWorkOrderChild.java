@@ -1,23 +1,23 @@
 package ch.cern.eam.wshub.core.services.workorders.entities;
 
-import ch.cern.eam.wshub.core.annotations.InforField;
+import ch.cern.eam.wshub.core.annotations.EAMField;
 
 import java.math.BigInteger;
 
 public class StandardWorkOrderChild {
 
-    @InforField(xpath = "PARENTSTANDARDWO/STDWOCODE")
+    @EAMField(xpath = "PARENTSTANDARDWO/STDWOCODE")
     private String parentStandardWOCode;
-    @InforField(xpath = "CHILDSTANDARDWO/STDWOCODE")
+    @EAMField(xpath = "CHILDSTANDARDWO/STDWOCODE")
     private String childStandardWOCode;
-    @InforField(xpath = "SEQUENCE")
+    @EAMField(xpath = "SEQUENCE")
     private BigInteger sequence;
-    @InforField(xpath = "STEP")
+    @EAMField(xpath = "STEP")
     private BigInteger step;
 
-    @InforField(xpath = "OLDSEQUENCE")
+    @EAMField(xpath = "OLDSEQUENCE")
     private BigInteger oldSequence;
-    @InforField(xpath = "OLDSTEP")
+    @EAMField(xpath = "OLDSTEP")
     private BigInteger oldStep;
 
     public String getParentStandardWOCode() {

@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface InforField {
+public @interface EAMField {
     String[] xpath();
     boolean enforceValidXpath() default true;
     boolean readOnly() default false;

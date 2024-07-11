@@ -1,11 +1,11 @@
 package ch.cern.eam.wshub.core.services.workorders.impl;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.workorders.CaseService;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 import ch.cern.eam.wshub.core.tools.Tools;
-import ch.cern.eam.wshub.core.services.workorders.entities.InforCase;
+import ch.cern.eam.wshub.core.services.workorders.entities.EAMCase;
 import net.datastream.schemas.mp_entities.casemanagement_001.CaseDetails;
 import net.datastream.schemas.mp_entities.casemanagement_001.CaseManagement;
 import net.datastream.schemas.mp_entities.casemanagement_001.TrackingDetails;
@@ -18,25 +18,25 @@ import net.datastream.schemas.mp_functions.mp3643_001.MP3643_GetCaseManagement_0
 import net.datastream.schemas.mp_results.mp3640_001.MP3640_AddCaseManagement_001_Result;
 import net.datastream.schemas.mp_results.mp3641_001.MP3641_SyncCaseManagement_001_Result;
 import net.datastream.schemas.mp_results.mp3643_001.MP3643_GetCaseManagement_001_Result;
-import net.datastream.wsdls.inforws.InforWebServicesPT;
+import net.datastream.wsdls.eamws.EAMWebServicesPT;
 
-import javax.xml.ws.Holder;
+import jakarta.xml.ws.Holder;
 
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.toCodeString;
 
 public class CaseServiceImpl implements CaseService {
 
 	private Tools tools;
-	private InforWebServicesPT inforws;
+	private EAMWebServicesPT eamws;
 	private ApplicationData applicationData;
 
-	public CaseServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
+	public CaseServiceImpl(ApplicationData applicationData, Tools tools, EAMWebServicesPT eamWebServicesToolkitClient) {
 		this.applicationData = applicationData;
 		this.tools = tools;
-		this.inforws = inforWebServicesToolkitClient;
+		this.eamws = eamWebServicesToolkitClient;
 	}
 
-	public InforCase readCase(InforContext context, String caseID) throws InforException {
+	public EAMCase readCase(EAMContext context, String caseID) throws EAMException {
 		//
 		// Fetch WO
 		//
@@ -46,10 +46,10 @@ public class CaseServiceImpl implements CaseService {
 		getCase.getCASEID().setORGANIZATIONID(tools.getOrganization(context));
 
 		MP3643_GetCaseManagement_001_Result result =
-			tools.performInforOperation(context, inforws::getCaseManagementOp, getCase);
+			tools.performEAMOperation(context, eamws::getCaseManagementOp, getCase);
 
 		CaseManagement caseManagement = result.getResultData().getCaseManagement();
-		InforCase caseMT = tools.getInforFieldTools().transformInforObject(new InforCase(), caseManagement, context);
+		EAMCase caseMT = tools.getEAMFieldTools().transformEAMObject(new EAMCase(), caseManagement, context);
 		//
 		// DESCRIPTION
 		//
@@ -126,7 +126,7 @@ public class CaseServiceImpl implements CaseService {
 		//
 		// CUSTOM FIELDS
 		//
-		caseMT.setCustomFields(tools.getCustomFieldsTools().readInforCustomFields(caseManagement.getUSERDEFINEDAREA(), context));
+		caseMT.setCustomFields(tools.getCustomFieldsTools().readEAMCustomFields(caseManagement.getUSERDEFINEDAREA(), context));
 
 		//
 		//
@@ -140,15 +140,15 @@ public class CaseServiceImpl implements CaseService {
 		//
 		if (caseManagement.getTrackingDetails() != null) {
 			caseMT.setScheduledStartDate(
-					tools.getDataTypeTools().decodeInforDate(caseManagement.getTrackingDetails().getSCHEDULEDSTARTDATE()));
+					tools.getDataTypeTools().decodeEAMDate(caseManagement.getTrackingDetails().getSCHEDULEDSTARTDATE()));
 			caseMT.setScheduledEndDate(
-					tools.getDataTypeTools().decodeInforDate(caseManagement.getTrackingDetails().getSCHEDULEDENDDATE()));
+					tools.getDataTypeTools().decodeEAMDate(caseManagement.getTrackingDetails().getSCHEDULEDENDDATE()));
 			caseMT.setRequestedStartDate(
-					tools.getDataTypeTools().decodeInforDate(caseManagement.getTrackingDetails().getREQUESTEDSTART()));
-			caseMT.setRequestedEndDate(tools.getDataTypeTools().decodeInforDate(caseManagement.getTrackingDetails().getREQUESTEDEND()));
-			caseMT.setStartDate(tools.getDataTypeTools().decodeInforDate(caseManagement.getTrackingDetails().getSTARTDATE()));
-			caseMT.setCompletedDate(tools.getDataTypeTools().decodeInforDate(caseManagement.getTrackingDetails().getCOMPLETEDDATE()));
-			caseMT.setDaterequested(tools.getDataTypeTools().decodeInforDate(caseManagement.getTrackingDetails().getDATEREQUESTED()));
+					tools.getDataTypeTools().decodeEAMDate(caseManagement.getTrackingDetails().getREQUESTEDSTART()));
+			caseMT.setRequestedEndDate(tools.getDataTypeTools().decodeEAMDate(caseManagement.getTrackingDetails().getREQUESTEDEND()));
+			caseMT.setStartDate(tools.getDataTypeTools().decodeEAMDate(caseManagement.getTrackingDetails().getSTARTDATE()));
+			caseMT.setCompletedDate(tools.getDataTypeTools().decodeEAMDate(caseManagement.getTrackingDetails().getCOMPLETEDDATE()));
+			caseMT.setDaterequested(tools.getDataTypeTools().decodeEAMDate(caseManagement.getTrackingDetails().getDATEREQUESTED()));
 		}
 		//
 		// CREATED BY
@@ -160,20 +160,20 @@ public class CaseServiceImpl implements CaseService {
 		// CREATED DATE
 		//
 		if (caseManagement.getCREATEDDATE() != null) {
-			caseMT.setCreateDate(tools.getDataTypeTools().decodeInforDate(caseManagement.getCREATEDDATE()));
+			caseMT.setCreateDate(tools.getDataTypeTools().decodeEAMDate(caseManagement.getCREATEDDATE()));
 		}
 		//
 		// UPDATED DATE
 		//
 		if (caseManagement.getDATEUPDATED() != null) {
-			caseMT.setUpdatedDate(tools.getDataTypeTools().decodeInforDate(caseManagement.getDATEUPDATED()));
+			caseMT.setUpdatedDate(tools.getDataTypeTools().decodeEAMDate(caseManagement.getDATEUPDATED()));
 		}
 		//
 		// CASE DETAILS
 		//
 		if (caseManagement.getCaseDetails() != null) {
-			caseMT.setEventstartdate(tools.getDataTypeTools().decodeInforDate(caseManagement.getCaseDetails().getEVENTSTARTDATE()));
-			caseMT.setEventenddate(tools.getDataTypeTools().decodeInforDate(caseManagement.getCaseDetails().getEVENTENDDATE()));
+			caseMT.setEventstartdate(tools.getDataTypeTools().decodeEAMDate(caseManagement.getCaseDetails().getEVENTSTARTDATE()));
+			caseMT.setEventenddate(tools.getDataTypeTools().decodeEAMDate(caseManagement.getCaseDetails().getEVENTENDDATE()));
 		}
 
 		//
@@ -186,12 +186,12 @@ public class CaseServiceImpl implements CaseService {
 		return caseMT;
 	}
 
-	public String createCase(InforContext context, InforCase caseMT) throws InforException {
+	public String createCase(EAMContext context, EAMCase caseMT) throws EAMException {
 
 		CaseManagement caseManagement = new CaseManagement();
 		caseManagement.setStandardUserDefinedFields(new StandardUserDefinedFields());
 
-		caseManagement.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(
+		caseManagement.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getEAMCustomFields(
 				context,
 				null,
 				caseManagement.getUSERDEFINEDAREA(),
@@ -203,23 +203,23 @@ public class CaseServiceImpl implements CaseService {
 		MP3640_AddCaseManagement_001 addCase = new MP3640_AddCaseManagement_001();
 		addCase.setCaseManagement(caseManagement);
 		MP3640_AddCaseManagement_001_Result addCaseResult =
-			tools.performInforOperation(context, inforws::addCaseManagementOp, addCase);
+			tools.performEAMOperation(context, eamws::addCaseManagementOp, addCase);
 		return addCaseResult.getResultData().getCASEID().getCASECODE();
 	}
 
-	public String deleteCase(InforContext context, String caseID) throws InforException {
+	public String deleteCase(EAMContext context, String caseID) throws EAMException {
 
 		MP3642_DeleteCaseManagement_001 deleteCase = new MP3642_DeleteCaseManagement_001();
 		deleteCase.setCASEID(new CASEID_Type());
 		deleteCase.getCASEID().setCASECODE(caseID);
 		deleteCase.getCASEID().setORGANIZATIONID(tools.getOrganization(context));
 
-		tools.performInforOperation(context, inforws::deleteCaseManagementOp, deleteCase);
+		tools.performEAMOperation(context, eamws::deleteCaseManagementOp, deleteCase);
 		return caseID;
 	}
 
-	public synchronized String updateCase(InforContext context, InforCase caseMT)
-			throws InforException {
+	public synchronized String updateCase(EAMContext context, EAMCase caseMT)
+			throws EAMException {
 		//
 		// FETCH IT FIRST
 		//
@@ -229,7 +229,7 @@ public class CaseServiceImpl implements CaseService {
 		getCase.getCASEID().setORGANIZATIONID(tools.getOrganization(context));
 
 		MP3643_GetCaseManagement_001_Result result =
-			tools.performInforOperation(context, inforws::getCaseManagementOp, getCase);
+			tools.performEAMOperation(context, eamws::getCaseManagementOp, getCase);
 
 		CaseManagement caseManagement = result.getResultData().getCaseManagement();
 
@@ -238,7 +238,7 @@ public class CaseServiceImpl implements CaseService {
 			throw tools.generateFault("The record has been updated by another user.");
 		}
 
-		caseManagement.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(
+		caseManagement.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getEAMCustomFields(
 				context,
 				caseManagement.getCaseDetails() != null ? toCodeString(caseManagement.getCaseDetails().getCASECLASSID()) : null,
 				caseManagement.getUSERDEFINEDAREA(),
@@ -256,78 +256,78 @@ public class CaseServiceImpl implements CaseService {
 		MP3641_SyncCaseManagement_001 syncCase = new MP3641_SyncCaseManagement_001();
 		syncCase.setCaseManagement(caseManagement);
 		MP3641_SyncCaseManagement_001_Result syncCaseResult =
-			tools.performInforOperation(context, inforws::syncCaseManagementOp, syncCase);
+			tools.performEAMOperation(context, eamws::syncCaseManagementOp, syncCase);
 		return syncCaseResult.getResultData().getCASEID().getCASECODE();
 	}
 
-	private void initCaseObject(CaseManagement caseInfor, InforCase caseMT, InforContext context) throws InforException {
+	private void initCaseObject(CaseManagement caseEAM, EAMCase caseMT, EAMContext context) throws EAMException {
 
-		tools.getInforFieldTools().transformWSHubObject(caseInfor, caseMT, context);
+		tools.getEAMFieldTools().transformWSHubObject(caseEAM, caseMT, context);
 		//
 		// CODE AND DESCRIPTION
 		//
-		if (caseInfor.getCASEID() == null) {
-			caseInfor.setCASEID(new CASEID_Type());
-			caseInfor.getCASEID().setORGANIZATIONID(tools.getOrganization(context));
-			caseInfor.getCASEID().setCASECODE("0");
+		if (caseEAM.getCASEID() == null) {
+			caseEAM.setCASEID(new CASEID_Type());
+			caseEAM.getCASEID().setORGANIZATIONID(tools.getOrganization(context));
+			caseEAM.getCASEID().setCASECODE("0");
 		}
 
 		if (caseMT.getDescription() != null) {
-			caseInfor.getCASEID().setDESCRIPTION(caseMT.getDescription());
+			caseEAM.getCASEID().setDESCRIPTION(caseMT.getDescription());
 		}
 		//
 		// EQUIPMENT
 		//
 		if (caseMT.getEquipmentCode() != null) {
 			if (caseMT.getEquipmentCode().trim().equals("")) {
-				caseInfor.setEQUIPMENTID(null);
+				caseEAM.setEQUIPMENTID(null);
 			} else {
-				caseInfor.setEQUIPMENTID(new EQUIPMENTID_Type());
-				caseInfor.getEQUIPMENTID().setORGANIZATIONID(tools.getOrganization(context));
-				caseInfor.getEQUIPMENTID().setEQUIPMENTCODE(caseMT.getEquipmentCode().toUpperCase().trim());
+				caseEAM.setEQUIPMENTID(new EQUIPMENTID_Type());
+				caseEAM.getEQUIPMENTID().setORGANIZATIONID(tools.getOrganization(context));
+				caseEAM.getEQUIPMENTID().setEQUIPMENTCODE(caseMT.getEquipmentCode().toUpperCase().trim());
 			}
 		}
 		//
 		// STATUS
 		//
 		if (caseMT.getStatusCode() != null) {
-			caseInfor.setSTATUS(new STATUS_Type());
-			caseInfor.getSTATUS().setSTATUSCODE(caseMT.getStatusCode().toUpperCase().trim());
-			caseInfor.setRSTATUS(new STATUS_Type());
-			caseInfor.getRSTATUS().setSTATUSCODE(caseMT.getStatusCode().toUpperCase().trim());
+			caseEAM.setSTATUS(new STATUS_Type());
+			caseEAM.getSTATUS().setSTATUSCODE(caseMT.getStatusCode().toUpperCase().trim());
+			caseEAM.setRSTATUS(new STATUS_Type());
+			caseEAM.getRSTATUS().setSTATUSCODE(caseMT.getStatusCode().toUpperCase().trim());
 		}
 		//
 		// TYPE
 		//
 		if (caseMT.getTypeCode() != null) {
-			caseInfor.setCASETYPE(new TYPE_Type());
-			caseInfor.getCASETYPE().setTYPECODE(caseMT.getTypeCode().toUpperCase().trim());
+			caseEAM.setCASETYPE(new TYPE_Type());
+			caseEAM.getCASETYPE().setTYPECODE(caseMT.getTypeCode().toUpperCase().trim());
 		}
 		//
 		// DEPARTMENT
 		//
 		if (caseMT.getDepartmentCode() != null) {
-			caseInfor.setDEPARTMENTID(new DEPARTMENTID_Type());
-			caseInfor.getDEPARTMENTID().setORGANIZATIONID(tools.getOrganization(context));
-			caseInfor.getDEPARTMENTID().setDEPARTMENTCODE(caseMT.getDepartmentCode().toUpperCase().trim());
+			caseEAM.setDEPARTMENTID(new DEPARTMENTID_Type());
+			caseEAM.getDEPARTMENTID().setORGANIZATIONID(tools.getOrganization(context));
+			caseEAM.getDEPARTMENTID().setDEPARTMENTCODE(caseMT.getDepartmentCode().toUpperCase().trim());
 		}
 		//
 		// CLASS CODE AND DESCRIPTION
 		//
 		if (caseMT.getClassCode() != null) {
-			if (caseInfor.getCaseDetails() == null)
-				caseInfor.setCaseDetails(new CaseDetails());
-			if (caseInfor.getCaseDetails().getCASECLASSID() == null) {
-				caseInfor.getCaseDetails().setCASECLASSID(new CLASSID_Type());
+			if (caseEAM.getCaseDetails() == null)
+				caseEAM.setCaseDetails(new CaseDetails());
+			if (caseEAM.getCaseDetails().getCASECLASSID() == null) {
+				caseEAM.getCaseDetails().setCASECLASSID(new CLASSID_Type());
 			}
-			caseInfor.getCaseDetails().getCASECLASSID().setCLASSCODE(caseMT.getClassCode());
-			caseInfor.getCaseDetails().getCASECLASSID().setDESCRIPTION(caseMT.getClassDesc());
-			caseInfor.getCaseDetails().getCASECLASSID().setORGANIZATIONID(tools.getOrganization(context));
+			caseEAM.getCaseDetails().getCASECLASSID().setCLASSCODE(caseMT.getClassCode());
+			caseEAM.getCaseDetails().getCASECLASSID().setDESCRIPTION(caseMT.getClassDesc());
+			caseEAM.getCaseDetails().getCASECLASSID().setORGANIZATIONID(tools.getOrganization(context));
 
 			if (caseMT.getPriority() != null) {
 				USERDEFINEDCODEID_Type t = new USERDEFINEDCODEID_Type();
-				caseInfor.getCaseDetails().setCASEPRIORITY(new USERDEFINEDCODEID_Type());
-				caseInfor.getCaseDetails().getCASEPRIORITY().setENTITY(caseMT.getPriority());
+				caseEAM.getCaseDetails().setCASEPRIORITY(new USERDEFINEDCODEID_Type());
+				caseEAM.getCaseDetails().getCASEPRIORITY().setENTITY(caseMT.getPriority());
 			}
 		}
 
@@ -335,134 +335,134 @@ public class CaseServiceImpl implements CaseService {
 		// WORK ADDRESS
 		//
 		if (caseMT.getWorkaddress() != null) {
-			if (caseInfor.getCaseDetails() == null)
-				caseInfor.setCaseDetails(new CaseDetails());
-			caseInfor.getCaseDetails().setWORKADDRESS(caseMT.getWorkaddress());
+			if (caseEAM.getCaseDetails() == null)
+				caseEAM.setCaseDetails(new CaseDetails());
+			caseEAM.getCaseDetails().setWORKADDRESS(caseMT.getWorkaddress());
 		}
 		//
 		// RESPONSIBLE
 		//
 		if (caseMT.getResponsibleCode() != null) {
-			if (caseInfor.getTrackingDetails() == null)
-				caseInfor.setTrackingDetails(new TrackingDetails());
-			if (caseInfor.getTrackingDetails().getPERSONRESPONSIBLE() == null)
-				caseInfor.getTrackingDetails().setPERSONRESPONSIBLE(new Employee_Type());
-			caseInfor.getTrackingDetails().getPERSONRESPONSIBLE().setEMPLOYEECODE(caseMT.getResponsibleCode());
-			caseInfor.getTrackingDetails().getPERSONRESPONSIBLE().setDESCRIPTION(caseMT.getResponsibleDesc());
-			caseInfor.getTrackingDetails().setEMAIL(caseMT.getResponsibleEMail());
+			if (caseEAM.getTrackingDetails() == null)
+				caseEAM.setTrackingDetails(new TrackingDetails());
+			if (caseEAM.getTrackingDetails().getPERSONRESPONSIBLE() == null)
+				caseEAM.getTrackingDetails().setPERSONRESPONSIBLE(new Employee_Type());
+			caseEAM.getTrackingDetails().getPERSONRESPONSIBLE().setEMPLOYEECODE(caseMT.getResponsibleCode());
+			caseEAM.getTrackingDetails().getPERSONRESPONSIBLE().setDESCRIPTION(caseMT.getResponsibleDesc());
+			caseEAM.getTrackingDetails().setEMAIL(caseMT.getResponsibleEMail());
 		}
 		//
 		// ASSIGNED TO
 		//
 		if (caseMT.getAssignedToCode() != null) {
-			if (caseInfor.getTrackingDetails() == null)
-				caseInfor.setTrackingDetails(new TrackingDetails());
-			if (caseInfor.getTrackingDetails().getASSIGNEDTO() == null)
-				caseInfor.getTrackingDetails().setASSIGNEDTO(new PERSONID_Type());
-			caseInfor.getTrackingDetails().getASSIGNEDTO().setPERSONCODE(caseMT.getAssignedToCode());
-			caseInfor.getTrackingDetails().getASSIGNEDTO().setDESCRIPTION(caseMT.getAssignedToDesc());
-			caseInfor.getTrackingDetails().setASSIGNEDTOEMAIL(caseMT.getAssignedToEMail());
+			if (caseEAM.getTrackingDetails() == null)
+				caseEAM.setTrackingDetails(new TrackingDetails());
+			if (caseEAM.getTrackingDetails().getASSIGNEDTO() == null)
+				caseEAM.getTrackingDetails().setASSIGNEDTO(new PERSONID_Type());
+			caseEAM.getTrackingDetails().getASSIGNEDTO().setPERSONCODE(caseMT.getAssignedToCode());
+			caseEAM.getTrackingDetails().getASSIGNEDTO().setDESCRIPTION(caseMT.getAssignedToDesc());
+			caseEAM.getTrackingDetails().setASSIGNEDTOEMAIL(caseMT.getAssignedToEMail());
 		}
 		//
 		// LOCATION
 		//
 		if (caseMT.getLocationCode() != null) {
-			if (caseInfor.getCaseDetails() == null) {
-				caseInfor.setCaseDetails(new CaseDetails());
+			if (caseEAM.getCaseDetails() == null) {
+				caseEAM.setCaseDetails(new CaseDetails());
 			}
 			if (caseMT.getLocationCode().equals("")) {
-				caseInfor.getCaseDetails().setLOCATIONID(null);
+				caseEAM.getCaseDetails().setLOCATIONID(null);
 			} else {
-				caseInfor.getCaseDetails().setLOCATIONID(new LOCATIONID_Type());
-				caseInfor.getCaseDetails().getLOCATIONID().setORGANIZATIONID(tools.getOrganization(context));
-				caseInfor.getCaseDetails().getLOCATIONID().setLOCATIONCODE(caseMT.getLocationCode().trim());
+				caseEAM.getCaseDetails().setLOCATIONID(new LOCATIONID_Type());
+				caseEAM.getCaseDetails().getLOCATIONID().setORGANIZATIONID(tools.getOrganization(context));
+				caseEAM.getCaseDetails().getLOCATIONID().setLOCATIONCODE(caseMT.getLocationCode().trim());
 			}
 		}
 		//
 		// SCHEDULING START DATE
 		//
 		if (caseMT.getScheduledStartDate() != null) {
-			if (caseInfor.getTrackingDetails() == null) {
-				caseInfor.setTrackingDetails(new TrackingDetails());
+			if (caseEAM.getTrackingDetails() == null) {
+				caseEAM.setTrackingDetails(new TrackingDetails());
 			}
-			caseInfor.getTrackingDetails().setSCHEDULEDSTARTDATE(
-					tools.getDataTypeTools().encodeInforDate(caseMT.getScheduledStartDate(), "Scheduling Start Date"));
+			caseEAM.getTrackingDetails().setSCHEDULEDSTARTDATE(
+					tools.getDataTypeTools().encodeEAMDate(caseMT.getScheduledStartDate(), "Scheduling Start Date"));
 		}
 		//
 		// SCHEDULING END DATE
 		//
 		if (caseMT.getScheduledEndDate() != null) {
-			if (caseInfor.getTrackingDetails() == null) {
-				caseInfor.setTrackingDetails(new TrackingDetails());
+			if (caseEAM.getTrackingDetails() == null) {
+				caseEAM.setTrackingDetails(new TrackingDetails());
 			}
-			caseInfor.getTrackingDetails().setSCHEDULEDENDDATE(
-					tools.getDataTypeTools().encodeInforDate(caseMT.getScheduledEndDate(), "Scheduling Completed Date"));
+			caseEAM.getTrackingDetails().setSCHEDULEDENDDATE(
+					tools.getDataTypeTools().encodeEAMDate(caseMT.getScheduledEndDate(), "Scheduling Completed Date"));
 		}
 		//
 		// REQUESTED START DATE
 		//
 		if (caseMT.getRequestedStartDate() != null) {
-			if (caseInfor.getTrackingDetails() == null) {
-				caseInfor.setTrackingDetails(new TrackingDetails());
+			if (caseEAM.getTrackingDetails() == null) {
+				caseEAM.setTrackingDetails(new TrackingDetails());
 			}
-			caseInfor.getTrackingDetails()
-					.setREQUESTEDSTART(tools.getDataTypeTools().encodeInforDate(caseMT.getRequestedStartDate(), "Requested Start Date"));
+			caseEAM.getTrackingDetails()
+					.setREQUESTEDSTART(tools.getDataTypeTools().encodeEAMDate(caseMT.getRequestedStartDate(), "Requested Start Date"));
 		}
 		//
 		// REQUESTED END DATE
 		//
 		if (caseMT.getRequestedEndDate() != null) {
-			if (caseInfor.getTrackingDetails() == null) {
-				caseInfor.setTrackingDetails(new TrackingDetails());
+			if (caseEAM.getTrackingDetails() == null) {
+				caseEAM.setTrackingDetails(new TrackingDetails());
 			}
-			caseInfor.getTrackingDetails()
-					.setREQUESTEDEND(tools.getDataTypeTools().encodeInforDate(caseMT.getRequestedEndDate(), "Requested End Date"));
+			caseEAM.getTrackingDetails()
+					.setREQUESTEDEND(tools.getDataTypeTools().encodeEAMDate(caseMT.getRequestedEndDate(), "Requested End Date"));
 		}
 		//
 		// START DATE
 		//
 		if (caseMT.getStartDate() != null) {
-			if (caseInfor.getTrackingDetails() == null) {
-				caseInfor.setTrackingDetails(new TrackingDetails());
+			if (caseEAM.getTrackingDetails() == null) {
+				caseEAM.setTrackingDetails(new TrackingDetails());
 			}
-			caseInfor.getTrackingDetails().setSTARTDATE(tools.getDataTypeTools().encodeInforDate(caseMT.getStartDate(), "Start Date"));
+			caseEAM.getTrackingDetails().setSTARTDATE(tools.getDataTypeTools().encodeEAMDate(caseMT.getStartDate(), "Start Date"));
 		}
 		//
 		// COMPLETED DATE
 		//
 		if (caseMT.getCompletedDate() != null) {
-			if (caseInfor.getTrackingDetails() == null) {
-				caseInfor.setTrackingDetails(new TrackingDetails());
+			if (caseEAM.getTrackingDetails() == null) {
+				caseEAM.setTrackingDetails(new TrackingDetails());
 			}
-			caseInfor.getTrackingDetails()
-					.setCOMPLETEDDATE(tools.getDataTypeTools().encodeInforDate(caseMT.getCompletedDate(), "Completed Date"));
+			caseEAM.getTrackingDetails()
+					.setCOMPLETEDDATE(tools.getDataTypeTools().encodeEAMDate(caseMT.getCompletedDate(), "Completed Date"));
 		}
 		//
 		// DATEREQUESTED
 		//
 		if (caseMT.getDaterequested() != null) {
-			if (caseInfor.getTrackingDetails() == null)
-				caseInfor.setTrackingDetails(new TrackingDetails());
-			caseInfor.getTrackingDetails()
-					.setDATEREQUESTED(tools.getDataTypeTools().encodeInforDate(caseMT.getDaterequested(), "Requested Date"));
+			if (caseEAM.getTrackingDetails() == null)
+				caseEAM.setTrackingDetails(new TrackingDetails());
+			caseEAM.getTrackingDetails()
+					.setDATEREQUESTED(tools.getDataTypeTools().encodeEAMDate(caseMT.getDaterequested(), "Requested Date"));
 		}
 		//
 		// CASE DETAILS EVENT START DATE
 		//
 		if (caseMT.getEventstartdate() != null) {
-			if (caseInfor.getCaseDetails() == null)
-				caseInfor.setCaseDetails(new CaseDetails());
-			caseInfor.getCaseDetails()
-					.setEVENTSTARTDATE(tools.getDataTypeTools().encodeInforDate(caseMT.getEventstartdate(), "Event Start Date"));
+			if (caseEAM.getCaseDetails() == null)
+				caseEAM.setCaseDetails(new CaseDetails());
+			caseEAM.getCaseDetails()
+					.setEVENTSTARTDATE(tools.getDataTypeTools().encodeEAMDate(caseMT.getEventstartdate(), "Event Start Date"));
 		}
 		//
 		// CASE DETAILS EVENT END DATE
 		//
 		if (caseMT.getEventenddate() != null) {
-			if (caseInfor.getCaseDetails() == null)
-				caseInfor.setCaseDetails(new CaseDetails());
-			caseInfor.getCaseDetails()
-					.setEVENTENDDATE(tools.getDataTypeTools().encodeInforDate(caseMT.getEventenddate(), "Event End Date"));
+			if (caseEAM.getCaseDetails() == null)
+				caseEAM.setCaseDetails(new CaseDetails());
+			caseEAM.getCaseDetails()
+					.setEVENTENDDATE(tools.getDataTypeTools().encodeEAMDate(caseMT.getEventenddate(), "Event End Date"));
 		}
 
 	}

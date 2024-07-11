@@ -1,6 +1,6 @@
 package ch.cern.eam.wshub.core.services.workorders.impl;
 
-import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.comments.CommentService;
 import ch.cern.eam.wshub.core.services.comments.impl.CommentServiceImpl;
 import ch.cern.eam.wshub.core.services.entities.BatchResponse;
@@ -18,7 +18,7 @@ import ch.cern.eam.wshub.core.services.workorders.WorkOrderService;
 import ch.cern.eam.wshub.core.services.workorders.entities.StandardWorkOrder;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.GridTools;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.EAMException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrder;
 import net.datastream.schemas.mp_fields.*;
@@ -32,7 +32,7 @@ import net.datastream.schemas.mp_results.mp0023_001.MP0023_AddWorkOrder_001_Resu
 import net.datastream.schemas.mp_results.mp0024_001.MP0024_GetWorkOrder_001_Result;
 import net.datastream.schemas.mp_results.mp0026_001.MP0026_GetWorkOrderDefault_001_Result;
 import net.datastream.schemas.mp_results.mp0026_001.ResultData;
-import net.datastream.wsdls.inforws.InforWebServicesPT;
+import net.datastream.wsdls.eamws.EAMWebServicesPT;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -46,54 +46,54 @@ import static ch.cern.eam.wshub.core.tools.Tools.extractOrganizationCode;
 public class WorkOrderServiceImpl implements WorkOrderService {
 
 	private Tools tools;
-	private InforWebServicesPT inforws;
+	private EAMWebServicesPT eamws;
 	private ApplicationData applicationData;
 	private CommentService comments;
 	private StandardWorkOrderService standardWorkOrderService;
 	private GridsService gridsService;
 	private UserDefinedListService userDefinedListService;
 
-	public WorkOrderServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
+	public WorkOrderServiceImpl(ApplicationData applicationData, Tools tools, EAMWebServicesPT eamWebServicesToolkitClient) {
 		this.applicationData = applicationData;
 		this.tools = tools;
-		this.inforws = inforWebServicesToolkitClient;
-		this.comments = new CommentServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
-		this.standardWorkOrderService = new StandardWorkOrderServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
-		this.gridsService = new GridsServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
-		this.userDefinedListService = new UserDefinedListServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
+		this.eamws = eamWebServicesToolkitClient;
+		this.comments = new CommentServiceImpl(applicationData, tools, eamWebServicesToolkitClient);
+		this.standardWorkOrderService = new StandardWorkOrderServiceImpl(applicationData, tools, eamWebServicesToolkitClient);
+		this.gridsService = new GridsServiceImpl(applicationData, tools, eamWebServicesToolkitClient);
+		this.userDefinedListService = new UserDefinedListServiceImpl(applicationData, tools, eamWebServicesToolkitClient);
 	}
 
 	//
 	// BATCH WEB SERVICES
 	//
 
-	public BatchResponse<String> createWorkOrderBatch(InforContext context, List<WorkOrder> workOrderParam) {
+	public BatchResponse<String> createWorkOrderBatch(EAMContext context, List<WorkOrder> workOrderParam) {
 		return tools.batchOperation(context, this::createWorkOrder, workOrderParam);
 	}
 
-	public BatchResponse<WorkOrder> readWorkOrderBatch(InforContext context, List<String> workOrderNumbers)  {
+	public BatchResponse<WorkOrder> readWorkOrderBatch(EAMContext context, List<String> workOrderNumbers)  {
 		return tools.batchOperation(context, this::readWorkOrder, workOrderNumbers);
 	}
 
-	public BatchResponse<String> updateWorkOrderBatch(InforContext context, List<WorkOrder> workOrders) {
+	public BatchResponse<String> updateWorkOrderBatch(EAMContext context, List<WorkOrder> workOrders) {
 		return tools.batchOperation(context, this::updateWorkOrder, workOrders);
 	}
 
-	public BatchResponse<String> deleteWorkOrderBatch(InforContext context, List<String> workOrderNumbers) {
+	public BatchResponse<String> deleteWorkOrderBatch(EAMContext context, List<String> workOrderNumbers) {
 		return tools.batchOperation(context, this::deleteWorkOrder, workOrderNumbers);
 	}
 
 	//
 	// WORK ORDER CRUD
 	//
-	public WorkOrder readWorkOrder(InforContext context, String number) throws InforException {
-		// Get Infor Work Order
-		MP0024_GetWorkOrder_001_Result result = readWorkOrderInfor(context, extractEntityCode(number), extractOrganizationCode(number));
+	public WorkOrder readWorkOrder(EAMContext context, String number) throws EAMException {
+		// Get EAM Work Order
+		MP0024_GetWorkOrder_001_Result result = readWorkOrderEAM(context, extractEntityCode(number), extractOrganizationCode(number));
 		//
-		WorkOrder workOrder = tools.getInforFieldTools().transformInforObject(new WorkOrder(), result.getResultData().getWorkOrder(), context);
+		WorkOrder workOrder = tools.getEAMFieldTools().transformEAMObject(new WorkOrder(), result.getResultData().getWorkOrder(), context);
 		workOrder.setJtAuthCanUpdate(decodeBoolean(result.getJtauth_Can_Update()));
 
-		// Fetching missing descriptions and UDL not returned by Infor web service
+		// Fetching missing descriptions and UDL not returned by EAM web service
 		tools.processRunnables(
 			() -> workOrder.setAssignedToDesc(tools.getFieldDescriptionsTools().readPersonDesc(context, workOrder.getAssignedTo())),
 			() -> workOrder.setDepartmentDesc(tools.getFieldDescriptionsTools().readDepartmentDesc(context, workOrder.getDepartmentCode())),
@@ -106,16 +106,16 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		return workOrder;
 	}
 
-	public MP0024_GetWorkOrder_001_Result readWorkOrderInfor(InforContext context, String number, String organization) throws InforException {
+	public MP0024_GetWorkOrder_001_Result readWorkOrderEAM(EAMContext context, String number, String organization) throws EAMException {
 		MP0024_GetWorkOrder_001 getWorkOrder = new MP0024_GetWorkOrder_001();
 		getWorkOrder.setWORKORDERID(new WOID_Type());
 		getWorkOrder.getWORKORDERID().setJOBNUM(number);
 		getWorkOrder.getWORKORDERID().setORGANIZATIONID(tools.getOrganization(context, organization));
 
-		return tools.performInforOperation(context, inforws::getWorkOrderOp, getWorkOrder);
+		return tools.performEAMOperation(context, eamws::getWorkOrderOp, getWorkOrder);
 	}
 
-	public WorkOrder readWorkOrderDefault(InforContext context, String number) throws InforException {
+	public WorkOrder readWorkOrderDefault(EAMContext context, String number) throws EAMException {
 		//
 		// Fetch WO
 		//
@@ -124,7 +124,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		getWorkOrderDefault.setORGANIZATIONID(new ORGANIZATIONID_Type());
 		getWorkOrderDefault.getORGANIZATIONID().setORGANIZATIONCODE(context.getOrganizationCode());
 		MP0026_GetWorkOrderDefault_001_Result getWODefaultResult =
-			tools.performInforOperation(context, inforws::getWorkOrderDefaultOp, getWorkOrderDefault);
+			tools.performEAMOperation(context, eamws::getWorkOrderDefaultOp, getWorkOrderDefault);
 		ResultData resultData = getWODefaultResult.getResultData();
 		//
 		// Populate the 'workOrder' object
@@ -143,17 +143,17 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
 		// TARGET (SCHEDULED START) DATE
 		if (resultData.getTARGETDATE() != null) {
-			workOrder.setScheduledStartDate(tools.getDataTypeTools().decodeInforDate(resultData.getTARGETDATE()));
+			workOrder.setScheduledStartDate(tools.getDataTypeTools().decodeEAMDate(resultData.getTARGETDATE()));
 		}
 
 		// SCHEDULED END DATE
 		if (resultData.getSCHEDEND() != null) {
-			workOrder.setScheduledEndDate(tools.getDataTypeTools().decodeInforDate(resultData.getSCHEDEND()));
+			workOrder.setScheduledEndDate(tools.getDataTypeTools().decodeEAMDate(resultData.getSCHEDEND()));
 		}
 
 		// REPORTED DATE
 		if (resultData.getREPORTED() != null) {
-			workOrder.setReportedDate(tools.getDataTypeTools().decodeInforDate(resultData.getREPORTED()));
+			workOrder.setReportedDate(tools.getDataTypeTools().decodeEAMDate(resultData.getREPORTED()));
 		}
 
 		workOrder.setUserDefinedList(new HashMap<>());
@@ -164,7 +164,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 	/*
 		This method creates a work order based on workorderParam
 		There is an additional field, workOrderParam.copyFrom, which signals this method to copy from this work order
-		Currently, with the exception of the default values, the behavior of Infor EAM Extended is matched.
+		Currently, with the exception of the default values, the behavior of EAM EAM Extended is matched.
 
 		DEFAULT VALUE IMPLEMENTATION NOTES
 		Take note when implementing the default values that there is an install parameter that determines whether
@@ -172,7 +172,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		to apply the defaults after the fields from workorderParam are applied.
 
 		For work orders, when the default values are applied after the fields from workorderParam the values set in
-		Infor ("final values") work as follows, depending on the default value of the corresponding field:
+		EAM ("final values") work as follows, depending on the default value of the corresponding field:
 			- default value cleared: final value is the workorderParam value
 			- default value is a concrete value: final value is the default value
 			- default value is "NULL": final value is empty
@@ -180,23 +180,23 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		EAM Light implements this default value logic in its frontend.
 		END OF DEFAULT VALUE IMPLEMENTATION NOTES
 	 */
-	public String createWorkOrder(InforContext context, WorkOrder workorderParam) throws InforException {
-		net.datastream.schemas.mp_entities.workorder_001.WorkOrder inforWorkOrder;
+	public String createWorkOrder(EAMContext context, WorkOrder workorderParam) throws EAMException {
+		net.datastream.schemas.mp_entities.workorder_001.WorkOrder eamWorkOrder;
 
 		if(workorderParam.getCopyFrom() == null) {
-			inforWorkOrder = new net.datastream.schemas.mp_entities.workorder_001.WorkOrder();
+			eamWorkOrder = new net.datastream.schemas.mp_entities.workorder_001.WorkOrder();
 		} else {
-			inforWorkOrder = duplicateWorkOrder(context, workorderParam.getCopyFrom());
+			eamWorkOrder = duplicateWorkOrder(context, workorderParam.getCopyFrom());
 		}
 
 		// REQUIRED
-		if(inforWorkOrder.getWORKORDERID() == null) {
-			inforWorkOrder.setWORKORDERID(new WOID_Type());
+		if(eamWorkOrder.getWORKORDERID() == null) {
+			eamWorkOrder.setWORKORDERID(new WOID_Type());
 		}
 
-		inforWorkOrder.getWORKORDERID().setORGANIZATIONID(tools.getOrganization(context, workorderParam.getOrganization()));
-		inforWorkOrder.getWORKORDERID().setJOBNUM("0");
-		inforWorkOrder.setFIXED("V");
+		eamWorkOrder.getWORKORDERID().setORGANIZATIONID(tools.getOrganization(context, workorderParam.getOrganization()));
+		eamWorkOrder.getWORKORDERID().setJOBNUM("0");
+		eamWorkOrder.setFIXED("V");
 
 		// STANDARD WORK ORDER
 		if (workorderParam.getStandardWO() != null && !workorderParam.getStandardWO().trim().equals("")) {
@@ -233,26 +233,26 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			}
 		}
 
-		inforWorkOrder.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(
+		eamWorkOrder.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getEAMCustomFields(
 				context,
-				toCodeString(inforWorkOrder.getCLASSID()),
-				inforWorkOrder.getUSERDEFINEDAREA(),
+				toCodeString(eamWorkOrder.getCLASSID()),
+				eamWorkOrder.getUSERDEFINEDAREA(),
 				workorderParam.getClassCode(),
 				"EVNT"));
 
 		// POPULATE ALL OTHER FIELDS
-		tools.getInforFieldTools().transformWSHubObject(inforWorkOrder, workorderParam, context);
+		tools.getEAMFieldTools().transformWSHubObject(eamWorkOrder, workorderParam, context);
 
 		if(workorderParam.getCopyFrom() != null
-				&& inforWorkOrder.getUSERDEFINEDAREA() != null
-				&& inforWorkOrder.getUSERDEFINEDAREA().getCUSTOMFIELD() != null) {
-			inforWorkOrder.getUSERDEFINEDAREA().getCUSTOMFIELD().stream()
+				&& eamWorkOrder.getUSERDEFINEDAREA() != null
+				&& eamWorkOrder.getUSERDEFINEDAREA().getCUSTOMFIELD() != null) {
+			eamWorkOrder.getUSERDEFINEDAREA().getCUSTOMFIELD().stream()
 					.forEach(customField -> customField.setChanged("true"));
 		}
 
 		MP0023_AddWorkOrder_001 addWO = new MP0023_AddWorkOrder_001();
-		addWO.setWorkOrder(inforWorkOrder);
-		MP0023_AddWorkOrder_001_Result result = tools.performInforOperation(context, inforws::addWorkOrderOp, addWO);
+		addWO.setWorkOrder(eamWorkOrder);
+		MP0023_AddWorkOrder_001_Result result = tools.performEAMOperation(context, eamws::addWorkOrderOp, addWO);
 
 		// Work Order has been created, check if comment should be added
 		if (workorderParam.getComment() != null && !workorderParam.getComment().trim().equals("")) {
@@ -271,12 +271,12 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 	}
 
 	private net.datastream.schemas.mp_entities.workorder_001.WorkOrder duplicateWorkOrder(
-			InforContext context,
+			EAMContext context,
 			String workOrderCode)
-				throws InforException {
-		net.datastream.schemas.mp_entities.workorder_001.WorkOrder workOrder = readWorkOrderInfor(context, extractEntityCode(workOrderCode), extractOrganizationCode(workOrderCode)).getResultData().getWorkOrder();
+				throws EAMException {
+		net.datastream.schemas.mp_entities.workorder_001.WorkOrder workOrder = readWorkOrderEAM(context, extractEntityCode(workOrderCode), extractOrganizationCode(workOrderCode)).getResultData().getWorkOrder();
 
-		// As this work order is read directly from Infor, we can assume that workOrder.getWORKORDERID is not null,
+		// As this work order is read directly from EAM, we can assume that workOrder.getWORKORDERID is not null,
 		// and thus there is no need for a null check
 		workOrder.getWORKORDERID().setJOBNUM("0");
 
@@ -287,7 +287,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		return workOrder;
 	}
 
-	private boolean isClearingActivitiesRequired(InforContext context, net.datastream.schemas.mp_entities.workorder_001.WorkOrder workOrder) throws InforException {
+	private boolean isClearingActivitiesRequired(EAMContext context, net.datastream.schemas.mp_entities.workorder_001.WorkOrder workOrder) throws EAMException {
 		// we only need to clear the activities if there is a standard work order present
 		if (workOrder.getSTANDARDWO() == null || workOrder.getSTANDARDWO().getSTDWOCODE() == null) {
 			return false;
@@ -306,51 +306,51 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		return GridTools.isNotEmpty(gridsService.executeQuery(context, gridRequest));
 	}
 
-	public String updateWorkOrder(InforContext context, WorkOrder workorderParam) throws InforException {
-		net.datastream.schemas.mp_entities.workorder_001.WorkOrder inforWorkOrder = readWorkOrderInfor(context, workorderParam.getNumber(), workorderParam.getOrganization()).getResultData().getWorkOrder();
+	public String updateWorkOrder(EAMContext context, WorkOrder workorderParam) throws EAMException {
+		net.datastream.schemas.mp_entities.workorder_001.WorkOrder eamWorkOrder = readWorkOrderEAM(context, workorderParam.getNumber(), workorderParam.getOrganization()).getResultData().getWorkOrder();
 
 		// Check Custom fields. If they change, or now we have them
-		inforWorkOrder.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getInforCustomFields(
+		eamWorkOrder.setUSERDEFINEDAREA(tools.getCustomFieldsTools().getEAMCustomFields(
 			context,
-			toCodeString(inforWorkOrder.getCLASSID()),
-			inforWorkOrder.getUSERDEFINEDAREA(),
+			toCodeString(eamWorkOrder.getCLASSID()),
+			eamWorkOrder.getUSERDEFINEDAREA(),
 			workorderParam.getClassCode(),
 			"EVNT"));
 
 		// SET ALL PROPERTIES
-		tools.getInforFieldTools().transformWSHubObject(inforWorkOrder, workorderParam, context);
+		tools.getEAMFieldTools().transformWSHubObject(eamWorkOrder, workorderParam, context);
 
 		// Has to be nullified, otherwise the activity dates are not updated correctly (EAM Incident 16467875)
-		inforWorkOrder.setActivities(null);
+		eamWorkOrder.setActivities(null);
 
 		// CALL INFOR WEB SERVICE
 		MP0025_SyncWorkOrder_001 syncWO = new MP0025_SyncWorkOrder_001();
-		syncWO.setWorkOrder(inforWorkOrder);
+		syncWO.setWorkOrder(eamWorkOrder);
 
 		if (workorderParam.isConfirmedIncompleteChecklist() != null && workorderParam.isConfirmedIncompleteChecklist()) {
 			syncWO.setConfirmincompletechecklist("confirmed");
 		}
 
-		tools.performInforOperation(context, inforws::syncWorkOrderOp, syncWO);
+		tools.performEAMOperation(context, eamws::syncWorkOrderOp, syncWO);
 
-		String workOrderNumber = inforWorkOrder.getWORKORDERID().getJOBNUM();
+		String workOrderNumber = eamWorkOrder.getWORKORDERID().getJOBNUM();
 		userDefinedListService.writeUDLToEntity(context,
 			workorderParam, new EntityId("EVNT", workOrderNumber));
 		return workOrderNumber;
 	}
 
-	public String deleteWorkOrder(InforContext context, String workOrderNumber) throws InforException {
+	public String deleteWorkOrder(EAMContext context, String workOrderNumber) throws EAMException {
 		MP0055_DeleteWorkOrder_001 deleteWO = new MP0055_DeleteWorkOrder_001();
 		deleteWO.setWORKORDERID(new WOID_Type());
 		deleteWO.getWORKORDERID().setORGANIZATIONID(tools.getOrganization(context, extractOrganizationCode(workOrderNumber)));
 		deleteWO.getWORKORDERID().setJOBNUM(extractEntityCode(workOrderNumber));
 
-		tools.performInforOperation(context, inforws::deleteWorkOrderOp, deleteWO);
+		tools.performEAMOperation(context, eamws::deleteWorkOrderOp, deleteWO);
 		userDefinedListService.deleteUDLFromEntity(context, new EntityId("EVNT", workOrderNumber));
 		return workOrderNumber;
 	}
 
-	public String updateWorkOrderStatus(InforContext context, String workOrderNumber, String statusCode) throws InforException {
+	public String updateWorkOrderStatus(EAMContext context, String workOrderNumber, String statusCode) throws EAMException {
 		MP7161_ChangeWorkOrderStatus_001 changeWOStatus = new MP7161_ChangeWorkOrderStatus_001();
 		changeWOStatus.setWORKORDERID(new WOID_Type());
 		changeWOStatus.getWORKORDERID().setORGANIZATIONID(tools.getOrganization(context, extractOrganizationCode(workOrderNumber)));
@@ -358,7 +358,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		changeWOStatus.setNEWSTATUS(new STATUS_Type());
 		changeWOStatus.getNEWSTATUS().setSTATUSCODE(statusCode);
 
-		tools.performInforOperation(context, inforws::changeWorkOrderStatusOp, changeWOStatus);
+		tools.performEAMOperation(context, eamws::changeWorkOrderStatusOp, changeWOStatus);
 		return workOrderNumber;
 	}
 }
