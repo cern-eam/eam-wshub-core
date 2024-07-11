@@ -12,9 +12,16 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class NSEraserHandler implements SOAPHandler<SOAPMessageContext> {
+    final Logger logger;
+
+    public NSEraserHandler(Logger logger) {
+        this.logger = logger;
+    }
 
     @Override
     public boolean handleMessage(SOAPMessageContext context) {
@@ -30,8 +37,7 @@ public class NSEraserHandler implements SOAPHandler<SOAPMessageContext> {
                 // Clean SOAP Body (only the first element)
                 cleanSOAPElement((SOAPElement) context.getMessage().getSOAPPart().getEnvelope().getBody().getChildElements().next());
             } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("Problem: " + e.getMessage() + e.getClass().getName());
+                logger.log(Level.WARNING, e.getMessage());
             }
         }
         return true;
@@ -46,7 +52,7 @@ public class NSEraserHandler implements SOAPHandler<SOAPMessageContext> {
             result.add(namespaceIT.next());
         }
         // Remove
-        result.stream().filter(ns -> !ns.equals(headerNSPrefix)).forEach(ns -> soapElement.removeNamespaceDeclaration(ns));
+        result.stream().filter(ns -> !ns.equals(headerNSPrefix)).forEach(soapElement::removeNamespaceDeclaration);
     }
 
     @Override
