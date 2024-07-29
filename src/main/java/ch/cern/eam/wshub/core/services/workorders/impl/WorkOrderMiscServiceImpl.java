@@ -1,7 +1,9 @@
 package ch.cern.eam.wshub.core.services.workorders.impl;
 
 import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.services.material.PartService;
 import ch.cern.eam.wshub.core.services.material.entities.MaterialList;
+import ch.cern.eam.wshub.core.services.material.impl.PartServiceImpl;
 import ch.cern.eam.wshub.core.services.workorders.WorkOrderMiscService;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
@@ -31,16 +33,22 @@ import javax.xml.ws.Holder;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.isEmpty;
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
+
 public class WorkOrderMiscServiceImpl implements WorkOrderMiscService {
 
 	private Tools tools;
 	private InforWebServicesPT inforws;
 	private ApplicationData applicationData;
 
+	private PartService partService;
+
 	public WorkOrderMiscServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
 		this.applicationData = applicationData;
 		this.tools = tools;
 		this.inforws = inforWebServicesToolkitClient;
+		this.partService = new PartServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
 	}
 
 	public String createMeterReading(InforContext context, ch.cern.eam.wshub.core.services.workorders.entities.MeterReading meterReadingParam) throws InforException {
@@ -115,7 +123,7 @@ public class WorkOrderMiscServiceImpl implements WorkOrderMiscService {
 				.setMATERIALLISTPARTLINENUM(tools.getDataTypeTools().encodeLong(materialList.getLineNumber(), "Line Number"));
 
 		// PART
-		if (materialList.getPartCode() != null && !materialList.getPartCode().trim().equals("")) {
+		if (isNotEmpty(materialList.getPartCode())) {
 			matList.getMaterialListPart().setPARTID(new PARTID_Type());
 			matList.getMaterialListPart().getPARTID().setORGANIZATIONID(tools.getOrganization(context));
 			matList.getMaterialListPart().getPARTID().setPARTCODE(materialList.getPartCode());
@@ -129,10 +137,17 @@ public class WorkOrderMiscServiceImpl implements WorkOrderMiscService {
 		}
 
 		// EQUIPMENT
-		if (materialList.getEquipmentCode() != null && !materialList.getEquipmentCode().trim().equals("")) {
+		if (isNotEmpty(materialList.getEquipmentCode())) {
 			matList.getMaterialListPart().setEQUIPMENTID(new EQUIPMENTID_Type());
 			matList.getMaterialListPart().getEQUIPMENTID().setORGANIZATIONID(tools.getOrganization(context));
 			matList.getMaterialListPart().getEQUIPMENTID().setEQUIPMENTCODE(materialList.getEquipmentCode());
+		}
+
+		matList.getMaterialListPart().setUOMID(new UOMID_Type());
+		if (isEmpty(materialList.getUOM())) {
+			matList.getMaterialListPart().getUOMID().setUOMCODE(partService.readPart(context, materialList.getPartCode()).getUOM());
+		} else {
+			matList.getMaterialListPart().getUOMID().setUOMCODE(materialList.getUOM());
 		}
 
 		tools.performInforOperation(context, inforws::addMaterialListPartOp, matList);

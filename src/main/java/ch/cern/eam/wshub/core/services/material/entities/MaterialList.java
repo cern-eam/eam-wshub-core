@@ -13,6 +13,8 @@ public class MaterialList {
 	private BigDecimal quantity;
 	private String reserve;
 	private String equipmentCode;
+
+	private String UOM;
 	
 	public String getMaterialListCode() {
 		return materialListCode;
@@ -46,7 +48,15 @@ public class MaterialList {
 	public void setReserve(String reserve) {
 		this.reserve = reserve;
 	}
-	
+
+	public String getUOM() {
+		return UOM;
+	}
+
+	public void setUOM(String UOM) {
+		this.UOM = UOM;
+	}
+
 	@Override
 	public String toString() {
 		return "MaterialList ["
