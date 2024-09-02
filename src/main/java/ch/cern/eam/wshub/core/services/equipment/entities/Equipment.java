@@ -591,6 +591,10 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
     private String issueTo;
 
     @Transient
+    @InforField(xpath = "FleetVehicleInfo/CUSTOMERID/CUSTOMERCODE", nullifyParentLevel = 1)
+    private String customerCode;
+
+    @Transient
     @InforField(xpath="CHECKLISTFILTER")
     private String equipmentFilter;
 
@@ -1571,6 +1575,14 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
 
     public void setPrimaryFuel(String primaryFuel) {
         this.primaryFuel = primaryFuel;
+    }
+
+    public String getCustomerCode() {
+        return customerCode;
+    }
+
+    public void setCustomerCode(String customerCode) {
+        this.customerCode = customerCode;
     }
 
     @Override
