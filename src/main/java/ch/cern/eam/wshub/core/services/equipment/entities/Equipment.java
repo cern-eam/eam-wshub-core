@@ -595,6 +595,14 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
     private String customerCode;
 
     @Transient
+    @InforField(xpath = "FleetVehicleInfo/RENTALTEMPLATEID/RENTALTEMPLATECODE", nullifyParentLevel = 1)
+    private String rentalTemplateCode;
+
+    @Transient
+    @InforField(xpath = "FleetVehicleInfo/RENTALTEMPLATEID/DESCRIPTION", nullifyParentLevel = 1, readOnly = true)
+    private String rentalTemplateDesc;
+
+    @Transient
     @InforField(xpath="CHECKLISTFILTER")
     private String equipmentFilter;
 
@@ -603,6 +611,8 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
 
     @InforField(xpath = "FUELID/FUELCODE")
     private String primaryFuel;
+
+
 
     public String getDescription() {
         return description;
@@ -1583,6 +1593,22 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
 
     public void setCustomerCode(String customerCode) {
         this.customerCode = customerCode;
+    }
+
+    public String getRentalTemplateCode() {
+        return rentalTemplateCode;
+    }
+
+    public void setRentalTemplateCode(String rentalTemplateCode) {
+        this.rentalTemplateCode = rentalTemplateCode;
+    }
+
+    public String getRentalTemplateDesc() {
+        return rentalTemplateDesc;
+    }
+
+    public void setRentalTemplateDesc(String rentalTemplateDesc) {
+        this.rentalTemplateDesc = rentalTemplateDesc;
     }
 
     @Override
