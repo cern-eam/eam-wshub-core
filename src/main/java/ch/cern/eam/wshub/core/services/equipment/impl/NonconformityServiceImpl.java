@@ -6,6 +6,7 @@ import ch.cern.eam.wshub.core.services.equipment.entities.NonConformity;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
+import net.datastream.schemas.mp_fields.ORGANIZATIONID_Type;
 import net.datastream.schemas.mp_fields.STANDARDENTITYID_Type;
 import net.datastream.schemas.mp_functions.mp3396_001.MP3396_GetNonconformityDefault_001;
 import net.datastream.schemas.mp_functions.mp3397_001.MP3397_AddNonconformity_001;
@@ -17,6 +18,8 @@ import net.datastream.schemas.mp_results.mp3397_001.MP3397_AddNonconformity_001_
 import net.datastream.schemas.mp_results.mp3398_001.MP3398_SyncNonconformity_001_Result;
 import net.datastream.schemas.mp_results.mp3400_001.MP3400_GetNonconformity_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
+
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.isEmpty;
 
 public class NonconformityServiceImpl implements NonconformityService {
 
@@ -31,10 +34,15 @@ public class NonconformityServiceImpl implements NonconformityService {
     }
 
     @Override
-    public NonConformity readNonconformityDefault(InforContext context) throws InforException {
+    public NonConformity readNonconformityDefault(InforContext context, String organization) throws InforException {
         MP3396_GetNonconformityDefault_001 getNonconformityDefault = new MP3396_GetNonconformityDefault_001();
 
-        getNonconformityDefault.setORGANIZATIONID(tools.getOrganization(context));
+        if (isEmpty(organization)) {
+            getNonconformityDefault.setORGANIZATIONID(tools.getOrganization(context));
+        } else {
+            getNonconformityDefault.setORGANIZATIONID(new ORGANIZATIONID_Type());
+            getNonconformityDefault.getORGANIZATIONID().setORGANIZATIONCODE(organization);
+        }
 
         MP3396_GetNonconformityDefault_001_Result result =
                 tools.performInforOperation(context, inforws::getNonconformityDefaultOp, getNonconformityDefault);

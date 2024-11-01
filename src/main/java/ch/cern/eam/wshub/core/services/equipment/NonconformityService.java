@@ -10,7 +10,7 @@ import ch.cern.eam.wshub.core.tools.InforException;
 public interface NonconformityService {
 
     @Operation(logOperation = INFOR_OPERATION.NONCONF_RD)
-    NonConformity readNonconformityDefault(InforContext context) throws InforException;
+    NonConformity readNonconformityDefault(InforContext context, String organization) throws InforException;
 
     @Operation(logOperation = INFOR_OPERATION.NONCONF_C, logDataReference1 = LogDataReferenceType.RESULT)
     String createNonconformity(InforContext context, NonConformity nonconformityParam) throws InforException;

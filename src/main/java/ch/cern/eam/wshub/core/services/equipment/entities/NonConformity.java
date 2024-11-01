@@ -3,16 +3,21 @@ package ch.cern.eam.wshub.core.services.equipment.entities;
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
 import ch.cern.eam.wshub.core.annotations.GridField;
 import ch.cern.eam.wshub.core.annotations.InforField;
+import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Date;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 
 @Getter
 @Setter
@@ -457,6 +462,10 @@ public class NonConformity {
     @InforField(xpath = "StandardUserDefinedFields")
     private UserDefinedFields userDefinedFields;
 
+    @Transient
+    @InforField(xpath = "USERDEFINEDAREA")
+    private CustomField[] customFields;
+
     @XmlJavaTypeAdapter(DateAdapter.class)
     public Date getNextInspectDateOverride() {
         return nextInspectDateOverride;
@@ -480,5 +489,16 @@ public class NonConformity {
     @XmlJavaTypeAdapter(DateAdapter.class)
     public Date getRepairDate() {
         return repairDate;
+    }
+
+    @JsonProperty("customField")
+    @XmlElementWrapper(name = "customFields")
+    @XmlElement(name = "customField")
+    public CustomField[] getCustomFields() {
+        return customFields;
+    }
+
+    public void setCustomFields(CustomField[] customFields) {
+        this.customFields = customFields;
     }
 }
