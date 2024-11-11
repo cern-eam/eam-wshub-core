@@ -20,9 +20,9 @@ import net.datastream.schemas.mp_results.mp7863_001.MP7863_GetCustomerRentalAdju
 import net.datastream.schemas.mp_results.mp7864_001.MP7864_AddCustomerRentalAdjustment_001_Result;
 import net.datastream.schemas.mp_results.mp7865_001.MP7865_SyncCustomerRentalAdjustment_001_Result;
 import net.datastream.schemas.mp_results.mp7866_001.MP7866_DeleteCustomerRentalAdjustment_001_Result;
+
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Objects;
