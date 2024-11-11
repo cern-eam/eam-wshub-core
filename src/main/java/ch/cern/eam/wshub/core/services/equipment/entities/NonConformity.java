@@ -501,4 +501,5 @@ public class NonConformity {
     public void setCustomFields(CustomField[] customFields) {
         this.customFields = customFields;
     }
+
 }
