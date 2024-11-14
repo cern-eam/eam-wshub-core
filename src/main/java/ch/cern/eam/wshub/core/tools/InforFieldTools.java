@@ -93,18 +93,23 @@ public class InforFieldTools {
      */
     private <I,W> void setInforValue(W wshubObject, Field wshubField, I inforObject, InforContext context ) throws InforException {
         InforField inforField = wshubField.getAnnotation(InforField.class);
-        List<String> fieldNamePath = convertXPathToPropertyChain(inforObject.getClass(), inforField.xpath()[0], inforField.enforceValidXpath());
-        try {
-            wshubField.setAccessible(true);
-            Object wshubFieldValue = wshubField.get(wshubObject);
-            setInforFieldByPath(inforObject, fieldNamePath, wshubFieldValue, wshubField, context);
-        } 
-        catch (InforException exception) {
-        	throw exception;
-        }
-        catch (Exception exception ) {
-            exception.printStackTrace();
-            System.out.println("Problem: " + exception.getMessage());
+        for (String xpath: inforField.xpath()) {
+            List<String> fieldNamePath = convertXPathToPropertyChain(inforObject.getClass(), xpath, inforField.enforceValidXpath());
+            try {
+                wshubField.setAccessible(true);
+                Object wshubFieldValue = wshubField.get(wshubObject);
+                setInforFieldByPath(inforObject, fieldNamePath, wshubFieldValue, wshubField, context);
+                if (!fieldNamePath.isEmpty()) {
+                    // This will allow multiple xpaths
+                    break;
+                }
+            } catch (InforException exception) {
+                throw exception;
+            } catch (Exception exception ) {
+                // Silence constant errors
+//                exception.printStackTrace();
+//                System.out.println("Problem: " + exception.getMessage());
+            }
         }
     }
 

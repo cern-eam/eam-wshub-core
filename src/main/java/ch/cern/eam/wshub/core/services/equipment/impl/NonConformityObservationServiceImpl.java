@@ -47,7 +47,7 @@ public class NonConformityObservationServiceImpl implements NonConformityObserva
 
     @Override
     public String createNonConformityObservation(InforContext context, NonConformityObservation nonConformityObservation) throws InforException {
-        if(nonConformityObservation.getJobNum() != null) {
+        if (nonConformityObservation.getJobNum() == null) {
             MP3442_AddNonconformityObservation_001 addNonconformityObservation = new MP3442_AddNonconformityObservation_001();
             NonconformityObservation nonconformityObservation =  tools.getInforFieldTools().transformWSHubObject(
                     createDefaultNonConformityObservation(), nonConformityObservation, context);
@@ -57,20 +57,12 @@ public class NonConformityObservationServiceImpl implements NonConformityObserva
             MP3442_AddNonconformityObservation_001_Result result = tools.performInforOperation(context, inforws::addNonconformityObservationOp, addNonconformityObservation);
             return result.getResultData().getNONCONFORMITYOBSERVATIONID().getOBSERVATIONPK();
 
-        } else {
-            MP3402_CreateNonconformityObservation_001 addNonconformityObservation = new MP3402_CreateNonconformityObservation_001();
-            NonconformityObservation nonconformityObservation =  tools.getInforFieldTools().transformWSHubObject(
-                    new NonconformityObservation(), nonConformityObservation, context);
-            STANDARDENTITYID_Type typeId = new STANDARDENTITYID_Type();
-            typeId.setDESCRIPTION(nonconformityObservation.getNONCONFORMITYOBSERVATIONID().getDESCRIPTION());
-            typeId.setSTANDARDENTITYCODE(nonconformityObservation.getNONCONFORMITYOBSERVATIONID().getNONCONFORMITYCODE());
-            typeId.setORGANIZATIONID(nonconformityObservation.getNONCONFORMITYOBSERVATIONID().getORGANIZATIONID());
-            addNonconformityObservation.setNONCONFORMITYID(typeId);
-            addNonconformityObservation.setJOBNUM(nonConformityObservation.getJobNum());
-
-            MP3402_CreateNonconformityObservation_001_Result result = tools.performInforOperation(context, inforws::createNonconformityObservationOp, addNonconformityObservation);
-            return result.getResultData().getNONCONFORMITYOBSERVATIONID().getOBSERVATIONPK();
         }
+        MP3402_CreateNonconformityObservation_001 addNonconformityObservation = new MP3402_CreateNonconformityObservation_001();
+        addNonconformityObservation =  tools.getInforFieldTools().transformWSHubObject(
+                addNonconformityObservation, nonConformityObservation, context);
+        MP3402_CreateNonconformityObservation_001_Result result = tools.performInforOperation(context, inforws::createNonconformityObservationOp, addNonconformityObservation);
+        return result.getResultData().getNONCONFORMITYOBSERVATIONID().getOBSERVATIONPK();
     }
 
 
