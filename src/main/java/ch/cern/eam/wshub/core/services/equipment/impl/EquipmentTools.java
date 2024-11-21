@@ -53,10 +53,18 @@ public class EquipmentTools {
         gridRequest.addFilter("obj_code", equipmentCode, "=", GridRequestFilter.JOINER.AND);
         gridRequest.addFilter("obj_org", tools.getOrganizationCode(inforContext, organization), "=");
         gridRequest.addParam("parameter.lastupdated", "31-JAN-1970");
-        String systemType = extractSingleResult(gridsService.executeQuery(inforContext, gridRequest), "obj_obrtype");
+        final GridRequestResult gridRequestResult1 = gridsService.executeQuery(inforContext, gridRequest);
+        String systemType = extractSingleResult(gridRequestResult1, "obj_obrtype");
 
-        if(systemType == null) {
-            throw tools.generateFault("The equipment record couldn't be found.");
+        if (systemType == null) {
+            GridRequest gridRequest2 = new GridRequest("OSOBJL", GridRequest.GRIDTYPE.LIST);
+            gridRequest2.addFilter("equipmentno", equipmentCode, "=", GridRequestFilter.JOINER.AND);
+            gridRequest2.addFilter("organization", tools.getOrganizationCode(inforContext, organization), "=");
+            final GridRequestResult gridRequestResult = gridsService.executeQuery(inforContext, gridRequest2);
+            if (gridRequestResult.getRows().length > 0) {
+                return "L";
+            }
+            throw Tools.generateFault("The equipment record couldn't be found.");
         }
 
         return systemType;

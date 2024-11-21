@@ -203,9 +203,9 @@ public class InforFieldTools {
                 }
                 return result;
             } catch (Exception e) {
-                if (enforceValidXpath) {
-                    System.out.println("Couldn't extract path for: " + xpath);
-                }
+//                if (enforceValidXpath) {
+//                    System.out.println(" Couldn't extract path for: " + xpath);
+//                }
             }
             return result;
     }
