@@ -22,7 +22,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 @Getter
 @Setter
 @ToString
-@JsonInclude(JsonInclude.Include.NON_NULL)
+//@JsonInclude(JsonInclude.Include.NON_NULL)
 public class NonConformity {
     @GridField(name = "description")
     @InforField(xpath = "NONCONFORMITYID/DESCRIPTION")
