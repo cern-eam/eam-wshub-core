@@ -23,11 +23,9 @@ import net.datastream.wsdls.inforws.InforWebServicesPT;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -309,32 +307,24 @@ public class InforGrids implements Serializable {
 		//
 		// FILTERS
 		//
-		if (gridRequest.getGridRequestFilters() != null && gridRequest.getGridRequestFilters().size() > 0) {
+		if (gridRequest.getGridRequestFilters() != null && !gridRequest.getGridRequestFilters().isEmpty()) {
 			int counter = 0;
 			for (GridRequestFilter filter: gridRequest.getGridRequestFilters()) {
+				if ("IN".equals(filter.getOperator())) {
+					counter = createInGridFilter(multiaddon_filters, filter, counter);
+					continue;
+				}
 				MADDON_FILTER inforFilter = new MADDON_FILTER();
 				inforFilter.setSEQNUM(BigInteger.valueOf(counter++));
-
-				// JOINER
-				if (filter.getJoiner() == GridRequestFilter.JOINER.AND) {
-					inforFilter.setJOINER(AND_OR.AND);
+				if (filter.getJoiner() != null) {
+					inforFilter.setJOINER(filter.getJoiner().getEamValue());
 				}
-				if (filter.getJoiner() == GridRequestFilter.JOINER.OR) {
-					inforFilter.setJOINER(AND_OR.OR);
-				}
-				//
 				inforFilter.setOPERATOR(filter.getOperator());
 				inforFilter.setALIAS_NAME(filter.getFieldName());
-				try {
-					String fieldValue = applicationData.isEncodeGridFilter() && filter.getFieldValue() != null ?
-							java.net.URLEncoder.encode(filter.getFieldValue(), "UTF-8")
-							: filter.getFieldValue();
-					inforFilter.setVALUE(fieldValue);
-				} catch (UnsupportedEncodingException e) {
-					tools.log(Level.WARNING, e.getMessage());
-				}
+				getFilterValue(filter).ifPresent(inforFilter::setVALUE);
 				inforFilter.setLPAREN(tools.getDataTypeTools().decodeBoolean(filter.getLeftParenthesis()));
 				inforFilter.setRPAREN(tools.getDataTypeTools().decodeBoolean(filter.getRightParenthesis()));
+				// Translate operators
 				switch(inforFilter.getOPERATOR()) {
 					case "EQUALS":
 						inforFilter.setOPERATOR("=");
@@ -415,6 +405,67 @@ public class InforGrids implements Serializable {
 			default:
 				return content;
 		}
+	}
+
+	private int createInGridFilter(MULTIADDON_FILTERS multiaddon_filters, GridRequestFilter gridRequestFilter, int counter) {
+		if (gridRequestFilter.getLeftParenthesis()) {
+			counter = addDumbParenthesisFilter(multiaddon_filters, counter, gridRequestFilter, true);
+		}
+		AtomicInteger counterWrapper = new AtomicInteger(counter);
+		getFilterValue(gridRequestFilter).ifPresent(values -> {
+			String[] splitValues = values.split(",");
+			for (int i = 0; i < splitValues.length; i++) {
+				boolean isFirst = i == 0;
+				boolean isLast = i == splitValues.length - 1;
+				MADDON_FILTER filter = new MADDON_FILTER();
+				filter.setSEQNUM(BigInteger.valueOf(counterWrapper.getAndIncrement()));
+                filter.setOPERATOR(Operator.EQUALS.getValue());
+                filter.setALIAS_NAME(gridRequestFilter.getFieldName());
+				filter.setVALUE(splitValues[i]);
+				Optional.ofNullable(isLast ? gridRequestFilter.getJoiner() : GridRequestFilter.JOINER.OR)
+						.ifPresent(joiner -> filter.setJOINER(joiner.getEamValue()));
+                if (isFirst) {
+                    filter.setLPAREN(tools.getDataTypeTools().decodeBoolean(Boolean.TRUE));
+                }
+				if (isLast) {
+					filter.setRPAREN(tools.getDataTypeTools().decodeBoolean(Boolean.TRUE));
+				}
+				multiaddon_filters.getMADDON_FILTER().add(filter);
+			}
+		});
+		counter = counterWrapper.get();
+		if (gridRequestFilter.getRightParenthesis()) {
+			counter = addDumbParenthesisFilter(multiaddon_filters, counter, gridRequestFilter, false);
+		}
+		return counter;
+	}
+
+	private int addDumbParenthesisFilter(MULTIADDON_FILTERS multiaddon_filters, int counter, GridRequestFilter gridRequestFilter, boolean isLeft) {
+		MADDON_FILTER parenthesisFilter = new MADDON_FILTER();
+		parenthesisFilter.setSEQNUM(BigInteger.valueOf(counter++));
+		Optional.ofNullable(isLeft ? GridRequestFilter.JOINER.AND : gridRequestFilter.getJoiner())
+				.ifPresent(joiner -> parenthesisFilter.setJOINER(joiner.getEamValue()));
+		parenthesisFilter.setOPERATOR(Operator.NOT_EMPTY.getValue());
+		parenthesisFilter.setALIAS_NAME(gridRequestFilter.getFieldName());
+		if (isLeft) {
+			parenthesisFilter.setLPAREN(tools.getDataTypeTools().decodeBoolean(Boolean.TRUE));
+		} else {
+			parenthesisFilter.setRPAREN(tools.getDataTypeTools().decodeBoolean(Boolean.TRUE));
+		}
+		multiaddon_filters.getMADDON_FILTER().add(parenthesisFilter);
+		return counter;
+	}
+
+	private Optional<String> getFilterValue(GridRequestFilter filter) {
+		Optional<String> filterValue = Optional.empty();
+		try {
+			filterValue = Optional.ofNullable(applicationData.isEncodeGridFilter() && filter.getFieldValue() != null ?
+                    java.net.URLEncoder.encode(filter.getFieldValue(), "UTF-8")
+                    : filter.getFieldValue());
+		} catch (UnsupportedEncodingException e) {
+			tools.log(Level.WARNING, e.getMessage());
+		}
+		return filterValue;
 	}
 
 	private GridField decodeInforGridField(FIELD field) {
