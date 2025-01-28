@@ -1,6 +1,7 @@
 package ch.cern.eam.wshub.core.services.equipment.impl;
 
 import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.services.entities.EntityOrganizationCodePair;
 import ch.cern.eam.wshub.core.services.equipment.NonconformityService;
 import ch.cern.eam.wshub.core.services.equipment.entities.NonConformity;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
@@ -79,10 +80,10 @@ public class NonconformityServiceImpl implements NonconformityService {
     private net.datastream.schemas.mp_entities.nonconformity_001.Nonconformity readNonconformityInfor(
             InforContext context, String nonconformityCode) throws InforException {
         MP3400_GetNonconformity_001 getNonconformity = new MP3400_GetNonconformity_001();
-
+        EntityOrganizationCodePair entityOrganizationCodePair= Tools.extractEntityOrganizationCodePair(nonconformityCode);
         getNonconformity.setNONCONFORMITYID(new STANDARDENTITYID_Type());
-        getNonconformity.getNONCONFORMITYID().setSTANDARDENTITYCODE(nonconformityCode);
-        getNonconformity.getNONCONFORMITYID().setORGANIZATIONID(tools.getOrganization(context));
+        getNonconformity.getNONCONFORMITYID().setSTANDARDENTITYCODE(entityOrganizationCodePair.getEntityCode());
+        getNonconformity.getNONCONFORMITYID().setORGANIZATIONID(tools.getOrganization(context, entityOrganizationCodePair.getOrganizationCode()));
 
         MP3400_GetNonconformity_001_Result result =
                 tools.performInforOperation(context, inforws::getNonconformityOp, getNonconformity);
