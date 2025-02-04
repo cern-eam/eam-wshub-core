@@ -36,6 +36,7 @@ public class GridRequestFilter implements Serializable {
 		this.fieldName = fieldName;
 		this.fieldValue = fieldValue;
 		this.operator = operator;
+		this.joiner = JOINER.AND;
 	}
 
 	public GridRequestFilter(String fieldName, String fieldValue, String operator, JOINER joiner) {

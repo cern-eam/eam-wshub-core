@@ -50,23 +50,22 @@ public class GridsServiceImpl implements GridsService {
 	public GridRequestResult executeQuery(InforContext context, GridRequest gridRequest) throws InforException {
 		if (gridRequest.getUseNative() || !tools.isDatabaseConnectionConfigured()) {
 			return inforGrids.executeQuery(context, gridRequest);
-		} else {
-			tools.demandDatabaseConnection();
-			if (isEmpty(gridRequest.getDataspyID()) || isEmpty(gridRequest.getGridID()) || isEmpty(gridRequest.getGridName())) {
-				GridMetadataRequestResult gridMetadataInfor = getGridMetadataInfor(context, gridRequest.getGridName(), gridRequest.getGridID());
-				gridRequest.setGridID(gridMetadataInfor.getGridCode());
-				gridRequest.setGridName(gridMetadataInfor.getGridName());
-				if (gridRequest.getDataspyID() == null) gridRequest.setDataspyID(gridMetadataInfor.getDataSpyId());
-				if (gridRequest.getUserFunctionName() == null) gridRequest.setUserFunctionName(gridMetadataInfor.getGridName());
-			}
-			
-			if (applicationData.getWithJPAGridsAuthentication()) {
-				// Invoke the EAM login web service before JPA Grid invocation
-				UserSetupServiceImpl.login(context, null, tools, inforws);
-			}
-			GridRequestResult gridRequestResult = jpaGrids.executeQuery(context, gridRequest);
-			return gridRequestResult;
 		}
+		tools.demandDatabaseConnection();
+		if (isEmpty(gridRequest.getDataspyID()) || isEmpty(gridRequest.getGridID()) || isEmpty(gridRequest.getGridName())) {
+			GridMetadataRequestResult gridMetadataInfor = getGridMetadataInfor(context, gridRequest.getGridName(), gridRequest.getGridID());
+			gridRequest.setGridID(gridMetadataInfor.getGridCode());
+			gridRequest.setGridName(gridMetadataInfor.getGridName());
+			if (gridRequest.getDataspyID() == null) gridRequest.setDataspyID(gridMetadataInfor.getDataSpyId());
+			if (gridRequest.getUserFunctionName() == null) gridRequest.setUserFunctionName(gridMetadataInfor.getGridName());
+		}
+
+		if (applicationData.getWithJPAGridsAuthentication()) {
+			// Invoke the EAM login web service before JPA Grid invocation
+			UserSetupServiceImpl.login(context, null, tools, inforws);
+		}
+		GridRequestResult gridRequestResult = jpaGrids.executeQuery(context, gridRequest);
+		return gridRequestResult;
 	}
 
 	public GridMetadataRequestResult getGridMetadataInfor(InforContext context, String gridName) {
