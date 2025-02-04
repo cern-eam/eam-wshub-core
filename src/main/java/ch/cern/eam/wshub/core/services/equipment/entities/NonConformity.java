@@ -437,7 +437,7 @@ public class NonConformity {
 
     @GridField(name = "sourceobservation")
     @InforField(xpath = "TrackingDetails/SOURCEOBSERVATIONNUM")
-    private BigInteger sourceobservation;
+    private BigDecimal sourceobservation;
 
     @GridField(name = "updatedby")
     @InforField(xpath = "TrackingDetails/UPDATEDBY/USERCODE")

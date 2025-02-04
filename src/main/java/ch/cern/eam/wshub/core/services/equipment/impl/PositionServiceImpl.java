@@ -121,7 +121,7 @@ public class PositionServiceImpl implements PositionService {
 		position.setHierarchyPrimarySystemDependent(positionEquipment.getPositionParentHierarchy().getPrimarySystemDependency() != null);
 
 		tools.processRunnables(
-				() -> userDefinedListService.readUDLToEntity(context, position, new EntityId("OBJ", positionCode)),
+				() -> { if(tools.isDatabaseConnectionConfigured()) userDefinedListService.readUDLToEntity(context, position, new EntityId("OBJ", positionCode)); },
 				() -> position.setSystemStatusCode(tools.getFieldDescriptionsTools().readSystemCodeForUserCode(context, "OBST", position.getStatusCode()))
 		);
 

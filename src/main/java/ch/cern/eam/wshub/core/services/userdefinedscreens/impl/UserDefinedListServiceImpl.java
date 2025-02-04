@@ -103,6 +103,7 @@ public class UserDefinedListServiceImpl implements UserDefinedListService {
 
     @Override
     public HashMap<String, ArrayList<UDLValue>> readUserDefinedLists(InforContext context, UDLEntryId entryId) throws InforException {
+
         List<UDLEntry> entries = readUserDefinedListEntries(context, entryId);
 
         HashMap<String, ArrayList<UDLValue>> map = new HashMap<>();
