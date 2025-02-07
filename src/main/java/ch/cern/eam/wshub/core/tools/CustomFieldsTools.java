@@ -40,7 +40,7 @@ public class CustomFieldsTools {
     // CUSTOM FIELDS
     //
 
-    // INFOR CUSTOM FIELD -> MIDDLE TIER CUSTOM FIELD
+    // EAM CUSTOM FIELD -> MIDDLE TIER CUSTOM FIELD
     public CustomField decodeEAMCustomField(CUSTOMFIELD customFieldEAM, EAMContext eamContext) {
         CustomField customField = new CustomField();
 
@@ -105,7 +105,7 @@ public class CustomFieldsTools {
         return customField;
     }
 
-    // MIDDLE TIER CUSTOM FIELD -> INFOR CUSTOM FIELD
+    // MIDDLE TIER CUSTOM FIELD -> EAM CUSTOM FIELD
     public CUSTOMFIELD encodeEAMCustomField(CUSTOMFIELD customFieldEAM, CustomField customField)
             throws EAMException {
         //

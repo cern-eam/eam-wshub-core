@@ -25,7 +25,7 @@ public interface MECService {
     @Operation(logOperation = EAM_OPERATION.MEC_ADD_BATCH, logDataReference1 = LogDataReferenceType.RESULT)
     BatchResponse<String> addWorkOrderEquipmentBatch(EAMContext context, List<MEC> mecsToAdd) throws EAMException;
 
-    @Operation(logOperation = EAM_OPERATION.MEC_GET_INFOR, logDataReference1 = LogDataReferenceType.RESULT)
+    @Operation(logOperation = EAM_OPERATION.MEC_GET_EAM, logDataReference1 = LogDataReferenceType.RESULT)
     WorkOrderEquipment getWorkOrderMecEAM(EAMContext context, String workorderID) throws EAMException;
 
     @Operation(logOperation = EAM_OPERATION.MEC_ADD, logDataReference1 = LogDataReferenceType.RESULT)

@@ -38,7 +38,7 @@ public class PartManufacturerServiceImpl implements PartManufacturerService {
 		tools.getEAMFieldTools().transformWSHubObject(partManufacturerEAM, partManufacturerParam, context);
 
 		//
-		// CALL INFOR WS
+		// CALL EAM WS
 		//
 		MP0261_AddPartManufacturer_001 addPartManufacturer = new  MP0261_AddPartManufacturer_001();
 		addPartManufacturer.setPartManufacturer(partManufacturerEAM);
@@ -74,7 +74,7 @@ public class PartManufacturerServiceImpl implements PartManufacturerService {
 		//TRANSFORM
 		tools.getEAMFieldTools().transformWSHubObject(partManufacturerEAM, partManufacturerParam, context);
 
-		//CALL INFOR WS
+		//CALL EAM WS
 
 		MP0262_SyncPartManufacturer_001 syncPartManufacturer = new  MP0262_SyncPartManufacturer_001();
 		syncPartManufacturer.setPartManufacturer(partManufacturerEAM);

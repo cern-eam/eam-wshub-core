@@ -1,14 +1,14 @@
 package ch.cern.eam.wshub.core.services.equipment.entities;
 
+import ch.cern.eam.wshub.core.annotations.EAMField;
 import ch.cern.eam.wshub.core.annotations.GridField;
-import ch.cern.eam.wshub.core.annotations.InforField;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.persistence.Transient;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -22,255 +22,250 @@ public class NonConformityObservation implements Serializable {
 
     // Panel 1
     @GridField(name = "nonconformitypk")
-    @InforField(xpath = "NONCONFORMITYOBSERVATIONID/OBSERVATIONPK")
+    @EAMField(xpath = "NONCONFORMITYOBSERVATIONID/OBSERVATIONPK")
     private String observationPk;
 
     @GridField(name = "organization")
-    @InforField(xpath = "NONCONFORMITYOBSERVATIONID/ORGANIZATIONID/ORGANIZATIONCODE")
+    @EAMField(xpath = "NONCONFORMITYOBSERVATIONID/ORGANIZATIONID/ORGANIZATIONCODE")
     private String organizationCode;
 
     @GridField(name = "description")
-    @InforField(xpath = "NONCONFORMITYID/DESCRIPTION")
+    @EAMField(xpath = "NONCONFORMITYID/DESCRIPTION")
     private String description;
 
     @GridField(name = "nonconformity")
-    @InforField(xpath = {"NONCONFORMITYOBSERVATIONID/NONCONFORMITYCODE", "NONCONFORMITYID/STANDARDENTITYCODE"})
+    @EAMField(xpath = {"NONCONFORMITYOBSERVATIONID/NONCONFORMITYCODE", "NONCONFORMITYID/STANDARDENTITYCODE"})
     private String nonConformityCode;
 
     @GridField(name = "nonconformity")
-    @InforField(xpath = "NONCONFORMITYOBSERVATIONID/NONCONFORMITYCODE")
+    @EAMField(xpath = "NONCONFORMITYOBSERVATIONID/NONCONFORMITYCODE")
     private String code;
 
 
     //Panel Nonconformity Details
     @GridField(name = "equipment")
-    @InforField(xpath = "EQUIPMENTID/EQUIPMENTCODE")
+    @EAMField(xpath = "EQUIPMENTID/EQUIPMENTCODE")
     private String equipmentCode;
 
     @GridField(name = "equipmentorg")
-    @InforField(xpath = "EQUIPMENTID/ORGANIZATIONID/ORGANIZATIONCODE")
+    @EAMField(xpath = "EQUIPMENTID/ORGANIZATIONID/ORGANIZATIONCODE")
     private String equipmentOrg;
 
     @GridField(name = "locationdesc")
-    @InforField(xpath = "LOCATIONID/DESCRIPTION")
+    @EAMField(xpath = "LOCATIONID/DESCRIPTION")
     private String locationDesc;
 
     @GridField(name = "location")
-    @InforField(xpath = "LOCATIONID/LOCATIONCODE")
+    @EAMField(xpath = "LOCATIONID/LOCATIONCODE")
     private String locationCode;
 
     @GridField(name = "locationorg")
-    @InforField(xpath = "LOCATIONID/ORGANIZATIONID/ORGANIZATIONCODE")
+    @EAMField(xpath = "LOCATIONID/ORGANIZATIONID/ORGANIZATIONCODE")
     private String locationOrgCode;
 
     @GridField(name = "department")
-    @InforField(xpath = "DEPARTMENTID/DEPARTMENTCODE")
+    @EAMField(xpath = "DEPARTMENTID/DEPARTMENTCODE")
     private String department;
 
     @GridField(name = "part")
-    @InforField(xpath = "PARTID/PARTCODE")
+    @EAMField(xpath = "PARTID/PARTCODE")
     private String partCode;
 
     @GridField(name = "partdesc")
-    @InforField(xpath = "PARTID/DESCRIPTION")
+    @EAMField(xpath = "PARTID/DESCRIPTION")
     private String partDesc;
 
     @GridField(name = "type")
-    @InforField(xpath = "NONCONFORMITYTYPEID/NONCONFORMITYTYPECODE")
+    @EAMField(xpath = "NONCONFORMITYTYPEID/NONCONFORMITYTYPECODE")
     private String typeCode;
 
     @GridField(name = "typedesc")
-    @InforField(xpath = "NONCONFORMITYTYPEID/DESCRIPTION")
+    @EAMField(xpath = "NONCONFORMITYTYPEID/DESCRIPTION")
     private String typeDesc;
 
     @GridField(name = "typeorg")
-    @InforField(xpath = "NONCONFORMITYTYPEID/ORGANIZATIONID/ORGANIZATIONCODE")
+    @EAMField(xpath = "NONCONFORMITYTYPEID/ORGANIZATIONID/ORGANIZATIONCODE")
     private String typeOrgCode;
 
     @GridField(name = "classCode")
-    @InforField(xpath = "CLASSID/CLASSCODE")
+    @EAMField(xpath = "CLASSID/CLASSCODE")
     private String classCode;
 
     @GridField(name = "classorg")
-    @InforField(xpath = "CLASSID/ORGANIZATIONID/ORGANIZATIONCODE")
+    @EAMField(xpath = "CLASSID/ORGANIZATIONID/ORGANIZATIONCODE")
     private String classOrgCode;
 
     @GridField(name = "materialtype")
-    @InforField(xpath = "MATERIALTYPE/USERDEFINEDCODE")
+    @EAMField(xpath = "MATERIALTYPE/USERDEFINEDCODE")
     private String materialType;
 
     @GridField(name = "status")
-    @InforField(xpath = "STATUS/STATUSCODE")
+    @EAMField(xpath = "STATUS/STATUSCODE")
     private String statusCode;
 
     @GridField(name = "priority")
-    @InforField(xpath = "PRIORITY/PRIORITYCODE")
+    @EAMField(xpath = "PRIORITY/PRIORITYCODE")
     private String priority;
 
     @GridField(name = "syslevel")
-    @InforField(xpath = "VMRSCODE/SYSTEMLEVELID/SYSTEMLEVELCODE")
+    @EAMField(xpath = "VMRSCODE/SYSTEMLEVELID/SYSTEMLEVELCODE")
     private String syslevel;
 
     @GridField(name = "asslevel")
-    @InforField(xpath = "VMRSCODE/VMRSASSEMBLYID/ASSEMBLYLEVELID/ASSEMBLYLEVELCODE")
+    @EAMField(xpath = "VMRSCODE/VMRSASSEMBLYID/ASSEMBLYLEVELID/ASSEMBLYLEVELCODE")
     private String asslevel;
 
     @GridField(name = "complevel")
-    @InforField(xpath = "VMRSCODE/VMRSCOMPNENTID/COMPONENTLEVELID/COMPONENTLEVELCODE")
+    @EAMField(xpath = "VMRSCODE/VMRSCOMPNENTID/COMPONENTLEVELID/COMPONENTLEVELCODE")
     private String complevel;
 
     @GridField(name = "aspectcode")
-    @InforField(xpath = "ASPECTID/ASPECTCODE")
+    @EAMField(xpath = "ASPECTID/ASPECTCODE")
     private String aspectCode;
 
     @GridField(name = "aspectdescription")
-    @InforField(xpath = "ASPECTID/DESCRIPTION")
+    @EAMField(xpath = "ASPECTID/DESCRIPTION")
     private String aspectDescription;
 
     @GridField(name = "nonconformitynote")
-    @InforField(xpath = "NONCONFORMITYNOTE")
+    @EAMField(xpath = "NONCONFORMITYNOTE")
     private String nonConformityNote;
 
     //Panel observation details
     @GridField(name = "observation")
-    @InforField(xpath = "NONCONFORMITYOBSERVATIONID/OBSERVATIONNUM")
+    @EAMField(xpath = "NONCONFORMITYOBSERVATIONID/OBSERVATIONNUM")
     private String observationNum;
 
     @GridField(name = "rstatus")
-    @InforField(xpath = "OBSERVATIONSTATUS/STATUSCODE")
+    @EAMField(xpath = "OBSERVATIONSTATUS/STATUSCODE")
     private String observationStatusCode;
 
     @GridField(name = "taskplanchlist")
-    @InforField(xpath = "TASKLISTID/TASKCODE")
+    @EAMField(xpath = "TASKLISTID/TASKCODE")
     private String taskCode;
 
     @GridField(name = "taskplanchlistrev\n")
-    @InforField(xpath = "TASKLISTID/TASKREVISION")
+    @EAMField(xpath = "TASKLISTID/TASKREVISION")
     private String taskRevision;
 
     @GridField(name = "note")
-    @InforField(xpath = "NOTE")
+    @EAMField(xpath = "NOTE")
     private String note;
 
     @GridField(name = "recordedby")
-    @InforField(xpath = "RECORDEDBY/EMPLOYEECODE")
+    @EAMField(xpath = "RECORDEDBY/EMPLOYEECODE")
     private String employeeCode;
 
     @GridField(name = "created")
-    @InforField(xpath = "RECORDEDDATE")
+    @EAMField(xpath = "RECORDEDDATE")
     private String recoredDate;
 
     @GridField(name = "severity_display")
-    @InforField(xpath = "OBSERVATIONSEVERITY/USERDEFINEDCODE")
+    @EAMField(xpath = "OBSERVATIONSEVERITY/USERDEFINEDCODE")
     private String severity;
 
     @GridField(name = "intensity_display")
-    @InforField(xpath = "OBSERVATIONINTENSITY/USERDEFINEDCODE")
+    @EAMField(xpath = "OBSERVATIONINTENSITY/USERDEFINEDCODE")
     private String intensity;
 
     @GridField(name = "ncfsize")
-    @InforField(xpath = "OBSERVATIONSIZE")
+    @EAMField(xpath = "OBSERVATIONSIZE")
     private String size;
 
     @GridField(name = "importance")
-    @InforField(xpath = "OBSERVATIONIMPORTANCE/USERDEFINEDCODE")
+    @EAMField(xpath = "OBSERVATIONIMPORTANCE/USERDEFINEDCODE")
     private String importance;
 
     @GridField(name = "workordernum")
-    @InforField(xpath = {"WORKORDERID/JOBNUM", "JOBNUM"})
+    @EAMField(xpath = {"WORKORDERID/JOBNUM", "JOBNUM"})
     private String jobNum;
 
     @GridField(name = "nonconformitybeforemerge")
-    @InforField(xpath = "NONCONFORMITYCODEBEFOREMERGE")
+    @EAMField(xpath = "NONCONFORMITYCODEBEFOREMERGE")
     private String beforeMerge;
 
     @GridField(name = "massacknowledgeddesc")
-    @InforField(xpath = "MASSACKNOWLEDGED/DESCRIPTION")
+    @EAMField(xpath = "MASSACKNOWLEDGED/DESCRIPTION")
     private String acknowledgedDescription;
 
     @GridField(name = "acknowledgedby")
-    @InforField(xpath = "ACKNOWLEDGEDBY/USERCODE")
+    @EAMField(xpath = "ACKNOWLEDGEDBY/USERCODE")
     private String acknowledgedBy;
 
     @GridField(name = "dateacknowledged")
-    @InforField(xpath = "DATEACKNOWLEDGED")
+    @EAMField(xpath = "DATEACKNOWLEDGED")
     private String acknowledgedDate;
 
     @GridField(name = "mobiledateacknowledged")
-    @InforField(xpath = "MOBILEDATEACKNOWLEDGED")
+    @EAMField(xpath = "MOBILEDATEACKNOWLEDGED")
     private String mobileDateAcknowledged;
 
     @GridField(name = "acknowledgedcopiedfromdes")
-    @InforField(xpath = "ACKNOWLEDGEDCOPIEDFROM/DESCRIPTION")
+    @EAMField(xpath = "ACKNOWLEDGEDCOPIEDFROM/DESCRIPTION")
     private String acknowledgedCopiedFrom;
 
     @GridField(name = "acknowledgedsourceobservseq")
-    @InforField(xpath = "ACKNOWLEDGEDSOURCEOBSERVATION/OBSERVATIONNUM")
+    @EAMField(xpath = "ACKNOWLEDGEDSOURCEOBSERVATION/OBSERVATIONNUM")
     private String acknowledgedSourceObservation;
 
     @GridField(name = "conditionscore")
-    @InforField(xpath = "TrackingDetails/CONDITIONSCORE")
+    @EAMField(xpath = "TrackingDetails/CONDITIONSCORE")
     private BigDecimal conditionScore;
 
     @GridField(name = "conditionindex")
-    @InforField(xpath = "TrackingDetails/CONDITIONINDEX/DESCRIPTION")
+    @EAMField(xpath = "TrackingDetails/CONDITIONINDEX/DESCRIPTION")
     private String conditionDescription;
 
     @GridField(name = "nextinspectdate")
-    @InforField(xpath = "TrackingDetails/NEXTINSPECTIONDATE")
+    @EAMField(xpath = "TrackingDetails/NEXTINSPECTIONDATE")
     private Date nextInspectDate;
 
     @Setter
     @GridField(name = "nextinspectdateoverride")
-    @InforField(xpath = "TrackingDetails/NEXTINSPECTIONDATEOVERRIDE")
+    @EAMField(xpath = "TrackingDetails/NEXTINSPECTIONDATEOVERRIDE")
     private Date nextInspectDateOverride;
 
     @GridField(name = "repairdate")
-    @InforField(xpath = "TrackingDetails/RECOMMENDEDREPAIRDATE")
+    @EAMField(xpath = "TrackingDetails/RECOMMENDEDREPAIRDATE")
     private Date repairDate;
 
     @GridField(name = "ncfestlaborcost")
-    @InforField(xpath = "TrackingDetails/ESTIMATEDLABORCOST")
+    @EAMField(xpath = "TrackingDetails/ESTIMATEDLABORCOST")
     private BigDecimal ncfestlaborcost;
 
     @GridField(name = "ncfestmatlcost")
-    @InforField(xpath = "TrackingDetails/ESTIMATEDMATERIALCOST")
+    @EAMField(xpath = "TrackingDetails/ESTIMATEDMATERIALCOST")
     private BigDecimal ncfestmatlcost;
 
     @GridField(name = "ncfestmisccost")
-    @InforField(xpath = "TrackingDetails/ESTIMATEDMISCELLANEOUSCOST")
+    @EAMField(xpath = "TrackingDetails/ESTIMATEDMISCELLANEOUSCOST")
     private BigDecimal ncfestmisccost;
 
     @GridField(name = "ncftotalestcost")
-    @InforField(xpath = "TrackingDetails/ESTIMATEDTOTALCOST")
+    @EAMField(xpath = "TrackingDetails/ESTIMATEDTOTALCOST")
     private BigDecimal ncftotalestcost;
 
     @GridField(name = "createdby")
-    @InforField(xpath = "TrackingDetails/CREATEDBY/USERCODE")
+    @EAMField(xpath = "TrackingDetails/CREATEDBY/USERCODE")
     private String createdBy;
 
     @GridField(name = "created")
-    @InforField(xpath = "TrackingDetails/CREATEDDATE")
+    @EAMField(xpath = "TrackingDetails/CREATEDDATE")
     private Date createdDate;
 
     @GridField(name = "updatedby")
-    @InforField(xpath = "TrackingDetails/UPDATEDBY/USERCODE")
+    @EAMField(xpath = "TrackingDetails/UPDATEDBY/USERCODE")
     private String updatedBy;
 
     @Setter
     @GridField(name = "updated")
-    @InforField(xpath = "TrackingDetails/DATEUPDATED")
+    @EAMField(xpath = "TrackingDetails/DATEUPDATED")
     private Date updatedDate;
 
     //Custom fields panel
     @Transient
-    @InforField(xpath = "USERDEFINEDAREA")
+    @EAMField(xpath = "USERDEFINEDAREA")
     private CustomField[] customFields;
-
-    public void setCustomFields(CustomField[] customFields) {
-        this.customFields = customFields;
-    }
-
 
 }
 

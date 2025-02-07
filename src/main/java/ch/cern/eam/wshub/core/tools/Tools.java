@@ -290,7 +290,7 @@ public class Tools {
 	}
 
 	//
-	// INFOR CONTEXT
+	// EAM CONTEXT
 	//
 	public EAMContext getEAMContext(Credentials credentials, String sessionID) {
 		if (credentials != null) {

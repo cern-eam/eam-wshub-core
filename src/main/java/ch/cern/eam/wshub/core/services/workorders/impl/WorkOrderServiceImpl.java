@@ -323,7 +323,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		// Has to be nullified, otherwise the activity dates are not updated correctly (EAM Incident 16467875)
 		eamWorkOrder.setActivities(null);
 
-		// CALL INFOR WEB SERVICE
+		// CALL EAM WEB SERVICE
 		MP0025_SyncWorkOrder_001 syncWO = new MP0025_SyncWorkOrder_001();
 		syncWO.setWorkOrder(eamWorkOrder);
 

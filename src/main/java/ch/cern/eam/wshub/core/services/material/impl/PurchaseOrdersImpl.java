@@ -48,7 +48,7 @@ public class PurchaseOrdersImpl implements PurchaseOrdersService {
 		this.initializeEAMPOObject(eamPurchaseOrder, purchaseOrderParam);
 		
 		//
-		// CALL INFOR WEB SERVICE
+		// CALL EAM WEB SERVICE
 		//
 		MP0415_SyncPurchaseOrder_001 syncPO = new MP0415_SyncPurchaseOrder_001();
 		syncPO.setPurchaseOrder(eamPurchaseOrder);

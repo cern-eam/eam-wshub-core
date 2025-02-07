@@ -85,7 +85,7 @@ public class StandardWorkOrderServiceImpl implements StandardWorkOrderService {
         tools.getEAMFieldTools().transformWSHubObject(eamStandardWorkOrder, standardWorkOrder, context);
 
         //
-        // CALL INFOR WEB SERVICE
+        // CALL EAM WEB SERVICE
         //
         MP7080_SyncStandardWorkOrder_001 syncStandardWorkOrder = new MP7080_SyncStandardWorkOrder_001();
         syncStandardWorkOrder.setStandardWorkOrder(eamStandardWorkOrder);
