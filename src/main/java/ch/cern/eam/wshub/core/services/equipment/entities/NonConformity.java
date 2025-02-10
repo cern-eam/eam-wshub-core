@@ -5,6 +5,7 @@ import ch.cern.eam.wshub.core.annotations.EAMField;
 import ch.cern.eam.wshub.core.annotations.GridField;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Transient;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlElementWrapper;
