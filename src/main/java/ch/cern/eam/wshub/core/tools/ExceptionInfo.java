@@ -20,6 +20,7 @@ public class ExceptionInfo implements Serializable {
 	}
 	private String location;
 	private String message;
+	private String name;
 	
 	public String getLocation() {
 		return location;
@@ -32,6 +33,14 @@ public class ExceptionInfo implements Serializable {
 	}
 	public void setMessage(String message) {
 		this.message = message;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	@Override

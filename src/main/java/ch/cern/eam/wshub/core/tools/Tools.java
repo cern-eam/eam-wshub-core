@@ -392,7 +392,9 @@ public class Tools {
 			sessionTerminationScenario = null;
 		}
 
-		if(context.getCredentials() != null) {
+		if(context.getCredentials() != null &&
+				isNotEmpty(context.getCredentials().getUsername()) &&
+				isNotEmpty(context.getCredentials().getPassword())) {
 			security = createSecurityHeader(context);
 		} else {
 			holder = new Holder<>(createInforSession(context));

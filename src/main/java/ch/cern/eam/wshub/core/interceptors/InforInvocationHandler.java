@@ -168,7 +168,14 @@ public class InforInvocationHandler<T> implements InvocationHandler {
                     exceptionInfo.setLocation(locationString);
                 }
 
-                exceptionInfo.setMessage(nodeList.item(i).getFirstChild().getLastChild().getTextContent());
+                Node exceptionNode = nodeList.item(i).getFirstChild();
+
+                exceptionInfo.setMessage(exceptionNode.getLastChild().getTextContent());
+
+                Node nameAttribute = exceptionNode.getAttributes().getNamedItem("name");
+                if (nameAttribute != null) {
+                    exceptionInfo.setName(nameAttribute.getTextContent());
+                }
                 exs.add(exceptionInfo);
             }
         } catch (Exception e) {
