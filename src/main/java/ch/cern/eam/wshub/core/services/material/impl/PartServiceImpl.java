@@ -95,7 +95,7 @@ public class PartServiceImpl implements PartService {
 			() -> part.setCategoryDesc(tools.getFieldDescriptionsTools().readCategoryDesc(context, part.getCategoryCode())),
 			() -> part.setUOMDesc(tools.getFieldDescriptionsTools().readUOMDesc(context, part.getUOM())),
 			() -> part.setCommodityDesc(tools.getFieldDescriptionsTools().readCommodityDesc(context,  part.getCommodityCode())),
-			() -> userDefinedListService.readUDLToEntity(context, part, new EntityId("PART", extractEntityCode(partCode)))
+			() -> { if(tools.isDatabaseConnectionConfigured()) userDefinedListService.readUDLToEntity(context, part, new EntityId("PART", extractEntityCode(partCode))); }
 		);
 
 		return part;

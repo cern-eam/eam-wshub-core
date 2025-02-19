@@ -1,11 +1,27 @@
 package ch.cern.eam.wshub.core.services.grids.entities;
 
+import net.datastream.schemas.mp_functions.gridrequest.AND_OR;
+
 import java.io.Serializable;
 
 public class GridRequestFilter implements Serializable {
 	private static final long serialVersionUID = 2336324664740111857L;
 
-	public enum JOINER {AND, OR};
+	public enum JOINER {
+		AND(AND_OR.AND),
+		OR(AND_OR.OR);
+
+		private final AND_OR eamValue;
+
+		JOINER(AND_OR eamValue) {
+			this.eamValue = eamValue;
+		}
+
+		public AND_OR getEamValue() {
+			return eamValue;
+		}
+
+	}
 
 	private String fieldName;
 	private String fieldValue;
@@ -20,6 +36,7 @@ public class GridRequestFilter implements Serializable {
 		this.fieldName = fieldName;
 		this.fieldValue = fieldValue;
 		this.operator = operator;
+		this.joiner = JOINER.AND;
 	}
 
 	public GridRequestFilter(String fieldName, String fieldValue, String operator, JOINER joiner) {

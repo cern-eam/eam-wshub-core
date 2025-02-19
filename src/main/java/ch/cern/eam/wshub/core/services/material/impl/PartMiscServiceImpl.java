@@ -231,6 +231,10 @@ public class PartMiscServiceImpl implements PartMiscService {
 
 			IssueReturnTransactionLine issueReturnTransactionLine = tools.getInforFieldTools().transformWSHubObject(new IssueReturnTransactionLine(), line, context);
 
+			if (line.getPartOrg() != null) {
+				issueReturnTransactionLine.getPARTID().getORGANIZATIONID().setORGANIZATIONCODE(line.getPartOrg());
+			}
+
 			if (issueReturnTransactionLine.getLOT() == null) {
 				issueReturnTransactionLine.setLOT("*");
 			}

@@ -1,5 +1,6 @@
 package ch.cern.eam.wshub.core.services.casemanagement.entities;
 
+import ch.cern.eam.wshub.core.adapters.DateAdapter;
 import ch.cern.eam.wshub.core.annotations.BooleanType;
 import ch.cern.eam.wshub.core.annotations.InforField;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
@@ -9,6 +10,7 @@ import net.datastream.schemas.mp_fields.StandardUserDefinedFields;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -284,6 +286,7 @@ public class EAMCaseManagement implements Serializable {
 		this.reviewedByDesign = reviewedByDesign;
 	}
 
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	public Date getDateReviewed() {
 		return dateReviewed;
 	}
@@ -300,6 +303,7 @@ public class EAMCaseManagement implements Serializable {
 		this.createdBy = createdBy;
 	}
 
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	public Date getCreatedDate() {
 		return createdDate;
 	}
@@ -316,6 +320,7 @@ public class EAMCaseManagement implements Serializable {
 		this.updatedby = updatedby;
 	}
 
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	public Date getDateUpdated() {
 		return dateUpdated;
 	}
@@ -388,6 +393,7 @@ public class EAMCaseManagement implements Serializable {
 		this.costCode = costCode;
 	}
 
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	public Date getEventStartDate() {
 		return eventStartDate;
 	}
@@ -396,6 +402,7 @@ public class EAMCaseManagement implements Serializable {
 		this.eventStartDate = eventStartDate;
 	}
 
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	public Date getEventEndDate() {
 		return eventEndDate;
 	}
@@ -556,6 +563,7 @@ public class EAMCaseManagement implements Serializable {
 		this.requestedBy = requestedBy;
 	}
 
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	public Date getDateRequested() {
 		return dateRequested;
 	}
@@ -612,6 +620,7 @@ public class EAMCaseManagement implements Serializable {
 		this.assignedToEmail = assignedToEmail;
 	}
 
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	public Date getScheduledStartDate() {
 		return scheduledStartDate;
 	}
@@ -620,6 +629,7 @@ public class EAMCaseManagement implements Serializable {
 		this.scheduledStartDate = scheduledStartDate;
 	}
 
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	public Date getScheduledEndDate() {
 		return scheduledEndDate;
 	}
@@ -628,6 +638,7 @@ public class EAMCaseManagement implements Serializable {
 		this.scheduledEndDate = scheduledEndDate;
 	}
 
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	public Date getRequestedStart() {
 		return requestedStart;
 	}
@@ -636,6 +647,7 @@ public class EAMCaseManagement implements Serializable {
 		this.requestedStart = requestedStart;
 	}
 
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	public Date getRequestedEnd() {
 		return requestedEnd;
 	}
@@ -644,6 +656,7 @@ public class EAMCaseManagement implements Serializable {
 		this.requestedEnd = requestedEnd;
 	}
 
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	public Date getStartDate() {
 		return startDate;
 	}
@@ -652,6 +665,7 @@ public class EAMCaseManagement implements Serializable {
 		this.startDate = startDate;
 	}
 
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	public Date getCompletedDate() {
 		return completedDate;
 	}

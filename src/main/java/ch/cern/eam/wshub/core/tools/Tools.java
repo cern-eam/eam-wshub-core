@@ -1,9 +1,7 @@
 package ch.cern.eam.wshub.core.tools;
 
 import ch.cern.eam.wshub.core.client.InforContext;
-import ch.cern.eam.wshub.core.services.entities.BatchResponse;
-import ch.cern.eam.wshub.core.services.entities.BatchSingleResponse;
-import ch.cern.eam.wshub.core.services.entities.Credentials;
+import ch.cern.eam.wshub.core.services.entities.*;
 import net.datastream.schemas.mp_fields.*;
 import net.datastream.schemas.mp_functions.MessageConfigType;
 import net.datastream.schemas.mp_functions.MessageItemConfigType;
@@ -198,6 +196,17 @@ public class Tools {
 			return code.split("#")[1];
 		}
 		return null;
+	}
+
+	public static EntityOrganizationCodePair extractEntityOrganizationCodePair(String code) {
+		if (isEmpty(code)) {
+			return new EntityOrganizationCodePair();
+		}
+		String[] parts = code.split("#");
+		if (parts.length == 1) {
+			return new EntityOrganizationCodePair(code);
+		}
+		return new EntityOrganizationCodePair(parts[0], parts[1]);
 	}
 
 	//
