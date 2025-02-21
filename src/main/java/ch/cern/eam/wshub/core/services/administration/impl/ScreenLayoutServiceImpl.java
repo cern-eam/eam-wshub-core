@@ -127,10 +127,10 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
             final Optional<String> desc = returnFields.keySet().stream().filter(s -> s.endsWith("desc")).findFirst();
             if (desc.isPresent()) {
                 map.put("desc", GridTools.getCellContent(returnFields.get(desc.get()), row));
-            } else if (returnFields.size() > 1) {
-                map.put("desc", GridTools.getCellContent(listReturnFields.get(1), row));
             } else if ( GridTools.getCellContent("des_text", row) != null) {
                 map.put("desc", GridTools.getCellContent("des_text", row));
+            } else if (returnFields.size() > 1) {
+                map.put("desc", GridTools.getCellContent(listReturnFields.get(1), row));
             }
             listReturnFields.forEach(str -> map.put(str, GridTools.getCellContent(str, row)));
             return map;
