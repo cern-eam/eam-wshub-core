@@ -18,6 +18,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "R5OBJECTS")
@@ -125,6 +126,9 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
     @Transient
     @EAMField(xpath = "USERDEFINEDAREA")
     private CustomField[] customFields;
+
+    @Transient
+    private Map<String, String> customFieldMap;
 
     //
     @Transient
@@ -693,6 +697,14 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
 
     public void setCustomFields(CustomField[] customFields) {
         this.customFields = customFields;
+    }
+
+    public Map<String, String> getCustomFieldMap() {
+        return customFieldMap;
+    }
+
+    public void setCustomFieldMap(Map<String, String> customFieldMap) {
+        this.customFieldMap = customFieldMap;
     }
 
     public String getCategoryCode() {
@@ -1627,6 +1639,7 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
                 + (costCode != null ? "costCode=" + costCode + ", " : "")
                 + (departmentCode != null ? "departmentCode=" + departmentCode + ", " : "")
                 + (departmentDesc != null ? "departmentDesc=" + departmentDesc + ", " : "")
+                + (customFieldMap != null ? "customFieldMap=" + customFieldMap + ", " : "")
                 + (customFields != null ? "customFields=" + Arrays.toString(customFields) + ", " : "")
                 + (comissionDate != null ? "comissionDate=" + comissionDate + ", " : "")
                 + (equipmentValue != null ? "equipmentValue=" + equipmentValue + ", " : "")

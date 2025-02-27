@@ -29,6 +29,7 @@ public class GlobalContext {
     }
 
     public enum TypeCode {
+        A,
         L
     }
     public static String getCode(TypeCode type) {
@@ -43,7 +44,7 @@ public class GlobalContext {
         int cores = Runtime.getRuntime().availableProcessors();
         int threadPoolSize = cores * 2;
 
-        eamClient = new EAMClient.Builder("https://cmmsx-test.cern.ch/axis/services/EWSConnector")
+        eamClient = new EAMClient.Builder("https://testeam.cern.ch/axis/services/EWSConnector")
                 .withDefaultTenant("infor")
                 .withDefaultOrganizationCode("*")
                 .withLogger(Logger.getLogger("wshublogger"))
