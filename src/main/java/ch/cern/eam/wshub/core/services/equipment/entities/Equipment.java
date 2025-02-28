@@ -126,6 +126,9 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
     @InforField(xpath = "USERDEFINEDAREA")
     private CustomField[] customFields;
 
+    @Transient
+    private Map<String, String> customFieldMap;
+
     //
     @Transient
     @InforField(xpath = "COMMISSIONDATE")
@@ -695,6 +698,14 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
 
     public void setCustomFields(CustomField[] customFields) {
         this.customFields = customFields;
+    }
+
+    public Map<String, String> getCustomFieldMap() {
+        return customFieldMap;
+    }
+
+    public void setCustomFieldMap(Map<String, String> customFieldMap) {
+        this.customFieldMap = customFieldMap;
     }
 
     public String getCategoryCode() {
@@ -1630,6 +1641,7 @@ public class Equipment implements Serializable, UserDefinedListHelpable {
                 + (departmentCode != null ? "departmentCode=" + departmentCode + ", " : "")
                 + (departmentDesc != null ? "departmentDesc=" + departmentDesc + ", " : "")
                 + (customFields != null ? "customFields=" + Arrays.toString(customFields) + ", " : "")
+                + (customFieldMap != null ? "customFieldMap=" + customFieldMap + ", " : "")
                 + (comissionDate != null ? "comissionDate=" + comissionDate + ", " : "")
                 + (equipmentValue != null ? "equipmentValue=" + equipmentValue + ", " : "")
                 + (assignedTo != null ? "assignedTo=" + assignedTo + ", " : "")
