@@ -2,13 +2,18 @@ package ch.cern.eam.wshub.core.services.equipment.impl;
 
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.entities.BatchResponse;
+import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.equipment.*;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.Tools;
 import ch.cern.eam.wshub.core.tools.InforException;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 import ch.cern.eam.wshub.core.services.equipment.entities.Equipment;
+
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static ch.cern.eam.wshub.core.tools.Tools.*;
 
@@ -61,6 +66,14 @@ public class EquipmentFacadeServiceImpl implements EquipmentFacadeService {
     @Override
     public String updateEquipment(InforContext inforContext, Equipment equipment) throws InforException {
 
+        //New Custom Field API
+        final Map<String, String> customFieldMap = equipment.getCustomFieldMap();
+        if (customFieldMap != null) {
+            final CustomField[] customFields =
+                    customFieldMap.entrySet().stream().map(s -> new CustomField(s.getKey(), s.getValue())).toArray(CustomField[]::new);
+            equipment.setCustomFields(customFields);
+        }
+
         if (equipment.getSystemTypeCode() == null) {
             equipment.setSystemTypeCode(equipmentTools.getEquipmentSystemTypeForEquipment(inforContext, equipment.getCode(), equipment.getOrganization()));
         }
@@ -83,6 +96,13 @@ public class EquipmentFacadeServiceImpl implements EquipmentFacadeService {
     public String createEquipment(InforContext inforContext, Equipment equipment) throws InforException {
         if (equipment.getTypeCode() == null) {
             throw tools.generateFault("Equipment type can not be empty.");
+        }
+
+        final Map<String, String> customFieldMap = equipment.getCustomFieldMap();
+        if (customFieldMap != null) {
+            final CustomField[] customFields =
+                    customFieldMap.entrySet().stream().map(s -> new CustomField(s.getKey(), s.getValue())).toArray(CustomField[]::new);
+            equipment.setCustomFields(customFields);
         }
 
         if (equipment.getSystemTypeCode() == null) {
@@ -110,18 +130,33 @@ public class EquipmentFacadeServiceImpl implements EquipmentFacadeService {
 
         String equipmentTypeCode = equipmentTools.getEquipmentSystemTypeForEquipment(inforContext, code, organization);
 
+        Equipment equipment ;
         switch (equipmentTypeCode) {
             case "A":
-                return assetService.readAsset(inforContext, code, organization);
+                equipment = assetService.readAsset(inforContext, code, organization);
+                break;
             case "P":
-                return positionService.readPosition(inforContext, code, organization);
+                equipment = positionService.readPosition(inforContext, code, organization);
+                break;
             case "S": // System
-                return systemService.readSystem(inforContext, code, organization);
+                equipment = systemService.readSystem(inforContext, code, organization);
+                break;
             case "L": // Location
                 throw tools.generateFault("Locations are no longer available here. Use LocationService.");
             default:
                 throw tools.generateFault("Equipment type not recognized.");
         }
+
+        //New Custom Field API
+        final CustomField[] customFields = equipment.getCustomFields();
+        if (customFields != null) {
+            final Map<String, String> collect =
+                    Arrays.stream(customFields).collect(Collectors.toMap(CustomField::getCode,
+                            s -> s.getValue() != null ? s.getValue() : ""));
+            equipment.setCustomFieldMap(collect);
+        }
+
+        return equipment;
     }
 
     @Override
