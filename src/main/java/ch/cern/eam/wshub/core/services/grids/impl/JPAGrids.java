@@ -1045,7 +1045,8 @@ public class JPAGrids implements Serializable {
             // Grid fields and data spies
             GridDataspy[] gridDataspies = em.createNamedQuery(GridDataspy.GETGRIDDATASPIES, GridDataspy.class)
                     .setParameter("gridid", gridCode)
-                    .setParameter("userid", context.getCredentials().getUsername()).getResultList().toArray(new GridDataspy[0]);
+                    .setParameter("userid", context.getCredentials().getUsername())
+					.getResultList().toArray(new GridDataspy[0]);
 
             // select default dataspy
 			if (dataspyId == null) {

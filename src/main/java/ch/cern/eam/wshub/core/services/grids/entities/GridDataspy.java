@@ -21,20 +21,32 @@ import java.io.Serializable;
 	),
 	@NamedNativeQuery(name=GridDataspy.GETGRIDDATASPIES, 
 		query=
-		"SELECT nvl(bot_text, dds_ddspyname) as dds_ddspyname, dds_ddspyid, dds_autorun, " +
-		"CASE " +
-		"WHEN usd_dataspyid IS NOT NULL THEN '+' " +
-		"WHEN usd_dataspyid IS NULL AND DDS_DEFAULTFLAG = '+' AND NOT EXISTS (SELECT * FROM r5usegridsysdefault usd WHERE usd.USD_gridid = :gridid and usd.USD_userid = :userid) THEN '+' " +
-		"ELSE '-' " +
-		"END AS default_ds " +
-		"FROM r5dddataspy LEFT OUTER JOIN r5usegridsysdefault  " +
-		"ON r5usegridsysdefault.usd_dataspyid = r5dddataspy.dds_ddspyid AND usd_userid = :userid  " +
-		"JOIN R5GRID ON dds_gridid = grd_gridid " +
-		"LEFT OUTER JOIN R5BOILERTEXTS ON bot_fld1 = DDS_BOTNAME and BOT_FUNCTION = GRD_GRIDNAME " +
-		"WHERE dds_gridid = :gridid AND (dds_globaldataspy = '+' OR dds_owner = :userid OR usd_gridid is not null) " +
-		"  AND dds_securitydataspy = '-' " +
-		"  AND dds_mekey like 'Y%' " +
-		"order by dds_ddspyname ", 
+		"SELECT nvl(bot_text, dds_ddspyname) as dds_ddspyname, " +
+				"       dds_ddspyid, " +
+				"       dds_autorun, " +
+				"       CASE " +
+				"           WHEN usd_dataspyid IS NOT NULL THEN '+' " +
+				"           WHEN usd_dataspyid IS NULL AND DDS_DEFAULTFLAG = '+' AND NOT EXISTS (SELECT * " +
+				"                                                                                FROM r5usegridsysdefault usd " +
+				"                                                                                WHERE usd.USD_gridid = :gridid " +
+				"                                                                                  and usd.USD_userid = :userid) THEN '+' " +
+				"           ELSE '-' " +
+				"           END                      AS default_ds " +
+				"FROM r5dddataspy " +
+				"         LEFT OUTER JOIN r5usegridsysdefault " +
+				"                         ON r5usegridsysdefault.usd_dataspyid = r5dddataspy.dds_ddspyid AND usd_userid = :userid " +
+				"         JOIN R5GRID ON dds_gridid = grd_gridid " +
+				"            LEFT JOIN R5USERS " +
+				"            ON USR_CODE = :userid " +
+				"        LEFT JOIN R5DDSPYFILTERGROUPS " +
+				"            ON DDS_DDSPYID = R5DDSPYFILTERGROUPS.DFG_DDSPYID " +
+				"         LEFT OUTER JOIN R5BOILERTEXTS ON bot_fld1 = DDS_BOTNAME and BOT_FUNCTION = GRD_GRIDNAME " +
+				"WHERE dds_gridid = :gridid " +
+				"  AND (dds_globaldataspy = '+' OR dds_owner = :userid OR usd_gridid is not null) " +
+				"  AND (DFG_GROUP IS NULL OR DFG_GROUP = USR_GROUP) " +
+				"  AND dds_securitydataspy = '-' " +
+				"  AND dds_mekey like 'Y%' " +
+				"order by dds_ddspyname ",
 		resultClass=GridDataspy.class
 	),
 	@NamedNativeQuery(name=GridDataspy.GETDEFAULTDATASPY, 
