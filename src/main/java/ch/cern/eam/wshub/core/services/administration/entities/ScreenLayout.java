@@ -9,6 +9,7 @@ public class ScreenLayout {
 	private Map<String, Tab> tabs;
 
 	private Map<String, Tab> customGridTabs;
+	private Map<String, CustomTab> customTabs;
 
 	public Map<String, ElementInfo> getFields() {
 		return fields;
@@ -38,4 +39,14 @@ public class ScreenLayout {
 		this.customGridTabs = customGridTabs;
 	}
 
+	public Map<String, CustomTab> getCustomTabs() {
+		if (customTabs == null) {
+			customTabs = new HashMap<>();
+		}
+		return customTabs;
+	}
+
+	public void setCustomTabs(Map<String, CustomTab> customTabs) {
+		this.customTabs = customTabs;
+	}
 }
