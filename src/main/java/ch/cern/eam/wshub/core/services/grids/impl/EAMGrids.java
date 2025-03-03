@@ -310,8 +310,12 @@ public class EAMGrids implements Serializable {
 		if (gridRequest.getGridRequestFilters() != null && !gridRequest.getGridRequestFilters().isEmpty()) {
 			int counter = 0;
 			for (GridRequestFilter filter: gridRequest.getGridRequestFilters()) {
-				if ("IN".equals(filter.getOperator())) {
+				if ("ALT_IN".equals(filter.getOperator())) {
 					counter = createInGridFilter(multiaddon_filters, filter, counter);
+					continue;
+				}
+				if ("NOT_IN".equals(filter.getOperator())) {
+					counter = createNotInGridFilter(multiaddon_filters, filter, counter);
 					continue;
 				}
 				MADDON_FILTER eamFilter = new MADDON_FILTER();
@@ -407,45 +411,39 @@ public class EAMGrids implements Serializable {
 		}
 	}
 
-	private int createInGridFilter(MULTIADDON_FILTERS multiaddon_filters, GridRequestFilter gridRequestFilter, int counter) {
-		if (gridRequestFilter.getLeftParenthesis()) {
-			counter = addDumbParenthesisFilter(multiaddon_filters, counter, gridRequestFilter, true);
+	private int createNotInGridFilter(MULTIADDON_FILTERS multiaddon_filters, GridRequestFilter gridRequestFilter, int counter) {
+		if (Boolean.TRUE.equals(gridRequestFilter.getLeftParenthesis())) {
+			counter = addDumbParenthesisFilter(multiaddon_filters, counter, gridRequestFilter, Operator.IS_EMPTY, GridRequestFilter.JOINER.OR);
 		}
-		AtomicInteger counterWrapper = new AtomicInteger(counter);
-		getFilterValue(gridRequestFilter).ifPresent(values -> {
-			String[] splitValues = values.split(",");
-			for (int i = 0; i < splitValues.length; i++) {
-				boolean isFirst = i == 0;
-				boolean isLast = i == splitValues.length - 1;
-				MADDON_FILTER filter = new MADDON_FILTER();
-				filter.setSEQNUM(BigInteger.valueOf(counterWrapper.getAndIncrement()));
-                filter.setOPERATOR(Operator.EQUALS.getValue());
-                filter.setALIAS_NAME(gridRequestFilter.getFieldName());
-				filter.setVALUE(splitValues[i]);
-				Optional.ofNullable(isLast ? gridRequestFilter.getJoiner() : GridRequestFilter.JOINER.OR)
-						.ifPresent(joiner -> filter.setJOINER(joiner.getEamValue()));
-                if (isFirst) {
-                    filter.setLPAREN(tools.getDataTypeTools().decodeBoolean(Boolean.TRUE));
-                }
-				if (isLast) {
-					filter.setRPAREN(tools.getDataTypeTools().decodeBoolean(Boolean.TRUE));
-				}
-				multiaddon_filters.getMADDON_FILTER().add(filter);
-			}
-		});
-		counter = counterWrapper.get();
-		if (gridRequestFilter.getRightParenthesis()) {
-			counter = addDumbParenthesisFilter(multiaddon_filters, counter, gridRequestFilter, false);
+		counter = applyListOperator(multiaddon_filters, counter, gridRequestFilter, Operator.NOT_EQUAL, GridRequestFilter.JOINER.AND);
+		if (Boolean.TRUE.equals(gridRequestFilter.getRightParenthesis())) {
+			counter = addDumbParenthesisFilter(multiaddon_filters, counter, gridRequestFilter, Operator.IS_EMPTY);
 		}
 		return counter;
 	}
 
-	private int addDumbParenthesisFilter(MULTIADDON_FILTERS multiaddon_filters, int counter, GridRequestFilter gridRequestFilter, boolean isLeft) {
+	private int createInGridFilter(MULTIADDON_FILTERS multiaddon_filters, GridRequestFilter gridRequestFilter, int counter) {
+		if (Boolean.TRUE.equals(gridRequestFilter.getLeftParenthesis())) {
+			counter = addDumbParenthesisFilter(multiaddon_filters, counter, gridRequestFilter, Operator.NOT_EMPTY, GridRequestFilter.JOINER.AND);
+		}
+		counter = applyListOperator(multiaddon_filters, counter, gridRequestFilter, Operator.EQUALS, GridRequestFilter.JOINER.OR);
+		if (Boolean.TRUE.equals(gridRequestFilter.getRightParenthesis())) {
+			counter = addDumbParenthesisFilter(multiaddon_filters, counter, gridRequestFilter, Operator.NOT_EMPTY);
+		}
+		return counter;
+	}
+
+	private int addDumbParenthesisFilter(MULTIADDON_FILTERS multiaddon_filters, int counter, GridRequestFilter gridRequestFilter, Operator operator) {
+		return addDumbParenthesisFilter(multiaddon_filters, counter, gridRequestFilter, operator, null);
+	}
+
+	private int addDumbParenthesisFilter(MULTIADDON_FILTERS multiaddon_filters, int counter, GridRequestFilter gridRequestFilter, Operator operator, GridRequestFilter.JOINER joiner) {
 		MADDON_FILTER parenthesisFilter = new MADDON_FILTER();
 		parenthesisFilter.setSEQNUM(BigInteger.valueOf(counter++));
-		Optional.ofNullable(isLeft ? GridRequestFilter.JOINER.AND : gridRequestFilter.getJoiner())
-				.ifPresent(joiner -> parenthesisFilter.setJOINER(joiner.getEamValue()));
-		parenthesisFilter.setOPERATOR(Operator.NOT_EMPTY.getValue());
+		boolean isLeft = joiner != null;
+		Optional.ofNullable(isLeft ? joiner : gridRequestFilter.getJoiner())
+				.ifPresent(presentJoiner -> parenthesisFilter.setJOINER(presentJoiner.getEamValue()));
+		parenthesisFilter.setOPERATOR(operator.getValue());
 		parenthesisFilter.setALIAS_NAME(gridRequestFilter.getFieldName());
 		if (isLeft) {
 			parenthesisFilter.setLPAREN(tools.getDataTypeTools().decodeBoolean(Boolean.TRUE));
@@ -454,6 +452,32 @@ public class EAMGrids implements Serializable {
 		}
 		multiaddon_filters.getMADDON_FILTER().add(parenthesisFilter);
 		return counter;
+	}
+
+	private int applyListOperator(MULTIADDON_FILTERS multiaddon_filters, int counter, GridRequestFilter gridRequestFilter, Operator operator, GridRequestFilter.JOINER joiner) {
+		AtomicInteger counterWrapper = new AtomicInteger(counter);
+		getFilterValue(gridRequestFilter).ifPresent(values -> {
+			String[] splitValues = values.split(",");
+			for (int i = 0; i < splitValues.length; i++) {
+				boolean isFirst = i == 0;
+				boolean isLast = i == splitValues.length - 1;
+				MADDON_FILTER filter = new MADDON_FILTER();
+				filter.setSEQNUM(BigInteger.valueOf(counterWrapper.getAndIncrement()));
+				filter.setOPERATOR(operator.getValue());
+				filter.setALIAS_NAME(gridRequestFilter.getFieldName());
+				filter.setVALUE(splitValues[i]);
+				Optional.ofNullable(isLast ? gridRequestFilter.getJoiner() : joiner)
+						.ifPresent(presentJoiner -> filter.setJOINER(presentJoiner.getEamValue()));
+				if (isFirst) {
+					filter.setLPAREN(tools.getDataTypeTools().decodeBoolean(Boolean.TRUE));
+				}
+				if (isLast) {
+					filter.setRPAREN(tools.getDataTypeTools().decodeBoolean(Boolean.TRUE));
+				}
+				multiaddon_filters.getMADDON_FILTER().add(filter);
+			}
+		});
+		return counterWrapper.get();
 	}
 
 	private Optional<String> getFilterValue(GridRequestFilter filter) {

@@ -4,6 +4,8 @@ public enum Operator {
 	BEGINS("BEGINS"),
 	ENDS("ENDS"),
 	IN("IN"),
+	ALT_IN("ALT_IN"),
+	NOT_IN("NOT_IN"),
 	LIKE("LIKE"),
 	CONTAINS("CONTAINS"),
 	NOT_CONTAINS("NOTCONTAINS"),
