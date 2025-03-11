@@ -9,6 +9,7 @@ import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestRow;
 import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
+import ch.cern.eam.wshub.core.services.grids.impl.Operator;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.GridTools;
 import ch.cern.eam.wshub.core.tools.EAMException;
@@ -57,6 +58,7 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
         }
 
         screenLayout.setCustomGridTabs(getCustomGridTabs(context, userGroup, userFunction));
+        screenLayout.setCustomTabs(getCustomTabs(context, tabs, userGroup, userFunction));
         // Get layout labels first
         Map<String, String> labels = getTabLayoutLabels(context, userFunction);
         // For all fields for the record view the bot_fld1 matches the upper-cased elementId
@@ -166,6 +168,67 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
         return tabs;
     }
 
+    private Map<String, CustomTab> getCustomTabs(EAMContext context, List<String> alreadyFetchedTabs, String userGroup, String screenCode) throws EAMException {
+        GridRequest gridRequest = new GridRequest("BSFUNC_TBS");
+        gridRequest.getParams().put("parameter.screencode", screenCode);
+        gridRequest.addFilter("type", "HTML", Operator.EQUALS.getValue(), GridRequestFilter.JOINER.AND);
+        gridRequest.addFilter("tabcode", String.join(",", alreadyFetchedTabs), Operator.NOT_IN.getValue(), GridRequestFilter.JOINER.OR);
+        GridRequestResult result = gridsService.executeQuery(context, gridRequest);
+        LinkedHashMap<String, String> customTabsValues = new LinkedHashMap<>();
+        for (GridRequestRow row : result.getRows()) {
+            String tabCode = GridTools.getCellContent("tabcode", row);
+            String tabUrl = GridTools.getCellContent("taburl", row);
+            customTabsValues.put(tabCode, tabUrl);
+        }
+
+        Map<String, Tab> tabs = getTabsInCodes(context, userGroup, screenCode, customTabsValues.keySet());
+        LinkedHashMap<String, CustomTab> customTabs = new LinkedHashMap<>();
+
+        for (Map.Entry<String, String> entry : customTabsValues.entrySet()) {
+            String tabCode = entry.getKey();
+            String tabUrl = entry.getValue();
+
+            CustomTab customTab = new CustomTab(tabs.getOrDefault(tabCode, new Tab()));
+            customTab.setValue(tabUrl);
+            customTab.setUrlParams(getCustomTabUrlParams(context, screenCode, tabCode));
+
+            customTabs.put(tabCode, customTab);
+        }
+
+        return customTabs;
+    }
+
+    private Map<String, Tab> getTabsInCodes(EAMContext context, String userGroup, String userFunction, Collection<String> codes) throws EAMException {
+        GridRequest gridRequest = new GridRequest("BSGROU_PRM");
+        gridRequest.getParams().put("param.usergroupcode", userGroup);
+        gridRequest.getParams().put("param.userfunction", userFunction);
+        gridRequest.addFilter("tabcode", String.join(",", codes), Operator.IN.getValue(), GridRequestFilter.JOINER.OR);
+        GridRequestResult result = gridsService.executeQuery(context, gridRequest);
+        Map<String, Tab> tabs = new HashMap<>();
+        for (GridRequestRow row : result.getRows()) {
+            tabs.put(GridTools.getCellContent("tabcode", row), gridRowToTab(row));
+        }
+        return tabs;
+    }
+
+    private List<URLParam> getCustomTabUrlParams(EAMContext context, String screenCode, String tabCode) throws EAMException {
+        GridRequest gridRequest = new GridRequest("BSURLP");
+        gridRequest.getParams().put("param.screencode", screenCode);
+        gridRequest.getParams().put("param.tabcode", tabCode);
+        gridRequest.addFilter("active", null, "SELECTED", GridRequestFilter.JOINER.OR);
+        GridRequestResult result = gridsService.executeQuery(context, gridRequest);
+        return Arrays.stream(result.getRows()).map(this::rowToURLParam).collect(Collectors.toList());
+    }
+
+    private URLParam rowToURLParam(GridRequestRow row) {
+        return new URLParam(
+                GridTools.getCellContent("parametername", row),
+                GridTools.getCellContent("parametervalue", row),
+                Objects.equals(GridTools.getCellContent("system", row), "true"),
+                Objects.equals(GridTools.getCellContent("usefieldvalue", row), "true")
+        );
+    }
+
     private Map<String, ElementInfo> getTabLayout(EAMContext context, String userGroup, String systemFunction, String userFunction, String entity) throws EAMException {
         GridRequest gridRequestLayout = new GridRequest( "EULLAY");
         gridRequestLayout.setRowCount(2000);
@@ -230,7 +293,7 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
         GridRequest gridRequest = new GridRequest("BSGROU_PRM");
         gridRequest.getParams().put("param.usergroupcode", userGroup);
         gridRequest.getParams().put("param.userfunction", userFunction);
-        gridRequest.addFilter("tabcode", String.join(",", tabCodes), "IN", GridRequestFilter.JOINER.OR);
+        gridRequest.addFilter("tabcode", String.join(",", tabCodes), "ALT_IN", GridRequestFilter.JOINER.OR);
         GridRequestResult result = gridsService.executeQuery(context, gridRequest);
         for (GridRequestRow row : result.getRows()) {
             String tabCode = GridTools.getCellContent("tabcode", row);
