@@ -2,6 +2,7 @@ package ch.cern.eam.wshub.core.services.equipment.impl;
 
 import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.contractmanagement.entities.EquipmentReservationAdjustment;
+import ch.cern.eam.wshub.core.services.entities.BatchResponse;
 import ch.cern.eam.wshub.core.services.equipment.EquipmentReservationService;
 import ch.cern.eam.wshub.core.services.equipment.entities.EquipmentReservation;
 import ch.cern.eam.wshub.core.services.grids.GridsService;
@@ -40,6 +41,26 @@ public class EquipmentReservationServiceImpl implements EquipmentReservationServ
         this.eamws = eamWebServicesToolkitClient;
         this.gridsService = new GridsServiceImpl(applicationData, tools, eamWebServicesToolkitClient);
     }
+
+    //
+    // BATCH WEB SERVICES
+    //
+    public BatchResponse<String> createEquipmentReservationBatch(EAMContext context, List<EquipmentReservation> equipmentReservationList) {
+        return tools.batchOperation(context, this::createEquipmentReservation, equipmentReservationList);
+    }
+
+    public BatchResponse<EquipmentReservation> readEquipmentReservationBatch(EAMContext context, List<String> equipmentReservationCodes)  {
+        return tools.batchOperation(context, this::readEquipmentReservation, equipmentReservationCodes);
+    }
+
+    public BatchResponse<String> updateEquipmentReservationBatch(EAMContext context, List<EquipmentReservation> equipmentReservationList) {
+        return tools.batchOperation(context, this::updateEquipmentReservation, equipmentReservationList);
+    }
+
+    public BatchResponse<String> deleteEquipmentReservationBatch(EAMContext context, List<String> equipmentReservationCodes) {
+        return tools.batchOperation(context, this::deleteEquipmentReservation, equipmentReservationCodes);
+    }
+
 
     @Override
     public String createEquipmentReservation(EAMContext context, EquipmentReservation reservationParam) throws EAMException {
