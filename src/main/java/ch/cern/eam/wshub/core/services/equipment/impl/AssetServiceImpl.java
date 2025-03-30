@@ -139,6 +139,7 @@ public class AssetServiceImpl implements AssetService {
         //
         MP0303_SyncAssetEquipment_001 syncAsset = new MP0303_SyncAssetEquipment_001();
         syncAsset.setAssetEquipment(assetEquipment);
+        syncAsset.setConfirm_Availability_Status("confirmed");
         tools.performInforOperation(context, inforws::syncAssetEquipmentOp, syncAsset);
         userDefinedListService.writeUDLToEntity(context, assetParam, new EntityId("OBJ", assetParam.getCode()));
 
