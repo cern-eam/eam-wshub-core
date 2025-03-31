@@ -2,6 +2,7 @@ package ch.cern.eam.wshub.core.services.equipment.impl;
 
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.contractmanagement.entities.EquipmentReservationAdjustment;
+import ch.cern.eam.wshub.core.services.entities.BatchResponse;
 import ch.cern.eam.wshub.core.services.equipment.EquipmentReservationService;
 import ch.cern.eam.wshub.core.services.equipment.entities.EquipmentReservation;
 import ch.cern.eam.wshub.core.services.grids.GridsService;
@@ -119,4 +120,24 @@ public class EquipmentReservationServiceImpl implements EquipmentReservationServ
         GridRequestResult gridRequestResult = gridsService.executeQuery(context, gridRequest);
         return GridTools.convertGridResultToObject(EquipmentReservationAdjustment.class, null, gridRequestResult);
     }
+
+    //
+    // BATCH WEB SERVICES
+    //
+    public BatchResponse<String> createEquipmentReservationBatch(InforContext context, List<EquipmentReservation> equipmentReservationList) {
+        return tools.batchOperation(context, this::createEquipmentReservation, equipmentReservationList);
+    }
+
+    public BatchResponse<EquipmentReservation> readEquipmentReservationBatch(InforContext context, List<String> equipmentReservationCodes)  {
+        return tools.batchOperation(context, this::readEquipmentReservation, equipmentReservationCodes);
+    }
+
+    public BatchResponse<String> updateEquipmentReservationBatch(InforContext context, List<EquipmentReservation> equipmentReservationList) {
+        return tools.batchOperation(context, this::updateEquipmentReservation, equipmentReservationList);
+    }
+
+    public BatchResponse<String> deleteEquipmentReservationBatch(InforContext context, List<String> equipmentReservationCodes) {
+        return tools.batchOperation(context, this::deleteEquipmentReservation, equipmentReservationCodes);
+    }
+
 }
