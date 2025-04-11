@@ -79,7 +79,7 @@ public class EAMGrids implements Serializable {
 		funRequest.setADDON_SORT(createSort(gridRequest));
 
 		// LOV PARAMETERS
-		funRequest.setLOV(createLovParams(gridRequest));
+		funRequest.setLOV(createLovParams(context, gridRequest));
 
 		//
 		// CALL THE WEB SERVICE
@@ -110,7 +110,7 @@ public class EAMGrids implements Serializable {
 		// RESULT DATA
 		//
 
-		if (result.getGRIDRESULT().getGRID().getDATA() != null && 
+		if (result.getGRIDRESULT().getGRID().getDATA() != null &&
 				result.getGRIDRESULT().getGRID().getDATA().getROW() != null &&
 				result.getGRIDRESULT().getGRID().getDATA().getROW().size() > 0) {
 
@@ -133,17 +133,17 @@ public class EAMGrids implements Serializable {
 				}).collect(Collectors.toList());
 
 				// SET ORDER AND TAG NAME
-				
-				// Sort using the order 
+
+				// Sort using the order
 				cells = cells.stream().sorted(Comparator.comparing(GridRequestCell::getOrder)).collect(Collectors.toList());
-				
+
 				GridRequestRow row = new GridRequestRow();
 				row.setId(eamRow.getId().toString());
 				row.setCells(cells.toArray(new GridRequestCell[0]));
 				rows.add(row);
 			}
 			grr.setRows(rows.toArray(new GridRequestRow[0]));
-		} 
+		}
 		else {
 			grr.setRows(new GridRequestRow[0]);
 		}
@@ -180,7 +180,7 @@ public class EAMGrids implements Serializable {
 		funRequest.setADDON_SORT(createSort(gridRequest));
 
 		// LOV PARAMETERS
-		funRequest.setLOV(createLovParams(gridRequest));
+		funRequest.setLOV(createLovParams(context, gridRequest));
 
 		//
 		// CALL THE WEB SERVICE
@@ -360,7 +360,7 @@ public class EAMGrids implements Serializable {
 		return multiaddon_filters;
 	}
 
-	private LOV createLovParams(GridRequest gridRequest) {
+	private LOV createLovParams(InforContext inforContext, GridRequest gridRequest) {
 		LOV lov = new LOV();
 		lov.setLOV_PARAMETERS(new LOV_PARAMETERS());
 		gridRequest.getParams().forEach( (paramName, paramValue) -> {
@@ -372,6 +372,7 @@ public class EAMGrids implements Serializable {
 			}
 			lov.getLOV_PARAMETERS().getLOV_PARAMETER().add(lovParameter);
 		});
+		lov.getLOV_PARAMETERS().getLOV_PARAMETER().addAll(getDefaultLovParams(inforContext, gridRequest));
 		return lov;
 	}
 
@@ -504,6 +505,18 @@ public class EAMGrids implements Serializable {
 		gridField.setLabel(field.getLabel());
 		gridField.setVisible(decodeBoolean(field.getVisible()));
 		return gridField;
+	}
+
+	private List<LOV_PARAMETER> getDefaultLovParams(InforContext inforContext, GridRequest gridRequest) {
+		ArrayList<LOV_PARAMETER> lovParams = new ArrayList<>();
+		if (gridRequest.getGridType() == GridRequest.GRIDTYPE.LOV) {
+			LOV_PARAMETER controlOrgParam = new LOV_PARAMETER();
+			controlOrgParam.setTYPE("VARCHAR");
+			controlOrgParam.setALIAS_NAME("control.org");
+			controlOrgParam.setVALUE(tools.getOrganizationCode(inforContext));
+			lovParams.add(controlOrgParam);
+		}
+		return lovParams;
 	}
 
 }
