@@ -39,25 +39,26 @@ public class GridTools {
     }
 
     public static List<Map<String,String>> convertGridResultToMapList(GridRequestResult gridRequestResult, List<String> allowedColumns) {
-        Function<GridRequestRow, LinkedHashMap<String, String>> mapper = (row) -> gridRequestRowMapper(row, allowedColumns);
+        return convertGridResultToMapList(gridRequestResult, allowedColumns, true);
+    }
+
+    public static List<Map<String,String>> convertGridResultToMapList(GridRequestResult gridRequestResult, List<String> allowedColumns, boolean onlyDataspyFields) {
+        Function<GridRequestRow, LinkedHashMap<String, String>> mapper = (row) -> gridRequestRowMapper(row, allowedColumns, onlyDataspyFields);
 
         return Arrays.stream(gridRequestResult.getRows())
                 .map(mapper)
                 .collect(Collectors.toCollection(LinkedList::new));
     }
 
-    public static LinkedHashMap<String, String> gridRequestRowMapper(GridRequestRow row, List<String> allowedColumns) {
-        LinkedHashMap<String, String> rowAsPairs =
-                Arrays.stream(row.getCell())
-                        .filter(cell -> cell.getOrder() >= 0)
-                        .filter(cell -> allowedColumns == null || allowedColumns.contains(cell.getCol()) || allowedColumns.contains(cell.getTag()))
-                        .sorted(Comparator.comparing(GridRequestCell::getOrder))
-                        .collect(
-                                LinkedHashMap::new,
-                                (m, v) -> m.put(v.getTag(), v.getContent()),
-                                HashMap::putAll
-                        );
-        return rowAsPairs;
+    public static LinkedHashMap<String, String> gridRequestRowMapper(GridRequestRow row, List<String> allowedColumns, boolean onlyDataspyFields) {
+        return Arrays.stream(row.getCell())
+                .filter(cell -> (!onlyDataspyFields ||  cell.getOrder() >= 0) && (allowedColumns == null || allowedColumns.contains(cell.getCol()) || allowedColumns.contains(cell.getTag())))
+                .sorted(Comparator.comparing(GridRequestCell::getOrder))
+                .collect(
+                        LinkedHashMap::new,
+                        (m, v) -> m.put(v.getTag(), v.getContent()),
+                        HashMap::putAll
+                );
     }
 
     /**
