@@ -308,7 +308,7 @@ public class PartMiscServiceImpl implements PartMiscService {
 		}
 
 		if (partAssociation.getEquipmentCode() != null) {
-			addpass.getPartsAssociated().setPARTASSOCIATEDCODE(partAssociation.getEquipmentCode() + "#*");
+			addpass.getPartsAssociated().setPARTASSOCIATEDCODE(partAssociation.getEquipmentCode());
 		}
 
 		addpass.getPartsAssociated().setPARTASSOCIATEDID(new PARTASSOCIATEDID_Type());
