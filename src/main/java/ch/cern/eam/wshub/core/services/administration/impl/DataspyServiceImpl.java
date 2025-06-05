@@ -5,6 +5,7 @@ import ch.cern.eam.wshub.core.services.administration.DataspyService;
 import ch.cern.eam.wshub.core.services.administration.entities.DataspyCopy;
 import ch.cern.eam.wshub.core.services.grids.GridsService;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
 import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.annotations.BooleanType;
@@ -51,6 +52,9 @@ public class DataspyServiceImpl implements DataspyService {
 
         MP6516_CopyScreenDataspy_001_Result result = null;
 
+        //Get last created dataspy
+        final String lastDataspy = getLastDataspy(context, dataspyCopy.getUserCode());
+
         // Execute operation of reading
         result = tools.performInforOperation(context, inforws::copyScreenDataspyOp, copyScreenDataspy);
 
@@ -58,10 +62,22 @@ public class DataspyServiceImpl implements DataspyService {
         //return tools.getDataTypeTools().decodeQuantity(result.getResultData().getSCREENDATASPYID().getDDSPYID());
 
         // Temporarily fetch the ID of the created dataspy (most recent dataspy created for the passed user)
+
+        result = tools.performInforOperation(context, inforws::copyScreenDataspyOp, copyScreenDataspy);
+        final String lastDataspyAfter = getLastDataspy(context, dataspyCopy.getUserCode());
+
+        if (lastDataspyAfter != null && !lastDataspyAfter.equals(lastDataspy)) {
+            return lastDataspyAfter.replaceAll(",", "");
+        }
+        return null;
+    }
+
+    private String getLastDataspy(InforContext context, String userCode) throws InforException {
         GridRequest gridRequest = new GridRequest("BEWSDP", 1);
-        gridRequest.addFilter("dds_owner", dataspyCopy.getUserCode(), "=");
+        gridRequest.addFilter("dds_owner", userCode, "=");
         gridRequest.sortBy("dds_ddspyid", "DESC");
-        return extractSingleResult(gridsService.executeQuery(context, gridRequest), "dds_ddspyid").replace(",", "");
+        final GridRequestResult gridRequestResult = gridsService.executeQuery(context, gridRequest);
+        return extractSingleResult(gridRequestResult, "dds_ddspyid");
     }
 
     public String deleteDataspy(InforContext context, BigDecimal dataspyId) throws InforException {
