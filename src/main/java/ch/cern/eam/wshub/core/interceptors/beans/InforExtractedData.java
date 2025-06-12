@@ -1,13 +1,16 @@
 package ch.cern.eam.wshub.core.interceptors.beans;
 
+import lombok.Getter;
+
 /**
  * Bean containing extracted information from infor calls
  */
+@Getter
 public class InforExtractedData {
 
-    private String dataReference1;
+    private final String dataReference1;
 
-    private String dataReference2;
+    private final String dataReference2;
 
 
     private InforExtractedData(String dataReference1, String dataReference2) {
@@ -34,11 +37,4 @@ public class InforExtractedData {
         }
     }
 
-    public String getDataReference1() {
-        return dataReference1;
-    }
-
-    public String getDataReference2() {
-        return dataReference2;
-    }
 }

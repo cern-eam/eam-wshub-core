@@ -1,37 +1,17 @@
 package ch.cern.eam.wshub.core.tools;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 public class ApplicationData {
+	public static Boolean localizeResults = true;
 
 	private String url;
 	private String tenant;
 	private String organization;
 	private Boolean withJPAGridsAuthentication = false;
-
-	public static Boolean localizeResults = true;
-
-	public String getUrl() {
-		return url;
-	}
-
-	public void setUrl(String url) {
-		this.url = url;
-	}
-
-	public String getTenant() {
-		return tenant;
-	}
-
-	public void setTenant(String tenant) {
-		this.tenant = tenant;
-	}
-
-	public String getOrganization() {
-		return organization;
-	}
-
-	public void setOrganization(String organization) {
-		this.organization = organization;
-	}
 
 	public String getQueryTimeout() {
 		return "15000";
@@ -53,14 +33,6 @@ public class ApplicationData {
 		return "MM/dd/yyyy HH:mm";
 	}
 
-	public Boolean getWithJPAGridsAuthentication() {
-		return withJPAGridsAuthentication;
-	}
-
-	public void setWithJPAGridsAuthentication(Boolean withJPAGridsAuthentication) {
-		this.withJPAGridsAuthentication = withJPAGridsAuthentication;
-	}
-
 	public Long getQueryMaxNumberOfRows() {
 		return 1000L;
 	}
@@ -68,5 +40,4 @@ public class ApplicationData {
 	public boolean isEncodeGridFilter() {
 		return "true".equals(System.getProperty("ENCODE_GRID_FILTERS"));
 	}
-
 }
