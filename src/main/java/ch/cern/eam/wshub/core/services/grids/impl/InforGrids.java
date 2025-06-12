@@ -1,12 +1,11 @@
 package ch.cern.eam.wshub.core.services.grids.impl;
 
 import ch.cern.eam.wshub.core.annotations.BooleanType;
+import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.grids.entities.*;
-import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.tools.DataTypeTools;
-import ch.cern.eam.wshub.core.tools.InforException;
-import ch.cern.eam.wshub.core.tools.Tools;
+import ch.cern.eam.wshub.core.tools.*;
+import com.github.benmanes.caffeine.cache.Cache;
 import net.datastream.schemas.mp_functions.gridrequest.*;
 import net.datastream.schemas.mp_functions.gridrequest.LOV.LOV_PARAMETERS;
 import net.datastream.schemas.mp_functions.gridrequest.LOV.LOV_PARAMETERS.LOV_PARAMETER;
@@ -34,10 +33,9 @@ import static ch.cern.eam.wshub.core.tools.DataTypeTools.decodeBoolean;
 public class InforGrids implements Serializable {
 	private static final long serialVersionUID = 5957161022766799698L;
 
-	private ApplicationData applicationData;
-	private Tools tools;
-	private InforWebServicesPT inforws;
-	public static final Map<String, Map<BigInteger, GridField>> gridFieldCache = new ConcurrentHashMap<>();
+	private final ApplicationData applicationData;
+	private final Tools tools;
+	private final InforWebServicesPT inforws;
 
 	public InforGrids(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
 		this.applicationData = applicationData;
@@ -46,14 +44,21 @@ public class InforGrids implements Serializable {
 	}
 
 	public GridRequestResult executeQuery(InforContext context, GridRequest gridRequest) throws InforException {
-		if (gridRequest.getIncludeMetadata() || !gridFieldCache.containsKey(gridRequest.getRequestKey())) {
+		String gridFieldCacheKey = context.getTenant() + "_" + gridRequest.getRequestKey();
+		Cache<String, Object> gridFieldCache = InforClient.cacheMap.get(CacheKey.GRID_FIELD);
+		if (gridFieldCache == null) {
+			return executeQueryHeaderData(context, gridRequest);
+		}
+		
+		Map<BigInteger, GridField> gridFieldMap = (Map<BigInteger, GridField>) gridFieldCache.getIfPresent(gridFieldCacheKey);
+		if (gridRequest.getIncludeMetadata() || gridFieldMap == null) {
 			return executeQueryHeaderData(context, gridRequest);
 		} else {
-			return executeQueryDataOnly(context, gridRequest);
+			return executeQueryDataOnly(context, gridRequest, gridFieldMap);
 		}
 	}
 
-	public GridRequestResult executeQueryDataOnly(InforContext context, GridRequest gridRequest) throws InforException {
+	private GridRequestResult executeQueryDataOnly(InforContext context, GridRequest gridRequest, Map<BigInteger, GridField> gridFieldMap) throws InforException {
 		//
 		FUNCTION_REQUEST_INFO funRequest = new FUNCTION_REQUEST_INFO();
 
@@ -112,19 +117,19 @@ public class InforGrids implements Serializable {
 
 		if (result.getGRIDRESULT().getGRID().getDATA() != null &&
 				result.getGRIDRESULT().getGRID().getDATA().getROW() != null &&
-				result.getGRIDRESULT().getGRID().getDATA().getROW().size() > 0) {
+				!result.getGRIDRESULT().getGRID().getDATA().getROW().isEmpty()) {
 
-			LinkedList<GridRequestRow> rows = new LinkedList<GridRequestRow>();
+			LinkedList<GridRequestRow> rows = new LinkedList<>();
 			for (net.datastream.schemas.mp_functions.mp0116_getgriddataonly_001_result.DATA.ROW inforRow : result.getGRIDRESULT().getGRID().getDATA().getROW()) {
 
 				//
 				List<GridRequestCell> cells = inforRow.getD().stream().map(inforCell -> {
-					// If current column is not in the grid cache (or there is no grid cache :-) ) extract only the ID and content from Infor grid cell
-					if (gridFieldCache.get(gridRequest.getRequestKey()) == null || gridFieldCache.get(gridRequest.getRequestKey()).get(inforCell.getN()) == null) {
+					// If the current column is not in the grid cache (or there is no grid cache :-) ) extract only the ID and content from Infor grid cell
+					if (gridFieldMap == null || gridFieldMap.get(inforCell.getN()) == null) {
 						return new GridRequestCell(inforCell.getN().toString(), inforCell.getContent(), -99999, "UNKNOWN_TAGNAME");
 					}
 					// Extract the ID, content, order and the tag name from the grid cell
-					GridField gridField = gridFieldCache.get(gridRequest.getRequestKey()).get(inforCell.getN());
+					GridField gridField = gridFieldMap.get(inforCell.getN());
 					return new GridRequestCell(inforCell.getN().toString(),
 							decodeCellContent(gridField, inforCell.getContent()),
 							gridField.getOrder(),
@@ -151,7 +156,7 @@ public class InforGrids implements Serializable {
 		return grr;
 	}
 
-	public GridRequestResult executeQueryHeaderData(InforContext context, GridRequest gridRequest) throws InforException {
+	private GridRequestResult executeQueryHeaderData(InforContext context, GridRequest gridRequest) throws InforException {
 		//
 		net.datastream.schemas.mp_functions.mp0118_getgridheaderdata_001.FUNCTION_REQUEST_INFO funRequest = new net.datastream.schemas.mp_functions.mp0118_getgridheaderdata_001.FUNCTION_REQUEST_INFO();
 
@@ -195,9 +200,14 @@ public class InforGrids implements Serializable {
 		//
 		// POPULATE GRID FIELD CACHE
 		//
-		gridFieldCache.put(gridRequest.getRequestKey(), new ConcurrentHashMap<>());
+		Map<BigInteger, GridField> gridFieldMap = new ConcurrentHashMap<>();
 		for (FIELD field : result.getGRIDRESULT().getGRID().getFIELDS().getFIELD()) {
-			gridFieldCache.get(gridRequest.getRequestKey()).put(field.getAliasnum(), decodeInforGridField(field));
+			gridFieldMap.put(field.getAliasnum(), decodeInforGridField(field));
+		}
+		String gridFieldCacheKey = context.getTenant() + "_" + gridRequest.getRequestKey();
+		Cache<String, Object> gridFieldCache = InforClient.cacheMap.get(CacheKey.GRID_FIELD);
+		if (gridFieldCache != null) {
+			gridFieldCache.put(gridFieldCacheKey, gridFieldMap);
 		}
 
 		//
@@ -225,7 +235,7 @@ public class InforGrids implements Serializable {
 
 		grr.setGridFields(result.getGRIDRESULT().getGRID().getFIELDS().getFIELD().stream()
 				.filter(field -> Integer.parseInt(field.getOrder()) >= 0)
-				.map(field -> decodeInforGridField(field))
+				.map(this::decodeInforGridField)
 				.collect(Collectors.toList()));
 
 		//
@@ -233,17 +243,17 @@ public class InforGrids implements Serializable {
 		//
 		if (result.getGRIDRESULT().getGRID().getDATA() != null &&
 				result.getGRIDRESULT().getGRID().getDATA().getROW() != null &&
-				result.getGRIDRESULT().getGRID().getDATA().getROW().size() > 0) {
+				!result.getGRIDRESULT().getGRID().getDATA().getROW().isEmpty()) {
 
-			LinkedList<GridRequestRow> rows = new LinkedList<GridRequestRow>();
+			LinkedList<GridRequestRow> rows = new LinkedList<>();
 			for (net.datastream.schemas.mp_functions.mp0118_getgridheaderdata_001_result.DATA.ROW inforRow : result.getGRIDRESULT().getGRID().getDATA().getROW()) {
 
 				//
 				List<GridRequestCell> cells = inforRow.getD().stream().map(inforCell ->
 					 new GridRequestCell(inforCell.getN().toString(),
-											   decodeCellContent(gridFieldCache.get(gridRequest.getRequestKey()).get(inforCell.getN()), inforCell.getContent()),
-											   gridFieldCache.get(gridRequest.getRequestKey()).get(inforCell.getN()).getOrder(),
-											   gridFieldCache.get(gridRequest.getRequestKey()).get(inforCell.getN()).getName())
+							 decodeCellContent(gridFieldMap.get(inforCell.getN()), inforCell.getContent()),
+							 gridFieldMap.get(inforCell.getN()).getOrder(),
+							 gridFieldMap.get(inforCell.getN()).getName())
 				).collect(Collectors.toList());
 
 				// Sort using the order
@@ -278,7 +288,7 @@ public class InforGrids implements Serializable {
 		if (gridRequest.getGridName() != null) {
 			grid.setGRID_NAME(gridRequest.getGridName());
 		} else {
-			throw tools.generateFault("Please supply grid name.");
+			throw Tools.generateFault("Please supply grid name.");
 		}
 
 		// GRID ID
@@ -287,7 +297,7 @@ public class InforGrids implements Serializable {
 		}
 
 		// USER FUNCTION NAME
-		if (tools.getDataTypeTools().isNotEmpty(gridRequest.getUserFunctionName())) {
+		if (DataTypeTools.isNotEmpty(gridRequest.getUserFunctionName())) {
 			grid.setUSER_FUNCTION_NAME(gridRequest.getUserFunctionName());
 		}
 		// SET NUMBERS OF ROWS TO RETURN

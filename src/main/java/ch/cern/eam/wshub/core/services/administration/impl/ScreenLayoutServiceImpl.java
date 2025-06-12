@@ -1,5 +1,6 @@
 package ch.cern.eam.wshub.core.services.administration.impl;
 
+import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.administration.ScreenLayoutService;
 import ch.cern.eam.wshub.core.services.administration.entities.*;
@@ -10,14 +11,11 @@ import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestRow;
 import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.services.grids.impl.Operator;
-import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.tools.GridTools;
-import ch.cern.eam.wshub.core.tools.InforException;
-import ch.cern.eam.wshub.core.tools.Tools;
+import ch.cern.eam.wshub.core.tools.*;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.decodeBoolean;
@@ -26,56 +24,57 @@ import static ch.cern.eam.wshub.core.tools.GridTools.convertGridResultToMap;
 
 public class ScreenLayoutServiceImpl implements ScreenLayoutService {
 
-    public static final Map<String, ScreenLayout> screenLayoutCache = new ConcurrentHashMap<>();
-    public static final Map<String, Map<String, String>> screenLayoutLabelCache = new ConcurrentHashMap<>();
-
-    private Tools tools;
-    private InforWebServicesPT inforws;
-    private ApplicationData applicationData;
-    private GridsService gridsService;
-
-    public ScreenLayoutServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
-        this.applicationData = applicationData;
-        this.tools = tools;
-        this.inforws = inforWebServicesToolkitClient;
-        gridsService = new GridsServiceImpl(applicationData, tools, inforws);
-    }
-
-
-    public ScreenLayout readScreenLayout(InforContext context, String systemFunction, String userFunction, List<String> tabs, String userGroup, String entity) throws InforException {
-        // Check if value not already in the cache
-        String layoutCacheKey = userGroup + "_" + userFunction;
-        if (screenLayoutCache.containsKey(layoutCacheKey)) {
-            return screenLayoutCache.get(layoutCacheKey);
-        }
-
-        ScreenLayout screenLayout = new ScreenLayout();
-        // Add the record view
-        screenLayout.setFields(getTabLayout(context, userGroup, systemFunction, userFunction, entity));
-        // Add other tabs
-        if (tabs != null && tabs.size() > 0) {
-            screenLayout.setTabs(getTabs(context, tabs, userGroup, systemFunction, userFunction, entity));
-        }
-
-        screenLayout.setCustomGridTabs(getCustomGridTabs(context, userGroup, userFunction));
-        screenLayout.setCustomTabs(getCustomTabs(context, tabs, userGroup, userFunction));
-        // Get layout labels first
-        Map<String, String> labels = getTabLayoutLabels(context, userFunction);
-        // For all fields for the record view the bot_fld1 matches the upper-cased elementId
-        screenLayout.getFields().values().forEach(elementInfo -> elementInfo.setText(labels.get(elementInfo.getElementId().toUpperCase())));
-        // For all tab fields bot_fld1 matches upper-cased tab code + '_' + elementId
-        screenLayout.getTabs().keySet().forEach(tab -> {
-            screenLayout.getTabs().get(tab).getFields().values().forEach(elementInfo -> elementInfo.setText(labels.get(tab + "_" + elementInfo.getElementId().toUpperCase())));
-        });
-
-        // Cache it before returning
-        screenLayoutCache.put(layoutCacheKey, screenLayout);
-
-        return  screenLayout;
-    }
-
     private static final List<String> ALLOW_SEARCH_DESC = Collections.singletonList("LVPERS");
     private static final List<String> ALLOW_SEARCH_ALIAS = Collections.singletonList("LVOBJL");
+
+    private final GridsService gridsService;
+
+    public ScreenLayoutServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
+        this.gridsService = new GridsServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
+    }
+
+    public ScreenLayout readScreenLayout(InforContext context, String systemFunction, String userFunction, List<String> tabs, String userGroup, String entity) throws InforException {
+        try {
+            String screenLayoutCacheKey = String.join("_",
+                    context.getTenant(), context.getCredentials().getLanguage(), userGroup, userFunction);
+            Function<String, ScreenLayout> loader = key ->
+                    loadScreenLayout(context, systemFunction, userFunction, tabs, userGroup, entity);
+            return Optional.ofNullable(InforClient.cacheMap.get(CacheKey.SCREEN_LAYOUT))
+                    .map(cache -> (ScreenLayout) cache.get(screenLayoutCacheKey, loader))
+                    .orElseGet(() -> loader.apply(screenLayoutCacheKey));
+        } catch (RuntimeException e) {
+            if (e.getCause() instanceof InforException) {
+                throw (InforException) e.getCause();
+            }
+            throw new InforException("Failed to read screens", null, null);
+        }
+    }
+
+    public ScreenLayout loadScreenLayout(InforContext context, String systemFunction, String userFunction, List<String> tabs, String userGroup, String entity) {
+        try {
+            ScreenLayout screenLayout = new ScreenLayout();
+            // Add the record view
+            screenLayout.setFields(getTabLayout(context, userGroup, systemFunction, userFunction, entity));
+            // Add other tabs
+            if (tabs != null && !tabs.isEmpty()) {
+                screenLayout.setTabs(getTabs(context, tabs, userGroup, systemFunction, userFunction, entity));
+            }
+
+            screenLayout.setCustomGridTabs(getCustomGridTabs(context, userGroup, userFunction));
+            screenLayout.setCustomTabs(getCustomTabs(context, tabs, userGroup, userFunction));
+            // Get layout labels first
+            Map<String, String> labels = getTabLayoutLabels(context, userFunction);
+            // For all fields for the record view, the bot_fld1 matches the upper-cased elementId
+            screenLayout.getFields().values().forEach(elementInfo -> elementInfo.setText(labels.get(elementInfo.getElementId().toUpperCase())));
+            // For all tab fields, bot_fld1 matches upper-cased tab code + '_' + elementId
+            screenLayout.getTabs().keySet().forEach(tab -> screenLayout.getTabs().get(tab).getFields().values().forEach(elementInfo -> elementInfo.setText(labels.get(tab + "_" + elementInfo.getElementId().toUpperCase()))));
+
+            return screenLayout;
+        } catch (InforException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     public List<Map<String, String>> getGenericLov(InforContext context, GenericLov genericLov
                 ) throws InforException {
@@ -122,7 +121,7 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
 
         final GridRequestResult gridRequestResult =
                 gridsService.executeQuery(context, gridRequest);
-        List<Map<String, String>> response = Arrays.stream(gridRequestResult.getRows()).map(row -> {
+        return Arrays.stream(gridRequestResult.getRows()).map(row -> {
             Map<String, String> map = new LinkedHashMap<>();
             map.put("code", GridTools.getCellContent(listReturnFields.get(0), row));
 
@@ -137,7 +136,6 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
             listReturnFields.forEach(str -> map.put(str, GridTools.getCellContent(str, row)));
             return map;
         }).collect(Collectors.toList());
-        return response;
     }
 
     private  Map<String, Tab> getTabs(InforContext context, List<String> tabCodes, String userGroup, String systemFunction, String userFunction, String entity) throws InforException {
@@ -254,27 +252,38 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
      * @throws InforException
      */
     private Map<String, String> getTabLayoutLabels(InforContext context, String userFunction) throws InforException {
-        // Check if value already not present in the cache
-        if (screenLayoutLabelCache.containsKey(userFunction)) {
-            return screenLayoutLabelCache.get(userFunction);
+        try {
+            String screenLayoutLabelCacheKey = String.join("_",
+                    context.getTenant(), context.getCredentials().getLanguage(), userFunction);
+            Function<String, Map<String, String>> loader = key -> loadTabLayoutLabels(context, userFunction);
+            return Optional.ofNullable(InforClient.cacheMap.get(CacheKey.SCREEN_LAYOUT_LABEL))
+                    .map(cache -> (Map<String, String>) cache.get(screenLayoutLabelCacheKey, loader))
+                    .orElseGet(() -> loader.apply(screenLayoutLabelCacheKey));
+        } catch (RuntimeException e) {
+            if (e.getCause() instanceof InforException) {
+                throw (InforException) e.getCause();
+            }
+            throw new InforException("Failed to read screens", null, null);
         }
+    }
 
-        // Fetch boiler texts for given screen
-        GridRequest gridRequestLabels = new GridRequest( "ASOBOT");
-        gridRequestLabels.setRowCount(10000);
-        gridRequestLabels.setUseNative(false);
-        gridRequestLabels.addFilter("bot_function", userFunction, "EQUALS");
-        Map<String, String> labels = convertGridResultToMap("bot_fld1", "bot_text", gridsService.executeQuery(context, gridRequestLabels));
-
-        // Save to cache and return
-        screenLayoutLabelCache.put(userFunction, labels);
-        return labels;
+    private Map<String, String> loadTabLayoutLabels(InforContext context, String userFunction) {
+        try {
+            // Fetch boiler texts for given screen
+            GridRequest gridRequestLabels = new GridRequest("ASOBOT");
+            gridRequestLabels.setRowCount(10000);
+            gridRequestLabels.setUseNative(false);
+            gridRequestLabels.addFilter("bot_function", userFunction, "EQUALS");
+            return convertGridResultToMap("bot_fld1", "bot_text", gridsService.executeQuery(context, gridRequestLabels));
+        } catch (InforException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private Map<String, UserDefinedFieldDescription> getUdfDetails(InforContext context, String entity) throws InforException {
         GridRequest gridRequest = new GridRequest("BCUDFS");
         gridRequest.getParams().put("parameter.lastupdated", "01-Jan-1970");
-        List<GridRequestFilter> filters = new ArrayList<GridRequestFilter>();
+        List<GridRequestFilter> filters = new ArrayList<>();
         GridRequestFilter rentity = new GridRequestFilter("UDF_RENTITY", entity, "=");
         filters.add(rentity);
         gridRequest.setGridRequestFilters(filters);

@@ -1,6 +1,7 @@
 package ch.cern.eam.wshub.core.services.workorders.impl;
 
 import ch.cern.eam.wshub.core.annotations.BooleanType;
+import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.entities.Pair;
 import ch.cern.eam.wshub.core.services.entities.Signature;
@@ -15,6 +16,7 @@ import ch.cern.eam.wshub.core.services.workorders.entities.*;
 import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrderActivityCheckList.CheckListType;
 import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrderActivityCheckList.ReturnType;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
+import ch.cern.eam.wshub.core.tools.CacheKey;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_entities.taskchecklist_001.TaskChecklist;
@@ -36,26 +38,22 @@ import java.math.BigInteger;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.*;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.isEmpty;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
-import static ch.cern.eam.wshub.core.tools.DataTypeTools.*;
 import static ch.cern.eam.wshub.core.tools.GridTools.*;
 
 public class ChecklistServiceImpl implements ChecklistService {
 
-	private Tools tools;
-	private InforWebServicesPT inforws;
-	private ApplicationData applicationData;
-	private GridsService gridsService;
-	public static final Map<String, String> findingsCache = new ConcurrentHashMap<>();
+	private final Tools tools;
+	private final InforWebServicesPT inforws;
+	private final GridsService gridsService;
 
 	public ChecklistServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
-		this.applicationData = applicationData;
 		this.tools = tools;
 		this.inforws = inforWebServicesToolkitClient;
 		this.gridsService = new GridsServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
@@ -88,7 +86,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 						"responsibility", responsibilityCode, "=", GridRequestFilter.JOINER.OR, false, false));
 			}
 		}
-		if(filters.size() == 0) return;
+		if (filters.isEmpty()) return;
 		gridRequest.setGridRequestFilters(filters);
 		Map<String, String> responsibilityToDescription =
 				convertGridResultToMap("responsibility", "description", gridsService.executeQuery(context, gridRequest));
@@ -269,7 +267,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 
 		// Follow Up
 		if (workOrderActivityCheckList.getFollowUp() != null) {
-			workOrderActivityCheckListInfor.setFOLLOWUP(tools.getDataTypeTools().encodeBoolean(workOrderActivityCheckList.getFollowUp(), BooleanType.PLUS_MINUS));
+			workOrderActivityCheckListInfor.setFOLLOWUP(encodeBoolean(workOrderActivityCheckList.getFollowUp(), BooleanType.PLUS_MINUS));
 		}
 
 		if (workOrderActivityCheckList.getNotApplicableOption() != null) {
@@ -324,7 +322,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 				}
 
 				workOrderActivityCheckListInfor
-						.setRESULTVALUE(tools.getDataTypeTools().encodeQuantity(numericValue, "Checklists Value"));
+						.setRESULTVALUE(encodeQuantity(numericValue, "Checklists Value"));
 				break;
 			case CheckListType.OK_REPAIR_NEEDED:
 				workOrderActivityCheckListInfor.setOKFLAG(getStringBool.apply(ReturnType.OK));
@@ -343,7 +341,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 				break;
 			case CheckListType.OK_ADJUSTED_MEASUREMENT:
 				workOrderActivityCheckListInfor
-					.setRESULTVALUE(tools.getDataTypeTools().encodeQuantity(workOrderActivityCheckList.getNumericValue(), "Checklists Value"));
+						.setRESULTVALUE(encodeQuantity(workOrderActivityCheckList.getNumericValue(), "Checklists Value"));
 				// no break here, OK_ADJUSTED_MEASUREMENT is the same as OK_ADJUSTED,
 				// but with a numeric value, so we will set the result to OK/ADJUSTED below
 			case CheckListType.OK_ADJUSTED:
@@ -352,7 +350,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 				break;
 			case CheckListType.NONCONFORMITY_MEASUREMENT:
 				workOrderActivityCheckListInfor
-					.setRESULTVALUE(tools.getDataTypeTools().encodeQuantity(workOrderActivityCheckList.getNumericValue(), "Checklists Value"));
+						.setRESULTVALUE(encodeQuantity(workOrderActivityCheckList.getNumericValue(), "Checklists Value"));
 				// no break here, NONCONFORMITY_MEASUREMENT is the same as NONCONFORMITY_CHECK,
 				// but with a numberic value, so we will set the result to OK/NONCONFORMITY below
 			case CheckListType.NONCONFORMITY_CHECK:
@@ -360,10 +358,10 @@ public class ChecklistServiceImpl implements ChecklistService {
 				workOrderActivityCheckListInfor.setNONCONFORMITYFLAG(getStringBool.apply(ReturnType.NONCONFORMITY));
 				break;
 			case CheckListType.DATE:
-				workOrderActivityCheckListInfor.setCHECKLISTDATE(tools.getDataTypeTools().encodeInforDate(workOrderActivityCheckList.getDate(), ""));
+				workOrderActivityCheckListInfor.setCHECKLISTDATE(encodeInforDate(workOrderActivityCheckList.getDate(), ""));
 				break;
 			case CheckListType.DATETIME:
-				workOrderActivityCheckListInfor.setCHECKLISTDATETIME(tools.getDataTypeTools().encodeInforDate(workOrderActivityCheckList.getDateTime(), ""));
+				workOrderActivityCheckListInfor.setCHECKLISTDATETIME(encodeInforDate(workOrderActivityCheckList.getDateTime(), ""));
 				break;
 			case CheckListType.FREE_TEXT:
 				workOrderActivityCheckListInfor.setCHECKLISTFREETEXT(workOrderActivityCheckList.getFreeText());
@@ -380,8 +378,8 @@ public class ChecklistServiceImpl implements ChecklistService {
 				workOrderActivityCheckListInfor.getENTITYCODEID().setORGANIZATIONID(organizationidType);
 				break;
 			case CheckListType.DUAL_QUANTITATIVE:
-				workOrderActivityCheckListInfor.setRESULTVALUE(tools.getDataTypeTools().encodeQuantity(workOrderActivityCheckList.getNumericValue(), "Checklists Value"));
-				workOrderActivityCheckListInfor.setRESULTVALUE2(tools.getDataTypeTools().encodeQuantity(workOrderActivityCheckList.getNumericValue2(), "Checklists Value"));
+				workOrderActivityCheckListInfor.setRESULTVALUE(encodeQuantity(workOrderActivityCheckList.getNumericValue(), "Checklists Value"));
+				workOrderActivityCheckListInfor.setRESULTVALUE2(encodeQuantity(workOrderActivityCheckList.getNumericValue2(), "Checklists Value"));
 				break;
 		}
 
@@ -483,7 +481,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 		//
 		// CLASS
 		//
-		if (taskChecklist.getClassCode() != null && !taskChecklist.getClassCode().trim().equals("")) {
+		if (taskChecklist.getClassCode() != null && !taskChecklist.getClassCode().trim().isEmpty()) {
 			taskChecklistInfor.setCLASSID(new CLASSID_Type());
 			taskChecklistInfor.getCLASSID().setORGANIZATIONID(tools.getOrganization(context));
 			taskChecklistInfor.getCLASSID().setCLASSCODE(taskChecklist.getClassCode());
@@ -491,7 +489,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 		//
 		// CATEGORY
 		//
-		if (taskChecklist.getCategoryCode() != null && !taskChecklist.getCategoryCode().trim().equals("")) {
+		if (taskChecklist.getCategoryCode() != null && !taskChecklist.getCategoryCode().trim().isEmpty()) {
 			taskChecklistInfor.setCATEGORYID(new CATEGORYID());
 			taskChecklistInfor.getCATEGORYID().setCATEGORYCODE(taskChecklist.getCategoryCode());
 		}
@@ -548,18 +546,14 @@ public class ChecklistServiceImpl implements ChecklistService {
 
 		// FOLLOW-UP WORK ORDER
 		String followUpWorkOrderActivity = getCellContent("followupwoactivity", row);
-		if (tools.getDataTypeTools().isNotEmpty(followUpWorkOrderActivity)) {
+		if (isNotEmpty(followUpWorkOrderActivity)) {
 			// Remove the activity after the Work Order Number
 			checklist.setFollowUpWorkOrder(followUpWorkOrderActivity.split("-")[0]);
 		}
 
 		// REQUIRED
 		String required = getCellContent("requiredtoclosedocument", row);
-		if ("Yes".equalsIgnoreCase(required)) {
-			checklist.setRequiredToClose(true);
-		} else {
-			checklist.setRequiredToClose(false);
-		}
+		checklist.setRequiredToClose("Yes".equalsIgnoreCase(required));
 
 		checklist.setConditional("X".equalsIgnoreCase(getCellContent("conditionpk", row)));
 
@@ -638,7 +632,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 				checklist.setNumericValue(encodeBigDecimal(getCellContent("value", row), ""));
 				checklist.setUOM(getCellContent("uom", row));
 				// no break here, NONCONFORMITY_MEASUREMENT is the same as NONCONFORMITY_CHECK,
-				// but with a numberic value and UOM, so we will set the result to OK/NONCONFORMITY below
+				// but with a numeric value and UOM, so we will set the result to OK/NONCONFORMITY below
 			case CheckListType.NONCONFORMITY_CHECK:
 				if (cellEquals(row, "ok", "true")) {
 					checklist.setResult(ReturnType.OK);
@@ -673,10 +667,10 @@ public class ChecklistServiceImpl implements ChecklistService {
 				}
 				break;
 			case CheckListType.DATE:
-				checklist.setDate(tools.getDataTypeTools().convertStringToDate(getCellContent("checklistdate", row)));
+				checklist.setDate(convertStringToDate(getCellContent("checklistdate", row)));
 				break;
 			case CheckListType.DATETIME:
-				checklist.setDateTime(tools.getDataTypeTools().convertStringToDate(getCellContent("checklistdatetime", row)));
+				checklist.setDateTime(convertStringToDate(getCellContent("checklistdatetime", row)));
 				break;
 			case CheckListType.FREE_TEXT:
 				checklist.setFreeText(getCellContent("checklistfreetext", row));
@@ -707,23 +701,27 @@ public class ChecklistServiceImpl implements ChecklistService {
 	 */
 	private List<Finding> getPossibleFindings(InforContext context, GridRequestRow row) {
 		List<String> possibleFindings = Arrays.asList(getCellContent("possiblefindings", row).split(","));
-
-		for (String findingCode : possibleFindings) {
-			if (!findingsCache.containsKey(findingCode)) {
-				try {
-					GridRequest gridRequest = new GridRequest("ISFIND", GridRequest.GRIDTYPE.LIST);
-					gridRequest.addFilter("findingcode", findingCode, "=");
-					findingsCache.put(findingCode, extractSingleResult(gridsService.executeQuery(context, gridRequest), "findingdesc"));
-				}
-				catch (Exception e) {
-					tools.log(Level.WARNING, "Finding could not be fetched: " + e.getMessage());
-				}
-			}
-		}
-
 		return possibleFindings.stream()
-				.map(findingCode -> new Finding(findingCode, findingsCache.containsKey(findingCode) ? findingsCache.get(findingCode) : findingCode))
+				.map(findingCode -> {
+					String findingsCacheKey = context.getTenant() + "_" + findingCode;
+					Function<String, String> loader = key -> loadFinding(context, findingCode);
+					String finding = Optional.ofNullable(InforClient.cacheMap.get(CacheKey.FINDINGS))
+							.map(cache -> (String) cache.get(findingsCacheKey, loader))
+							.orElseGet(() -> loader.apply(findingsCacheKey));
+					return new Finding(findingCode, finding != null ? finding : findingCode);
+				})
 				.collect(Collectors.toList());
+	}
+
+	private String loadFinding(InforContext context, String findingCode) {
+		try {
+			GridRequest gridRequest = new GridRequest("ISFIND", GridRequest.GRIDTYPE.LIST);
+			gridRequest.addFilter("findingcode", findingCode, "=");
+			return extractSingleResult(gridsService.executeQuery(context, gridRequest), "findingdesc");
+		} catch (Exception e) {
+			tools.log(Level.WARNING, "Finding could not be fetched: " + e.getMessage());
+			return null;
+		}
 	}
 
 	private boolean cellEquals(GridRequestRow row, String key, String value) {
@@ -731,7 +729,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 	}
 
 	private String getValue(ResultSet v_result) throws SQLException {
-		Double value = v_result.getDouble("ack_value");
+		double value = v_result.getDouble("ack_value");
 		if (v_result.wasNull()) {
 			return null;
 		} else {
@@ -777,7 +775,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 		String notApplicableOptionsString = extractSingleResult(result, "naoptions");
 
 		// optimization to not call the grid request below
-		if (notApplicableOptionsString == null || "".equals(notApplicableOptionsString)) {
+		if (notApplicableOptionsString == null || notApplicableOptionsString.isEmpty()) {
 			return definition;
 		}
 
