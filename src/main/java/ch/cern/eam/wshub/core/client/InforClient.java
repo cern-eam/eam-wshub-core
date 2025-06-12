@@ -33,7 +33,11 @@ import ch.cern.eam.wshub.core.services.userdefinedscreens.impl.UserDefinedTableS
 import ch.cern.eam.wshub.core.services.workorders.*;
 import ch.cern.eam.wshub.core.services.workorders.impl.*;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
+import ch.cern.eam.wshub.core.tools.CacheKey;
 import ch.cern.eam.wshub.core.tools.Tools;
+import com.github.benmanes.caffeine.cache.Cache;
+import lombok.Getter;
+import lombok.Setter;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
 import javax.persistence.EntityManagerFactory;
@@ -41,11 +45,13 @@ import javax.sql.DataSource;
 import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Service;
+import javax.xml.ws.handler.Handler;
 import javax.xml.ws.handler.HandlerResolver;
 import java.io.Serializable;
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -56,16 +62,19 @@ import java.util.logging.Logger;
  * This class is thread-safe. On single instance can and should be reused to handle multiple calls,
  * even if it involves different Infor users.
  */
+@Getter
 public class InforClient implements Serializable {
 
+    public static Map<CacheKey, Cache<String, Object>> cacheMap = new ConcurrentHashMap<>();
+
     private Tools tools;
-    private InvocationHandler invocationHandler;
     private InforWebServicesPT inforWebServicesToolkitClient;
     private BindingProvider bindingProvider;
 
     private CommentService commentService;
     private WorkOrderService workOrderService;
     private StandardWorkOrderService standardWorkOrderService;
+    @Setter
     private StandardWorkOrderChildService standardWorkOrderChildService;
     private CaseService caseService;
     private CaseTaskService caseTaskService;
@@ -129,8 +138,10 @@ public class InforClient implements Serializable {
 
     private Store2StoreTransferService store2StoreTransferService;
 
+    @Setter
     private CaseManagementService caseManagementService;
 
+    @Setter
     private EquipmentReservationAdjustmentService equipmentReservationAdjustmentService;
 
     // Prevent initializing the class without the builder
@@ -149,6 +160,7 @@ public class InforClient implements Serializable {
         private Boolean withJPAGridsAuthentication = false;
 
         private Boolean localizeResults = true;
+        private Map<CacheKey, Cache<String, Object>> cacheMap;
 
         public Builder(String url) {
             this.url = url;
@@ -199,6 +211,11 @@ public class InforClient implements Serializable {
         	return this;
         }
 
+        public Builder withCache(Map<CacheKey, Cache<String, Object>> cacheMap) {
+            this.cacheMap = cacheMap;
+            return this;
+        }
+
         public Builder localizeResults(Boolean localizeResults) {
             this.localizeResults = localizeResults;
             return this;
@@ -219,6 +236,8 @@ public class InforClient implements Serializable {
             applicationData.setWithJPAGridsAuthentication(withJPAGridsAuthentication);
             ApplicationData.localizeResults = localizeResults;
 
+            InforClient.cacheMap = this.cacheMap;
+
             // Infor Web Services Client
             Service service = Service.create(new QName("inforws"));
             if (this.soapHandlerResolver != null) {
@@ -230,7 +249,7 @@ public class InforClient implements Serializable {
             inforClient.bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, applicationData.getUrl());
             inforClient.bindingProvider.getRequestContext().put("set-jaxb-validation-event-handler", false);
 
-            List handlerChain = inforClient.bindingProvider.getBinding().getHandlerChain();
+            List<Handler> handlerChain = inforClient.bindingProvider.getBinding().getHandlerChain();
             handlerChain.add(0, new AuthenticationHandler());
             inforClient.bindingProvider.getBinding().setHandlerChain(handlerChain);
 
@@ -321,217 +340,5 @@ public class InforClient implements Serializable {
             return inforClient;
         }
 
-    }
-
-    //
-    // GETTERS
-    //
-    public CommentService getCommentService() {
-        return commentService;
-    }
-
-    public WorkOrderService getWorkOrderService() {
-        return workOrderService;
-    }
-
-    public StandardWorkOrderService getStandardWorkOrderService() {
-        return standardWorkOrderService;
-    }
-
-    public StandardWorkOrderChildService getStandardWorkOrderChildService() {
-        return standardWorkOrderChildService;
-    }
-
-    public void setStandardWorkOrderChildService(StandardWorkOrderChildService standardWorkOrderChildService) {
-        this.standardWorkOrderChildService = standardWorkOrderChildService;
-    }
-
-    public AssetService getAssetService() {
-        return assetService;
-    }
-
-    public PositionService getPositionService() {
-        return positionService;
-    }
-
-    public SystemService getSystemService() {
-        return systemService;
-    }
-
-    public EquipmentFacadeService getEquipmentFacadeService() {
-        return equipmentFacadeService;
-    }
-
-    public EquipmentStructureService getEquipmentStructureService() {
-        return equipmentStructureService;
-    }
-
-    public LinearReferenceService getLinearReferenceService() {
-        return linearReferenceService;
-    }
-
-    public PMScheduleService getPmScheduleService() {
-        return pmScheduleService;
-    }
-
-    public EquipmentWarrantyCoverageService getEquipmentWarrantyCoverageService() {
-        return equipmentWarrantyCoverageService;
-    }
-
-    public EquipmentOtherService getEquipmentOtherService() {
-        return equipmentOtherService;
-    }
-
-    public PartService getPartService() {
-        return partService;
-    }
-
-    public PartMiscService getPartMiscService() {
-        return partMiscService;
-    }
-
-    public PartStoreService getPartStoreService() {
-        return partStoreService;
-    }
-
-    public PartManufacturerService getPartManufacturerService() {
-        return partManufacturerService;
-    }
-
-    public PartBinStockService getPartBinStockService() {
-        return partBinStockService;
-    }
-
-    public PartLotService getPartLotService() {return partLotService; }
-
-    public LocationService getLocationService() {
-        return locationService;
-    }
-
-    public CaseService getCaseService() {
-        return caseService;
-    }
-
-    public LaborBookingService getLaborBookingService() {
-        return laborBookingService;
-    }
-
-    public WorkOrderMiscService getWorkOrderMiscService() {
-        return workOrderMiscService;
-    }
-
-    public EmployeeService getEmployeeService() {
-        return employeeService;
-    }
-
-    public CaseTaskService getCaseTaskService() {
-        return caseTaskService;
-    }
-
-    public ChecklistService getChecklistService() {
-        return checklistService;
-    }
-
-    public InspectionService getInspectionService() {
-        return inspectionService;
-    }
-
-    public UserSetupService getUserSetupService() {
-        return userSetupService;
-    }
-
-    public GridsService getGridsService() {
-        return gridsService;
-    }
-
-    public PartKitService getPartKitService() { return partKitService; }
-
-    public PurchaseOrdersService getPurchaseOrdersService() { return purchaseOrdersService; }
-
-    public DocumentsService getDocumentsService() {return documentsService; }
-
-    public PickTicketService getPickTicketService() {return pickTicketService; }
-
-    public PhysicalInventoryService getPhysicalInventoryService() {return physicalInventoryService;}
-
-    public UserDefinedTableService getUserDefinedTableServices() {
-        return userDefinedTableServices;
-    }
-
-    public UserDefinedListService getUserDefinedListService() { return userDefinedListService; }
-
-    public InforWebServicesPT getInforWebServicesToolkitClient() {return inforWebServicesToolkitClient; }
-
-    public Tools getTools() {
-        return tools;
-    }
-
-    public EquipmentGenerationService getEquipmentGenerationService() {
-        return equipmentGenerationService;
-    }
-
-    public EquipmentConfigurationService getEquipmentConfigurationService() {
-        return equipmentConfigurationService;
-    }
-
-    public RouteService getRouteService() {
-        return routeService;
-    }
-
-    public DataspyService getDataspyService() { return dataspyService; }
-
-    public UserGroupMenuService getUserGroupMenuService() { return userGroupMenuService; }
-
-    public ScreenLayoutService getScreenLayoutService() {return screenLayoutService;}
-
-    public BindingProvider getBindingProvider() { return bindingProvider; }
-
-    public SafetyService getSafetyService() { return safetyService; }
-
-    public MECService getMECService() { return mecService; }
-
-    public TaskPlanService getTaskPlanService() { return  taskPlanService; }
-
-    public SalesPriceService getSalesPriceService() {return salesPriceService; }
-
-    public UserDefinedScreenService getUserDefinedScreenService() {return userDefinedScreenService; }
-
-    public CategoryService getCategoryService() {
-        return categoryService;
-    }
-
-    public EquipmentReservationService getEquipmentReservationService() { return equipmentReservationService; }
-
-    public EquipmentMeterReadingService getEquipmentMeterReadingService() {
-        return equipmentMeterReadingService;
-    }
-
-    public NonconformityService getNonconformityService() {
-        return nonconformityService;
-    }
-
-    public NonConformityObservationService getNonconformityObservationService() {
-        return nonConformityObservationService;
-    }
-
-
-    public Store2StoreTransferService getStore2StoreTransferService() {
-        return store2StoreTransferService;
-    }
-
-    public CaseManagementService getCaseManagementService() {
-        return caseManagementService;
-    }
-
-    public void setCaseManagementService(CaseManagementService caseManagementService) {
-        this.caseManagementService = caseManagementService;
-    }
-
-    public EquipmentReservationAdjustmentService getEquipmentReservationAdjustmentService() {
-        return equipmentReservationAdjustmentService;
-    }
-
-    public void setEquipmentReservationAdjustmentService(EquipmentReservationAdjustmentService equipmentReservationAdjustmentService) {
-        this.equipmentReservationAdjustmentService = equipmentReservationAdjustmentService;
     }
 }
