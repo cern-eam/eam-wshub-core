@@ -1,44 +1,42 @@
 package ch.cern.eam.wshub.core.services.grids.impl;
 
+import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.administration.impl.UserSetupServiceImpl;
 import ch.cern.eam.wshub.core.services.entities.BatchResponse;
 import ch.cern.eam.wshub.core.services.grids.GridsService;
-
 import ch.cern.eam.wshub.core.services.grids.entities.*;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
+import ch.cern.eam.wshub.core.tools.CacheKey;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
-import static ch.cern.eam.wshub.core.tools.DataTypeTools.isEmpty;
-
-import java.util.List;
-import java.util.stream.Collectors;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.isEmpty;
 import static ch.cern.eam.wshub.core.tools.GridTools.getCellContent;
 
 public class GridsServiceImpl implements GridsService {
 
-	private Tools tools;
-	private InforWebServicesPT inforws;
-
-	private InforGrids inforGrids;
-	private JPAGrids jpaGrids;
-	private ApplicationData applicationData;
-	public static final Map<String, GridMetadataRequestResult> gridIdCache = new ConcurrentHashMap<>();
+	private final ApplicationData applicationData;
+	private final Tools tools;
+	private final InforWebServicesPT inforws;
+	private final InforGrids inforGrids;
+	private final JPAGrids jpaGrids;
 
 	public GridsServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
 		this.tools = tools;
 		this.inforws = inforWebServicesToolkitClient;
 		this.applicationData = applicationData;
-		inforGrids = new InforGrids(applicationData, tools, inforws);
+		this.inforGrids = new InforGrids(applicationData, tools, inforws);
 		// Init JPA Grids only when DB connection is present
 		if (tools.isDatabaseConnectionConfigured()) {
 			jpaGrids = new JPAGrids(applicationData, tools, inforws);
+		} else {
+			jpaGrids = null;
 		}
 	}
 
@@ -64,8 +62,7 @@ public class GridsServiceImpl implements GridsService {
 			// Invoke the EAM login web service before JPA Grid invocation
 			UserSetupServiceImpl.login(context, null, tools, inforws);
 		}
-		GridRequestResult gridRequestResult = jpaGrids.executeQuery(context, gridRequest);
-		return gridRequestResult;
+		return jpaGrids.executeQuery(context, gridRequest);
 	}
 
 	public GridMetadataRequestResult getGridMetadataInfor(InforContext context, String gridName) {
@@ -73,11 +70,15 @@ public class GridsServiceImpl implements GridsService {
 	}
 
 	public GridMetadataRequestResult getGridMetadataInfor(InforContext context, String gridName, String gridId) {
+		String gridIdCacheKey = context.getTenant() + "_" + gridName + "#" + gridId;
+		Function<String, GridMetadataRequestResult> loader = key -> loadGridMetadataInfor(context, gridName, gridId);
+		return Optional.ofNullable(InforClient.cacheMap.get(CacheKey.GRID_ID))
+				.map(cache -> (GridMetadataRequestResult) cache.get(gridIdCacheKey, loader))
+				.orElseGet(() -> loader.apply(gridIdCacheKey));
+	}
+
+	public GridMetadataRequestResult loadGridMetadataInfor(InforContext context, String gridName, String gridId) {
 		try {
-			String cacheName = gridName + "#" + gridId;
-			if (gridIdCache.containsKey(cacheName)) {
-				return gridIdCache.get(cacheName);
-			}
 			GridRequest gridRequest = new GridRequest("BEWSGR");
 			gridRequest.setIncludeMetadata(true);
 			gridRequest.setRowCount(1);
@@ -93,9 +94,6 @@ public class GridsServiceImpl implements GridsService {
 			gridData.setGridName(getCellContent("grd_gridname", result.getRows()[0]));
 			gridData.setGridCode(getCellContent("grd_gridid", result.getRows()[0]));
 			gridData.setDataSpyId(getCellContent("dds_ddspyid", result.getRows()[0]).replaceAll(",", ""));
-			// Store the gridId in the cache
-			gridIdCache.put(cacheName, gridData);
-			//
 			return gridData;
 		} catch (Exception e) {
 			return null;
@@ -123,7 +121,7 @@ public class GridsServiceImpl implements GridsService {
 	}
 
     public String getGridCsvData(InforContext context, GridRequest gridRequest) throws InforException {
-		// Always fetch the meta data to ensure that the grid fields will be included
+		// Always fetch the metadata to ensure that the grid fields will be included
 		gridRequest.setIncludeMetadata(true);
         GridRequestResult gridRequestResult = inforGrids.executeQuery(context, gridRequest);
         return CSVUtils.convertGridRequestResultToCsv(gridRequestResult);

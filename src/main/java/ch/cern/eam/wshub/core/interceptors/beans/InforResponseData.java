@@ -1,15 +1,18 @@
 package ch.cern.eam.wshub.core.interceptors.beans;
 
+import lombok.Getter;
+
 /**
  * Bean containing details about a response from Infor
  */
+@Getter
 public class InforResponseData {
 
     // Response time in nanoseconds
-    private long responseTime;
+    private final long responseTime;
 
     // Response of the Infor service
-    private Object response;
+    private final Object response;
 
 
     private InforResponseData(long responseTime, Object response) {
@@ -36,11 +39,4 @@ public class InforResponseData {
         }
     }
 
-    public long getResponseTime() {
-        return responseTime;
-    }
-
-    public Object getResponse() {
-        return response;
-    }
 }
