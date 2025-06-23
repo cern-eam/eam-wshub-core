@@ -1,17 +1,19 @@
 package ch.cern.eam.wshub.core.interceptors.beans;
 
 import ch.cern.eam.wshub.core.client.InforContext;
+import lombok.Getter;
 
 /**
  * Bean containing details about a request to an Infor service
  */
+@Getter
 public class InforRequestData {
 
     // Context of infor request
-    private InforContext inforContext;
+    private final InforContext inforContext;
 
     // Object sent in the request to Infor
-    private Object input;
+    private final Object input;
 
 
     private InforRequestData(InforContext inforContext, Object input) {
@@ -38,11 +40,4 @@ public class InforRequestData {
         }
     }
 
-    public InforContext getInforContext() {
-        return inforContext;
-    }
-
-    public Object getInput() {
-        return input;
-    }
 }

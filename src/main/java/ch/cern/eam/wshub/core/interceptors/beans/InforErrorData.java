@@ -1,14 +1,17 @@
 package ch.cern.eam.wshub.core.interceptors.beans;
 
+import lombok.Getter;
+
 /**
- * Bean containing details about an exception occuring during a call to an Infor service
+ * Bean containing details about an exception occurring during a call to an Infor service
  */
+@Getter
 public class InforErrorData {
 
     // Response time in nanoseconds
-    private long responseTime;
+    private final long responseTime;
 
-    private Exception exception;
+    private final Exception exception;
 
 
     private InforErrorData(long responseTime, Exception exception) {
@@ -35,11 +38,4 @@ public class InforErrorData {
         }
     }
 
-    public long getResponseTime() {
-        return responseTime;
-    }
-
-    public Exception getException() {
-        return exception;
-    }
 }
