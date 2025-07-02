@@ -13,7 +13,7 @@ import java.util.Date;
 import java.util.List;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-public class WorkOrderActivityCheckList implements Serializable {
+public class WorkOrderActivityChecklistItem implements Serializable {
 	public static final class CheckListType {
 		public static final String CHECKLIST_ITEM = "01";
 		public static final String QUESTION_YES_NO = "02";

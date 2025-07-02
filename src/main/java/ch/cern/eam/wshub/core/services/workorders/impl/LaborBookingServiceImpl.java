@@ -156,7 +156,7 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 								taskPlan = taskPlanService.getTaskPlan(context, taskPlan);
 								WorkOrderActivityChecklistSignatureResult[] signatures = checklistService.getSignatures(context, workOrderNumber, activity.getActivityCode().toString(), taskPlan);
 								if (signatures.length > 0) {
-									activity.setChecklists(checklistService.readWorkOrderChecklists(context, activity));
+									activity.setChecklists(checklistService.readWorkOrderChecklistItems(context, activity));
 									if (taskPlan.getReviewedByRequired()) {
 										activity.setSignatures(Arrays.stream(signatures)
 												.collect(Collectors.toMap(WorkOrderActivityChecklistSignatureResult::getType, Function.identity())));
@@ -168,10 +168,10 @@ public class LaborBookingServiceImpl implements LaborBookingService {
 									activity.setForceActivityExpansion(taskPlan.getUserDefinedFields().getUdfchkbox03());
 								}
 								else {
-									activity.setChecklists(new WorkOrderActivityCheckList[0]);
+									activity.setChecklists(new WorkOrderActivityChecklistItem[0]);
 								}
 							} catch (Exception e) {
-								activity.setChecklists(new WorkOrderActivityCheckList[0]);
+								activity.setChecklists(new WorkOrderActivityChecklistItem[0]);
 							}
 						})
 						.collect(Collectors.toList());
