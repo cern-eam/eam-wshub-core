@@ -1,15 +1,12 @@
 package ch.cern.eam.wshub.core.services.workorders.entities;
 
 import ch.cern.eam.wshub.core.annotations.InforField;
-import net.datastream.schemas.mp_fields.USERDEFINEDCODEID_Type;
-import org.openapplications.oagis_segments.DATETIME;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class WorkOrderActivityCheckListDefaultResult implements Serializable {
+public class WorkOrderActivityChecklistDefaultResult implements Serializable {
     @InforField(xpath = "PERFORMEDBYESIGN/ESIGNATURE/USERID/DESCRIPTION")
     private String performer1Name;
 
@@ -49,7 +46,7 @@ public class WorkOrderActivityCheckListDefaultResult implements Serializable {
     @InforField(xpath = "REVIEWEDBYESIGN/ESIGNATURE/EXTERNALDATETIME")
     Date timeRev1;
 
-    public WorkOrderActivityCheckListDefaultResult(){
+    public WorkOrderActivityChecklistDefaultResult(){
         rejectPerformedBy = "false";
         rejectPerformedBy2 = "false";
     }

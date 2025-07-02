@@ -11,14 +11,18 @@ import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestRow;
 import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.services.workorders.ChecklistService;
+import ch.cern.eam.wshub.core.services.workorders.TaskPlanService;
 import ch.cern.eam.wshub.core.services.workorders.entities.*;
-import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrderActivityCheckList.CheckListType;
-import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrderActivityCheckList.ReturnType;
+import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrderActivityChecklistItem.CheckListType;
+import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrderActivityChecklistItem.ReturnType;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_entities.taskchecklist_001.TaskChecklist;
+import net.datastream.schemas.mp_entities.workorderactivitychecklistdefault_001.WorkOrderActivityCheckListDefault;
 import net.datastream.schemas.mp_fields.*;
+import net.datastream.schemas.mp_functions.mp5782_001.MP5782_UpdateWorkOrderActivityCheckList_001;
+import net.datastream.schemas.mp_functions.mp5782_001.WorkOrderActivityDetail;
 import net.datastream.schemas.mp_functions.mp7913_001.MP7913_SyncWorkOrderActivityCheckList_001;
 import net.datastream.schemas.mp_functions.mp7914_001.MP7914_GetWorkOrderActivityCheckList_001;
 import net.datastream.schemas.mp_functions.mp7916_001.MP7916_AddTaskChecklist_001;
@@ -48,30 +52,65 @@ import static ch.cern.eam.wshub.core.tools.GridTools.*;
 
 public class ChecklistServiceImpl implements ChecklistService {
 
-	private Tools tools;
-	private InforWebServicesPT inforws;
-	private ApplicationData applicationData;
-	private GridsService gridsService;
+	private final Tools tools;
+	private final InforWebServicesPT inforws;
+	private final GridsService gridsService;
+	private final TaskPlanService taskPlanService;
+
+	private static final String PERFORMED_BY_1 = "PB01";
+	private static final String PERFORMED_BY_2 = "PB02";
+	private static final String REVIEWED_BY_1 = "RB01";
+
 	public static final Map<String, String> findingsCache = new ConcurrentHashMap<>();
 
-	public ChecklistServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
-		this.applicationData = applicationData;
+	public ChecklistServiceImpl(
+			ApplicationData applicationData,
+			Tools tools,
+			InforWebServicesPT inforWebServicesToolkitClient
+	) {
 		this.tools = tools;
 		this.inforws = inforWebServicesToolkitClient;
 		this.gridsService = new GridsServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
+		this.taskPlanService = new TaskPlanServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
 	}
 
-	public WorkOrderActivityChecklistSignatureResult[] getSignatures(InforContext context, String workOrderCode,
-		String activityCode, TaskPlan taskPlan) throws InforException {
+	@Override
+	public WorkOrderActivityChecklistSignatureResult[] getSignatures(
+			InforContext context,
+			String workOrderCode,
+			String activityCode,
+			TaskPlan taskPlan
+	) throws InforException {
 
-		MP7999_GetWorkOrderActivityCheckListDefault_001_Result getResult = getSignatureWS(context, workOrderCode, activityCode);
-		WorkOrderActivityCheckListDefaultResult workOrderActivityCheckListDefaultResult = new WorkOrderActivityCheckListDefaultResult();
-		tools.getInforFieldTools().transformInforObject(workOrderActivityCheckListDefaultResult,
-				getResult.getResultData().getWorkOrderActivityCheckListDefault(), context);
+		MP7999_GetWorkOrderActivityCheckListDefault_001_Result fetchedChecklistValues = getChecklistDefaults(
+				context,
+				workOrderCode,
+				activityCode
+		);
+		WorkOrderActivityChecklistSignatureResult[] signatures = getFilteredSignatures(
+				context,
+				fetchedChecklistValues,
+				taskPlan
+		);
+		getResponsibilityDescriptions(context, signatures);
 
-		WorkOrderActivityChecklistSignatureResult[] res = filterSignatures(workOrderActivityCheckListDefaultResult, taskPlan);
-		getResponsibilityDescriptions(context, res);
-		return res;
+		return signatures;
+	}
+
+	private WorkOrderActivityChecklistSignatureResult[] getFilteredSignatures(
+			InforContext context,
+			MP7999_GetWorkOrderActivityCheckListDefault_001_Result fetchedChecklistValues,
+			TaskPlan taskPlan
+	) {
+
+		WorkOrderActivityChecklistDefaultResult workOrderActivityCheckListDefaultResult = new WorkOrderActivityChecklistDefaultResult();
+		tools.getInforFieldTools().transformInforObject(
+				workOrderActivityCheckListDefaultResult,
+				fetchedChecklistValues.getResultData().getWorkOrderActivityCheckListDefault(),
+				context
+		);
+
+		return filterSignatures(workOrderActivityCheckListDefaultResult, taskPlan);
 	}
 
 	private void getResponsibilityDescriptions(InforContext context, WorkOrderActivityChecklistSignatureResult[] signatures)
@@ -99,7 +138,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 		});
 	}
 
-	private WorkOrderActivityChecklistSignatureResult[] filterSignatures(WorkOrderActivityCheckListDefaultResult workOrderActivityCheckList, TaskPlan taskPlan){
+	private WorkOrderActivityChecklistSignatureResult[] filterSignatures(WorkOrderActivityChecklistDefaultResult workOrderActivityCheckList, TaskPlan taskPlan){
 		String reviewerQualification = workOrderActivityCheckList.getReviewerQualification();
 		String performer1Qualification = workOrderActivityCheckList.getPerformer1Qualification();
 		String performer2Qualification = workOrderActivityCheckList.getPerformer2Qualification();
@@ -134,7 +173,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 
 		if (isPerformer1 || isReviewer || isViewer) {
 			WorkOrderActivityChecklistSignatureResult perf1 = new WorkOrderActivityChecklistSignatureResult();
-			perf1.setType("PB01");
+			perf1.setType(ChecklistServiceImpl.PERFORMED_BY_1);
 			perf1.setSigner(workOrderActivityCheckList.getPerformer1Name());
 			perf1.setViewAsViewer(isViewer);
 			perf1.setViewAsPerformer(isPerformer1);
@@ -148,7 +187,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 		boolean performedBy2Hidden = taskPlan.getUserDefinedFields().getUdfchkbox02();
 		if (!performedBy2Hidden && (isPerformer2 || isReviewer || isViewer)) {
 			WorkOrderActivityChecklistSignatureResult perf2 = new WorkOrderActivityChecklistSignatureResult();
-			perf2.setType("PB02");
+			perf2.setType(PERFORMED_BY_2);
 			perf2.setSigner(workOrderActivityCheckList.getPerformer2Name());
 			perf2.setViewAsViewer(isViewer);
 			perf2.setViewAsPerformer(isPerformer2);
@@ -161,7 +200,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 
 		if (isPerformer1 || isPerformer2 || isReviewer || isViewer) {
 			WorkOrderActivityChecklistSignatureResult reviewer = new WorkOrderActivityChecklistSignatureResult();
-			reviewer.setType("RB01");
+			reviewer.setType(REVIEWED_BY_1);
 			reviewer.setSigner(workOrderActivityCheckList.getReviewerName());
 			reviewer.setViewAsViewer(isViewer);
 			reviewer.setViewAsPerformer(isReviewer);
@@ -178,10 +217,23 @@ public class ChecklistServiceImpl implements ChecklistService {
 		return signatures.toArray(new WorkOrderActivityChecklistSignatureResult[0]);
 	}
 
-	private MP7999_GetWorkOrderActivityCheckListDefault_001_Result getSignatureWS(InforContext context, String workOrderCode, String activityCode) throws InforException {
+	private MP7999_GetWorkOrderActivityCheckListDefault_001_Result getChecklistDefaults(
+			InforContext context,
+			String workOrderCode,
+			String activityCode
+	) throws InforException {
+
 		MP7999_GetWorkOrderActivityCheckListDefault_001 getWorkOrderActivityCheckListDefault = new MP7999_GetWorkOrderActivityCheckListDefault_001();
-		transformGetWorkOrderActivityCheckListDefaultRequest(getWorkOrderActivityCheckListDefault, workOrderCode, activityCode);
-		return tools.performInforOperation(context, inforws::getWorkOrderActivityCheckListDefaultOp, getWorkOrderActivityCheckListDefault);
+		transformGetWorkOrderActivityCheckListDefaultRequest(
+				getWorkOrderActivityCheckListDefault,
+				workOrderCode,
+				activityCode
+		);
+		return tools.performInforOperation(
+				context,
+				inforws::getWorkOrderActivityCheckListDefaultOp,
+				getWorkOrderActivityCheckListDefault
+		);
 	}
 
 	private void transformGetWorkOrderActivityCheckListDefaultRequest(MP7999_GetWorkOrderActivityCheckListDefault_001 getWorkOrderActivityCheckListDefault,
@@ -195,7 +247,8 @@ public class ChecklistServiceImpl implements ChecklistService {
 		getWorkOrderActivityCheckListDefault.setWORKORDERID(workOrderID);
 	}
 
-	public WorkOrderActivityChecklistSignatureResponse eSignWorkOrderActivityChecklist(InforContext context, WorkOrderActivityCheckListSignature workOrderActivityCheckListSignature)
+	@Override
+	public WorkOrderActivityChecklistSignatureResponse eSignWorkOrderActivityChecklist(InforContext context, WorkOrderActivityChecklistSignature workOrderActivityCheckListSignature)
 			throws InforException{
 		Signature signature = new Signature();
 		signature.setUserCode(workOrderActivityCheckListSignature.getUserCode());
@@ -211,7 +264,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 		}
 	}
 
-	private WorkOrderActivityChecklistSignatureResponse performWorkOrderActivityChecklist(InforContext context, WorkOrderActivityCheckListSignature workOrderActivityCheckListSignature)
+	private WorkOrderActivityChecklistSignatureResponse performWorkOrderActivityChecklist(InforContext context, WorkOrderActivityChecklistSignature workOrderActivityCheckListSignature)
 			throws InforException {
 
 		MP7997_PerformWorkOrderActivityCheckList_001 performWorkOrderActivityCheckList = new MP7997_PerformWorkOrderActivityCheckList_001();
@@ -220,7 +273,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 		tools.performInforOperation(context, inforws::performWorkOrderActivityCheckListOp, performWorkOrderActivityCheckList);
 
 		MP7999_GetWorkOrderActivityCheckListDefault_001_Result getResult =
-				getSignatureWS(context, workOrderActivityCheckListSignature.getWorkOrderCode(),
+				getChecklistDefaults(context, workOrderActivityCheckListSignature.getWorkOrderCode(),
 						       workOrderActivityCheckListSignature.getActivityCodeValue().toString());
 		if(workOrderActivityCheckListSignature.getSequenceNumber() != null &&
 				workOrderActivityCheckListSignature.getSequenceNumber().intValue() == 2) {
@@ -230,7 +283,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 		}
 	}
 
-	private WorkOrderActivityChecklistSignatureResponse reviewWorkOrderActivityCheckList(InforContext context, WorkOrderActivityCheckListSignature workOrderActivityCheckListSignature)
+	private WorkOrderActivityChecklistSignatureResponse reviewWorkOrderActivityCheckList(InforContext context, WorkOrderActivityChecklistSignature workOrderActivityCheckListSignature)
 			throws InforException {
 
 		MP7998_ReviewWorkOrderActivityCheckList_001 reviewWorkOrderActivityCheckList = new MP7998_ReviewWorkOrderActivityCheckList_001();
@@ -239,7 +292,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 		tools.performInforOperation(context, inforws::reviewWorkOrderActivityCheckListOp, reviewWorkOrderActivityCheckList);
 
 		MP7999_GetWorkOrderActivityCheckListDefault_001_Result getResult =
-				getSignatureWS(context, workOrderActivityCheckListSignature.getWorkOrderCode(),
+				getChecklistDefaults(context, workOrderActivityCheckListSignature.getWorkOrderCode(),
 						       workOrderActivityCheckListSignature.getActivityCodeValue().toString());
 
 		return transformESIGNATUREtoResponse(getResult.getResultData().getWorkOrderActivityCheckListDefault().getREVIEWEDBYESIGN().getESIGNATURE());
@@ -252,12 +305,81 @@ public class ChecklistServiceImpl implements ChecklistService {
 		return response;
 	}
 
-	public String updateWorkOrderChecklist(InforContext context, WorkOrderActivityCheckList workOrderActivityCheckList) throws InforException {
+	@Override
+	public String updateWorkOrderActivityCheckList(
+			InforContext context,
+			WorkOrderActivityChecklist workOrderActivityChecklist,
+			boolean shouldMergeExistingValues
+	) throws InforException {
+
+		if (shouldMergeExistingValues) {
+			MP7999_GetWorkOrderActivityCheckListDefault_001_Result fetchedExistingValues = getChecklistDefaults(
+					context,
+					workOrderActivityChecklist.getWorkOrderCode(),
+					String.valueOf(workOrderActivityChecklist.getActivityCode())
+			);
+			mergeChecklistValues(workOrderActivityChecklist, fetchedExistingValues);
+		}
+
+		MP5782_UpdateWorkOrderActivityCheckList_001 updateCheckList = new MP5782_UpdateWorkOrderActivityCheckList_001();
+		updateCheckList.setWorkOrderActivityDetail(tools.getInforFieldTools().transformWSHubObject(
+				new WorkOrderActivityDetail(),
+				workOrderActivityChecklist,
+				context
+		));
+		tools.performInforOperation(context, inforws::updateWorkOrderActivityCheckListOp, updateCheckList);
+
+		return "OK";
+	}
+
+	private void mergeChecklistValues(
+			WorkOrderActivityChecklist workOrderActivityChecklist,
+			MP7999_GetWorkOrderActivityCheckListDefault_001_Result fetchedValues
+	) {
+
+		WorkOrderActivityCheckListDefault existingValues = fetchedValues
+				.getResultData()
+				.getWorkOrderActivityCheckListDefault();
+
+		if (workOrderActivityChecklist.getJobSequence() == null) {
+			workOrderActivityChecklist.setJobSequence(existingValues.getJOBSEQUENCE());
+		}
+		if (workOrderActivityChecklist.getRejectPerformedBy() == null) {
+			workOrderActivityChecklist.setRejectPerformedBy(
+					Boolean.parseBoolean(existingValues.getREJECTPERFORMEDBY())
+			);
+		}
+		if (workOrderActivityChecklist.getRejectPerformedBy2() == null) {
+			workOrderActivityChecklist.setRejectPerformedBy2(
+					Boolean.parseBoolean(existingValues.getREJECTPERFORMEDBY2())
+			);
+		}
+		if (workOrderActivityChecklist.getRejectionReason() == null) {
+			workOrderActivityChecklist.setRejectionReason(existingValues.getREJECTIONREASON());
+		}
+		if (
+				workOrderActivityChecklist.getConditionOptionUserDefinedCode() == null &&
+						existingValues.getCONDITIONOPTION() != null
+		) {
+			workOrderActivityChecklist.setConditionOptionUserDefinedCode(
+					existingValues.getCONDITIONOPTION().getUSERDEFINEDCODE()
+			);
+		}
+
+		// A merge of user-defined fields can happen here if needed.
+	}
+
+	@Override
+	public String updateWorkOrderChecklistItem(
+			InforContext context,
+			WorkOrderActivityChecklistItem workOrderActivityChecklistItem,
+			TaskPlan taskPlan
+	) throws InforException {
 		//
 		// Fetch it first
 		//
 		MP7914_GetWorkOrderActivityCheckList_001 getwoactchl = new MP7914_GetWorkOrderActivityCheckList_001();
-		getwoactchl.setCHECKLISTCODE(workOrderActivityCheckList.getCheckListCode());
+		getwoactchl.setCHECKLISTCODE(workOrderActivityChecklistItem.getCheckListCode());
 		MP7914_GetWorkOrderActivityCheckList_001_Result getresult =
 			tools.performInforOperation(context, inforws::getWorkOrderActivityCheckListOp, getwoactchl);
 
@@ -268,22 +390,22 @@ public class ChecklistServiceImpl implements ChecklistService {
 				.getResultData().getWorkOrderActivityCheckList();
 
 		// Follow Up
-		if (workOrderActivityCheckList.getFollowUp() != null) {
-			workOrderActivityCheckListInfor.setFOLLOWUP(tools.getDataTypeTools().encodeBoolean(workOrderActivityCheckList.getFollowUp(), BooleanType.PLUS_MINUS));
+		if (workOrderActivityChecklistItem.getFollowUp() != null) {
+			workOrderActivityCheckListInfor.setFOLLOWUP(tools.getDataTypeTools().encodeBoolean(workOrderActivityChecklistItem.getFollowUp(), BooleanType.PLUS_MINUS));
 		}
 
-		if (workOrderActivityCheckList.getNotApplicableOption() != null) {
+		if (workOrderActivityChecklistItem.getNotApplicableOption() != null) {
 			USERDEFINEDCODEID_Type option = new USERDEFINEDCODEID_Type();
-			option.setUSERDEFINEDCODE(workOrderActivityCheckList.getNotApplicableOption());
+			option.setUSERDEFINEDCODE(workOrderActivityChecklistItem.getNotApplicableOption());
 			workOrderActivityCheckListInfor.setNOTAPPLICABLEOPTION(option);
 		}
 
 		Function<String, String> getStringBool =
-			key -> String.valueOf(key.equals(workOrderActivityCheckList.getResult()));
+			key -> String.valueOf(key.equals(workOrderActivityChecklistItem.getResult()));
 
-		switch (workOrderActivityCheckList.getType()) {
+		switch (workOrderActivityChecklistItem.getType()) {
 			case CheckListType.CHECKLIST_ITEM:
-				if (ReturnType.COMPLETED.equalsIgnoreCase(workOrderActivityCheckList.getResult())) {
+				if (ReturnType.COMPLETED.equalsIgnoreCase(workOrderActivityChecklistItem.getResult())) {
 					workOrderActivityCheckListInfor.setCOMPLETED("true");
 				} else {
 					workOrderActivityCheckListInfor.setCOMPLETED("false");
@@ -294,17 +416,17 @@ public class ChecklistServiceImpl implements ChecklistService {
 				workOrderActivityCheckListInfor.setNO(getStringBool.apply(ReturnType.NO));
 				break;
 			case CheckListType.QUALITATIVE:
-				if (workOrderActivityCheckList.getFinding() != null) {
+				if (workOrderActivityChecklistItem.getFinding() != null) {
 					workOrderActivityCheckListInfor.setFINDINGID(new FINDINGID_Type());
-					workOrderActivityCheckListInfor.getFINDINGID().setFINDINGCODE(workOrderActivityCheckList.getFinding());
+					workOrderActivityCheckListInfor.getFINDINGID().setFINDINGCODE(workOrderActivityChecklistItem.getFinding());
 				} else {
 					workOrderActivityCheckListInfor.setFINDINGID(null);
 				}
 				break;
 			case CheckListType.INSPECTION:
-				if (workOrderActivityCheckList.getFinding() != null) {
+				if (workOrderActivityChecklistItem.getFinding() != null) {
 					workOrderActivityCheckListInfor.setFINDINGID(new FINDINGID_Type());
-					workOrderActivityCheckListInfor.getFINDINGID().setFINDINGCODE(workOrderActivityCheckList.getFinding());
+					workOrderActivityCheckListInfor.getFINDINGID().setFINDINGCODE(workOrderActivityChecklistItem.getFinding());
 				} else {
 					workOrderActivityCheckListInfor.setFINDINGID(null);
 				}
@@ -312,13 +434,13 @@ public class ChecklistServiceImpl implements ChecklistService {
 				// but with findings and possible findings, so we will set the numeric value below
 			case CheckListType.QUANTITATIVE:
 			case CheckListType.METER_READING:
-				BigDecimal numericValue = workOrderActivityCheckList.getNumericValue();
+				BigDecimal numericValue = workOrderActivityChecklistItem.getNumericValue();
 
 				// this logic is used while applications are not yet using the numeric value field
 				// using the result field in the way below is deprecated
 				if(numericValue == null) {
 					BigDecimal possibleNumericValue =
-						encodeBigDecimal(workOrderActivityCheckList.getResult(), "");
+						encodeBigDecimal(workOrderActivityChecklistItem.getResult(), "");
 
 					if(possibleNumericValue != null) numericValue = possibleNumericValue;
 				}
@@ -330,11 +452,11 @@ public class ChecklistServiceImpl implements ChecklistService {
 				workOrderActivityCheckListInfor.setOKFLAG(getStringBool.apply(ReturnType.OK));
 				workOrderActivityCheckListInfor.setREPAIRSNEEDED(getStringBool.apply(ReturnType.REPAIRSNEEDED));
 
-				if(isEmpty(workOrderActivityCheckList.getFinding())) {
+				if(isEmpty(workOrderActivityChecklistItem.getFinding())) {
 					workOrderActivityCheckListInfor.setRESOLUTIONID(null);
 				} else {
 					workOrderActivityCheckListInfor.setRESOLUTIONID(new USERDEFINEDCODEID_Type());
-					workOrderActivityCheckListInfor.getRESOLUTIONID().setUSERDEFINEDCODE(workOrderActivityCheckList.getFinding());
+					workOrderActivityCheckListInfor.getRESOLUTIONID().setUSERDEFINEDCODE(workOrderActivityChecklistItem.getFinding());
 				}
 				break;
 			case CheckListType.GOOD_POOR:
@@ -343,7 +465,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 				break;
 			case CheckListType.OK_ADJUSTED_MEASUREMENT:
 				workOrderActivityCheckListInfor
-					.setRESULTVALUE(tools.getDataTypeTools().encodeQuantity(workOrderActivityCheckList.getNumericValue(), "Checklists Value"));
+					.setRESULTVALUE(tools.getDataTypeTools().encodeQuantity(workOrderActivityChecklistItem.getNumericValue(), "Checklists Value"));
 				// no break here, OK_ADJUSTED_MEASUREMENT is the same as OK_ADJUSTED,
 				// but with a numeric value, so we will set the result to OK/ADJUSTED below
 			case CheckListType.OK_ADJUSTED:
@@ -352,7 +474,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 				break;
 			case CheckListType.NONCONFORMITY_MEASUREMENT:
 				workOrderActivityCheckListInfor
-					.setRESULTVALUE(tools.getDataTypeTools().encodeQuantity(workOrderActivityCheckList.getNumericValue(), "Checklists Value"));
+					.setRESULTVALUE(tools.getDataTypeTools().encodeQuantity(workOrderActivityChecklistItem.getNumericValue(), "Checklists Value"));
 				// no break here, NONCONFORMITY_MEASUREMENT is the same as NONCONFORMITY_CHECK,
 				// but with a numberic value, so we will set the result to OK/NONCONFORMITY below
 			case CheckListType.NONCONFORMITY_CHECK:
@@ -360,42 +482,99 @@ public class ChecklistServiceImpl implements ChecklistService {
 				workOrderActivityCheckListInfor.setNONCONFORMITYFLAG(getStringBool.apply(ReturnType.NONCONFORMITY));
 				break;
 			case CheckListType.DATE:
-				workOrderActivityCheckListInfor.setCHECKLISTDATE(tools.getDataTypeTools().encodeInforDate(workOrderActivityCheckList.getDate(), ""));
+				workOrderActivityCheckListInfor.setCHECKLISTDATE(tools.getDataTypeTools().encodeInforDate(workOrderActivityChecklistItem.getDate(), ""));
 				break;
 			case CheckListType.DATETIME:
-				workOrderActivityCheckListInfor.setCHECKLISTDATETIME(tools.getDataTypeTools().encodeInforDate(workOrderActivityCheckList.getDateTime(), ""));
+				workOrderActivityCheckListInfor.setCHECKLISTDATETIME(tools.getDataTypeTools().encodeInforDate(workOrderActivityChecklistItem.getDateTime(), ""));
 				break;
 			case CheckListType.FREE_TEXT:
-				workOrderActivityCheckListInfor.setCHECKLISTFREETEXT(workOrderActivityCheckList.getFreeText());
+				workOrderActivityCheckListInfor.setCHECKLISTFREETEXT(workOrderActivityChecklistItem.getFreeText());
 				break;
 			case CheckListType.ENTITY:
-				if (isEmpty(workOrderActivityCheckList.getEntityCode())) {
+				if (isEmpty(workOrderActivityChecklistItem.getEntityCode())) {
 					workOrderActivityCheckListInfor.setENTITYCODEID(null);
 					break;
 				}
 				workOrderActivityCheckListInfor.setENTITYCODEID(new ENTITYCODEID_Type());
-				workOrderActivityCheckListInfor.getENTITYCODEID().setCODE(workOrderActivityCheckList.getEntityCode());
+				workOrderActivityCheckListInfor.getENTITYCODEID().setCODE(workOrderActivityChecklistItem.getEntityCode());
 				ORGANIZATIONID_Type organizationidType = new ORGANIZATIONID_Type();
-				organizationidType.setORGANIZATIONCODE(isEmpty(workOrderActivityCheckList.getEntityCodeOrg()) ? tools.getOrganizationCode(context) : workOrderActivityCheckList.getEntityCodeOrg());
+				organizationidType.setORGANIZATIONCODE(isEmpty(workOrderActivityChecklistItem.getEntityCodeOrg()) ? tools.getOrganizationCode(context) : workOrderActivityChecklistItem.getEntityCodeOrg());
 				workOrderActivityCheckListInfor.getENTITYCODEID().setORGANIZATIONID(organizationidType);
 				break;
 			case CheckListType.DUAL_QUANTITATIVE:
-				workOrderActivityCheckListInfor.setRESULTVALUE(tools.getDataTypeTools().encodeQuantity(workOrderActivityCheckList.getNumericValue(), "Checklists Value"));
-				workOrderActivityCheckListInfor.setRESULTVALUE2(tools.getDataTypeTools().encodeQuantity(workOrderActivityCheckList.getNumericValue2(), "Checklists Value"));
+				workOrderActivityCheckListInfor.setRESULTVALUE(tools.getDataTypeTools().encodeQuantity(workOrderActivityChecklistItem.getNumericValue(), "Checklists Value"));
+				workOrderActivityCheckListInfor.setRESULTVALUE2(tools.getDataTypeTools().encodeQuantity(workOrderActivityChecklistItem.getNumericValue2(), "Checklists Value"));
 				break;
 		}
 
-		if (workOrderActivityCheckList.getNotes() != null) {
-			workOrderActivityCheckListInfor.setNOTES(workOrderActivityCheckList.getNotes());
+		if (workOrderActivityChecklistItem.getNotes() != null) {
+			workOrderActivityCheckListInfor.setNOTES(workOrderActivityChecklistItem.getNotes());
 		}
 
 		MP7913_SyncWorkOrderActivityCheckList_001 syncwoactchl = new MP7913_SyncWorkOrderActivityCheckList_001();
 		syncwoactchl.setWorkOrderActivityCheckList(workOrderActivityCheckListInfor);
 
 		tools.performInforOperation(context, inforws::syncWorkOrderActivityCheckListOp, syncwoactchl);
+		invalidateSignatures(
+				context,
+				workOrderActivityChecklistItem.getWorkOrderCode(),
+				workOrderActivityChecklistItem.getActivityCode(),
+				taskPlan
+		);
 		return null;
 	}
 
+	private void invalidateSignatures(
+			InforContext context,
+			String workOrderCode,
+			String activityCode,
+			TaskPlan taskPlan
+	) throws InforException {
+
+		TaskPlan fetchedTaskPlan = taskPlanService.getTaskPlan(context, taskPlan);
+		MP7999_GetWorkOrderActivityCheckListDefault_001_Result fetchedChecklistValues = getChecklistDefaults(
+				context,
+				workOrderCode,
+				activityCode
+		);
+		WorkOrderActivityChecklistSignatureResult[] signatures = getFilteredSignatures(
+				context,
+				fetchedChecklistValues,
+				fetchedTaskPlan
+		);
+
+		if (signatures.length == 0) {
+			return;
+		}
+
+		WorkOrderActivityChecklist checklist = new WorkOrderActivityChecklist(
+				workOrderCode,
+				Long.parseLong(activityCode)
+		);
+
+		for (WorkOrderActivityChecklistSignatureResult signature : signatures) {
+			if (signature.getSigner() == null) {
+				continue;
+			}
+
+			if (PERFORMED_BY_1.equals(signature.getType())) {
+				checklist.setRejectPerformedBy(true);
+			} else if (PERFORMED_BY_2.equals(signature.getType())) {
+				checklist.setRejectPerformedBy2(true);
+			}
+		}
+		if (
+				Boolean.TRUE.equals(checklist.getRejectPerformedBy()) ||
+				Boolean.TRUE.equals(checklist.getRejectPerformedBy2())
+		) {
+			checklist.setRejectionReason("The checklist was updated.");
+		}
+
+		mergeChecklistValues(checklist, fetchedChecklistValues);
+		updateWorkOrderActivityCheckList(context, checklist, false);
+	}
+
+	@Override
 	public String createTaskplanChecklist(InforContext context, TaskplanCheckList taskChecklist) throws InforException {
 		TaskChecklist taskChecklistInfor = new TaskChecklist();
 		//
@@ -510,7 +689,8 @@ public class ChecklistServiceImpl implements ChecklistService {
 		return "OK";
 	}
 
-	public WorkOrderActivityCheckList[] readWorkOrderChecklists(InforContext context, Activity activity) throws InforException {
+	@Override
+	public WorkOrderActivityChecklistItem[] readWorkOrderChecklistItems(InforContext context, Activity activity) throws InforException {
 		// Fetch the data
 		GridRequest gridRequest = new GridRequest("WSJOBS_ACK");
 		gridRequest.setRowCount(2000);
@@ -521,17 +701,17 @@ public class ChecklistServiceImpl implements ChecklistService {
 		gridRequest.getParams().put("param.jobseq", "0");
 		GridRequestResult gridRequestResult = gridsService.executeQuery(context, gridRequest);
 
-		LinkedList<WorkOrderActivityCheckList> checklists = new LinkedList<>();
+		LinkedList<WorkOrderActivityChecklistItem> checklists = new LinkedList<>();
 		for (GridRequestRow row : gridRequestResult.getRows()) {
 			checklists.add(getCheckList(context, row, activity));
 		}
 
-		return checklists.toArray(new WorkOrderActivityCheckList[]{});
+		return checklists.toArray(new WorkOrderActivityChecklistItem[]{});
 	}
 
 
-	private WorkOrderActivityCheckList getCheckList(InforContext context, GridRequestRow row, Activity activity) throws InforException {
-		WorkOrderActivityCheckList checklist = new WorkOrderActivityCheckList();
+	private WorkOrderActivityChecklistItem getCheckList(InforContext context, GridRequestRow row, Activity activity) throws InforException {
+		WorkOrderActivityChecklistItem checklist = new WorkOrderActivityChecklistItem();
 		checklist.setWorkOrderCode(activity.getWorkOrderNumber());
 		checklist.setActivityCode(activity.getActivityCode().toString());
 		checklist.setCheckListCode(getCellContent("checklistcode", row));
@@ -747,6 +927,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 	 * @throws InforException
 	 */
 
+	@Override
 	public Long createFollowUpWorkOrders(InforContext context, Activity activity) throws InforException {
 		MP8000_CreateFollowUpWorkOrder_001 createFUWO = new MP8000_CreateFollowUpWorkOrder_001();
 
@@ -762,7 +943,8 @@ public class ChecklistServiceImpl implements ChecklistService {
 		return createFUWOResult.getResultData().getWORKORDERCOUNT();
 	}
 
-	public WorkOrderActivityCheckListDefinition getChecklistDefinition(InforContext context, TaskPlan taskPlan, String code) throws InforException {
+	@Override
+	public WorkOrderActivityChecklistDefinition getChecklistDefinition(InforContext context, TaskPlan taskPlan, String code) throws InforException {
 		GridRequest gridRequest = new GridRequest("WSTASK_TCH", 1);
 		gridRequest.addParam("param.task", taskPlan.getCode());
 		gridRequest.addParam("param.revision", taskPlan.getTaskRevision() == null ? null : taskPlan.getTaskRevision().toString());
@@ -771,8 +953,8 @@ public class ChecklistServiceImpl implements ChecklistService {
 
 		GridRequestResult result = gridsService.executeQuery(context, gridRequest);
 
-		WorkOrderActivityCheckListDefinition definition = convertGridResultToObject(
-				WorkOrderActivityCheckListDefinition.class, null, result).stream().findFirst().orElse(null);
+		WorkOrderActivityChecklistDefinition definition = convertGridResultToObject(
+				WorkOrderActivityChecklistDefinition.class, null, result).stream().findFirst().orElse(null);
 
 		String notApplicableOptionsString = extractSingleResult(result, "naoptions");
 

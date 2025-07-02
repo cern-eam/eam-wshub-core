@@ -5,7 +5,7 @@ import ch.cern.eam.wshub.core.services.entities.Pair;
 
 import java.util.List;
 
-public class WorkOrderActivityCheckListDefinition {
+public class WorkOrderActivityChecklistDefinition {
     @GridField(name="checklistitem")
     private String code;
 

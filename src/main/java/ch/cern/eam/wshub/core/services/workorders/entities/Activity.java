@@ -93,7 +93,7 @@ public class Activity implements Serializable {
 	private BigDecimal taskQty;
 
 	@Transient
-	private WorkOrderActivityCheckList[] checklists;
+	private WorkOrderActivityChecklistItem[] checklists;
 
 	@Transient
 	private Map<String, WorkOrderActivityChecklistSignatureResult> signatures;
@@ -203,11 +203,11 @@ public class Activity implements Serializable {
 		this.taskRev = taskRev;
 	}
 
-	public WorkOrderActivityCheckList[] getChecklists() {
+	public WorkOrderActivityChecklistItem[] getChecklists() {
 		return checklists;
 	}
 
-	public void setChecklists(WorkOrderActivityCheckList[] checklists) {
+	public void setChecklists(WorkOrderActivityChecklistItem[] checklists) {
 		this.checklists = checklists;
 	}
 
