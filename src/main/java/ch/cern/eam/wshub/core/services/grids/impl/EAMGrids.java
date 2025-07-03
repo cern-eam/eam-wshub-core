@@ -360,7 +360,7 @@ public class EAMGrids implements Serializable {
 		return multiaddon_filters;
 	}
 
-	private LOV createLovParams(InforContext inforContext, GridRequest gridRequest) {
+	private LOV createLovParams(EAMContext eamContext, GridRequest gridRequest) {
 		LOV lov = new LOV();
 		lov.setLOV_PARAMETERS(new LOV_PARAMETERS());
 		gridRequest.getParams().forEach( (paramName, paramValue) -> {
@@ -372,7 +372,7 @@ public class EAMGrids implements Serializable {
 			}
 			lov.getLOV_PARAMETERS().getLOV_PARAMETER().add(lovParameter);
 		});
-		lov.getLOV_PARAMETERS().getLOV_PARAMETER().addAll(getDefaultLovParams(inforContext, gridRequest));
+		lov.getLOV_PARAMETERS().getLOV_PARAMETER().addAll(getDefaultLovParams(eamContext, gridRequest));
 		return lov;
 	}
 
@@ -507,13 +507,13 @@ public class EAMGrids implements Serializable {
 		return gridField;
 	}
 
-	private List<LOV_PARAMETER> getDefaultLovParams(InforContext inforContext, GridRequest gridRequest) {
+	private List<LOV_PARAMETER> getDefaultLovParams(EAMContext eamContext, GridRequest gridRequest) {
 		ArrayList<LOV_PARAMETER> lovParams = new ArrayList<>();
 		if (gridRequest.getGridType() == GridRequest.GRIDTYPE.LOV) {
 			LOV_PARAMETER controlOrgParam = new LOV_PARAMETER();
 			controlOrgParam.setTYPE("VARCHAR");
 			controlOrgParam.setALIAS_NAME("control.org");
-			controlOrgParam.setVALUE(tools.getOrganizationCode(inforContext));
+			controlOrgParam.setVALUE(tools.getOrganizationCode(eamContext));
 			lovParams.add(controlOrgParam);
 		}
 		return lovParams;
