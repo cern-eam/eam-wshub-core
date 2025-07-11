@@ -140,20 +140,9 @@
 
     <scm>
         <connection>scm:git:ssh://git@github.com/cern-eam/eam-wshub-core.git</connection>
-        <tag>eam-wshub-core-11.7-23</tag>
+        <tag>eam-wshub-core-12.1.12-8-SNAPSHOT</tag>
         <url>https://github.com/cern-eam/eam-wshub-core</url>
     </scm>
-
-    <distributionManagement>
-        <repository>
-            <id>maven-staging</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
-        </repository>
-        <snapshotRepository>
-            <id>maven-snapshots</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
 
     <build>
         <resources>
@@ -179,14 +168,13 @@
             </plugin>
 
             <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.8</version>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.8.0</version>
                 <extensions>true</extensions>
                 <configuration>
-                    <serverId>oss-cern-eam</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                    <publishingServerId>central</publishingServerId>
+                    <autoPublish>true</autoPublish>
                 </configuration>
             </plugin>
 
