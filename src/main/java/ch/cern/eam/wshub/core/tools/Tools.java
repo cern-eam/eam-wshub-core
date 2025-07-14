@@ -28,11 +28,14 @@ import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.isEmpty;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
 
 public class Tools {
+
+	public static final String CACHE_SEPARATOR = "_";
 
 	private ApplicationData applicationData;
 	private InforWebServicesPT inforws;
@@ -417,5 +420,21 @@ public class Tools {
 		String tenant = getTenant(context);
 
 		return operation.apply(argument, organization, security, sessionTerminationScenario, holder, messageConfigType, tenant);
+	}
+
+	public static String getCacheKey(InforContext inforContext, String ...parts) {
+		final String tenant = inforContext.getTenant();
+		return Stream.concat(
+						tenant != null ? Stream.of(tenant) : Stream.empty(),
+						Arrays.stream(parts)
+				)
+				.filter(Objects::nonNull)
+				.collect(Collectors.joining(CACHE_SEPARATOR));
+	}
+
+	public static String getCacheKeyWithLang(InforContext inforContext, String ...parts) {
+		final String language = inforContext.getLanguage();
+		return language == null ? getCacheKey(inforContext, parts) : getCacheKey(inforContext, Stream.concat(Stream.of(language), Arrays.stream(parts))
+				.toArray(String[]::new));
 	}
 }

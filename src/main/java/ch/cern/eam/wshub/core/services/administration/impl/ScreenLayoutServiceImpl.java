@@ -35,8 +35,7 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
 
     public ScreenLayout readScreenLayout(InforContext context, String systemFunction, String userFunction, List<String> tabs, String userGroup, String entity) throws InforException {
         try {
-            String screenLayoutCacheKey = String.join("_",
-                    context.getTenant(), context.getCredentials().getLanguage(), userGroup, userFunction);
+            String screenLayoutCacheKey = Tools.getCacheKeyWithLang(context, userGroup, userFunction);
             Function<String, ScreenLayout> loader = key ->
                     loadScreenLayout(context, systemFunction, userFunction, tabs, userGroup, entity);
             return Optional.ofNullable(InforClient.cacheMap.get(CacheKey.SCREEN_LAYOUT))
@@ -253,8 +252,7 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
      */
     private Map<String, String> getTabLayoutLabels(InforContext context, String userFunction) throws InforException {
         try {
-            String screenLayoutLabelCacheKey = String.join("_",
-                    context.getTenant(), context.getCredentials().getLanguage(), userFunction);
+            String screenLayoutLabelCacheKey = Tools.getCacheKeyWithLang(context, userFunction);
             Function<String, Map<String, String>> loader = key -> loadTabLayoutLabels(context, userFunction);
             return Optional.ofNullable(InforClient.cacheMap.get(CacheKey.SCREEN_LAYOUT_LABEL))
                     .map(cache -> (Map<String, String>) cache.get(screenLayoutLabelCacheKey, loader))

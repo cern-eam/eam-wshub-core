@@ -68,6 +68,10 @@ public class EAMUser implements Serializable {
 	@InforField(xpath = "LOCALE")
 	private String locale;
 
+	@Column(name = "USR_LANG")
+	@InforField(xpath = "LANGUAGE")
+	private String language;
+
 	@Transient
 	private String employeeCode;
 
@@ -229,6 +233,14 @@ public class EAMUser implements Serializable {
 
 	public void setDepartmentalSecurity(Map<String, Department> departmentalSecurity) {
 		this.departmentalSecurity = departmentalSecurity;
+	}
+
+	public String getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(String language) {
+		this.language = language;
 	}
 
 	/*

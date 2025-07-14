@@ -44,7 +44,7 @@ public class InforGrids implements Serializable {
 	}
 
 	public GridRequestResult executeQuery(InforContext context, GridRequest gridRequest) throws InforException {
-		String gridFieldCacheKey = context.getTenant() + "_" + gridRequest.getRequestKey();
+		String gridFieldCacheKey = Tools.getCacheKey(context, gridRequest.getRequestKey());
 		Cache<String, Object> gridFieldCache = InforClient.cacheMap.get(CacheKey.GRID_FIELD);
 		if (gridFieldCache == null) {
 			return executeQueryHeaderData(context, gridRequest);
@@ -204,7 +204,7 @@ public class InforGrids implements Serializable {
 		for (FIELD field : result.getGRIDRESULT().getGRID().getFIELDS().getFIELD()) {
 			gridFieldMap.put(field.getAliasnum(), decodeInforGridField(field));
 		}
-		String gridFieldCacheKey = context.getTenant() + "_" + gridRequest.getRequestKey();
+		String gridFieldCacheKey = Tools.getCacheKeyWithLang(context, gridRequest.getRequestKey());
 		Cache<String, Object> gridFieldCache = InforClient.cacheMap.get(CacheKey.GRID_FIELD);
 		if (gridFieldCache != null) {
 			gridFieldCache.put(gridFieldCacheKey, gridFieldMap);

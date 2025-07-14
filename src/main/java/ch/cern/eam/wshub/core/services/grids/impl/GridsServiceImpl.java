@@ -70,7 +70,7 @@ public class GridsServiceImpl implements GridsService {
 	}
 
 	public GridMetadataRequestResult getGridMetadataInfor(InforContext context, String gridName, String gridId) {
-		String gridIdCacheKey = context.getTenant() + "_" + gridName + "#" + gridId;
+		String gridIdCacheKey = Tools.getCacheKey(context, gridName + "#" + gridId);
 		Function<String, GridMetadataRequestResult> loader = key -> loadGridMetadataInfor(context, gridName, gridId);
 		return Optional.ofNullable(InforClient.cacheMap.get(CacheKey.GRID_ID))
 				.map(cache -> (GridMetadataRequestResult) cache.get(gridIdCacheKey, loader))

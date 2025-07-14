@@ -884,7 +884,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 		List<String> possibleFindings = Arrays.asList(getCellContent("possiblefindings", row).split(","));
 		return possibleFindings.stream()
 				.map(findingCode -> {
-					String findingsCacheKey = context.getTenant() + "_" + findingCode;
+					String findingsCacheKey = Tools.getCacheKey(context, findingCode);
 					Function<String, String> loader = key -> loadFinding(context, findingCode);
 					String finding = Optional.ofNullable(InforClient.cacheMap.get(CacheKey.FINDINGS))
 							.map(cache -> (String) cache.get(findingsCacheKey, loader))
