@@ -514,12 +514,14 @@ public class ChecklistServiceImpl implements ChecklistService {
 		syncwoactchl.setWorkOrderActivityCheckList(workOrderActivityCheckListInfor);
 
 		tools.performInforOperation(context, inforws::syncWorkOrderActivityCheckListOp, syncwoactchl);
-		invalidateSignatures(
-				context,
-				workOrderActivityChecklistItem.getWorkOrderCode(),
-				workOrderActivityChecklistItem.getActivityCode(),
-				taskPlan
-		);
+		if (taskPlan != null) {
+			invalidateSignatures(
+					context,
+					workOrderActivityChecklistItem.getWorkOrderCode(),
+					workOrderActivityChecklistItem.getActivityCode(),
+					taskPlan
+			);
+		}
 		return null;
 	}
 
