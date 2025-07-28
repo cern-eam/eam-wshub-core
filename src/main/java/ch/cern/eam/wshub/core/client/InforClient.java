@@ -160,7 +160,7 @@ public class InforClient implements Serializable {
         private Boolean withJPAGridsAuthentication = false;
 
         private Boolean localizeResults = true;
-        private Map<CacheKey, Cache<String, Object>> cacheMap;
+        private Map<CacheKey, Cache<String, Object>> cacheMap = InforClient.cacheMap;
 
         public Builder(String url) {
             this.url = url;
