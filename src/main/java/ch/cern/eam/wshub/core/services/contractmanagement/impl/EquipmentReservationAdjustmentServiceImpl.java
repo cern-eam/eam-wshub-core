@@ -60,10 +60,10 @@ public class EquipmentReservationAdjustmentServiceImpl implements EquipmentReser
                         : s.getRate().compareTo(equipmentReservationAdjustment.getRate()) != 0)
                 || !Objects.equals(s.getAdjustmentCode(), equipmentReservationAdjustment.getAdjustmentCode())
             );
-        if (equipmentReservationAdjustments.isEmpty()) {
-            throw new InforException("Could not retrieve Equipment Reservation Adjustment id.", null, null);
+        if (equipmentReservationAdjustments.size() == 1) {
+            return equipmentReservationAdjustments.get(0).getCode();
         }
-        return equipmentReservationAdjustments.get(0).getCode();
+        return "";
     }
 
     @Override
