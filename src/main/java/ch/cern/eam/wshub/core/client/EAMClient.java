@@ -33,8 +33,10 @@ import ch.cern.eam.wshub.core.services.userdefinedscreens.impl.UserDefinedTableS
 import ch.cern.eam.wshub.core.services.workorders.*;
 import ch.cern.eam.wshub.core.services.workorders.impl.*;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
+import ch.cern.eam.wshub.core.tools.CacheKey;
 import ch.cern.eam.wshub.core.tools.Tools;
 import ch.cern.eam.wshub.core.tools.soaphandler.SOAPHandlerResolver;
+import com.github.benmanes.caffeine.cache.Cache;
 import lombok.Getter;
 import lombok.Setter;
 import net.datastream.wsdls.eamws.EAMWebServicesPT;
@@ -49,6 +51,8 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -62,6 +66,8 @@ import java.util.logging.Logger;
 @Getter
 @Setter
 public class EAMClient implements Serializable {
+
+    public static Map<CacheKey, Cache<String, Object>> cacheMap = new ConcurrentHashMap<>();
 
     private Tools tools;
     private InvocationHandler invocationHandler;
@@ -153,6 +159,7 @@ public class EAMClient implements Serializable {
         private Boolean withJPAGridsAuthentication = false;
 
         private Boolean localizeResults = true;
+        private Map<CacheKey, Cache<String, Object>> cacheMap = EAMClient.cacheMap;
 
         public Builder(String url) {
             this.url = url;
@@ -203,6 +210,11 @@ public class EAMClient implements Serializable {
         	return this;
         }
 
+        public Builder withCache(Map<CacheKey, Cache<String, Object>> cacheMap) {
+            this.cacheMap = cacheMap;
+            return this;
+        }
+
         public Builder localizeResults(Boolean localizeResults) {
             this.localizeResults = localizeResults;
             return this;
@@ -222,6 +234,8 @@ public class EAMClient implements Serializable {
             applicationData.setTenant(this.tenant);
             applicationData.setWithJPAGridsAuthentication(withJPAGridsAuthentication);
             ApplicationData.localizeResults = localizeResults;
+
+            EAMClient.cacheMap = this.cacheMap;
 
             // EAM Web Services Client
             Service service = Service.create(new QName("eamws"));

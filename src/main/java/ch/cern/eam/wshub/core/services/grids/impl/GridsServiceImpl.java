@@ -1,5 +1,6 @@
 package ch.cern.eam.wshub.core.services.grids.impl;
 
+import ch.cern.eam.wshub.core.client.EAMClient;
 import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.administration.impl.UserSetupServiceImpl;
 import ch.cern.eam.wshub.core.services.entities.BatchResponse;
@@ -7,11 +8,14 @@ import ch.cern.eam.wshub.core.services.grids.GridsService;
 
 import ch.cern.eam.wshub.core.services.grids.entities.*;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
+import ch.cern.eam.wshub.core.tools.CacheKey;
 import ch.cern.eam.wshub.core.tools.EAMException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.isEmpty;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.datastream.wsdls.eamws.EAMWebServicesPT;
 
@@ -35,7 +39,7 @@ public class GridsServiceImpl implements GridsService {
 		this.tools = tools;
 		this.eamws = eamWebServicesToolkitClient;
 		this.applicationData = applicationData;
-		eamGrids = new EAMGrids(applicationData, tools, eamws);
+		this.eamGrids = new EAMGrids(applicationData, tools, eamws);
 		// Init JPA Grids only when DB connection is present
 		if (tools.isDatabaseConnectionConfigured()) {
 			jpaGrids = new JPAGrids(applicationData, tools, eamws);
@@ -73,11 +77,15 @@ public class GridsServiceImpl implements GridsService {
 	}
 
 	public GridMetadataRequestResult getGridMetadataEAM(EAMContext context, String gridName, String gridId) {
+		String gridIdCacheKey = Tools.getCacheKey(context, gridName + "#" + gridId);
+		Function<String, GridMetadataRequestResult> loader = key -> loadGridMetadataInfor(context, gridName, gridId);
+		return Optional.ofNullable(EAMClient.cacheMap.get(CacheKey.GRID_ID))
+				.map(cache -> (GridMetadataRequestResult) cache.get(gridIdCacheKey, loader))
+				.orElseGet(() -> loader.apply(gridIdCacheKey));
+	}
+
+	public GridMetadataRequestResult loadGridMetadataInfor(EAMContext context, String gridName, String gridId) {
 		try {
-			String cacheName = gridName + "#" + gridId;
-			if (gridIdCache.containsKey(cacheName)) {
-				return gridIdCache.get(cacheName);
-			}
 			GridRequest gridRequest = new GridRequest("BEWSGR");
 			gridRequest.setIncludeMetadata(true);
 			gridRequest.setRowCount(1);
@@ -93,9 +101,6 @@ public class GridsServiceImpl implements GridsService {
 			gridData.setGridName(getCellContent("grd_gridname", result.getRows()[0]));
 			gridData.setGridCode(getCellContent("grd_gridid", result.getRows()[0]));
 			gridData.setDataSpyId(getCellContent("dds_ddspyid", result.getRows()[0]).replaceAll(",", ""));
-			// Store the gridId in the cache
-			gridIdCache.put(cacheName, gridData);
-			//
 			return gridData;
 		} catch (Exception e) {
 			return null;
