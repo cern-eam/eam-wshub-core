@@ -17,6 +17,7 @@ public class EAMContext implements Serializable {
     private Signature signature;
     private Boolean keepSession;
     private String authToken;
+    private String language;
 
     private Boolean localizeResults = true;
 
@@ -86,5 +87,13 @@ public class EAMContext implements Serializable {
 
     public void setLocalizeResults(Boolean localizeResults) {
         this.localizeResults = localizeResults;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
     }
 }

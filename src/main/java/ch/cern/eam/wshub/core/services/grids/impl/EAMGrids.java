@@ -1,12 +1,11 @@
 package ch.cern.eam.wshub.core.services.grids.impl;
 
 import ch.cern.eam.wshub.core.annotations.BooleanType;
+import ch.cern.eam.wshub.core.client.EAMClient;
 import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.grids.entities.*;
-import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.tools.DataTypeTools;
-import ch.cern.eam.wshub.core.tools.EAMException;
-import ch.cern.eam.wshub.core.tools.Tools;
+import ch.cern.eam.wshub.core.tools.*;
+import com.github.benmanes.caffeine.cache.Cache;
 import net.datastream.schemas.mp_functions.gridrequest.*;
 import net.datastream.schemas.mp_functions.gridrequest.LOV.LOV_PARAMETERS;
 import net.datastream.schemas.mp_functions.gridrequest.LOV.LOV_PARAMETERS.LOV_PARAMETER;
@@ -37,8 +36,6 @@ public class EAMGrids implements Serializable {
 	private ApplicationData applicationData;
 	private Tools tools;
 	private EAMWebServicesPT eamws;
-	public static final Map<String, Map<BigInteger, GridField>> gridFieldCache = new ConcurrentHashMap<>();
-
 	public EAMGrids(ApplicationData applicationData, Tools tools, EAMWebServicesPT eamWebServicesToolkitClient) {
 		this.applicationData = applicationData;
 		this.tools = tools;
@@ -46,14 +43,21 @@ public class EAMGrids implements Serializable {
 	}
 
 	public GridRequestResult executeQuery(EAMContext context, GridRequest gridRequest) throws EAMException {
-		if (gridRequest.getIncludeMetadata() || !gridFieldCache.containsKey(gridRequest.getRequestKey())) {
+		String gridFieldCacheKey = Tools.getCacheKey(context, gridRequest.getRequestKey());
+		Cache<String, Object> gridFieldCache = EAMClient.cacheMap.get(CacheKey.GRID_FIELD);
+		if (gridFieldCache == null) {
+			return executeQueryHeaderData(context, gridRequest);
+		}
+
+		Map<BigInteger, GridField> gridFieldMap = (Map<BigInteger, GridField>) gridFieldCache.getIfPresent(gridFieldCacheKey);
+		if (gridRequest.getIncludeMetadata() || gridFieldMap == null) {
 			return executeQueryHeaderData(context, gridRequest);
 		} else {
-			return executeQueryDataOnly(context, gridRequest);
+			return executeQueryDataOnly(context, gridRequest, gridFieldMap);
 		}
 	}
 
-	public GridRequestResult executeQueryDataOnly(EAMContext context, GridRequest gridRequest) throws EAMException {
+	public GridRequestResult executeQueryDataOnly(EAMContext context, GridRequest gridRequest, Map<BigInteger, GridField> gridFieldMap) throws EAMException {
 		//
 		FUNCTION_REQUEST_INFO funRequest = new FUNCTION_REQUEST_INFO();
 
@@ -112,7 +116,7 @@ public class EAMGrids implements Serializable {
 
 		if (result.getGRIDRESULT().getGRID().getDATA() != null &&
 				result.getGRIDRESULT().getGRID().getDATA().getROW() != null &&
-				result.getGRIDRESULT().getGRID().getDATA().getROW().size() > 0) {
+                !result.getGRIDRESULT().getGRID().getDATA().getROW().isEmpty()) {
 
 			LinkedList<GridRequestRow> rows = new LinkedList<GridRequestRow>();
 			for (net.datastream.schemas.mp_functions.mp0116_getgriddataonly_001_result.DATA.ROW eamRow : result.getGRIDRESULT().getGRID().getDATA().getROW()) {
@@ -120,11 +124,11 @@ public class EAMGrids implements Serializable {
 				//
 				List<GridRequestCell> cells = eamRow.getD().stream().map(eamCell -> {
 					// If current column is not in the grid cache (or there is no grid cache :-) ) extract only the ID and content from EAM grid cell
-					if (gridFieldCache.get(gridRequest.getRequestKey()) == null || gridFieldCache.get(gridRequest.getRequestKey()).get(eamCell.getN()) == null) {
+					if (gridFieldMap == null || gridFieldMap.get(eamCell.getN()) == null) {
 						return new GridRequestCell(eamCell.getN().toString(), eamCell.getContent(), -99999, "UNKNOWN_TAGNAME");
 					}
 					// Extract the ID, content, order and the tag name from the grid cell
-					GridField gridField = gridFieldCache.get(gridRequest.getRequestKey()).get(eamCell.getN());
+					GridField gridField = gridFieldMap.get(eamCell.getN());
 					return new GridRequestCell(eamCell.getN().toString(),
 							decodeCellContent(gridField, eamCell.getContent()),
 							gridField.getOrder(),
@@ -151,7 +155,7 @@ public class EAMGrids implements Serializable {
 		return grr;
 	}
 
-	public GridRequestResult executeQueryHeaderData(EAMContext context, GridRequest gridRequest) throws EAMException {
+	private GridRequestResult executeQueryHeaderData(EAMContext context, GridRequest gridRequest) throws EAMException {
 		//
 		net.datastream.schemas.mp_functions.mp0118_getgridheaderdata_001.FUNCTION_REQUEST_INFO funRequest = new net.datastream.schemas.mp_functions.mp0118_getgridheaderdata_001.FUNCTION_REQUEST_INFO();
 
@@ -195,9 +199,14 @@ public class EAMGrids implements Serializable {
 		//
 		// POPULATE GRID FIELD CACHE
 		//
-		gridFieldCache.put(gridRequest.getRequestKey(), new ConcurrentHashMap<>());
+		Map<BigInteger, GridField> gridFieldMap = new ConcurrentHashMap<>();
 		for (FIELD field : result.getGRIDRESULT().getGRID().getFIELDS().getFIELD()) {
-			gridFieldCache.get(gridRequest.getRequestKey()).put(field.getAliasnum(), decodeEAMGridField(field));
+			gridFieldMap.put(field.getAliasnum(), decodeEAMGridField(field));
+		}
+		String gridFieldCacheKey = Tools.getCacheKeyWithLang(context, gridRequest.getRequestKey());
+		Cache<String, Object> gridFieldCache = EAMClient.cacheMap.get(CacheKey.GRID_FIELD);
+		if (gridFieldCache != null) {
+			gridFieldCache.put(gridFieldCacheKey, gridFieldMap);
 		}
 
 		//
@@ -241,9 +250,9 @@ public class EAMGrids implements Serializable {
 				//
 				List<GridRequestCell> cells = eamRow.getD().stream().map(eamCell ->
 					 new GridRequestCell(eamCell.getN().toString(),
-											   decodeCellContent(gridFieldCache.get(gridRequest.getRequestKey()).get(eamCell.getN()), eamCell.getContent()),
-											   gridFieldCache.get(gridRequest.getRequestKey()).get(eamCell.getN()).getOrder(),
-											   gridFieldCache.get(gridRequest.getRequestKey()).get(eamCell.getN()).getName())
+							 decodeCellContent(gridFieldMap.get(eamCell.getN()), eamCell.getContent()),
+							 gridFieldMap.get(eamCell.getN()).getOrder(),
+							 gridFieldMap.get(eamCell.getN()).getName())
 				).collect(Collectors.toList());
 
 				// Sort using the order

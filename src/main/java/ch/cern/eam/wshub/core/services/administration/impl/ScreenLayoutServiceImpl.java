@@ -1,5 +1,6 @@
 package ch.cern.eam.wshub.core.services.administration.impl;
 
+import ch.cern.eam.wshub.core.client.EAMClient;
 import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.administration.ScreenLayoutService;
 import ch.cern.eam.wshub.core.services.administration.entities.*;
@@ -10,14 +11,12 @@ import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestRow;
 import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.services.grids.impl.Operator;
-import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.tools.GridTools;
-import ch.cern.eam.wshub.core.tools.EAMException;
-import ch.cern.eam.wshub.core.tools.Tools;
+import ch.cern.eam.wshub.core.tools.*;
 import net.datastream.wsdls.eamws.EAMWebServicesPT;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.decodeBoolean;
@@ -26,8 +25,8 @@ import static ch.cern.eam.wshub.core.tools.GridTools.convertGridResultToMap;
 
 public class ScreenLayoutServiceImpl implements ScreenLayoutService {
 
-    public static final Map<String, ScreenLayout> screenLayoutCache = new ConcurrentHashMap<>();
-    public static final Map<String, Map<String, String>> screenLayoutLabelCache = new ConcurrentHashMap<>();
+    private static final List<String> ALLOW_SEARCH_DESC = Collections.singletonList("LVPERS");
+    private static final List<String> ALLOW_SEARCH_ALIAS = Collections.singletonList("LVOBJL");
 
     private Tools tools;
     private EAMWebServicesPT eamws;
@@ -43,39 +42,48 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
 
 
     public ScreenLayout readScreenLayout(EAMContext context, String systemFunction, String userFunction, List<String> tabs, String userGroup, String entity) throws EAMException {
-        // Check if value not already in the cache
-        String layoutCacheKey = userGroup + "_" + userFunction;
-        if (screenLayoutCache.containsKey(layoutCacheKey)) {
-            return screenLayoutCache.get(layoutCacheKey);
+        try {
+            String screenLayoutCacheKey = Tools.getCacheKeyWithLang(context, userGroup, userFunction);
+            Function<String, ScreenLayout> loader = key ->
+                    loadScreenLayout(context, systemFunction, userFunction, tabs, userGroup, entity);
+            return Optional.ofNullable(EAMClient.cacheMap.get(CacheKey.SCREEN_LAYOUT))
+                    .map(cache -> (ScreenLayout) cache.get(screenLayoutCacheKey, loader))
+                    .orElseGet(() -> loader.apply(screenLayoutCacheKey));
+        } catch (RuntimeException e) {
+            if (e.getCause() instanceof EAMException) {
+                throw (EAMException) e.getCause();
+            }
+            throw new EAMException("Failed to read screens", null, null);
         }
-
-        ScreenLayout screenLayout = new ScreenLayout();
-        // Add the record view
-        screenLayout.setFields(getTabLayout(context, userGroup, systemFunction, userFunction, entity));
-        // Add other tabs
-        if (tabs != null && tabs.size() > 0) {
-            screenLayout.setTabs(getTabs(context, tabs, userGroup, systemFunction, userFunction, entity));
-        }
-
-        screenLayout.setCustomGridTabs(getCustomGridTabs(context, userGroup, userFunction));
-        screenLayout.setCustomTabs(getCustomTabs(context, tabs, userGroup, userFunction));
-        // Get layout labels first
-        Map<String, String> labels = getTabLayoutLabels(context, userFunction);
-        // For all fields for the record view the bot_fld1 matches the upper-cased elementId
-        screenLayout.getFields().values().forEach(elementInfo -> elementInfo.setText(labels.get(elementInfo.getElementId().toUpperCase())));
-        // For all tab fields bot_fld1 matches upper-cased tab code + '_' + elementId
-        screenLayout.getTabs().keySet().forEach(tab -> {
-            screenLayout.getTabs().get(tab).getFields().values().forEach(elementInfo -> elementInfo.setText(labels.get(tab + "_" + elementInfo.getElementId().toUpperCase())));
-        });
-
-        // Cache it before returning
-        screenLayoutCache.put(layoutCacheKey, screenLayout);
-
-        return  screenLayout;
     }
 
-    private static final List<String> ALLOW_SEARCH_DESC = Collections.singletonList("LVPERS");
-    private static final List<String> ALLOW_SEARCH_ALIAS = Collections.singletonList("LVOBJL");
+    public ScreenLayout loadScreenLayout(EAMContext context, String systemFunction, String userFunction, List<String> tabs, String userGroup, String entity) {
+       try {
+           ScreenLayout screenLayout = new ScreenLayout();
+           // Add the record view
+           screenLayout.setFields(getTabLayout(context, userGroup, systemFunction, userFunction, entity));
+           // Add other tabs
+           if (tabs != null && !tabs.isEmpty()) {
+               screenLayout.setTabs(getTabs(context, tabs, userGroup, systemFunction, userFunction, entity));
+           }
+
+           screenLayout.setCustomGridTabs(getCustomGridTabs(context, userGroup, userFunction));
+           screenLayout.setCustomTabs(getCustomTabs(context, tabs, userGroup, userFunction));
+           // Get layout labels first
+           Map<String, String> labels = getTabLayoutLabels(context, userFunction);
+           // For all fields for the record view the bot_fld1 matches the upper-cased elementId
+           screenLayout.getFields().values().forEach(elementInfo -> elementInfo.setText(labels.get(elementInfo.getElementId().toUpperCase())));
+           // For all tab fields bot_fld1 matches upper-cased tab code + '_' + elementId
+           screenLayout.getTabs().keySet().forEach(tab -> {
+               screenLayout.getTabs().get(tab).getFields().values().forEach(elementInfo -> elementInfo.setText(labels.get(tab + "_" + elementInfo.getElementId().toUpperCase())));
+           });
+
+           return  screenLayout;
+       } catch (EAMException e) {
+           throw new RuntimeException(e);
+       }
+    }
+
 
     public List<Map<String, String>> getGenericLov(EAMContext context, GenericLov genericLov
                 ) throws EAMException {
@@ -254,21 +262,31 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
      * @throws EAMException
      */
     private Map<String, String> getTabLayoutLabels(EAMContext context, String userFunction) throws EAMException {
-        // Check if value already not present in the cache
-        if (screenLayoutLabelCache.containsKey(userFunction)) {
-            return screenLayoutLabelCache.get(userFunction);
+        try {
+            String screenLayoutLabelCacheKey = Tools.getCacheKeyWithLang(context, userFunction);
+            Function<String, Map<String, String>> loader = key -> loadTabLayoutLabels(context, userFunction);
+            return Optional.ofNullable(EAMClient.cacheMap.get(CacheKey.SCREEN_LAYOUT_LABEL))
+                    .map(cache -> (Map<String, String>) cache.get(screenLayoutLabelCacheKey, loader))
+                    .orElseGet(() -> loader.apply(screenLayoutLabelCacheKey));
+        } catch (RuntimeException e) {
+            if (e.getCause() instanceof EAMException) {
+                throw (EAMException) e.getCause();
+            }
+            throw new EAMException("Failed to read screens", null, null);
         }
+    }
 
-        // Fetch boiler texts for given screen
-        GridRequest gridRequestLabels = new GridRequest( "ASOBOT");
-        gridRequestLabels.setRowCount(10000);
-        gridRequestLabels.setUseNative(false);
-        gridRequestLabels.addFilter("bot_function", userFunction, "EQUALS");
-        Map<String, String> labels = convertGridResultToMap("bot_fld1", "bot_text", gridsService.executeQuery(context, gridRequestLabels));
-
-        // Save to cache and return
-        screenLayoutLabelCache.put(userFunction, labels);
-        return labels;
+    private Map<String, String> loadTabLayoutLabels(EAMContext context, String userFunction) {
+        try {
+            // Fetch boiler texts for given screen
+            GridRequest gridRequestLabels = new GridRequest( "ASOBOT");
+            gridRequestLabels.setRowCount(10000);
+            gridRequestLabels.setUseNative(false);
+            gridRequestLabels.addFilter("bot_function", userFunction, "EQUALS");
+            return convertGridResultToMap("bot_fld1", "bot_text", gridsService.executeQuery(context, gridRequestLabels));
+        } catch (EAMException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private Map<String, UserDefinedFieldDescription> getUdfDetails(EAMContext context, String entity) throws EAMException {
