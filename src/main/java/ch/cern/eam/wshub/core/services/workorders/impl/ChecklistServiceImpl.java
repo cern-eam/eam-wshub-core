@@ -1,6 +1,7 @@
 package ch.cern.eam.wshub.core.services.workorders.impl;
 
 import ch.cern.eam.wshub.core.annotations.BooleanType;
+import ch.cern.eam.wshub.core.client.EAMClient;
 import ch.cern.eam.wshub.core.client.EAMContext;
 import ch.cern.eam.wshub.core.services.entities.Pair;
 import ch.cern.eam.wshub.core.services.entities.Signature;
@@ -15,6 +16,7 @@ import ch.cern.eam.wshub.core.services.workorders.entities.*;
 import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrderActivityCheckList.CheckListType;
 import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrderActivityCheckList.ReturnType;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
+import ch.cern.eam.wshub.core.tools.CacheKey;
 import ch.cern.eam.wshub.core.tools.EAMException;
 import ch.cern.eam.wshub.core.tools.Tools;
 import net.datastream.schemas.mp_entities.taskchecklist_001.TaskChecklist;
@@ -52,7 +54,6 @@ public class ChecklistServiceImpl implements ChecklistService {
 	private EAMWebServicesPT eamws;
 	private ApplicationData applicationData;
 	private GridsService gridsService;
-	public static final Map<String, String> findingsCache = new ConcurrentHashMap<>();
 
 	public ChecklistServiceImpl(ApplicationData applicationData, Tools tools, EAMWebServicesPT eamWebServicesToolkitClient) {
 		this.applicationData = applicationData;
@@ -88,7 +89,7 @@ public class ChecklistServiceImpl implements ChecklistService {
 						"responsibility", responsibilityCode, "=", GridRequestFilter.JOINER.OR, false, false));
 			}
 		}
-		if(filters.size() == 0) return;
+		if(filters.isEmpty()) return;
 		gridRequest.setGridRequestFilters(filters);
 		Map<String, String> responsibilityToDescription =
 				convertGridResultToMap("responsibility", "description", gridsService.executeQuery(context, gridRequest));
@@ -707,23 +708,27 @@ public class ChecklistServiceImpl implements ChecklistService {
 	 */
 	private List<Finding> getPossibleFindings(EAMContext context, GridRequestRow row) {
 		List<String> possibleFindings = Arrays.asList(getCellContent("possiblefindings", row).split(","));
-
-		for (String findingCode : possibleFindings) {
-			if (!findingsCache.containsKey(findingCode)) {
-				try {
-					GridRequest gridRequest = new GridRequest("ISFIND", GridRequest.GRIDTYPE.LIST);
-					gridRequest.addFilter("findingcode", findingCode, "=");
-					findingsCache.put(findingCode, extractSingleResult(gridsService.executeQuery(context, gridRequest), "findingdesc"));
-				}
-				catch (Exception e) {
-					tools.log(Level.WARNING, "Finding could not be fetched: " + e.getMessage());
-				}
-			}
-		}
-
 		return possibleFindings.stream()
-				.map(findingCode -> new Finding(findingCode, findingsCache.containsKey(findingCode) ? findingsCache.get(findingCode) : findingCode))
+				.map(findingCode -> {
+					String findingsCacheKey = Tools.getCacheKey(context, findingCode);
+					Function<String, String> loader = key -> loadFinding(context, findingCode);
+					String finding = Optional.ofNullable(EAMClient.cacheMap.get(CacheKey.FINDINGS))
+							.map(cache -> (String) cache.get(findingsCacheKey, loader))
+							.orElseGet(() -> loader.apply(findingsCacheKey));
+					return new Finding(findingCode, finding != null ? finding : findingCode);
+				})
 				.collect(Collectors.toList());
+	}
+
+	private String loadFinding(EAMContext context, String findingCode) {
+		try {
+			GridRequest gridRequest = new GridRequest("ISFIND", GridRequest.GRIDTYPE.LIST);
+			gridRequest.addFilter("findingcode", findingCode, "=");
+			return extractSingleResult(gridsService.executeQuery(context, gridRequest), "findingdesc");
+		} catch (Exception e) {
+			tools.log(Level.WARNING, "Finding could not be fetched: " + e.getMessage());
+			return null;
+		}
 	}
 
 	private boolean cellEquals(GridRequestRow row, String key, String value) {
