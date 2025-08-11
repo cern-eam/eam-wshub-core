@@ -17,7 +17,7 @@ import java.util.Date;
 @Setter
 @ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class NonConformityObservation implements Serializable {
+public class NonconformityObservation implements Serializable {
 
 
     // Panel 1
@@ -273,4 +273,3 @@ public class NonConformityObservation implements Serializable {
 
 
 }
-
