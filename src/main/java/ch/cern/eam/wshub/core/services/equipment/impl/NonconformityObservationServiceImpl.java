@@ -1,20 +1,18 @@
 package ch.cern.eam.wshub.core.services.equipment.impl;
 
 import ch.cern.eam.wshub.core.client.InforContext;
-import ch.cern.eam.wshub.core.services.equipment.NonConformityObservationService;
+import ch.cern.eam.wshub.core.services.equipment.NonconformityObservationService;
 import ch.cern.eam.wshub.core.services.equipment.NonconformityService;
-import ch.cern.eam.wshub.core.services.equipment.entities.NonConformity;
-import ch.cern.eam.wshub.core.services.equipment.entities.NonConformityObservation;
+import ch.cern.eam.wshub.core.services.equipment.entities.NonconformityObservation;
+import ch.cern.eam.wshub.core.services.grids.GridsService;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
+import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.tools.DataTypeTools;
+import ch.cern.eam.wshub.core.tools.GridTools;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
-import net.datastream.schemas.mp_entities.nonconformity_001.Nonconformity;
-import net.datastream.schemas.mp_entities.nonconformityobservation_001.NonconformityObservation;
 import net.datastream.schemas.mp_fields.NONCONFORMITYOBSERVATIONID_Type;
-import net.datastream.schemas.mp_fields.ORGANIZATIONID_Type;
-import net.datastream.schemas.mp_fields.STANDARDENTITYID_Type;
-import net.datastream.schemas.mp_fields.STATUS_Type;
 import net.datastream.schemas.mp_functions.mp3402_001.MP3402_CreateNonconformityObservation_001;
 import net.datastream.schemas.mp_functions.mp3442_001.MP3442_AddNonconformityObservation_001;
 import net.datastream.schemas.mp_functions.mp3443_001.MP3443_SyncNonconformityObservation_001;
@@ -27,29 +25,25 @@ import net.datastream.schemas.mp_results.mp3444_001.MP3444_DeleteNonconformityOb
 import net.datastream.schemas.mp_results.mp3445_001.MP3445_GetNonconformityObservation_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
-import java.math.BigDecimal;
+import java.util.List;
 
-import static ch.cern.eam.wshub.core.tools.DataTypeTools.isEmpty;
+public class NonconformityObservationServiceImpl implements NonconformityObservationService {
 
-public class NonConformityObservationServiceImpl implements NonConformityObservationService {
-
-    private ApplicationData applicationData;
     private Tools tools;
     private InforWebServicesPT inforws;
-    private NonconformityService  nonconformityService;
+    private GridsService gridsService;
 
-    public NonConformityObservationServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
-        this.applicationData = applicationData;
+    public NonconformityObservationServiceImpl(ApplicationData applicationData, Tools tools, InforWebServicesPT inforWebServicesToolkitClient) {
         this.tools = tools;
         this.inforws = inforWebServicesToolkitClient;
-        this.nonconformityService = new NonconformityServiceImpl(applicationData, tools, inforws);
+        this.gridsService = new GridsServiceImpl(applicationData, tools, inforWebServicesToolkitClient);
     }
 
     @Override
-    public String createNonConformityObservation(InforContext context, NonConformityObservation nonConformityObservation) throws InforException {
+    public String createNonconformityObservation(InforContext context, NonconformityObservation nonConformityObservation) throws InforException {
         if (nonConformityObservation.getJobNum() == null) {
             MP3442_AddNonconformityObservation_001 addNonconformityObservation = new MP3442_AddNonconformityObservation_001();
-            NonconformityObservation nonconformityObservation =  tools.getInforFieldTools().transformWSHubObject(
+            net.datastream.schemas.mp_entities.nonconformityobservation_001.NonconformityObservation nonconformityObservation =  tools.getInforFieldTools().transformWSHubObject(
                     createDefaultNonConformityObservation(), nonConformityObservation, context);
 
 
@@ -65,21 +59,37 @@ public class NonConformityObservationServiceImpl implements NonConformityObserva
         return result.getResultData().getNONCONFORMITYOBSERVATIONID().getOBSERVATIONPK();
     }
 
-
     @Override
-    public NonConformityObservation readNonConformityObservation(InforContext context, String nonconformityObsPk) throws InforException {
-        NonconformityObservation nonconformityObservation =
+    public NonconformityObservation readNonconformityObservation(InforContext context, String nonconformityObsPk) throws InforException {
+        net.datastream.schemas.mp_entities.nonconformityobservation_001.NonconformityObservation nonconformityObservation =
                 readNonconformityObservationInfor(context, nonconformityObsPk);
 
-        return tools.getInforFieldTools().transformInforObject(new NonConformityObservation(), nonconformityObservation, context);
+        return tools.getInforFieldTools().transformInforObject(new NonconformityObservation(), nonconformityObservation, context);
     }
 
+    @Override
+    public List<NonconformityObservation> readNonconformityObservationsByCode(
+            InforContext context,
+            String nonconformityCode,
+            String organization
+    ) throws InforException {
+        GridRequest observationsRequest = new GridRequest("OSNCHD_OBS");
+
+        observationsRequest.setRowCount(100);
+        observationsRequest.setUserFunctionName("OSNCHD");
+        observationsRequest.addParam("param.nonconformity", nonconformityCode);
+        observationsRequest.addParam("param.organization", organization);
+
+        GridRequestResult observationsResult = gridsService.executeQuery(context, observationsRequest);
+
+        return GridTools.convertGridResultToObject(NonconformityObservation.class, null, observationsResult);
+    }
 
     @Override
-    public String updateNonConformityObservation(InforContext context, NonConformityObservation nonConformityObservation) throws InforException {
+    public String updateNonconformityObservation(InforContext context, NonconformityObservation nonConformityObservation) throws InforException {
         MP3443_SyncNonconformityObservation_001 syncNonconformityObservation = new MP3443_SyncNonconformityObservation_001();
 
-        NonconformityObservation prev = readNonconformityObservationInfor(context, nonConformityObservation.getObservationPk());
+        net.datastream.schemas.mp_entities.nonconformityobservation_001.NonconformityObservation prev = readNonconformityObservationInfor(context, nonConformityObservation.getObservationPk());
         tools.getInforFieldTools().transformWSHubObject(prev, nonConformityObservation, context);
         syncNonconformityObservation.setNonconformityObservation(prev);
 
@@ -89,7 +99,7 @@ public class NonConformityObservationServiceImpl implements NonConformityObserva
     }
 
     @Override
-    public String deleteNonConformityObservation(InforContext context, String number) throws InforException {
+    public String deleteNonconformityObservation(InforContext context, String number) throws InforException {
         MP3444_DeleteNonconformityObservation_001 deleteNonconformityObservation = new MP3444_DeleteNonconformityObservation_001();
         NONCONFORMITYOBSERVATIONID_Type idType = new NONCONFORMITYOBSERVATIONID_Type();
         idType.setOBSERVATIONPK(number);
@@ -98,7 +108,7 @@ public class NonConformityObservationServiceImpl implements NonConformityObserva
         return result.getResultData().getNONCONFORMITYOBSERVATIONID().getOBSERVATIONPK();
 
     }
-    private NonconformityObservation readNonconformityObservationInfor(
+    private net.datastream.schemas.mp_entities.nonconformityobservation_001.NonconformityObservation readNonconformityObservationInfor(
             InforContext context, String nonconformityCode) throws InforException {
         MP3445_GetNonconformityObservation_001 getNonconformityObservation = new MP3445_GetNonconformityObservation_001();
         NONCONFORMITYOBSERVATIONID_Type idType = new NONCONFORMITYOBSERVATIONID_Type();
@@ -112,8 +122,8 @@ public class NonConformityObservationServiceImpl implements NonConformityObserva
         return result.getResultData().getNonconformityObservation();
     }
 
-    private NonconformityObservation createDefaultNonConformityObservation() throws InforException {
-        NonconformityObservation defaultObject = new NonconformityObservation();
+    private net.datastream.schemas.mp_entities.nonconformityobservation_001.NonconformityObservation createDefaultNonConformityObservation() throws InforException {
+        net.datastream.schemas.mp_entities.nonconformityobservation_001.NonconformityObservation defaultObject = new net.datastream.schemas.mp_entities.nonconformityobservation_001.NonconformityObservation();
         NONCONFORMITYOBSERVATIONID_Type idType = new NONCONFORMITYOBSERVATIONID_Type();
         idType.setOBSERVATIONPK("0");
 
@@ -122,4 +132,3 @@ public class NonConformityObservationServiceImpl implements NonConformityObserva
     }
 
 }
-
