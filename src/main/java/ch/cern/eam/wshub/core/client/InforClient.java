@@ -134,7 +134,7 @@ public class InforClient implements Serializable {
     private EquipmentMeterReadingService equipmentMeterReadingService;
 
     private NonconformityService nonconformityService;
-    private NonConformityObservationService nonConformityObservationService;
+    private NonconformityObservationService nonconformityObservationService;
 
     private Store2StoreTransferService store2StoreTransferService;
 
@@ -320,7 +320,7 @@ public class InforClient implements Serializable {
             inforClient.userDefinedScreenService = proxy(UserDefinedScreenService.class, new UserDefinedScreenServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.equipmentReservationService = proxy(EquipmentReservationService.class, new EquipmentReservationServiceImpl(applicationData, tools, inforWebServicesToolkitClient),inforInterceptor, tools);
             inforClient.nonconformityService = proxy(NonconformityService.class, new NonconformityServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
-            inforClient.nonConformityObservationService = proxy(NonConformityObservationService.class, new NonConformityObservationServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
+            inforClient.nonconformityObservationService = proxy(NonconformityObservationService.class, new NonconformityObservationServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
 
             inforClient.store2StoreTransferService = proxy(Store2StoreTransferService.class, new Store2StoreTransferServiceImpl(
                     applicationData,
