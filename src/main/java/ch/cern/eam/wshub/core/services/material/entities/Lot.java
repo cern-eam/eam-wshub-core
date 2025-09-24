@@ -2,16 +2,33 @@ package ch.cern.eam.wshub.core.services.material.entities;
 
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
 
+import ch.cern.eam.wshub.core.annotations.EAMField;
+import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 import java.util.Date;
 
+@Getter
+@Setter
+@ToString
 public class Lot {
 
+    @EAMField(xpath = "LOTID/LOTCODE")
     private String code;
+    @EAMField(xpath = "LOTID/DESCRIPTION")
     private String desc;
+    @EAMField(xpath = "CLASSID/CLASSCODE")
     private String classCode;
+    @EAMField(xpath = "EXPIRATIONDATE")
     private Date expirationDate;
+    @EAMField(xpath = "MANUFACTLOT")
     private String manufacturerLot;
+
+    @EAMField(xpath = "StandardUserDefinedFields")
+    private UserDefinedFields userDefinedFields;
 
     public String getCode() {
         return code;
@@ -52,6 +69,14 @@ public class Lot {
 
     public void setManufacturerLot(String manufacturerLot) {
         this.manufacturerLot = manufacturerLot;
+    }
+
+    public UserDefinedFields getUserDefinedFields() {
+        return userDefinedFields;
+    }
+
+    public void setUserDefinedFields(UserDefinedFields userDefinedFields) {
+        this.userDefinedFields = userDefinedFields;
     }
 
     @Override
