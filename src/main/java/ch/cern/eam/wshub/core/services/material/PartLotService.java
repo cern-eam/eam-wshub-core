@@ -11,5 +11,14 @@ public interface PartLotService {
     @Operation(logOperation = EAM_OPERATION.PARTLOT_C)
     String createLot(EAMContext context, Lot lot) throws EAMException;
 
+    @Operation(logOperation = EAM_OPERATION.PARTLOT_R)
+    Lot readLot(EAMContext context, String lotCode) throws EAMException;
+
+    @Operation(logOperation = EAM_OPERATION.PARTLOT_U)
+    String updateLot(EAMContext context, Lot lot) throws EAMException;
+
+    @Operation(logOperation = EAM_OPERATION.PARTLOT_D)
+    String deleteLot(EAMContext context, String lotCode) throws EAMException;
+
 }
 
