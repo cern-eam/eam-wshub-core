@@ -121,7 +121,7 @@ public class CaseServiceImpl implements CaseService {
 		// PRIORITY
 		//
 		if (caseManagement.getCaseDetails() != null && caseManagement.getCaseDetails().getCASEPRIORITY() != null) {
-			caseMT.setPriority(caseManagement.getCaseDetails().getCASEPRIORITY().getENTITY());
+			caseMT.setPriority(caseManagement.getCaseDetails().getCASEPRIORITY().getUSERDEFINEDCODE());
 		}
 		//
 		// CUSTOM FIELDS
@@ -327,7 +327,7 @@ public class CaseServiceImpl implements CaseService {
 			if (caseMT.getPriority() != null) {
 				USERDEFINEDCODEID_Type t = new USERDEFINEDCODEID_Type();
 				caseEAM.getCaseDetails().setCASEPRIORITY(new USERDEFINEDCODEID_Type());
-				caseEAM.getCaseDetails().getCASEPRIORITY().setENTITY(caseMT.getPriority());
+				caseEAM.getCaseDetails().getCASEPRIORITY().setUSERDEFINEDCODE(caseMT.getPriority());
 			}
 		}
 
