@@ -136,6 +136,9 @@ public class InforClient implements Serializable {
     private NonconformityService nonconformityService;
     private NonConformityObservationService nonConformityObservationService;
 
+    private NonPoReceiptService nonPoReceiptService;
+    private NonPoReceiptPartService nonPoReceiptPartService;
+
     private Store2StoreTransferService store2StoreTransferService;
 
     @Setter
@@ -321,6 +324,8 @@ public class InforClient implements Serializable {
             inforClient.equipmentReservationService = proxy(EquipmentReservationService.class, new EquipmentReservationServiceImpl(applicationData, tools, inforWebServicesToolkitClient),inforInterceptor, tools);
             inforClient.nonconformityService = proxy(NonconformityService.class, new NonconformityServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
             inforClient.nonConformityObservationService = proxy(NonConformityObservationService.class, new NonConformityObservationServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
+            inforClient.nonPoReceiptPartService = proxy(NonPoReceiptPartService.class, new NonPoReceiptPartServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
+            inforClient.nonPoReceiptService = proxy(NonPoReceiptService.class, new NonPoReceiptServiceImpl(applicationData, tools, inforWebServicesToolkitClient), inforInterceptor, tools);
 
             inforClient.store2StoreTransferService = proxy(Store2StoreTransferService.class, new Store2StoreTransferServiceImpl(
                     applicationData,
