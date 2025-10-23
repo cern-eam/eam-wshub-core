@@ -53,17 +53,18 @@ public class EquipmentReservationAdjustmentServiceImpl implements EquipmentReser
         // Since EAM always returns a 0 as the primary key of the created Equipment Reservation Adjustment, we have to use an alternative method to retrieve it
         // The solution might return incorrect results if multiple clients are creating requests at the same time, but it's still
         //better than the alternative of always not having the ID (for CERN's use case)
-        List<EquipmentReservationAdjustment> equipmentReservationAdjustments = equipmentReservationService.readEquipmentReservationAdjustments(context, equipmentReservationAdjustment.getCustomerRentalCode());
-        equipmentReservationAdjustments.removeIf(s ->
-                !Objects.equals(dateFormat.format(s.getDate()), dateFormat.format(equipmentReservationAdjustment.getDate()))
-                || (s.getRate() == null ? equipmentReservationAdjustment.getRate() != null
-                        : s.getRate().compareTo(equipmentReservationAdjustment.getRate()) != 0)
-                || !Objects.equals(s.getAdjustmentCode(), equipmentReservationAdjustment.getAdjustmentCode())
-            );
-        if (equipmentReservationAdjustments.size() == 1) {
-            return equipmentReservationAdjustments.get(0).getCode();
-        }
-        return "";
+//        List<EquipmentReservationAdjustment> equipmentReservationAdjustments = equipmentReservationService.readEquipmentReservationAdjustments(context, equipmentReservationAdjustment.getCustomerRentalCode());
+//        equipmentReservationAdjustments.removeIf(s ->
+//                !Objects.equals(dateFormat.format(s.getDate()), dateFormat.format(equipmentReservationAdjustment.getDate()))
+//                || (s.getRate() == null ? equipmentReservationAdjustment.getRate() != null
+//                        : s.getRate().compareTo(equipmentReservationAdjustment.getRate()) != 0)
+//                || !Objects.equals(s.getAdjustmentCode(), equipmentReservationAdjustment.getAdjustmentCode())
+//            );
+//        if (equipmentReservationAdjustments.size() == 1) {
+//            return equipmentReservationAdjustments.get(0).getCode();
+//        }
+//        return "";
+        return addOperationResult.getResultData().getCUSTOMERRENTALADJUSTMENTID().getCUSTOMERRENTALADJUSTMENTPK();
     }
 
     @Override
