@@ -3,18 +3,12 @@ package ch.cern.eam.wshub.core.services.equipment.impl;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.equipment.NonConformityObservationService;
 import ch.cern.eam.wshub.core.services.equipment.NonconformityService;
-import ch.cern.eam.wshub.core.services.equipment.entities.NonConformity;
 import ch.cern.eam.wshub.core.services.equipment.entities.NonConformityObservation;
 import ch.cern.eam.wshub.core.tools.ApplicationData;
-import ch.cern.eam.wshub.core.tools.DataTypeTools;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.tools.Tools;
-import net.datastream.schemas.mp_entities.nonconformity_001.Nonconformity;
 import net.datastream.schemas.mp_entities.nonconformityobservation_001.NonconformityObservation;
 import net.datastream.schemas.mp_fields.NONCONFORMITYOBSERVATIONID_Type;
-import net.datastream.schemas.mp_fields.ORGANIZATIONID_Type;
-import net.datastream.schemas.mp_fields.STANDARDENTITYID_Type;
-import net.datastream.schemas.mp_fields.STATUS_Type;
 import net.datastream.schemas.mp_functions.mp3402_001.MP3402_CreateNonconformityObservation_001;
 import net.datastream.schemas.mp_functions.mp3442_001.MP3442_AddNonconformityObservation_001;
 import net.datastream.schemas.mp_functions.mp3443_001.MP3443_SyncNonconformityObservation_001;
@@ -26,10 +20,6 @@ import net.datastream.schemas.mp_results.mp3443_001.MP3443_SyncNonconformityObse
 import net.datastream.schemas.mp_results.mp3444_001.MP3444_DeleteNonconformityObservation_001_Result;
 import net.datastream.schemas.mp_results.mp3445_001.MP3445_GetNonconformityObservation_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
-
-import java.math.BigDecimal;
-
-import static ch.cern.eam.wshub.core.tools.DataTypeTools.isEmpty;
 
 public class NonConformityObservationServiceImpl implements NonConformityObservationService {
 
