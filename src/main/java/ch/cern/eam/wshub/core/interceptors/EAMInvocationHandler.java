@@ -7,17 +7,11 @@ import ch.cern.eam.wshub.core.interceptors.beans.EAMExtractedData;
 import ch.cern.eam.wshub.core.interceptors.beans.EAMRequestData;
 import ch.cern.eam.wshub.core.interceptors.beans.EAMResponseData;
 import ch.cern.eam.wshub.core.services.EAM_OPERATION;
-import ch.cern.eam.wshub.core.tools.ExceptionInfo;
 import ch.cern.eam.wshub.core.tools.EAMException;
 import ch.cern.eam.wshub.core.tools.Tools;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
-import jakarta.xml.ws.soap.SOAPFaultException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.util.LinkedList;
 import java.util.logging.Level;
 
 /**
@@ -40,13 +34,13 @@ public class EAMInvocationHandler<T> implements InvocationHandler {
         Operation operation = method.getAnnotation(Operation.class);
 
         // Should we intercept this call ?
-        boolean intercept = eamInterceptor != null  && operation != null && operation.logOperation() != null;
+        boolean intercept = eamInterceptor != null && operation != null && operation.logOperation() != null;
 
         if (!intercept) {
             try {
                 return method.invoke(target, args);
-            } catch(Exception e) {
-                throw convertException(e.getCause());
+            } catch (Exception e) {
+                throw InterceptorTools.convertException(e.getCause());
             }
         }
 
@@ -81,7 +75,7 @@ public class EAMInvocationHandler<T> implements InvocationHandler {
                 return result;
             } catch (Exception e) {
                 // Error data
-                EAMException ie = convertException(e.getCause());
+                EAMException ie = InterceptorTools.convertException(e.getCause());
                 EAMErrorData error = new EAMErrorData.Builder()
                         .withResponseTime(System.nanoTime() - startNanoTime)
                         .withException(ie)
@@ -89,7 +83,7 @@ public class EAMInvocationHandler<T> implements InvocationHandler {
                 EAMExtractedData extractedData = extractDataReference(operation, input, null);
                 eamInterceptor.afterError(eamOperation, request, error, extractedData);
 
-                tools.log(Level.SEVERE,"Error while calling EAM service " + eamOperation);
+                tools.log(Level.SEVERE, "Error while calling EAM service " + eamOperation);
                 throw ie;
             }
         }
@@ -110,8 +104,8 @@ public class EAMInvocationHandler<T> implements InvocationHandler {
                 .build();
     }
 
-
-    private String readDataReferenceValue(Object input, Object result, String logFieldName, LogDataReferenceType logDataReference) {
+    private String readDataReferenceValue(Object input, Object result, String logFieldName,
+            LogDataReferenceType logDataReference) {
         //
         // INPUT
         //
@@ -137,44 +131,6 @@ public class EAMInvocationHandler<T> implements InvocationHandler {
             return result.toString();
         }
         return null;
-    }
-
-    // Conversion to EAMException
-    private EAMException convertException(Throwable e) {
-        if (e instanceof SOAPFaultException) {
-            SOAPFaultException se = (SOAPFaultException) e;
-            return new EAMException(e.getMessage(), se, extractSOAPFaultException(se));
-        } else {
-            return new EAMException(e.getMessage(), e, null);
-        }
-    }
-
-    private ExceptionInfo[] extractSOAPFaultException(SOAPFaultException exception) {
-        LinkedList<ExceptionInfo> exs = new LinkedList<ExceptionInfo>();
-        try {
-            // nodeList = list of <ExceptionInfo> elements (see example below)
-            NodeList nodeList =  exception.getFault().getDetail().getFirstChild().getChildNodes();
-            for (int i = 0; i < nodeList.getLength(); i++) {
-                ExceptionInfo exceptionInfo = new ExceptionInfo();
-
-                Node locationNode = nodeList.item(i).getAttributes().getNamedItem("location_reference");
-                if (locationNode != null) {
-                    String locationString = locationNode.getTextContent().replace("/", "_");
-                    if (locationString.startsWith("_")) {
-                        locationString = "EAMID" + locationString;
-                    } else {
-                        locationString = "EAMID_" + locationString;
-                    }
-                    exceptionInfo.setLocation(locationString);
-                }
-
-                exceptionInfo.setMessage(nodeList.item(i).getFirstChild().getLastChild().getTextContent());
-                exs.add(exceptionInfo);
-            }
-        } catch (Exception e) {
-            return null;
-        }
-        return exs.toArray(new ExceptionInfo[0]);
     }
 
 }
