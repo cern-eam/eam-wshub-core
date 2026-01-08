@@ -143,6 +143,9 @@ public class EAMClient implements Serializable {
 
     private EquipmentReservationAdjustmentService equipmentReservationAdjustmentService;
 
+    private ContractTemplateService contractTemplateService;
+    private ChargeDefinitionService chargeDefinitionService;
+
     // Prevent initializing the class without the builder
     private EAMClient() {}
 
@@ -320,6 +323,9 @@ public class EAMClient implements Serializable {
             eamClient.userDefinedScreenService = proxy(UserDefinedScreenService.class, new UserDefinedScreenServiceImpl(applicationData, tools, eamWebServicesToolkitClient), eamInterceptor, tools);
             eamClient.equipmentReservationService = proxy(EquipmentReservationService.class, new EquipmentReservationServiceImpl(applicationData, tools, eamWebServicesToolkitClient),eamInterceptor, tools);
             eamClient.nonconformityService = proxy(NonconformityService.class, new NonconformityServiceImpl(applicationData, tools, eamWebServicesToolkitClient), eamInterceptor, tools);
+            eamClient.contractTemplateService = proxy(ContractTemplateService.class, new ContractTemplateServiceImpl(applicationData, tools, eamWebServicesToolkitClient),eamInterceptor, tools);
+            eamClient.chargeDefinitionService = proxy(ChargeDefinitionService.class, new ChargeDefinitionServiceImpl(applicationData, tools, eamWebServicesToolkitClient), eamInterceptor, tools);
+
             eamClient.store2StoreTransferService = proxy(Store2StoreTransferService.class, new Store2StoreTransferServiceImpl(
                     applicationData,
                     tools,
