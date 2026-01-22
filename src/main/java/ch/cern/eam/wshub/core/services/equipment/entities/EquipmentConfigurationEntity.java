@@ -23,6 +23,10 @@ public class EquipmentConfigurationEntity implements Serializable {
     private String equipmentConfigDesc;
 
     @Transient
+    @EAMField(xpath = "OBJECTCODE")
+    private String objectCode;
+
+    @Transient
     @EAMField(xpath = "EQUIPMENTCONFIGURATIONID/ORGANIZATIONID/ORGANIZATIONCODE")
     private String organizationCode;
 
@@ -194,6 +198,14 @@ public class EquipmentConfigurationEntity implements Serializable {
 
     public void setEquipmentConfigDesc(String equipmentConfigDesc) {
         this.equipmentConfigDesc = equipmentConfigDesc;
+    }
+
+    public String getObjectCode() {
+        return objectCode;
+    }
+
+    public void setObjectCode(String objectCode) {
+        this.objectCode = objectCode;
     }
 
     public String getOrganizationCode() {
@@ -505,6 +517,7 @@ public class EquipmentConfigurationEntity implements Serializable {
         return "EquipmentConfigurationEntity{" +
                 "equipmentConfigCode='" + equipmentConfigCode + '\'' +
                 ", equipmentConfigDesc='" + equipmentConfigDesc + '\'' +
+                ", objectCode='" + objectCode + '\'' +
                 ", organizationCode='" + organizationCode + '\'' +
                 ", organizationDesc='" + organizationDesc + '\'' +
                 ", equipmentConfigStatusCode='" + equipmentConfigStatusCode + '\'' +
