@@ -1,22 +1,33 @@
 package ch.cern.eam.wshub.core.services.administration.entities;
 
+import ch.cern.eam.wshub.core.annotations.GridField;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class Tab {
     Map<String, ElementInfo> fields;
+
+    @GridField(name = "tabalwaysdisp")
     Boolean alwaysDisplayed;
+
+    @GridField(name = "tabavailable")
     Boolean tabAvailable;
+
+    @GridField(name = "tabcodetext")
     String tabDescription;
 
+    @GridField(name = "deleteval")
     Boolean deleteAllowed;
 
+    @GridField(name = "updateval")
     Boolean updateAllowed;
 
+    @GridField(name = "queryval")
     Boolean queryAllowed;
 
+    @GridField(name = "insertval")
     Boolean insertAllowed;
-
 
     public Tab() {
         fields = new HashMap<>();

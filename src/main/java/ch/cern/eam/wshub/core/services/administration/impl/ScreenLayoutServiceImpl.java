@@ -14,13 +14,11 @@ import ch.cern.eam.wshub.core.services.grids.impl.Operator;
 import ch.cern.eam.wshub.core.tools.*;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
-import java.math.BigInteger;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static ch.cern.eam.wshub.core.tools.DataTypeTools.decodeBoolean;
-import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
+import static ch.cern.eam.wshub.core.services.administration.impl.ScreenLayoutServiceImplTools.*;
 import static ch.cern.eam.wshub.core.tools.GridTools.convertGridResultToMap;
 
 public class ScreenLayoutServiceImpl implements ScreenLayoutService {
@@ -63,6 +61,9 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
             gridRequestLayout.addFilter("plo_usergroup", userGroup, "=");
             Map<String, Map<String, Map<String, String>>> layout = group(GridTools.convertGridResultToMapList(gridsService.executeQuery(context, gridRequestLayout)),"plo_pagename", "plo_elementid");
 
+            // Get layout labels first
+            Map<String, String> labels = getTabLayoutLabels(context, userFunction, systemFunction);
+
             screenLayout.setFields(getTabLayout(context, entity, defaultLayout.get(systemFunction), layout.get(userFunction)));
 
             Map<String, UserDefinedFieldDescription> udfDetails = getUdfDetails(context, entity);
@@ -77,8 +78,7 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
 
             screenLayout.setCustomGridTabs(getCustomGridTabs(context, userGroup, userFunction));
             screenLayout.setCustomTabs(getCustomTabs(context, tabs, userGroup, userFunction));
-            // Get layout labels first
-            Map<String, String> labels = getTabLayoutLabels(context, userFunction);
+
             // For all fields for the record view, the bot_fld1 matches the upper-cased elementId
             screenLayout.getFields().values().forEach(elementInfo -> elementInfo.setText(labels.get(elementInfo.getElementId().toUpperCase())));
             // For all tab fields, bot_fld1 matches upper-cased tab code + '_' + elementId
@@ -94,7 +94,6 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
         }
 
     }
-
 
     public List<Map<String, String>> getGenericLov(InforContext context, GenericLov genericLov
                 ) throws InforException {
@@ -159,18 +158,18 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
     }
 
     private  Map<String, Tab> getTabs(InforContext context, List<String> tabCodes, String userGroup, String systemFunction, String userFunction, String entity, Map<String, Map<String, Map<String, String>>> defaultLayout, Map<String, Map<String, Map<String, String>>> layout) throws InforException {
-        Map<String, Tab> result = new HashMap<>();
-        tabCodes.forEach(tabCode -> {
-            Tab tab = new Tab();
-            try {
-                tab.setFields(getTabLayout(context, entity, defaultLayout.get( systemFunction + "_" + tabCode), layout.get(userFunction + "_" + tabCode)));
-                result.put(tabCode, tab);
-            } catch (InforException e) {
-                e.printStackTrace();
-            }
-        });
-        getTabScreenPermissions(context, result, tabCodes, userGroup, userFunction);
-        return result;
+        GridRequest gridRequest = new GridRequest("BSGROU_PRM");
+        gridRequest.getParams().put("param.usergroupcode", userGroup);
+        gridRequest.getParams().put("param.userfunction", userFunction);
+        gridRequest.addFilter("tabcode", String.join(",", tabCodes), "ALT_IN", GridRequestFilter.JOINER.OR);
+        Map<String, Tab> tabs = GridTools.convertGridResultToMap(Tab.class, "tabcode", null, gridsService.executeQuery(context, gridRequest));
+
+        for (String tabCode : tabs.keySet())
+            tabs.get(tabCode).setFields(
+                    getTabLayout(context, entity, defaultLayout.get( systemFunction + "_" + tabCode), layout.get(userFunction + "_" + tabCode))
+            );
+
+        return tabs;
     }
 
     private Map<String, Tab> getCustomGridTabs(InforContext context, String userGroup, String userFunction) throws InforException {
@@ -178,12 +177,7 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
         gridRequest.getParams().put("param.usergroupcode", userGroup);
         gridRequest.getParams().put("param.userfunction", userFunction);
         gridRequest.addFilter("tabcode", "X", "BEGINS", GridRequestFilter.JOINER.OR);
-        GridRequestResult result = gridsService.executeQuery(context, gridRequest);
-        Map<String, Tab> tabs = new HashMap<>();
-        for (GridRequestRow row : result.getRows()) {
-            tabs.put(GridTools.getCellContent("tabcode", row), gridRowToTab(row));
-        }
-        return tabs;
+        return GridTools.convertGridResultToMap(Tab.class, "tabcode", null, gridsService.executeQuery(context, gridRequest));
     }
 
     private Map<String, CustomTab> getCustomTabs(InforContext context, List<String> alreadyFetchedTabs, String userGroup, String screenCode) throws InforException {
@@ -215,12 +209,7 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
         gridRequest.getParams().put("param.usergroupcode", userGroup);
         gridRequest.getParams().put("param.userfunction", userFunction);
         gridRequest.addFilter("tabcode", String.join(",", codes), Operator.IN.getValue(), GridRequestFilter.JOINER.OR);
-        GridRequestResult result = gridsService.executeQuery(context, gridRequest);
-        Map<String, Tab> tabs = new HashMap<>();
-        for (GridRequestRow row : result.getRows()) {
-            tabs.put(GridTools.getCellContent("tabcode", row), gridRowToTab(row));
-        }
-        return tabs;
+        return GridTools.convertGridResultToMap(Tab.class, "tabcode", null, gridsService.executeQuery(context, gridRequest));
     }
 
     private List<URLParam> getCustomTabUrlParams(InforContext context, String screenCode, String tabCode) throws InforException {
@@ -250,7 +239,7 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
         }
 
         elements.stream()
-                .filter(element -> element.getXpath() != null)
+                .filter(element -> element.getXpath() != null && !element.getXpath().isEmpty())
                 .forEach(element -> element.setXpath("EAMID_" + element.getXpath().replace("\\", "_")));
         return elements.stream().collect(Collectors.toMap(ElementInfo::getElementId, element -> element));
     }
@@ -262,10 +251,10 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
      * @param userFunction
      * @throws InforException
      */
-    private Map<String, String> getTabLayoutLabels(InforContext context, String userFunction) throws InforException {
+    private Map<String, String> getTabLayoutLabels(InforContext context, String userFunction, String systemFunction) throws InforException {
         try {
             String screenLayoutLabelCacheKey = Tools.getCacheKeyWithLang(context, userFunction);
-            Function<String, Map<String, String>> loader = key -> loadTabLayoutLabels(context, userFunction);
+            Function<String, Map<String, String>> loader = key -> loadTabLayoutLabels(context, userFunction, systemFunction);
             return Optional.ofNullable(InforClient.cacheMap.get(CacheKey.SCREEN_LAYOUT_LABEL))
                     .map(cache -> (Map<String, String>) cache.get(screenLayoutLabelCacheKey, loader))
                     .orElseGet(() -> loader.apply(screenLayoutLabelCacheKey));
@@ -277,14 +266,16 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
         }
     }
 
-    private Map<String, String> loadTabLayoutLabels(InforContext context, String userFunction) {
+    private Map<String, String> loadTabLayoutLabels(InforContext context, String userFunction, String systemFunction) {
         try {
             // Fetch boiler texts for given screen
             GridRequest gridRequestLabels = new GridRequest("ASOBOT");
             gridRequestLabels.setRowCount(10000);
             gridRequestLabels.setUseNative(false);
             gridRequestLabels.addFilter("bot_function", userFunction, "EQUALS");
-            return convertGridResultToMap("bot_fld1", "bot_text", gridsService.executeQuery(context, gridRequestLabels));
+            Map<String, String> labels = convertGridResultToMap("bot_fld1", "bot_text", gridsService.executeQuery(context, gridRequestLabels));
+            enhanceLabelsResponse(labels, systemFunction);
+            return labels;
         } catch (InforException e) {
             throw new RuntimeException(e);
         }
@@ -306,105 +297,6 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
             }
         }
         return result;
-    }
-
-    private void getTabScreenPermissions(InforContext context, Map<String, Tab> tabs, List<String> tabCodes, String userGroup, String userFunction) throws InforException {
-        GridRequest gridRequest = new GridRequest("BSGROU_PRM");
-        gridRequest.getParams().put("param.usergroupcode", userGroup);
-        gridRequest.getParams().put("param.userfunction", userFunction);
-        gridRequest.addFilter("tabcode", String.join(",", tabCodes), "ALT_IN", GridRequestFilter.JOINER.OR);
-        GridRequestResult result = gridsService.executeQuery(context, gridRequest);
-        for (GridRequestRow row : result.getRows()) {
-            String tabCode = GridTools.getCellContent("tabcode", row);
-            tabs.get(tabCode).setTabAvailable(decodeBoolean(GridTools.getCellContent("tabavailable", row)));
-            tabs.get(tabCode).setAlwaysDisplayed(decodeBoolean(GridTools.getCellContent("tabalwaysdisp", row)));
-            tabs.get(tabCode).setTabDescription(GridTools.getCellContent("tabcodetext", row));
-            tabs.get(tabCode).setInsertAllowed(decodeBoolean(GridTools.getCellContent("insertval", row)));
-            tabs.get(tabCode).setQueryAllowed(decodeBoolean(GridTools.getCellContent("queryval", row)));
-            tabs.get(tabCode).setUpdateAllowed(decodeBoolean(GridTools.getCellContent("updateval", row)));
-            tabs.get(tabCode).setDeleteAllowed(decodeBoolean(GridTools.getCellContent("deleteval", row)));
-        }
-    }
-
-    private ElementInfo bindUdfDescription(UserDefinedFieldDescription description, ElementInfo elementInfo) {
-        if(description != null) {
-            elementInfo.setUdfLookupEntity(description.getLookupREntity());
-            elementInfo.setUdfLookupType(description.getLookupType());
-            elementInfo.setUdfUom(description.getUom());
-            if (isNotEmpty(description.getDateType())) {
-                if (description.getDateType().equals("DATE")) {
-                    elementInfo.setFieldType("date");
-                }
-                if (description.getDateType().equals("DATI")) {
-                    elementInfo.setFieldType("datetime");
-                }
-            }
-        }
-        return elementInfo;
-    }
-
-    private Tab gridRowToTab(GridRequestRow row) {
-        Tab tab = new Tab();
-        tab.setTabAvailable(decodeBoolean(GridTools.getCellContent("tabavailable", row)));
-        tab.setAlwaysDisplayed(decodeBoolean(GridTools.getCellContent("tabalwaysdisp", row)));
-        tab.setTabDescription(GridTools.getCellContent("tabcodetext", row));
-        tab.setInsertAllowed(decodeBoolean(GridTools.getCellContent("insertval", row)));
-        tab.setQueryAllowed(decodeBoolean(GridTools.getCellContent("queryval", row)));
-        tab.setUpdateAllowed(decodeBoolean(GridTools.getCellContent("updateval", row)));
-        tab.setDeleteAllowed(decodeBoolean(GridTools.getCellContent("deleteval", row)));
-        return tab;
-    }
-
-    private Map<String, Map<String, Map<String, String>>> group(
-            List<Map<String, String>> layout, String pagekey, String elementkey) {
-
-        return layout.stream()
-                .collect(Collectors.groupingBy(
-                        m -> m.get(pagekey),
-                        Collectors.toMap(
-                                m -> m.get(elementkey),
-                                m -> m
-                        )
-                ));
-    }
-
-    private ElementInfo buildElementInfo(Map<String, String> def, Map<String, String> lay) {
-        ElementInfo e = new ElementInfo();
-
-        // --- pld_* always from DEFAULT layout ---
-        e.setElementId(def.get("pld_elementid"));
-        e.setPageName(def.get("pld_pagename"));
-        e.setXpath(def.get("pld_xpath"));
-        e.setMaxLength(def.get("pld_maxlength"));
-        e.setCharacterCase(def.get("pld_case"));
-        e.setFieldType(def.get("pld_fieldtype"));
-        e.setOnLookup(def.get("pld_onlookup"));
-
-        // --- plo_* always from LAYOUT override ---
-        if (lay != null) {
-            e.setAttribute(lay.get("plo_attribute"));
-            e.setDefaultValue(lay.get("plo_defaultvalue"));
-            e.setPresentInJSP(lay.get("plo_presentinjsp"));
-            e.setFieldContainer(lay.get("plo_fieldcontainer"));
-            e.setElementType(lay.get("plo_elementtype"));
-            e.setFieldContType(lay.get("plo_fieldconttype"));
-
-            e.setFieldGroup(toBigInt(lay.get("plo_fieldgroup")));
-            e.setPositionInGroup(toBigInt(lay.get("plo_positioningroup")));
-            e.setTabIndex(toBigInt(lay.get("plo_tabindex")));
-        }
-
-        return e;
-    }
-
-    private BigInteger toBigInt(String v) {
-        return v == null || v.isEmpty() ? null : new BigInteger(v);
-    }
-
-    static String getFunctionWithTabs(String functionCode, List<String> tabs) {
-        List<String> functionWithTabs = new ArrayList<>(Arrays.asList(functionCode));
-        tabs.forEach(t -> functionWithTabs.add(functionCode + "_" + t));
-        return String.join(",", functionWithTabs);
     }
 
 }
