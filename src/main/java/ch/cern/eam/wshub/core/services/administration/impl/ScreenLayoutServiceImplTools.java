@@ -85,6 +85,7 @@ public class ScreenLayoutServiceImplTools {
 
     static void enhanceLabelsResponse(Map<String, String> labels, String systemFunction) {
         if (systemFunction.equals("WSJOBS")) {
+
             labels.put("BLOCK_2", labels.get("WODETAILSSECTION"));
             labels.put("BLOCK_3", labels.get("ACTDETAILSSECTION"));
             labels.put("BLOCK_4", labels.get("SCHEDDETAILSSECTION"));
@@ -97,7 +98,77 @@ public class ScreenLayoutServiceImplTools {
             labels.put("BLOCK_13", labels.get("INCIDENTTRACKINGSECTION"));
             labels.put("BLOCK_14", labels.get("GUESTDETAILSSECTION"));
             labels.put("CLO_BLOCK_2", labels.get("CLOSINGCODESSECTION"));
-        }
+
+        } else if (systemFunction.equals("OSOBJA")) { // Assets
+
+            labels.put("BLOCK_2", labels.get("EQUIPMENTDETAILS"));
+            labels.put("BLOCK_3", labels.get("TRACKINGDETAILS"));
+            labels.put("BLOCK_4", labels.get("PARTASSOCIATION"));
+            labels.put("BLOCK_5", labels.get("HIERARCHY"));
+            labels.put("BLOCK_6", labels.get("CUSTOMFIELDS"));
+            labels.put("BLOCK_7", labels.get("VARIABLES"));
+            labels.put("BLOCK_8", labels.get("GISDETAILS"));
+            labels.put("BLOCK_9", labels.get("LINEARREFERENCEDETAILS"));
+            labels.put("BLOCK_10", labels.get("CONTRACTANDRENTALDETAILS"));
+            labels.put("BLOCK_11", labels.get("CALLCENTERDETAILS"));
+            labels.put("BLOCK_12", labels.get("USERDEFINEDFIELDSSECTION"));
+            labels.put("BLOCK_13", labels.get("FACILITYDETAILS"));
+            labels.put("BLOCK_15", labels.get("RELIABILITYRANKDETAILSSECTION"));
+            labels.put("BLOCK_16", labels.get("ENERGYPERFORMANCESECTION"));
+            labels.put("BLOCK_17", labels.get("RCMDETAILSSECTION"));
+            labels.put("BLOCK_19", labels.get("COMPLIANCEASSOCIATIONSECTION"));
+            labels.put("BLOCK_20", labels.get("FINANCIALANDDISPOSITIONDETAILSSECTION"));
+            labels.put("BLOCK_21", labels.get("PERFORMANCEDETAILSSECTION"));
+
+        } else if (systemFunction.equals("OSOBJP")) { // Positions
+
+            labels.put("BLOCK_2", labels.get("EQUIPMENTDETAILS"));
+            labels.put("BLOCK_3", labels.get("HIERARCHY"));
+            labels.put("BLOCK_4", labels.get("CUSTOMFIELDS"));
+            labels.put("BLOCK_5", labels.get("GISDETAILS"));
+            labels.put("BLOCK_6", labels.get("LINEARREFERENCEDETAILS"));
+            labels.put("BLOCK_7", labels.get("TRACKINGDETAILS"));
+            labels.put("BLOCK_8", labels.get("VARIABLES"));
+            labels.put("BLOCK_9", labels.get("CALLCENTERDETAILS"));
+            labels.put("BLOCK_10", labels.get("USERDEFINEDFIELDSSECTION"));
+            labels.put("BLOCK_11", labels.get("FACILITYDETAILS"));
+            labels.put("BLOCK_13", labels.get("RELIABILITYRANKDETAILSSECTION"));
+            labels.put("BLOCK_14", labels.get("CONTRACTANDRENTALDETAILSSECTION"));
+            labels.put("BLOCK_15", labels.get("ENERGYPERFORMANCESECTION"));
+            labels.put("BLOCK_16", labels.get("RCMDETAILSSECTION"));
+            labels.put("BLOCK_18", labels.get("COMPLIANCEASSOCIATIONSECTION"));
+            labels.put("BLOCK_19", labels.get("FINANCIALANDDISPOSITIONDETAILSSECTION"));
+            labels.put("BLOCK_20", labels.get("PERFORMANCEDETAILSSECTION"));
+
+        } else if (systemFunction.equals("OSOBJS")) { // Systems
+
+            labels.put("BLOCK_2", labels.get("EQUIPMENTDETAILS"));
+            labels.put("BLOCK_3", labels.get("HIERARCHY"));
+            labels.put("BLOCK_4", labels.get("CUSTOMFIELDS"));
+            labels.put("BLOCK_5", labels.get("GISDETAILS"));
+            labels.put("BLOCK_6", labels.get("LINEARREFERENCEDETAILS"));
+            labels.put("BLOCK_7", labels.get("CALLCENTERDETAILS"));
+            labels.put("BLOCK_8", labels.get("TRACKINGDETAILS"));
+            labels.put("BLOCK_9", labels.get("VARIABLES"));
+            labels.put("BLOCK_10", labels.get("USERDEFINEDFIELDSSECTION"));
+            labels.put("BLOCK_11", labels.get("FACILITYDETAILS"));
+            labels.put("BLOCK_13", labels.get("RELIABILITYRANKDETAILSSECTION"));
+            labels.put("BLOCK_14", labels.get("CONTRACTANDRENTALDETAILSSECTION"));
+            labels.put("BLOCK_15", labels.get("RCMDETAILSSECTION"));
+            labels.put("BLOCK_17", labels.get("COMPLIANCEASSOCIATIONSECTION"));
+            labels.put("BLOCK_18", labels.get("FINANCIALANDDISPOSITIONDETAILSSECTION"));
+            labels.put("BLOCK_19", labels.get("PERFORMANCEDETAILSSECTION"));
+
+        } else if (systemFunction.equals("SSPART")) { // Parts
+
+            labels.put("BLOCK_2", labels.get("TRACKINGSECTION"));
+            labels.put("BLOCK_3", labels.get("PARTSUMMARYSECTION"));
+            labels.put("BLOCK_4", labels.get("PROFILEATTACHMENTSECTION"));
+            labels.put("BLOCK_5", labels.get("ORDERDETAILSSECTION"));
+            labels.put("BLOCK_6", labels.get("CUSTOMFIELDSSECTION"));
+            labels.put("BLOCK_8", labels.get("USERDEFINEDFIELDSSECTION"));
+            labels.put("BLOCK_9", labels.get("CONDITIONDETAILSSECTION"));
+    }
     }
 
 }
