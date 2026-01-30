@@ -96,6 +96,7 @@ public class ScreenLayoutServiceImplTools {
             labels.put("BLOCK_12", labels.get("COMPLIANCEDETAILSSECTION"));
             labels.put("BLOCK_13", labels.get("INCIDENTTRACKINGSECTION"));
             labels.put("BLOCK_14", labels.get("GUESTDETAILSSECTION"));
+            labels.put("CLO_BLOCK_2", labels.get("CLOSINGCODESSECTION"));
         }
     }
 
