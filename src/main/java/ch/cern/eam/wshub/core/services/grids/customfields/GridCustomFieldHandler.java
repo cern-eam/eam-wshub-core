@@ -66,12 +66,15 @@ public class GridCustomFieldHandler implements Serializable {
      */
     private void fetchCustomFields(String dataspyID) {
         EntityManager em = tools.getEntityManager();
+        try {
+            List<Object[]> results = em.createNamedQuery(DataspyCustomField.GET_CUSTOM_FIELDS_FOR_DATASPY)
+                    .setParameter("dataspyID", dataspyID)
+                    .getResultList();
 
-        List<Object[]> results = em.createNamedQuery(DataspyCustomField.GET_CUSTOM_FIELDS_FOR_DATASPY)
-                .setParameter("dataspyID", dataspyID)
-                .getResultList();
-
-        customFields = parseResults(results);
+            customFields = parseResults(results);
+        } finally {
+            em.close();
+        }
     }
 
     private List<DataspyCustomField> parseResults(List<Object[]> results) {
@@ -228,28 +231,31 @@ public class GridCustomFieldHandler implements Serializable {
      */
     public Map<String, DataField> getCustomFieldsForGrid(String gridID) {
         EntityManager em = tools.getEntityManager();
+        try {
+            String queryString = "SELECT DISTINCT " +
+                    "  DCF_TAGNAME, " +
+                    "  PRO_TYPE " +
+                    "FROM R5DDCUSTOMFIELDS " +
+                    "JOIN R5DDDATASPY ON DCF_DDSPYID = DDS_DDSPYID " +
+                    "JOIN R5PROPERTIES ON UPPER(SUBSTR(DCF_TAGNAME, 3, INSTR(DCF_TAGNAME, '_', 1, 2) - 3)) = PRO_CODE " +
+                    "WHERE DDS_GRIDID = :gridID";
 
-        String queryString = "SELECT DISTINCT " +
-                "  DCF_TAGNAME, " +
-                "  PRO_TYPE " +
-                "FROM R5DDCUSTOMFIELDS " +
-                "JOIN R5DDDATASPY ON DCF_DDSPYID = DDS_DDSPYID " +
-                "JOIN R5PROPERTIES ON UPPER(SUBSTR(DCF_TAGNAME, 3, INSTR(DCF_TAGNAME, '_', 1, 2) - 3)) = PRO_CODE " +
-                "WHERE DDS_GRIDID = :gridID";
+            List<Object[]> results = em.createNativeQuery(queryString).setParameter("gridID", gridID).getResultList();
 
-        List<Object[]> results = em.createNativeQuery(queryString).setParameter("gridID", gridID).getResultList();
+            return results.stream().map(result -> {
+                String tagName = String.valueOf(result[0]);
+                String propertyName = tagName.split("_")[1].toUpperCase();
+                // get the rentity from last portion of the tagname
+                String rentity = String.valueOf(tagName.split("_")[tagName.split("_").length - 1]).toUpperCase();
 
-        return results.stream().map(result -> {
-            String tagName = String.valueOf(result[0]);
-            String propertyName = tagName.split("_")[1].toUpperCase();
-            // get the rentity from last portion of the tagname
-            String rentity = String.valueOf(tagName.split("_")[tagName.split("_").length - 1]).toUpperCase();
+                String dataTypeString = String.valueOf(result[1]);
+                DataType dataType = inferDataTypeFromPropertyType(dataTypeString);
 
-            String dataTypeString = String.valueOf(result[1]);
-            DataType dataType = inferDataTypeFromPropertyType(dataTypeString);
-
-            return new DataField(String.valueOf(result[0]), getSourceName(rentity, getJoinName(propertyName), getField(dataTypeString)), dataType, false);
-        }).collect(Collectors.toMap(dataField -> dataField.getTagName(), dataField -> dataField));
+                return new DataField(String.valueOf(result[0]), getSourceName(rentity, getJoinName(propertyName), getField(dataTypeString)), dataType, false);
+            }).collect(Collectors.toMap(dataField -> dataField.getTagName(), dataField -> dataField));
+        } finally {
+            em.close();
+        }
     }
 
     private DataType inferDataTypeFromPropertyType(String dataTypeString) {

@@ -442,13 +442,9 @@ public class PartMiscServiceImpl implements PartMiscService {
 
 		LinkedList<PartManufacturer> partManufacturers = new LinkedList<PartManufacturer>();
 		String sqlQuery = "select r5partmfgs.mfp_part, r5partmfgs.mfp_manufacturer, r5manufacturers.mfg_desc, r5partmfgs.mfp_manufactpart, r5partmfgs.mfp_manufactdraw, r5partmfgs.mfp_primary, r5partmfgs.mfp_notused from r5partmfgs,r5manufacturers where mfp_manufacturer = mfg_code and mfp_part= '" + partCode + "'";
-		Connection v_connection = null;
-		Statement stmt = null;
-		ResultSet v_result = null;
-		try {
-			v_connection = tools.getDataSource().getConnection();
-			stmt = v_connection.createStatement();
-			v_result = stmt.executeQuery(sqlQuery);
+		try (Connection v_connection = tools.getDataSource().getConnection();
+			 Statement stmt = v_connection.createStatement();
+			 ResultSet v_result = stmt.executeQuery(sqlQuery)) {
 
 			while (v_result.next())
 			{
@@ -464,16 +460,6 @@ public class PartMiscServiceImpl implements PartMiscService {
 			}
 		} catch (Exception e) {
 			throw tools.generateFault("Couldn't read the manufacturers: " + e.getMessage());
-		}
-		finally {
-			try {
-				if(v_result != null) v_result.close();
-				if(stmt != null) stmt.close();
-				if(v_connection != null) v_connection.close();
-			} catch (Exception e) {
-				//tools.log(Level.FATAL, "Couldn't close the connection in readPartManufacturers");
-				throw tools.generateFault("Couldn't read the manufacturers");
-			}
 		}
 
 		return partManufacturers.toArray(new PartManufacturer[0]);

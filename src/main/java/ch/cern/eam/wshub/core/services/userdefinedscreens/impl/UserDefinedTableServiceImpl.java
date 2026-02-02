@@ -38,13 +38,20 @@ public class UserDefinedTableServiceImpl implements UserDefinedTableService {
         tools.demandDatabaseConnection();
         UserDefinedTableValidator.validateOperation(tableName, rows);
         EntityManager entityManager = tools.getEntityManager();
-        entityManager.joinTransaction();
-        for (UDTRow row : rows) {
-            Map<String, Object> parameters = getUDTRowAsMap(row);
-            parameters.putAll(getDefaultInsertColumns(context.getCredentials().getUsername()));
-            UserDefinedTableQueries.executeInsertQuery(tableName.toUpperCase(), parameters, entityManager);
+
+        try {
+            entityManager.joinTransaction();
+            for (UDTRow row : rows) {
+                Map<String, Object> parameters = getUDTRowAsMap(row);
+                parameters.putAll(getDefaultInsertColumns(context.getCredentials().getUsername()));
+                UserDefinedTableQueries.executeInsertQuery(tableName.toUpperCase(), parameters, entityManager);
+            }
+            return null;
+        } catch (EAMException eamException) {
+            throw eamException;
+        } finally {
+            entityManager.close();
         }
-        return null;
     }
 
     @Override
