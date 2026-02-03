@@ -40,6 +40,8 @@ public class Tools {
 
 	public static final String CACHE_SEPARATOR = "_";
 
+	private static final ThreadLocal<EntityManager> currentEntityManager = new ThreadLocal<>();
+
 	private ApplicationData applicationData;
 	private EAMWebServicesPT eamws;
 
@@ -82,7 +84,35 @@ public class Tools {
 	//
 	//
 	public EntityManager getEntityManager() {
+		EntityManager em = currentEntityManager.get();
+		if (em != null) {
+			return em;
+		}
 		return this.entityManagerFactory.createEntityManager();
+	}
+
+	/**
+	 * Sets the EntityManager to be used by all operations on the current thread.
+	 * When set, getEntityManager() returns this instance instead of creating a new one.
+	 * The caller is responsible for managing the lifecycle of this EntityManager.
+	 */
+	public static void setCurrentEntityManager(EntityManager em) {
+		currentEntityManager.set(em);
+	}
+
+	/**
+	 * Clears the current thread's EntityManager. Should be called in a finally block
+	 * after setCurrentEntityManager() to prevent memory leaks.
+	 */
+	public static void clearCurrentEntityManager() {
+		currentEntityManager.remove();
+	}
+
+	/**
+	 * Returns true if a shared EntityManager is set for the current thread.
+	 */
+	public static boolean hasCurrentEntityManager() {
+		return currentEntityManager.get() != null;
 	}
 
 	public DataSource getDataSource() {

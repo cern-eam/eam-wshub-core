@@ -37,6 +37,7 @@ public class UserDefinedTableServiceImpl implements UserDefinedTableService {
             throws EAMException {
         tools.demandDatabaseConnection();
         UserDefinedTableValidator.validateOperation(tableName, rows);
+        boolean isSharedEntityManager = Tools.hasCurrentEntityManager();
         EntityManager entityManager = tools.getEntityManager();
 
         try {
@@ -50,7 +51,9 @@ public class UserDefinedTableServiceImpl implements UserDefinedTableService {
         } catch (EAMException eamException) {
             throw eamException;
         } finally {
-            entityManager.close();
+            if (!isSharedEntityManager) {
+                entityManager.close();
+            }
         }
     }
 
@@ -58,6 +61,7 @@ public class UserDefinedTableServiceImpl implements UserDefinedTableService {
     public List<Map<String, Object>> readUserDefinedTableRows(EAMContext context,
                                                               String tableName, UDTRow filters, List<String> fieldsToRead) throws EAMException {
         tools.demandDatabaseConnection();
+        boolean isSharedEntityManager = Tools.hasCurrentEntityManager();
         EntityManager entityManager = tools.getEntityManager();
 
         try {
@@ -76,7 +80,9 @@ public class UserDefinedTableServiceImpl implements UserDefinedTableService {
         } catch (EAMException eamException) {
             throw eamException;
         } finally {
-            entityManager.close();
+            if (!isSharedEntityManager) {
+                entityManager.close();
+            }
         }
     }
 
@@ -84,6 +90,7 @@ public class UserDefinedTableServiceImpl implements UserDefinedTableService {
     public int updateUserDefinedTableRows(EAMContext context, String tableName, UDTRow fieldsToUpdate,
                                           UDTRow filters) throws EAMException {
         tools.demandDatabaseConnection();
+        boolean isSharedEntityManager = Tools.hasCurrentEntityManager();
         EntityManager entityManager = tools.getEntityManager();
 
         try {
@@ -96,7 +103,9 @@ public class UserDefinedTableServiceImpl implements UserDefinedTableService {
         } catch (EAMException eamException) {
             throw eamException;
         } finally {
-            entityManager.close();
+            if (!isSharedEntityManager) {
+                entityManager.close();
+            }
         }
 
     }
@@ -104,6 +113,7 @@ public class UserDefinedTableServiceImpl implements UserDefinedTableService {
     @Override
     public int deleteUserDefinedTableRows(EAMContext context, String tableName, UDTRow filters) throws EAMException {
         tools.demandDatabaseConnection();
+        boolean isSharedEntityManager = Tools.hasCurrentEntityManager();
         EntityManager entityManager = tools.getEntityManager();
 
         try {
@@ -114,7 +124,9 @@ public class UserDefinedTableServiceImpl implements UserDefinedTableService {
         } catch (EAMException eamException) {
             throw eamException;
         } finally {
-            entityManager.close();
+            if (!isSharedEntityManager) {
+                entityManager.close();
+            }
         }
     }
 
@@ -129,6 +141,7 @@ public class UserDefinedTableServiceImpl implements UserDefinedTableService {
 
     public UDTRow getMapAsUDTRow(String tableName, Map<String, Object> mapRow) throws EAMException {
         tools.demandDatabaseConnection();
+        boolean isSharedEntityManager = Tools.hasCurrentEntityManager();
         EntityManager entityManager = tools.getEntityManager();
 
         try {
@@ -163,7 +176,9 @@ public class UserDefinedTableServiceImpl implements UserDefinedTableService {
         } catch (EAMException eamException) {
             throw eamException;
         } finally {
-            entityManager.close();
+            if (!isSharedEntityManager) {
+                entityManager.close();
+            }
         }
     }
 
