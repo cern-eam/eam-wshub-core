@@ -61,10 +61,12 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
             gridRequestLayout.addFilter("plo_usergroup", userGroup, "=");
             Map<String, Map<String, Map<String, String>>> layout = group(GridTools.convertGridResultToMapList(gridsService.executeQuery(context, gridRequestLayout)),"plo_pagename", "plo_elementid");
 
-            // Get layout labels first
+            // Get layout labels 
             Map<String, String> labels = getTabLayoutLabels(context, userFunction, systemFunction);
 
-            screenLayout.setFields(getTabLayout(context, entity, defaultLayout.get(systemFunction), layout.get(userFunction)));
+            Map<String, Tab> allTabs = getAllTabs(context, userGroup, userFunction);
+
+            screenLayout.setFields(getTabLayout(entity, defaultLayout.get(systemFunction), layout.get(userFunction)));
 
             Map<String, UserDefinedFieldDescription> udfDetails = getUdfDetails(context, entity);
             screenLayout.getFields()
@@ -73,15 +75,16 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
 
             // Add other tabs
             if (tabs != null && !tabs.isEmpty()) {
-                screenLayout.setTabs(getTabs(context, tabs, userGroup, systemFunction, userFunction, entity, defaultLayout, layout));
+                screenLayout.setTabs(getTabs(allTabs, tabs, systemFunction, userFunction, entity, defaultLayout, layout));
             }
 
-            screenLayout.setCustomGridTabs(getCustomGridTabs(context, userGroup, userFunction));
-            screenLayout.setCustomTabs(getCustomTabs(context, tabs, userGroup, userFunction));
+            // Custom grid tabs are tabs where the tabcode begins with X
+            screenLayout.setCustomGridTabs(allTabs.entrySet().stream().filter(entry -> entry.getKey().startsWith("X")).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
+            
+            screenLayout.setCustomTabs(getCustomTabs(context, allTabs, userGroup, userFunction));
 
-            // For all fields for the record view, the bot_fld1 matches the upper-cased elementId
+            // Ameliorate with boiler texsts (record view: bot_fld1 matches the upper-cased elementId, tab view: bot_fld1 matches upper-cased tab code + '_' + elementId)
             screenLayout.getFields().values().forEach(elementInfo -> elementInfo.setText(labels.get(elementInfo.getElementId().toUpperCase())));
-            // For all tab fields, bot_fld1 matches upper-cased tab code + '_' + elementId
             screenLayout.getTabs().keySet().forEach(tab -> screenLayout.getTabs().get(tab).getFields().values().forEach(elementInfo -> elementInfo.setText(labels.get(tab + "_" + elementInfo.getElementId().toUpperCase()))));
 
             return screenLayout;
@@ -157,44 +160,39 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
         }).collect(Collectors.toList());
     }
 
-    private  Map<String, Tab> getTabs(InforContext context, List<String> tabCodes, String userGroup, String systemFunction, String userFunction, String entity, Map<String, Map<String, Map<String, String>>> defaultLayout, Map<String, Map<String, Map<String, String>>> layout) throws InforException {
+    private Map<String, Tab> getAllTabs(InforContext context, String userGroup, String userFunction) throws InforException {
         GridRequest gridRequest = new GridRequest("BSGROU_PRM");
         gridRequest.getParams().put("param.usergroupcode", userGroup);
         gridRequest.getParams().put("param.userfunction", userFunction);
-        gridRequest.addFilter("tabcode", String.join(",", tabCodes), "ALT_IN", GridRequestFilter.JOINER.OR);
-        Map<String, Tab> tabs = GridTools.convertGridResultToMap(Tab.class, "tabcode", null, gridsService.executeQuery(context, gridRequest));
-
-        for (String tabCode : tabs.keySet())
-            tabs.get(tabCode).setFields(
-                    getTabLayout(context, entity, defaultLayout.get( systemFunction + "_" + tabCode), layout.get(userFunction + "_" + tabCode))
-            );
-
-        return tabs;
-    }
-
-    private Map<String, Tab> getCustomGridTabs(InforContext context, String userGroup, String userFunction) throws InforException {
-        GridRequest gridRequest = new GridRequest("BSGROU_PRM");
-        gridRequest.getParams().put("param.usergroupcode", userGroup);
-        gridRequest.getParams().put("param.userfunction", userFunction);
-        gridRequest.addFilter("tabcode", "X", "BEGINS", GridRequestFilter.JOINER.OR);
+        gridRequest.addFilter("tabcode", "", "BEGINS"); // Artificial filter to improve performance
         return GridTools.convertGridResultToMap(Tab.class, "tabcode", null, gridsService.executeQuery(context, gridRequest));
     }
 
-    private Map<String, CustomTab> getCustomTabs(InforContext context, List<String> alreadyFetchedTabs, String userGroup, String screenCode) throws InforException {
+    private  Map<String, Tab> getTabs(Map<String, Tab> allTabs, List<String> tabCodes, String systemFunction, String userFunction, String entity, Map<String, Map<String, Map<String, String>>> defaultLayout, Map<String, Map<String, Map<String, String>>> layout) throws InforException {
+        Map<String, Tab> tabs = new HashMap<>();
+        for (String tabCode : tabCodes) {
+            Tab tab = allTabs.get(tabCode);
+            tab.setFields(getTabLayout(entity, defaultLayout.get( systemFunction + "_" + tabCode), layout.get(userFunction + "_" + tabCode)));
+            tabs.put(tabCode, tab);
+        } 
+        return tabs; 
+    }
+
+    private Map<String, CustomTab> getCustomTabs(InforContext context, Map<String, Tab> allTabs, String userGroup, String screenCode) throws InforException {
         GridRequest gridRequest = new GridRequest("BSFUNC_TBS");
         gridRequest.getParams().put("parameter.screencode", screenCode);
         gridRequest.addFilter("type", "HTML", Operator.EQUALS.getValue(), GridRequestFilter.JOINER.AND);
-        gridRequest.addFilter("tabcode", String.join(",", alreadyFetchedTabs), Operator.NOT_IN.getValue(), GridRequestFilter.JOINER.OR);
+        //gridRequest.addFilter("tabcode", String.join(",", alreadyFetchedTabs), Operator.NOT_IN.getValue(), GridRequestFilter.JOINER.OR);
         Map<String, String> customTabsValues = convertGridResultToMap("tabcode", "taburl", gridsService.executeQuery(context, gridRequest));
 
-        Map<String, Tab> tabs = getTabsInCodes(context, userGroup, screenCode, customTabsValues.keySet());
+
         LinkedHashMap<String, CustomTab> customTabs = new LinkedHashMap<>();
 
         for (Map.Entry<String, String> entry : customTabsValues.entrySet()) {
             String tabCode = entry.getKey();
             String tabUrl = entry.getValue();
 
-            CustomTab customTab = new CustomTab(tabs.getOrDefault(tabCode, new Tab()));
+            CustomTab customTab = new CustomTab(allTabs.getOrDefault(tabCode, new Tab()));
             customTab.setValue(tabUrl);
             customTab.setUrlParams(getCustomTabUrlParams(context, screenCode, tabCode));
 
@@ -202,14 +200,6 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
         }
 
         return customTabs;
-    }
-
-    private Map<String, Tab> getTabsInCodes(InforContext context, String userGroup, String userFunction, Collection<String> codes) throws InforException {
-        GridRequest gridRequest = new GridRequest("BSGROU_PRM");
-        gridRequest.getParams().put("param.usergroupcode", userGroup);
-        gridRequest.getParams().put("param.userfunction", userFunction);
-        gridRequest.addFilter("tabcode", String.join(",", codes), Operator.IN.getValue(), GridRequestFilter.JOINER.OR);
-        return GridTools.convertGridResultToMap(Tab.class, "tabcode", null, gridsService.executeQuery(context, gridRequest));
     }
 
     private List<URLParam> getCustomTabUrlParams(InforContext context, String screenCode, String tabCode) throws InforException {
@@ -230,7 +220,7 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
         );
     }
 
-    private Map<String, ElementInfo> getTabLayout(InforContext context, String entity, Map<String, Map<String, String>> defaultLayout, Map<String, Map<String, String>> layout) throws InforException {
+    private Map<String, ElementInfo> getTabLayout(String entity, Map<String, Map<String, String>> defaultLayout, Map<String, Map<String, String>> layout) throws InforException {
         List<ElementInfo> elements = new ArrayList<>();
         if (defaultLayout != null) {
             for (Map<String, String> elementDefaultLayout : defaultLayout.values()) {
