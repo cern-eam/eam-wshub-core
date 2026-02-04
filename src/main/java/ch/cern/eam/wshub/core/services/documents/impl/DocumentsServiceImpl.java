@@ -18,6 +18,7 @@ import net.datastream.schemas.mp_results.mp0112_001.MP0112_AddDocumentAssociatio
 import net.datastream.schemas.mp_results.mp6001_001.MP6001_AddDocument_001_Result;
 import net.datastream.wsdls.inforws.InforWebServicesPT;
 
+import javax.persistence.EntityManager;
 import java.util.List;
 
 public class DocumentsServiceImpl implements DocumentsService {
@@ -39,9 +40,15 @@ public class DocumentsServiceImpl implements DocumentsService {
 				|| (objectCode == null || objectCode.isEmpty())) {
 			throw tools.generateFault("Parameters not supplied correctly.");
 		}
-		return tools.getEntityManager().createNamedQuery(InforDocument.GET_DOCUMENTS, InforDocument.class)
-				.setParameter("code", objectCode).setParameter("entity", entity)
-				.getResultList();
+
+		EntityManager em = tools.getEntityManager();
+		try {
+			return em.createNamedQuery(InforDocument.GET_DOCUMENTS, InforDocument.class)
+					.setParameter("code", objectCode).setParameter("entity", entity)
+					.getResultList();
+		} finally {
+			em.close();
+		}
 	}
 
 	@Override

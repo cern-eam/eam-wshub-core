@@ -542,8 +542,11 @@ public class JPAGrids implements Serializable {
 			tools.log(Level.SEVERE,"Error whlie executing Grid Query");
 			throw tools.generateFault("Couldn't fetch data for this grid.");
 		} finally {
-			em.clear();
-			em.close();
+			try {
+				em.clear();
+			} finally {
+				em.close();
+			}
 		}
 
 	}
@@ -1082,8 +1085,11 @@ public class JPAGrids implements Serializable {
             tools.log(Level.SEVERE,"Error while fetching grid metadata for gridCode " + gridCode);
             throw tools.generateFault("Couldn't fetch the metadata for this grid.");
         } finally {
-            em.clear();
-            em.close();
+            try {
+                em.clear();
+            } finally {
+                em.close();
+            }
         }
     }
 
@@ -1123,8 +1129,11 @@ public class JPAGrids implements Serializable {
             tools.log(Level.SEVERE,"Error");
             throw tools.generateFault("Couldn't fetch the metadata for this grid.");
         } finally {
-            em.clear();
-            em.close();
+            try {
+                em.clear();
+            } finally {
+                em.close();
+            }
         }
     }
 
@@ -1156,8 +1165,11 @@ public class JPAGrids implements Serializable {
             tools.log(Level.SEVERE,"Error while fetching default dataspy for grid code " + gridCode + " and view type " + viewType);
             throw tools.generateFault("Couldn't fetch the metadata for this grid.");
         } finally {
-            em.clear();
-            em.close();
+            try {
+                em.clear();
+            } finally {
+                em.close();
+            }
         }
     }
 
