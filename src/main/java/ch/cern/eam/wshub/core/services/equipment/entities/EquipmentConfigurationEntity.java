@@ -18,6 +18,7 @@ public class EquipmentConfigurationEntity implements Serializable {
     @Transient
     @EAMField(xpath = "EQUIPMENTCONFIGURATIONID/EQUIPMENTCONFIGURATIONCODE")
     private String equipmentConfigCode;
+
     @Transient
     @EAMField(xpath = "EQUIPMENTCONFIGURATIONID/DESCRIPTION")
     private String equipmentConfigDesc;
@@ -175,6 +176,21 @@ public class EquipmentConfigurationEntity implements Serializable {
     @Transient
     @EAMField(xpath = "PARTID/PARTCODE")
     private String partCode;
+
+    @Transient
+    @EAMField(xpath = "ContractAndRentalDetails/ISRENTAL")
+    private Boolean isRental;
+
+    @Transient
+    @EAMField(xpath = "ContractAndRentalDetails/RENTALTEMPLATEID/RENTALTEMPLATECODE")
+    private String rentalTemplate;
+
+    @Transient
+    @EAMField(xpath = "ContractAndRentalDetails/ISCONTRACT")
+    private Boolean isContract;
+    @Transient
+    @EAMField(xpath = "ConfigurationDetails/VEHICLETYPE/TYPECODE")
+    private String vehicleType;
 
     @Transient
     @EAMField(xpath = "UserDefinedFields")
@@ -498,6 +514,38 @@ public class EquipmentConfigurationEntity implements Serializable {
 
     public void setUserDefinedFields(UserDefinedFields userDefinedFields) {
         this.userDefinedFields = userDefinedFields;
+    }
+
+    public Boolean getIsRental() {
+        return isRental;
+    }
+
+    public void setIsRental(Boolean isRental) {
+        this.isRental = isRental;
+    }
+
+    public String getRentalTemplate() {
+        return rentalTemplate;
+    }
+
+    public void setRentalTemplate(String rentalTemplate) {
+        this.rentalTemplate = rentalTemplate;
+    }
+
+    public Boolean getIsContract() {
+        return isContract;
+    }
+
+    public void setIsContract(Boolean isContract) {
+        this.isContract = isContract;
+    }
+
+    public String getVehicleType() {
+        return vehicleType;
+    }
+
+    public void setVehicleType(String vehicleType) {
+        this.vehicleType = vehicleType;
     }
 
     @Override
