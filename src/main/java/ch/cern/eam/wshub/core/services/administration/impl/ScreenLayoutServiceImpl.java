@@ -171,10 +171,12 @@ public class ScreenLayoutServiceImpl implements ScreenLayoutService {
     private  Map<String, Tab> getTabs(Map<String, Tab> allTabs, List<String> tabCodes, String systemFunction, String userFunction, String entity, Map<String, Map<String, Map<String, String>>> defaultLayout, Map<String, Map<String, Map<String, String>>> layout) throws InforException {
         Map<String, Tab> tabs = new HashMap<>();
         for (String tabCode : tabCodes) {
-            Tab tab = allTabs.get(tabCode);
-            tab.setFields(getTabLayout(entity, defaultLayout.get( systemFunction + "_" + tabCode), layout.get(userFunction + "_" + tabCode)));
-            tabs.put(tabCode, tab);
-        } 
+            if (allTabs.containsKey(tabCode)) {
+                Tab tab = allTabs.get(tabCode);
+                tab.setFields(getTabLayout(entity, defaultLayout.get( systemFunction + "_" + tabCode), layout.get(userFunction + "_" + tabCode)));
+                tabs.put(tabCode, tab);
+            }
+        }
         return tabs; 
     }
 
