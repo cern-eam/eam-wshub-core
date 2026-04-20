@@ -66,10 +66,10 @@ public class NonPoReceiptServiceImpl implements NonPoReceiptService {
         MP1243_AddNonPOReceipt_001_Result addNonPoReceipt = tools.performInforOperation(context, inforws::addNonPOReceiptOp, addtransaction);
         String transactionCode = addNonPoReceipt.getResultData().getTRANSACTIONID().getTRANSACTIONCODE();
         if(receipt.getParts() != null && !receipt.getParts().isEmpty()) {
-            receipt.getParts().stream()
-                    .peek(part -> part.setTransactionCode(transactionCode))
-                    .collect(Collectors.toList());
-            nonPoReceiptPartService.createNoPoReceiptPartBatch(context, receipt.getParts());
+          for (NoPoReceiptPart part : receipt.getParts()) {
+                part.setTransactionCode(transactionCode);
+                nonPoReceiptPartService.createNoPoReceiptPart(context, part);
+            }
         }
 
         return transactionCode;
@@ -121,17 +121,22 @@ public class NonPoReceiptServiceImpl implements NonPoReceiptService {
 
 
         if (!toDeleteIds.isEmpty()) {
-            nonPoReceiptPartService.deleteNoPoReceiptPartBatch(context,toDeleteIds);
+            for (TransactionLineId ids : toDeleteIds) {
+                nonPoReceiptPartService.deleteNoPoReceiptPart(context, ids.getTransactionLineId(), ids.getTransactionCode());
+            }
         }
 
         if (!toUpdate.isEmpty()) {
-            nonPoReceiptPartService.updateNoPoReceiptPartBatch(context, toUpdate);
+            for (NoPoReceiptPart part : toUpdate) {
+                nonPoReceiptPartService.updateNoPoReceiptPart(context, part);
+            }
         }
 
         if (!toCreate.isEmpty()) {
-            nonPoReceiptPartService.createNoPoReceiptPartBatch(context, toCreate);
+            for (NoPoReceiptPart part : toCreate) {
+                nonPoReceiptPartService.createNoPoReceiptPart(context, part);
+            }
         }
-        nonPoReceiptPartService.updateNoPoReceiptPartBatch(context, receipt.getParts());
         return result.getResultData().getTRANSACTIONID().getTRANSACTIONCODE();
     }
 
@@ -147,13 +152,10 @@ public class NonPoReceiptServiceImpl implements NonPoReceiptService {
         List<TransactionLineId> ids = new ArrayList<>();
         if (prev.getParts() != null) {
             for (NoPoReceiptPart part : prev.getParts()) {
-                ids.add(new TransactionLineId(part.getTransactionCode(), part.getTransactionLineId()));
+                nonPoReceiptPartService.deleteNoPoReceiptPart(context, part.getTransactionLineId(), part.getTransactionCode());
             }
-            if (!ids.isEmpty()) {
-                nonPoReceiptPartService.deleteNoPoReceiptPartBatch(context, ids);
-            }
+
         }
-        nonPoReceiptPartService.deleteNoPoReceiptPartBatch(context, ids);
         MP1245_DeleteNonPOReceipt_001_Result result = tools.performInforOperation(context, inforws::deleteNonPOReceiptOp, deleteTransaction);
         return result.getResultData().getTRANSACTIONID().getTRANSACTIONCODE();
     }
