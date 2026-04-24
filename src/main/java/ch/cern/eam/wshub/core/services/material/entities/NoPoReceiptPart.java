@@ -47,7 +47,7 @@ public class NoPoReceiptPart implements Serializable {
     private String bin;
 
     @GridField(name = "lotcode")
-    @InforField(xpath = "LOTID/LOTCODE")
+    @InforField(xpath = "Lot/LOTID/LOTCODE")
     private String lot;
 
     @GridField(name = "manufacturerlot")
