@@ -92,6 +92,11 @@ public class Activity implements Serializable {
 	@InforField(xpath = "TASKSID/TASKQUANTITY")
 	private BigDecimal taskQty;
 
+	@Column(name = "ACT_PERCOMPLETE")
+	@GridField(name="percentcomplete")
+	@InforField(xpath = "PERCENTCOMPLETED")
+	private String percentCompleted;
+
 	@Transient
 	private WorkOrderActivityChecklistItem[] checklists;
 
@@ -238,6 +243,14 @@ public class Activity implements Serializable {
 
 	public void setForceActivityExpansion(Boolean forceActivityExpansion) {
 		this.forceActivityExpansion = forceActivityExpansion;
+	}
+
+	public String getPercentCompleted() {
+		return percentCompleted;
+	}
+
+	public void setPercentCompleted(String percentCompleted) {
+		this.percentCompleted = percentCompleted;
 	}
 
 	@Override
