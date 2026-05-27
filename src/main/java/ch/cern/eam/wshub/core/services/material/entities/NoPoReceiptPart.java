@@ -73,6 +73,7 @@ public class NoPoReceiptPart implements Serializable {
     @InforField(xpath = "PARTCONDITIONTEMPLATECONDITIONCODE")
     private String condition;
 
+    @InforField(xpath = "StandardUserDefinedFields")
     private UserDefinedFields userDefinedFields;
 
 
