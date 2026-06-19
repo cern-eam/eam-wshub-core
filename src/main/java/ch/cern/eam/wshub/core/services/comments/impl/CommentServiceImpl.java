@@ -237,7 +237,7 @@ public class CommentServiceImpl implements CommentService {
 	}
 
 	private static String complementEntityKeyCode(String entityCode, String entityKeyCode, String organization) {
-		if ("OBJ".equals(entityCode) || "PART".equals(entityCode) || "TASK".equals(entityCode)) {
+		if ("OBJ".equals(entityCode) || "PART".equals(entityCode) || "TASK".equals(entityCode) || "CREN".equals(entityCode)) {
 			return entityKeyCode + "#" + organization;
 		}
 		return entityKeyCode;
