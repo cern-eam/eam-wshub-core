@@ -48,7 +48,7 @@ public class SystemServiceImpl implements SystemService {
 
 		MP0315_GetSystemEquipmentDefault_001_Result result = tools.performEAMOperation(context, eamws::getSystemEquipmentDefaultOp, getSystemEquipmentDefault_001);
 
-		Equipment equipment = tools.getEAMFieldTools().transformEAMObject(new Equipment(), result.getResultData().getSystemEquipment(), context);
+		Equipment equipment = tools.getEAMFieldTools().transformEAMObject(new Equipment(), result.getResultData().getSystemEquipmentDefault(), context);
 		equipment.setUserDefinedList(new HashMap<>());
 		return equipment;
 	}

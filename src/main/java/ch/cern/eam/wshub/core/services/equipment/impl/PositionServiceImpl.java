@@ -101,7 +101,7 @@ public class PositionServiceImpl implements PositionService {
 
 		MP0310_GetPositionEquipmentDefault_001_Result result = tools.performEAMOperation(context, eamws::getPositionEquipmentDefaultOp, getPositionEquipmentDefault_001);
 
-		Equipment equipment = tools.getEAMFieldTools().transformEAMObject(new Equipment(), result.getResultData().getPositionEquipment(), context);
+		Equipment equipment = tools.getEAMFieldTools().transformEAMObject(new Equipment(), result.getResultData().getPositionEquipmentDefault(), context);
 		equipment.setUserDefinedList(new HashMap<>());
 		return equipment;
 	}
