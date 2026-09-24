@@ -101,7 +101,7 @@ public class PositionServiceImpl implements PositionService {
 
 		MP0310_GetPositionEquipmentDefault_001_Result result = tools.performInforOperation(context, inforws::getPositionEquipmentDefaultOp, getPositionEquipmentDefault_001);
 
-		Equipment equipment = tools.getInforFieldTools().transformInforObject(new Equipment(), result.getResultData().getPositionEquipment(), context);
+		Equipment equipment = tools.getInforFieldTools().transformInforObject(new Equipment(), result.getResultData().getPositionEquipmentDefault(), context);
 		equipment.setUserDefinedList(new HashMap<>());
 		return equipment;
 	}
